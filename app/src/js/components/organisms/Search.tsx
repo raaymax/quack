@@ -50,7 +50,7 @@ const StyledSearch = styled.div`
     padding: 0px 16px 16px 16px;
     padding-bottom: 50px;
   }
-  .message.pinned {
+  .message {
     background-color: ${(props) => props.theme.Chatbox.Background};
     border-radius: 8px;
     margin: 8px 0px;
@@ -98,6 +98,7 @@ export function SearchResults() {
     dispatch(methods.search.find({ channelId, text: value }));
   }, [channelId, location.state?.search, dispatch]);
 
+
   return (
     <StyledList>
       <div key='bottom' id='scroll-stop' />
@@ -125,6 +126,10 @@ export function SearchResults() {
 }
 
 export const Search = () => {
+  const location = useLocation();
+  console.log('state', location.state);
+  if(location.state?.search === undefined) return null;
+
   return (
     <MessageListArgsProvider streamId="search">
       <StyledSearch>
