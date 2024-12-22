@@ -1,13 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
-
-type ConfigState = {
-  appVersion: string,
-};
+import type { UserConfig } from '../../types';
 
 export default createSlice({
   name: 'config',
-  initialState: {} as ConfigState,
+  initialState: {} as UserConfig,
   reducers: {
-    setAppVersion: (state, action) => ({ ...state, appVersion: action.payload }),
+    set: (state, action) => ({ ...state, ...action.payload }),
   },
 });

@@ -225,9 +225,9 @@ export const MainConversation = ({ channelId, children}: MainConversationProps) 
             )}
             <ButtonWithIcon icon="thumbtack" onClick={() => {
               navigate("/"+ channelId + "/pins")
-            }}  iconSize={24}/>
-            <ButtonWithIcon icon="search" onClick={() => navigate("/"+ channelId + "/search")}  iconSize={24}/>
-            {/*<ButtonWithIcon icon="refresh" onClick={() => dispatch(init({}))} iconSize={24} />*/}
+            }}  iconSize={16}/>
+            {/*<ButtonWithIcon icon="search" onClick={() => navigate("/"+ channelId + "/search")}  iconSize={24}/>
+            <ButtonWithIcon icon="refresh" onClick={() => dispatch(init({}))} iconSize={24} />*/}
           </Toolbar>
         </div>
         <CollapsableColumns className={cn('conversation-with-context-bar', {'has-context-bar': Boolean(children)})} 

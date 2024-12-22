@@ -372,6 +372,7 @@ class API extends EventTarget {
     case 'message:remove': {
       return await this.callApi(`/api/messages/${msg.id}`, {
         method: 'DELETE',
+        body: JSON.stringify({}),
       });
     }
     case 'message:pin': {

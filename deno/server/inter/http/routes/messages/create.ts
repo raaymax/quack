@@ -25,6 +25,7 @@ export default (core: Core) =>
           debug: { type: "string" },
           links: { type: "array", items: { type: "string" } },
           mentions: { type: "array", items: { type: "string" } },
+          encrypted: { type: "boolean", default: false },
           attachments: {
             type: "array",
             items: {
@@ -44,6 +45,7 @@ export default (core: Core) =>
       },
     },
     handler: async (req) => {
+      console.log(req.body);
       const userId = req.state.user.id;
       const { channelId } = req.params;
 

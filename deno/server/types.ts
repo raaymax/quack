@@ -47,6 +47,11 @@ export type Interaction = {
 export type Config = {
   appVersion: string;
   mainChannelId: EntityId;
+  encryptionKey: JsonWebKey;
+  channels: {
+    channelId: EntityId;
+    encryptionKey: JsonWebKey;
+  }[];
 };
 
 export type Webhook = {
@@ -88,6 +93,8 @@ export type Channel = {
   private: boolean;
   direct: boolean;
   users: EntityId[];
+  encrypted: boolean;
+  encryptionKey: JsonWebKey | null;
 };
 
 // Replaces all EntityId with string recursively
@@ -183,6 +190,7 @@ export type Message = {
   clientId: string;
   emojiOnly: boolean;
   pinned: boolean;
+  encrypted: boolean;
   thread: Array<{
     userId: EntityId;
     childId: EntityId;
