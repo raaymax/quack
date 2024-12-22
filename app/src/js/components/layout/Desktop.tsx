@@ -129,6 +129,22 @@ export const Container = styled.div`
       & > .conversation-with-context-bar.has-context-bar {
         .conversation {
           flex: 1 1 50%;
+          width: 50%;
+          max-width: 100%;
+        }
+        .context-bar {
+          flex: 1 1 50%;
+          max-width: 50%;
+        }
+      }
+      & > .conversation-with-context-bar.has-context-bar.collapsed {
+        .conversation {
+          flex: 1 1 50%;
+          max-width: 50%;
+        }
+        .context-bar {
+          flex: 1 1 50%;
+          max-width: 100%;
         }
       }
     }
@@ -229,9 +245,9 @@ export const MainConversation = ({ channelId, children}: MainConversationProps) 
             )}
             <ButtonWithIcon icon="thumbtack" onClick={() => {
               navigate("/"+ channelId + "/pins")
-            }}  iconSize={24}/>
-            <ButtonWithIcon icon="search" onClick={() => navigate("/"+ channelId + "/search")}  iconSize={24}/>
-            {/*<ButtonWithIcon icon="refresh" onClick={() => dispatch(init({}))} iconSize={24} />*/}
+            }}  iconSize={16}/>
+            {/* <ButtonWithIcon icon="search" onClick={() => navigate("/"+ channelId + "/search")}  iconSize={24}/>
+            <ButtonWithIcon icon="refresh" onClick={() => dispatch(init({}))} iconSize={24} />*/}
           </Toolbar>
         </div>
         <CollapsableColumns className={cn('conversation-with-context-bar', {'has-context-bar': Boolean(children)})} 
