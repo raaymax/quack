@@ -33,7 +33,7 @@ export const CollapsableColumns = ({ className, columns, minSize }: CollapsableC
   const [Column1, Column2] = columns;
 
   return (
-    <Container className={cn(className)} ref={container}>
+    <Container className={cn(className, {collapsed: oneColumn})} ref={container}>
       {(!Column2 || !oneColumn) && Column1}
       {Column2}
     </Container>

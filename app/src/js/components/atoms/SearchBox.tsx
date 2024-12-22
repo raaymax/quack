@@ -1,6 +1,8 @@
 import styled from 'styled-components';
 import { cn, ClassNames } from '../../utils';
 import { Icon } from './Icon';
+import { useNavigate } from 'react-router-dom';
+import { useCallback, useState } from 'react';
 
 const Container = styled.div`
   position: relative;
@@ -32,27 +34,27 @@ const SearchBoxInput = styled.input`
 `;
 
 type SearchBoxProps = {
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
-  value?: string;
+  onSearch?: (value: string) => void;
   defaultValue?: string;
   className?: ClassNames;
   placeholder?: string;
 }
 
 export const SearchBox = ({
-  onChange, onKeyDown, placeholder = 'Search here...', defaultValue, value, className,
-}: SearchBoxProps) => (
-  <Container> 
+  placeholder = 'Search here...', className, onSearch, defaultValue
+}: SearchBoxProps) => {
+  const [value, setValue] = useState(defaultValue ?? '');
+
+  return (<Container>
     <SearchBoxInput
       type="text"
-      onChange={onChange}
-      onKeyDown={onKeyDown}
+      onChange={(e) => setValue(e.target.value)}
+      onKeyDown={(e) => e.key === 'Enter' && value.trim() && onSearch?.(value)}
       className={cn(className)}
       value={value}
-      defaultValue={defaultValue}
       placeholder={placeholder}
     />
     <Icon size={16} icon="search" />
   </Container>
-);
+  );
+};

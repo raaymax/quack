@@ -2,7 +2,7 @@ import styled, { useTheme } from 'styled-components';
 import { cn , same } from '../../utils';
 import { Resizer } from '../atoms/Resizer';
 import { useParams , useLocation, useNavigate } from 'react-router-dom';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Workspaces } from '../organisms/Workspaces';
 import { Sidebar } from '../organisms/Sidebar';
 import { Conversation } from '../organisms/Conversation';
@@ -129,6 +129,22 @@ export const Container = styled.div`
       & > .conversation-with-context-bar.has-context-bar {
         .conversation {
           flex: 1 1 50%;
+          width: 50%;
+          max-width: 100%;
+        }
+        .context-bar {
+          flex: 1 1 50%;
+          max-width: 50%;
+        }
+      }
+      & > .conversation-with-context-bar.has-context-bar.collapsed {
+        .conversation {
+          flex: 1 1 50%;
+          max-width: 50%;
+        }
+        .context-bar {
+          flex: 1 1 50%;
+          max-width: 100%;
         }
       }
     }
@@ -203,8 +219,12 @@ type MainConversationProps = {
 export const MainConversation = ({ channelId, children}: MainConversationProps) => {
   const location = useLocation();
   const [stream] = useMessageListArgs();
-  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const onSearch = useCallback((search: string) => {
+    console.log('searching', search);
+    navigate("/"+ channelId + "/search", {state: {search}});
+  } , [channelId, navigate]);
+  const searchTerm = location.state?.search;
 
   return (
     <MessageListArgsProvider streamId='main' value={location.state}>
@@ -213,7 +233,7 @@ export const MainConversation = ({ channelId, children}: MainConversationProps) 
         <div className='header'>
           <Toolbar className="toolbar" size={32}>
             <Channel channelId={channelId} />
-            <SearchBox />
+            <SearchBox onSearch={onSearch} defaultValue={searchTerm} />
             {stream.type === 'archive' && (
               <ButtonWithIcon icon='down' onClick = {() => {
                 navigate(".", { relative: "path", state: {
@@ -225,9 +245,9 @@ export const MainConversation = ({ channelId, children}: MainConversationProps) 
             )}
             <ButtonWithIcon icon="thumbtack" onClick={() => {
               navigate("/"+ channelId + "/pins")
-            }}  iconSize={24}/>
-            <ButtonWithIcon icon="search" onClick={() => navigate("/"+ channelId + "/search")}  iconSize={24}/>
-            {/*<ButtonWithIcon icon="refresh" onClick={() => dispatch(init({}))} iconSize={24} />*/}
+            }}  iconSize={16}/>
+            {/* <ButtonWithIcon icon="search" onClick={() => navigate("/"+ channelId + "/search")}  iconSize={24}/>
+            <ButtonWithIcon icon="refresh" onClick={() => dispatch(init({}))} iconSize={24} />*/}
           </Toolbar>
         </div>
         <CollapsableColumns className={cn('conversation-with-context-bar', {'has-context-bar': Boolean(children)})} 

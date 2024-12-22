@@ -29,36 +29,12 @@ const StyledPins = styled.div`
   & .message:hover {
       background-color: var(--primary_active_mask);
   }
-  &.hidden {
-    flex: 0 0px;
-    width: 0px;
-  }
-  & .form {
-    background-color: #1a1d21;
-    & input {
-      height: 70px;
-    }
-  }
 `;
 
 const StyledHeader = styled.div`
   display: flex;
   flex-direction: row;
   padding: 16px 16px 16px 16px;
-
-  & .channel{
-    flex: 1;
-    padding-left: 30px;
-    vertical-align: middle;
-    font-size: 20px;
-    font-weight: bold;
-  }
-  & .channel i{
-    font-size: 1.3em;
-  }
-  & .channel .name{
-    padding-left: 10px;
-  }
 `;
 
 export const Header = () => {

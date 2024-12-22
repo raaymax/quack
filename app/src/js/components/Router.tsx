@@ -1,6 +1,6 @@
 import { Main } from './layout/Main';
 import { Discussion } from './layout/Discussion';
-import { Search } from './pages/Search';
+import { Search } from './organisms/Search';
 import { Pins } from './organisms/Pins';
 import { redirect, useRouteError ,
   createHashRouter,
