@@ -34,9 +34,8 @@ export default createSlice({
     },
 
     add: (state, action) => {
-      action.payload.info = action.payload.info || null;
       const newState = { ...state, data: [...state.data] };
-      [action.payload].flat().forEach((msg) => {
+      [action.payload].flat().map(i => ({...i, info: i.info || null})).forEach((msg) => {
         if (msg.createdAt) {
           msg.createdAt = (new Date(msg.createdAt)).toISOString();
         }

@@ -13,8 +13,13 @@ export default (core: Core) =>
       if (!user) {
         throw new ResourceNotFound("User not found");
       }
-      delete user.password;
-      delete user.mainChannelId;
-      return Response.json(user);
+      return Response.json({
+        id: user.id,
+        alias: user.alias,
+        login: user.login,
+        name: user.name,
+        avatarFileId: user.avatarFileId,
+        statusers: user.status,
+      });
     },
   });

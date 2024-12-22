@@ -20,13 +20,15 @@ export type MessageBodyThread = {thread: string, _channelId: string, _parentId: 
 export type MessageBodyButton = {button: string, _action:string, _style: string };
 export type MessageBodyWrap = {wrap: MessageBody };
 export type MessageBodyColumn = {column: MessageBody, _width: number};
+export type MessageBodyEncrypted = {encrypted: string, _iv: string};
 
 export type MessageBodyPart = MessageBodyBullet | MessageBodyOrdered | MessageBodyItem
   | MessageBodyCodeblock | MessageBodyBlockquote | MessageBodyCode
   | MessageBodyLine | MessageBodyBr | MessageBodyText | MessageBodyBold
   | MessageBodyItalic | MessageBodyUnderline | MessageBodyStrike
   | MessageBodyImg | MessageBodyLink | MessageBodyEmoji | MessageBodyChannel
-  | MessageBodyUser | MessageBodyThread | MessageBodyButton | MessageBodyWrap | MessageBodyColumn;
+  | MessageBodyUser | MessageBodyThread | MessageBodyButton | MessageBodyWrap | MessageBodyColumn
+  | MessageBodyEncrypted;
 
 export type MessageBody = MessageBodyPart[] | MessageBodyPart;
 
@@ -86,6 +88,7 @@ export type Message = {
     }
   }[];
   priv?: boolean;
+  encrypted?: boolean;
   annotations?: MessageBody;
 };
 
@@ -146,6 +149,7 @@ export type Channel = {
   priv?: boolean;
   direct?: boolean;
   private?: boolean;
+  encryptionKey?: JsonWebKey | null;
 };
 
 export type Progress = {
@@ -168,4 +172,9 @@ export type Notification = {
 export type UserConfig = {
   appVersion: string,
   mainChannelId: string,
+  encryptionKey: JsonWebKey,
+  channels: {
+    channelId: string,
+    encryptionKey: JsonWebKey,
+  }
 }

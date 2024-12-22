@@ -6,6 +6,7 @@ import {
 import { Stream, Message } from '../types';
 import { SerializeInfo, processUrls } from '../serializer';
 import { IncommingError, OutgoingCommandExecute, OutgoingMessageCreate } from '../core/types';
+import { encryptor } from '../core/encryption';
 
 declare global {
   const APP_VERSION: string;
@@ -128,7 +129,6 @@ export const loadMessagesLive = createMethod('messages/loadMessagesLive', async 
 });
 
 export const loadMessages = createMethod('messages/loadMessages', async (stream: Stream, { dispatch }) => {
-  console.log('loadMessages', stream);
   if (stream.type === 'archive') {
     dispatch(loadMessagesArchive(stream));
   } else {
@@ -189,6 +189,18 @@ type MessageInfo = {
 const sendMessage = createMethod('messages/sendMessage', async ({ payload: msg}: {payload: OutgoingMessageCreate}, { dispatch, actions, getState }) => {
   dispatch(actions.messages.add({ ...msg, userId: getState().me, pending: true, info: null }));
   try {
+    const {encrypted} = getState().channels[msg.channelId];
+    if (encrypted) {
+      const state = getState();
+      const user = state.users[state.me] ?? {} as any;
+      const { encryptionKey = null, channels: channelKeys = [] } = user;
+      const channelKey = channelKeys.find(c => c.channelId === msg.channelId)?.encryptionKey;
+      const key = await encryptor(encryptionKey).decrypt(channelKey);
+      const enc = encryptor(key);
+      msg.message = await enc.encrypt(msg.message);
+      msg.flat = JSON.stringify(await enc.encrypt(msg.flat));
+      msg.encrypted = true;
+    }
     await client.api.sendMessage(msg);
   } catch (err) {
     dispatch(actions.messages.add({

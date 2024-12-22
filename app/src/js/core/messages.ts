@@ -1,5 +1,6 @@
 import { Message } from "../types";
 import type { Client } from "./client";
+import { encryptor } from "./encryption";
 
 class MRange {
   _from: number | null;
@@ -104,8 +105,6 @@ class MessagesCache<T> {
       acc.push(item);
       return acc;
     }, [])
-    console.log('relevant', relevant.map((r) => r.toString()), relevant);
-    console.log(r.toString());
 
     const cache = relevant.find((rel: MsgsRes<T>) => r.containsEntirely(rel))
     if(cache) {
@@ -114,6 +113,7 @@ class MessagesCache<T> {
     return null;
   }
 }
+
 
 export class MessageService{
   _cache: {[key: string]: MessagesCache<Message[]>};
@@ -147,25 +147,24 @@ export class MessageService{
     return Math.min(...dates);
   }
 
-  async _fetch(query: {before?: string, after?: string, limit?: number, channelId: string, parentId?: string}) {
-      const {channelId, parentId, before, after, limit} = query
+  async _fetch(query: {before?: string, after?: string, limit?: number, channelId: string, parentId?: string, encryptionKey?: JsonWebKey}) {
+      const {channelId, parentId, before, after, limit, encryptionKey} = query
       const to = before ? new Date(before).getTime() : null;
       const from = after ? new Date(after).getTime() : null;
       if ( to || from ) {
         const cache = this.cache(query).get(new QRange({ from, to }));
         if(cache) {
-          console.log('cache hit');
           return cache.map(item => ({...item})) //remove clonning
         }
       }
-      const data = await this.client.api.getMessages({
+      const {messages: data, pagination} = await this.client.api.getMessages({
         channelId: channelId,
         parentId: parentId,
         before,
         after,
         limit,
       })
-      console.log('cache miss');
+
 
       if (data?.length > 0) {
         this.cache(query).update(new MsgsRes({
@@ -175,10 +174,29 @@ export class MessageService{
         }));
       }
 
-      return data.map(item => ({...item})); //remove clonning 
+      if(!encryptionKey) {
+        return data.map(item => ({...item}));
+      }
+      const enc = encryptor(encryptionKey);
+      return {messages: await Promise.all(data.map(async (item) => {
+        if(item.encrypted) {
+          try {
+            return {
+              ...item,
+              message: await enc.decrypt(item.message),
+              flat: await enc.decrypt(item.flat),
+            }
+          } catch(e) {
+            console.error(e);
+            return {...item};
+          }
+        }else{
+          return {...item};
+        }
+      })), pagination }
   }
 
-  async fetch(query: {before?: string, after?: string, limit?: number, channelId: string, parentId?: string}) {
+  async fetch(query: {before?: string, after?: string, limit?: number, channelId: string, parentId?: string, encryptionKey?: JsonWebKey}) {
     const key = JSON.stringify(query);
     if(this.pending[key]){
       return this.pending[key];

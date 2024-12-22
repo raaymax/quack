@@ -8,10 +8,13 @@ export default (core: Core) =>
     url: "/",
     handler: async () => {
       const users = await core.user.getAll({});
-      return Response.json(users.map((u: Partial<User>) => {
-        delete u.password;
-        delete u.mainChannelId;
-        return u;
-      }));
+      return Response.json(users.map((u: Partial<User>) => ({
+        id: u.id,
+        alias: u.alias,
+        login: u.login,
+        name: u.name,
+        avatarFileId: u.avatarFileId,
+        status: u.status,
+      })));
     },
   });

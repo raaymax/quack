@@ -4,6 +4,7 @@ import { Id, IdArr } from "../types.ts";
 import { InvalidChannelValue } from "../errors.ts";
 import { usersExists } from "./validate.ts";
 import { ChannelType } from "../../types.ts";
+import { generateChannelKey } from "../encryption.ts";
 
 export default createCommand({
   type: "channel:create",
@@ -56,6 +57,8 @@ export default createCommand({
     private: channelType === "PRIVATE",
     direct: false,
     users: [userId, ...users],
+    encrypted: false,
+    encryptionKey: await generateChannelKey(),
   });
 
   const created = await repo.channel.get({ id: channelId });
