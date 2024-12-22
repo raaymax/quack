@@ -49,7 +49,7 @@ export const SearchBox = ({
     <SearchBoxInput
       type="text"
       onChange={(e) => setValue(e.target.value)}
-      onKeyDown={(e) => e.key === 'Enter' && onSearch?.(value)}
+      onKeyDown={(e) => e.key === 'Enter' && value.trim() && onSearch?.(value)}
       className={cn(className)}
       value={value}
       placeholder={placeholder}
