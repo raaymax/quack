@@ -1,3 +1,4 @@
+/* global JsonWebKey */
 import { Message } from "../types";
 import type { Client } from "./client";
 import { encryptor } from "./encryption";
@@ -157,7 +158,7 @@ export class MessageService{
           return cache.map(item => ({...item})) //remove clonning
         }
       }
-      const {messages: data, pagination} = await this.client.api.getMessages({
+      const {results: data, pagination} = await this.client.api.getMessages({
         channelId: channelId,
         parentId: parentId,
         before,
@@ -178,7 +179,7 @@ export class MessageService{
         return data.map(item => ({...item}));
       }
       const enc = encryptor(encryptionKey);
-      return {messages: await Promise.all(data.map(async (item) => {
+      return {results: await Promise.all(data.map(async (item) => {
         if(item.encrypted) {
           try {
             return {

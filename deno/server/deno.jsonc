@@ -1,5 +1,6 @@
 {
   "imports": {
+    "@felix/argon2": "jsr:@felix/argon2@^2.0.2",
     "@oak/oak": "jsr:@oak/oak@^16.1.0",
     "@planigale/body-parser": "jsr:@planigale/body-parser",
     "@planigale/planigale": "jsr:@planigale/planigale",

@@ -1,3 +1,4 @@
+/* global JsonWebKey */
 export type MessageBodyBullet = { bullet: MessageBody };
 export type MessageBodyOrdered = { ordered: MessageBody };
 export type MessageBodyItem = { item: MessageBody };

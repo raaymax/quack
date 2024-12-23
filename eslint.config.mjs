@@ -34,6 +34,7 @@ const config = [
       ],
       ignores: [
         "app/dist/**/*",
+        "app/dev-dist/**/*",
         "app/src-tauri/**/*",
         "app/.storybook/**/*",
       ],
@@ -61,6 +62,7 @@ const config = [
       ],
       ignores: [
         "app/dist/**/*",
+        "app/dev-dist/**/*",
         "app/src-tauri/**/*",
         "app/.storybook/**/*",
       ],
@@ -100,6 +102,7 @@ const config = [
       ],
       ignores: [
         "app/dist/**/*",
+        "app/dev-dist/**/*",
         "app/src-tauri/**/*",
         "app/.storybook/**/*",
       ],
@@ -125,6 +128,7 @@ const config = [
       ignores: [
         "app/src/sw.[jt]s",
         "app/dist/**/*",
+        "app/dev-dist/**/*",
         "app/src-tauri/**/*",
         "app/.storybook/**/*",
       ],

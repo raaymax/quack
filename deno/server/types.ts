@@ -70,6 +70,8 @@ export type Session = {
 
 export type User = {
   id: EntityId;
+  authType: "argon2" | "bcrypt";
+  salt: string;
   alias: string | null;
   login: string;
   password: string;

@@ -199,9 +199,11 @@ const MessageBase = ({ onClick, sameUser, navigate = () => {}, ...props }: Messa
       <div className='body'>
         {!sameUser && <MessageHeader user={user} createdAt={createdAt} />}
         {editing
-          ? <Input mode='edit' messageId={id}>{buildMessageBody(msg, { emojiOnly })}</Input>
+          ? <Input mode='edit' messageId={id}>
+              <MessageBodyRenderer body={msg.message} parent={msg} opts={{emojiOnly}} />
+            </Input>
           : <div className={['content'].join(' ')}>
-            <MessageBodyRenderer body={msg.message} parent={msg} emojiOnly={emojiOnly} />
+            <MessageBodyRenderer body={msg.message} parent={msg} opts={{emojiOnly}} />
           </div>
         }
 
@@ -213,7 +215,7 @@ const MessageBase = ({ onClick, sameUser, navigate = () => {}, ...props }: Messa
         <ReadReceipt data={msg.progress} />
         <MessageToolbar navigate={navigate} />
         {annotations && <div className='generated'>
-          {buildMessageAnnotations(msg)}
+          <MessageBodyRenderer body={annotations} parent={msg} />
         </div>}
       </div>
     </MessageContainer>

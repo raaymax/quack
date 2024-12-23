@@ -54,6 +54,7 @@ Deno.test("GET /api/users - getAllUsers", async () => {
 
 Deno.test("POST /api/users - user creation flow", async () => {
   let url: string;
+  await repo.user.removeMany({ login: "jack" });
   await ensureUser(repo, "admin", { name: "Admin" });
   await Chat.test(app, { type: "handler" }, async (agent) => {
     const admin = Chat.init(repo, agent);

@@ -1,6 +1,9 @@
 {
   "version": "4",
   "specifiers": {
+    "jsr:@denosaurs/plug@^1.0.6": "1.0.6",
+    "jsr:@felix/argon2@*": "2.0.2",
+    "jsr:@felix/argon2@^2.0.2": "2.0.2",
     "jsr:@jd1378/another-cookiejar@^5.0.7": "5.0.7",
     "jsr:@oak/commons@0.11": "0.11.0",
     "jsr:@oak/oak@^16.1.0": "16.1.0",
@@ -17,6 +20,7 @@
     "jsr:@planigale/testing@*": "0.3.3",
     "jsr:@planigale/testing@0.3.3": "0.3.3",
     "jsr:@std/assert@*": "1.0.6",
+    "jsr:@std/assert@0.221": "0.221.0",
     "jsr:@std/assert@0.223": "0.223.0",
     "jsr:@std/assert@0.224": "0.224.0",
     "jsr:@std/assert@0.226": "0.226.0",
@@ -32,10 +36,14 @@
     "jsr:@std/crypto@0.224": "0.224.0",
     "jsr:@std/crypto@^1.0.3": "1.0.3",
     "jsr:@std/encoding@*": "0.223.0",
+    "jsr:@std/encoding@0.221": "0.221.0",
     "jsr:@std/encoding@0.223": "0.223.0",
     "jsr:@std/encoding@1.0.0-rc.2": "1.0.0-rc.2",
+    "jsr:@std/encoding@^1.0.6": "1.0.6",
+    "jsr:@std/fmt@0.221": "0.221.0",
     "jsr:@std/fmt@~0.225.4": "0.225.6",
     "jsr:@std/fs@*": "1.0.4",
+    "jsr:@std/fs@0.221": "0.221.0",
     "jsr:@std/http@0.223": "0.223.0",
     "jsr:@std/http@0.224": "0.224.5",
     "jsr:@std/http@~0.224.5": "0.224.5",
@@ -49,6 +57,7 @@
     "jsr:@std/media-types@^1.0.2": "1.0.2",
     "jsr:@std/net@~0.224.3": "0.224.5",
     "jsr:@std/path@*": "1.0.6",
+    "jsr:@std/path@0.221": "0.221.0",
     "jsr:@std/path@0.223": "0.223.0",
     "jsr:@std/path@1": "1.0.6",
     "jsr:@std/path@1.0.0-rc.2": "1.0.0-rc.2",
@@ -63,7 +72,6 @@
     "npm:@babel/plugin-syntax-decorators@7.23.3": "7.23.3_@babel+core@7.25.8",
     "npm:@babel/plugin-syntax-jsx@7.23.3": "7.23.3_@babel+core@7.25.8",
     "npm:@chromatic-com/storybook@3.2.3": "3.2.3_storybook@8.4.7_react@18.2.0",
-    "npm:@eslint/js@9.12.0": "9.12.0",
     "npm:@google-cloud/storage@7.6.0": "7.6.0",
     "npm:@jsr/planigale__sse@0.2.4": "0.2.4",
     "npm:@reduxjs/toolkit@2.2.3": "2.2.3_react@18.2.0_react-redux@9.1.0__@types+react@18.3.17__react@18.2.0__redux@5.0.1_@types+react@18.3.17_redux@5.0.1",
@@ -120,7 +128,6 @@
     "npm:socket.io-client@4.7.2": "4.7.2",
     "npm:storybook@8.4.7": "8.4.7",
     "npm:styled-components@6.1.1": "6.1.1_react@18.2.0_react-dom@18.2.0__react@18.2.0",
-    "npm:typescript-eslint@8.8.1": "8.8.1_@typescript-eslint+parser@8.8.1__eslint@8.57.1__typescript@5.4.5_eslint@8.57.1_typescript@5.4.5",
     "npm:typescript@5.4.5": "5.4.5",
     "npm:valibot@0.36": "0.36.0",
     "npm:valibot@~0.31.1": "0.31.1",
@@ -134,6 +141,21 @@
     "npm:workbox-strategies@7.0.0": "7.0.0"
   },
   "jsr": {
+    "@denosaurs/plug@1.0.6": {
+      "integrity": "6cf5b9daba7799837b9ffbe89f3450510f588fafef8115ddab1ff0be9cb7c1a7",
+      "dependencies": [
+        "jsr:@std/encoding@0.221",
+        "jsr:@std/fmt@0.221",
+        "jsr:@std/fs@0.221",
+        "jsr:@std/path@0.221"
+      ]
+    },
+    "@felix/argon2@2.0.2": {
+      "integrity": "2e026d58c86ad4734cf92c30f579430dfa65235f7ac0c3dd5a9383faec0ce1d1",
+      "dependencies": [
+        "jsr:@denosaurs/plug"
+      ]
+    },
     "@jd1378/another-cookiejar@5.0.7": {
       "integrity": "788e22828dd428aaebaedc9acbed6ae7033cc240982a10fcfc34aa72dcf01088"
     },
@@ -204,6 +226,9 @@
         "jsr:@std/path@1.0.1"
       ]
     },
+    "@std/assert@0.221.0": {
+      "integrity": "a5f1aa6e7909dbea271754fd4ab3f4e687aeff4873b4cef9a320af813adb489a"
+    },
     "@std/assert@0.223.0": {
       "integrity": "eb8d6d879d76e1cc431205bd346ed4d88dc051c6366365b1af47034b0670be24"
     },
@@ -250,14 +275,30 @@
     "@std/crypto@1.0.3": {
       "integrity": "a2a32f51ddef632d299e3879cd027c630dcd4d1d9a5285d6e6788072f4e51e7f"
     },
+    "@std/encoding@0.221.0": {
+      "integrity": "d1dd76ef0dc5d14088411e6dc1dede53bf8308c95d1537df1214c97137208e45"
+    },
     "@std/encoding@0.223.0": {
       "integrity": "2b5615a75e00337ce113f34cf2f9b8c18182c751a8dcc8b1a2c2fc0e117bef00"
     },
     "@std/encoding@1.0.0-rc.2": {
       "integrity": "160d7674a20ebfbccdf610b3801fee91cf6e42d1c106dd46bbaf46e395cd35ef"
     },
+    "@std/encoding@1.0.6": {
+      "integrity": "ca87122c196e8831737d9547acf001766618e78cd8c33920776c7f5885546069"
+    },
+    "@std/fmt@0.221.0": {
+      "integrity": "379fed69bdd9731110f26b9085aeb740606b20428ce6af31ef6bd45ef8efa62a"
+    },
     "@std/fmt@0.225.6": {
       "integrity": "aba6aea27f66813cecfd9484e074a9e9845782ab0685c030e453a8a70b37afc8"
+    },
+    "@std/fs@0.221.0": {
+      "integrity": "028044450299de8ed5a716ade4e6d524399f035513b85913794f4e81f07da286",
+      "dependencies": [
+        "jsr:@std/assert@0.221",
+        "jsr:@std/path@0.221"
+      ]
     },
     "@std/fs@1.0.4": {
       "integrity": "2907d32d8d1d9e540588fd5fe0ec21ee638134bd51df327ad4e443aaef07123c",
@@ -278,7 +319,7 @@
         "jsr:@std/async",
         "jsr:@std/cli",
         "jsr:@std/encoding@1.0.0-rc.2",
-        "jsr:@std/fmt",
+        "jsr:@std/fmt@~0.225.4",
         "jsr:@std/media-types@^1.0.0-rc.1",
         "jsr:@std/net",
         "jsr:@std/path@1.0.0-rc.2",
@@ -311,6 +352,12 @@
     },
     "@std/net@0.224.5": {
       "integrity": "9c2ae90a5c3dc7771da5ae5e13b6f7d5d0b316c1954c5d53f2bfc1129fb757ff"
+    },
+    "@std/path@0.221.0": {
+      "integrity": "0a36f6b17314ef653a3a1649740cc8db51b25a133ecfe838f20b79a56ebe0095",
+      "dependencies": [
+        "jsr:@std/assert@0.221"
+      ]
     },
     "@std/path@0.223.0": {
       "integrity": "593963402d7e6597f5a6e620931661053572c982fc014000459edc1f93cc3989",
@@ -2036,9 +2083,6 @@
     "@eslint/js@8.57.1": {
       "integrity": "sha512-d9zaMRSTIKDLhctzH12MtXvJKSSUhaHcjV+2Z+GK+EEY7XKpP5yR4x+N3TAcHTcu963nIr+TMcCb4DBCYX1z6Q=="
     },
-    "@eslint/js@9.12.0": {
-      "integrity": "sha512-eohesHH8WFRUprDNyEREgqP6beG6htMeUYeCpkEgBCieCMme5r9zFWjzAJp//9S+Kub4rqE+jXe9Cp1a7IYIIA=="
-    },
     "@google-cloud/paginator@5.0.2": {
       "integrity": "sha512-DJS3s0OVH4zFDB1PzjxAsHqJT6sKVbRwwML0ZBP9PbU7Yebtu/7SWMRzvO2J3nUi9pRNITCfu4LJeooM2w4pjg==",
       "dependencies": [
@@ -3069,47 +3113,11 @@
         "@types/workbox-streams"
       ]
     },
-    "@typescript-eslint/eslint-plugin@8.8.1_@typescript-eslint+parser@8.8.1__eslint@8.57.1__typescript@5.4.5_eslint@8.57.1_typescript@5.4.5": {
-      "integrity": "sha512-xfvdgA8AP/vxHgtgU310+WBnLB4uJQ9XdyP17RebG26rLtDrQJV3ZYrcopX91GrHmMoH8bdSwMRh2a//TiJ1jQ==",
-      "dependencies": [
-        "@eslint-community/regexpp",
-        "@typescript-eslint/parser",
-        "@typescript-eslint/scope-manager",
-        "@typescript-eslint/type-utils",
-        "@typescript-eslint/utils",
-        "@typescript-eslint/visitor-keys",
-        "eslint",
-        "graphemer",
-        "ignore",
-        "natural-compare",
-        "ts-api-utils"
-      ]
-    },
-    "@typescript-eslint/parser@8.8.1_eslint@8.57.1_typescript@5.4.5": {
-      "integrity": "sha512-hQUVn2Lij2NAxVFEdvIGxT9gP1tq2yM83m+by3whWFsWC+1y8pxxxHUFE1UqDu2VsGi2i6RLcv4QvouM84U+ow==",
-      "dependencies": [
-        "@typescript-eslint/scope-manager",
-        "@typescript-eslint/types",
-        "@typescript-eslint/typescript-estree",
-        "@typescript-eslint/visitor-keys",
-        "debug@4.3.7",
-        "eslint"
-      ]
-    },
     "@typescript-eslint/scope-manager@8.8.1": {
       "integrity": "sha512-X4JdU+66Mazev/J0gfXlcC/dV6JI37h+93W9BRYXrSn0hrE64IoWgVkO9MSJgEzoWkxONgaQpICWg8vAN74wlA==",
       "dependencies": [
         "@typescript-eslint/types",
         "@typescript-eslint/visitor-keys"
-      ]
-    },
-    "@typescript-eslint/type-utils@8.8.1_eslint@8.57.1_typescript@5.4.5": {
-      "integrity": "sha512-qSVnpcbLP8CALORf0za+vjLYj1Wp8HSoiI8zYU5tHxRVj30702Z1Yw4cLwfNKhTPWp5+P+k1pjmD5Zd1nhxiZA==",
-      "dependencies": [
-        "@typescript-eslint/typescript-estree",
-        "@typescript-eslint/utils",
-        "debug@4.3.7",
-        "ts-api-utils"
       ]
     },
     "@typescript-eslint/types@8.8.1": {
@@ -4377,7 +4385,7 @@
         "@eslint-community/eslint-utils",
         "@eslint-community/regexpp",
         "@eslint/eslintrc",
-        "@eslint/js@8.57.1",
+        "@eslint/js",
         "@humanwhocodes/config-array",
         "@humanwhocodes/module-importer",
         "@nodelib/fs.walk",
@@ -6903,14 +6911,6 @@
     "typedarray@0.0.6": {
       "integrity": "sha512-/aCDEGatGvZ2BIk+HmLf4ifCJFwvKFNb9/JeZPMulfgFracn9QFcAf5GO8B/mweUjSoblS5In0cWhqpfs/5PQA=="
     },
-    "typescript-eslint@8.8.1_@typescript-eslint+parser@8.8.1__eslint@8.57.1__typescript@5.4.5_eslint@8.57.1_typescript@5.4.5": {
-      "integrity": "sha512-R0dsXFt6t4SAFjUSKFjMh4pXDtq04SsFKCVGDP3ZOzNP7itF0jBcZYU4fMsZr4y7O7V7Nc751dDeESbe4PbQMQ==",
-      "dependencies": [
-        "@typescript-eslint/eslint-plugin",
-        "@typescript-eslint/parser",
-        "@typescript-eslint/utils"
-      ]
-    },
     "typescript@5.4.5": {
       "integrity": "sha512-vcI4UpRgg81oIRUFwR0WSIHKt11nJ7SAVlYNIu+QpqeyXP+gpQJy/Z4+F0aGxSE4MqwjyXvW/TzgkLAx2AGHwQ=="
     },
@@ -7432,6 +7432,7 @@
       "jsr:@planigale/sse@*",
       "jsr:@planigale/testing@0.3.3",
       "jsr:@std/assert@^1.0.1",
+      "jsr:@std/encoding@^1.0.6",
       "jsr:@std/path@^1.0.2",
       "jsr:@std/uuid@^1.0.4",
       "npm:mongodb@^6.8.0",
@@ -7522,6 +7523,7 @@
       },
       "deno/server": {
         "dependencies": [
+          "jsr:@felix/argon2@^2.0.2",
           "jsr:@oak/oak@^16.1.0",
           "jsr:@planigale/body-parser@*",
           "jsr:@planigale/planigale@*",

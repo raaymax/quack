@@ -45,7 +45,6 @@ export default (core: Core) =>
       },
     },
     handler: async (req) => {
-      console.log(req.body);
       const userId = req.state.user.id;
       const { channelId } = req.params;
 

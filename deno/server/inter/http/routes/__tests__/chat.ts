@@ -391,7 +391,7 @@ export class Chat {
         .get(`/api/channels/${this.channelId}/messages${query}`)
         .header("Authorization", `Bearer ${this.token}`)
         .expect(200);
-      const body = await res.json();
+      const { results: body } = await res.json();
       await test?.(body, this);
     });
     return this;
@@ -558,7 +558,7 @@ export class Chat {
         .get(`/api/channels/${this.channelId}/messages?pinned=true`)
         .header("Authorization", `Bearer ${this.token}`)
         .expect(200);
-      const body = await res.json();
+      const { results: body } = await res.json();
       await fn(body, this);
     });
     return this;

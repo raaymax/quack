@@ -108,7 +108,7 @@ Deno.test("/api/channels/:channelId/messages - Auth successful", async (t) => {
           .get(`/api/channels/${channelId}/messages`)
           .header("Authorization", `Bearer ${token}`)
           .expect(200);
-        const body = await res.json();
+        const { results: body } = await res.json();
         assertEquals(body.length, 1);
         assertEquals(body[0].message.text, "test");
         messageId = body[0].id;
@@ -211,7 +211,7 @@ Deno.test("/api/channels/:channelId/messages - Access constraints", async (t) =>
           .get(`/api/channels/${channelId}/messages`)
           .header("Authorization", `Bearer ${memberToken}`)
           .expect(200);
-        const body = await res.json();
+        const { results: body } = await res.json();
         assertEquals(body.length, 1);
         assertEquals(body[0].message.text, "test");
         messageId = body[0].id;
@@ -424,7 +424,7 @@ Deno.test("Messages history", async (t) => {
         .header("Authorization", `Bearer ${token}`)
         .expect(200);
 
-      const body = await res.json();
+      const { results: body } = await res.json();
       assertEquals(body.length, 3);
       assertEquals(body.map((m: any) => m.flat), ["t2", "t1", "t0"]);
     });
@@ -435,7 +435,7 @@ Deno.test("Messages history", async (t) => {
         .header("Authorization", `Bearer ${token}`)
         .expect(200);
 
-      const body = await res.json();
+      const { results: body } = await res.json();
       assertEquals(body.length, 2);
       assertEquals(body.map((m: any) => m.flat), ["t2", "t1"]);
     });
@@ -452,7 +452,7 @@ Deno.test("Messages history", async (t) => {
           .header("Authorization", `Bearer ${token}`)
           .expect(200);
 
-        const body = await res.json();
+        const { results: body } = await res.json();
         assertEquals(body.length, 2);
         assertEquals(body.map((m: any) => m.flat), ["t1", "t0"]);
       },
@@ -467,7 +467,7 @@ Deno.test("Messages history", async (t) => {
         .header("Authorization", `Bearer ${token}`)
         .expect(200);
 
-      const body = await res.json();
+      const { results: body } = await res.json();
       assertEquals(body.length, 1);
       assertEquals(body.map((m: any) => m.flat), ["t0"]);
     });
@@ -481,7 +481,7 @@ Deno.test("Messages history", async (t) => {
         .header("Authorization", `Bearer ${token}`)
         .expect(200);
 
-      const body = await res.json();
+      const { results: body } = await res.json();
       assertEquals(body.length, 2);
       assertEquals(body.map((m: any) => m.flat), ["t2", "t1"]);
     });
@@ -491,7 +491,7 @@ Deno.test("Messages history", async (t) => {
         .header("Authorization", `Bearer ${token}`)
         .expect(200);
 
-      const body = await res.json();
+      const { results: body } = await res.json();
       assertEquals(body.length, 1);
       assertEquals(body.map((m: any) => m.flat), ["t1"]);
     });
@@ -501,7 +501,7 @@ Deno.test("Messages history", async (t) => {
         .header("Authorization", `Bearer ${token}`)
         .expect(200);
 
-      const body = await res.json();
+      const { results: body } = await res.json();
       assertEquals(body.length, 1);
       assertEquals(body.map((m: any) => m.flat), ["t2"]);
     });
@@ -511,7 +511,7 @@ Deno.test("Messages history", async (t) => {
         .header("Authorization", `Bearer ${token}`)
         .expect(200);
 
-      const body = await res.json();
+      const { results: body } = await res.json();
       assertEquals(body.length, 1);
       assertEquals(body.map((m: any) => m.flat), ["t1"]);
     });

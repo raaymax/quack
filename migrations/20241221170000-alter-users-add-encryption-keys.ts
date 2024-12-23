@@ -1,4 +1,4 @@
-import { decodeBase64, encodeBase64 } from "jsr:@std/encoding/base64";
+import { encodeBase64 } from "@std/encoding/base64";
 import {generateChannelKey} from '../deno/server/core/encryption.ts';
 
 async function encrypt(plaintext, key) {
@@ -27,6 +27,7 @@ export const up = async (db) => {
 	for await (const doc of docs) {
     const userJWK = await generateChannelKey();
 		await db.collection('users').updateOne({ _id: doc._id }, { $set: {
+      salt: encodeBase64(crypto.getRandomValues(new Uint8Array(16))),
       encryptionKey: userJWK,
       channels: [],
     } });

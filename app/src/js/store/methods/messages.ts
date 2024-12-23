@@ -26,7 +26,7 @@ export const load = createMethod('messages/load', async (query: Query, { actions
   const channelKey = state.config.channels.find((c) => c.channelId === query.channelId)?.encryptionKey;
   const key = userKey && channelKey ? await encryptor(userKey).decrypt(channelKey) : null;
   try{ 
-    const {messages: data} = await client.messages.fetch({
+    const {results: data} = await client.messages.fetch({
       limit: 50,
       encryptionKey: key,
       ...query,

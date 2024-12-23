@@ -79,7 +79,6 @@ export default createCommand({
     })),
     createdAt: new Date(),
   });
-console.log("message", message);
   const id: EntityId = await (async () => {
     const existing = await repo.message.get({
       channelId: channel.id,

@@ -9,4 +9,3 @@ export async function generateChannelKey() {
   );
   return await crypto.subtle.exportKey("jwk", key);
 }
-
