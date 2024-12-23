@@ -8,11 +8,6 @@ export const ensureUser = async (
 ) => {
   const user = await repo.user.get({ login });
   if (!user) {
-    console.log({
-      login,
-      password: hash("123"),
-      ...data,
-    });
     await repo.user.create({
       login,
       password: hash("123"),

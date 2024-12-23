@@ -92,7 +92,7 @@ export async function hashPassword(password: string, salt: string) {
     const derivedBits = await crypto.subtle.deriveBits(
         {
             name: "PBKDF2",
-            salt: salt,
+            salt: fromBase64(salt),
             iterations: iterations,
             hash: hash,
         },

@@ -58,7 +58,6 @@ export const NavChannels = ({ icon }: NavChannelsProps) => {
   try { navigate = useNavigate(); }catch {/* ignore */}
   const userId = useSelector((state) => state.me);
   const badges = useBadges(userId);
-  console.log(badges);
   const {channelId: id} = useParams();
   const { hideSidebar } = useSidebar();
   return (

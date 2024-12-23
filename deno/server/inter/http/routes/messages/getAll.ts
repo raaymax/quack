@@ -1,16 +1,6 @@
 import { Res, Route } from "@planigale/planigale";
 import { Core } from "../../../../core/mod.ts";
 
-function findCursors(messages: any[]) {
-  return messages.reduce(({ oldest, newest }, message) => {
-    const date = new Date(message.createdAt);
-    return {
-      oldest: date < oldest ? date : oldest,
-      newest: date > newest ? date : newest,
-    };
-  }, { oldest: Infinity, newest: -Infinity });
-}
-
 export default (core: Core) =>
   new Route({
     method: "GET",
@@ -65,13 +55,6 @@ export default (core: Core) =>
             : undefined,
         },
       });
-      const cursor = findCursors(messages);
-      return Res.json({
-        results: messages,
-        pagination: {
-          older: { ...req.query, before: cursor.oldest?.toISOString?.() },
-          newer: { ...req.query, after: cursor.newest?.toISOString?.() },
-        },
-      });
+      return Res.json(messages);
     },
   });

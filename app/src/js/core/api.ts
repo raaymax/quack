@@ -1,6 +1,11 @@
 import { SSESource } from '@planigale/sse';
 import { Channel } from '../types';
 
+declare global {
+  interface Window {
+    isTauri: boolean;
+  }
+}
 
 type RequestInit = (typeof fetch)['prototype']['init'];
 
@@ -509,6 +514,9 @@ class API extends EventTarget {
   };
 
   me(): string {
+    if(!this.userId) {
+      throw new Error('User is not logged in');
+    }
     return this.userId;
   };
 

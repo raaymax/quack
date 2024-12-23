@@ -118,7 +118,7 @@ class MessagesCache<T> {
 
 export class MessageService{
   _cache: {[key: string]: MessagesCache<Message[]>};
-  pending: {[key: string]: Promise<{results: Message[], pagination: any}>} = {};
+  pending: {[key: string]: Promise<Message[]>} = {};
   dataContainer: (r1: Message[], r2: Message[]) => Message[];
   client: Client;
 
@@ -148,21 +148,17 @@ export class MessageService{
     return Math.min(...dates);
   }
 
-  async _fetch(query: {before?: string, after?: string, limit?: number, channelId: string, parentId?: string, encryptionKey?: JsonWebKey}): Promise<{ results: Message[]; pagination: any; }> {
+  async _fetch(query: {before?: string, after?: string, limit?: number, channelId: string, parentId?: string, encryptionKey?: JsonWebKey}): Promise<Message[]> {
       const {channelId, parentId, before, after, limit, encryptionKey} = query
       const to = before ? new Date(before).getTime() : null;
       const from = after ? new Date(after).getTime() : null;
       if ( to || from ) {
         const cache = this.cache(query).get(new QRange({ from, to }));
         if(cache) {
-          return {
-            results: cache.map(item => ({...item})), //remove clonning
-            pagination: {} // fix pagination cache
-
-          }
+          return cache.map(item => ({...item})); //remove clonning
         }
       }
-      const {results: data, pagination} = await this.client.api.getMessages({
+      const data = await this.client.api.getMessages({
         channelId: channelId,
         parentId: parentId,
         before,
@@ -180,10 +176,10 @@ export class MessageService{
       }
 
       if(!encryptionKey) {
-        return {results: data.map(item => ({...item})) , pagination};
+        return data.map(item => ({...item}));
       }
       const enc = encryptor(encryptionKey);
-      return {results: await Promise.all(data.map(async (item) => {
+      return await Promise.all(data.map(async (item) => {
         if(item.encrypted) {
           try {
             return {
@@ -198,16 +194,16 @@ export class MessageService{
         }else{
           return {...item};
         }
-      })), pagination }
+      }));
   }
 
-  async fetch(query: {before?: string, after?: string, limit?: number, channelId: string, parentId?: string, encryptionKey?: JsonWebKey}): Promise<{ results: Message[]; pagination: any; }> {
+  async fetch(query: {before?: string, after?: string, limit?: number, channelId: string, parentId?: string, encryptionKey?: JsonWebKey}): Promise<Message[]> {
     const key = JSON.stringify(query);
     const promise = this.pending[key]
     if(promise) {
       return await promise;
     }
-    this.pending[key] = new Promise<{results: Message[], pagination:any}>((resolve) => {
+    this.pending[key] = new Promise<Message[]>((resolve) => {
       (async () => {
         const data = await this._fetch(query);
         const ret = resolve(data);
@@ -218,16 +214,4 @@ export class MessageService{
     return await this.pending[key];
   }
 }
-
-
-/*
-- add message store with owner 
-- hot area for reloading
-- freeze / resume events handling
-- bindings to react
-- ability to navigate next / prev messages
-- goto specific message
-- ability to pins support?
-
-*/
 
