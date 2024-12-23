@@ -1,5 +1,4 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { omitUndefined } from '../../utils';
 import { Stream } from '../../types';
 
 type StreamState = {
@@ -29,32 +28,12 @@ const loadStream = () => {
   };
 };
 
-const saveStream = (stream: Stream) => {
-  const query = new URLSearchParams(omitUndefined({
-    type: stream.type,
-    date: stream.date,
-    selected: stream.selected,
-  }) as Record<string, string>);
-  const querystring = query.toString();
-
-  window.location.hash = `/${stream.channelId}${
-    stream.parentId ? `/${stream.parentId}` : ''
-  }${querystring ? `?${querystring}` : ''}`;
-};
 
 export default createSlice({
   name: 'stream',
   initialState: { main: loadStream(), side: null, mainChannelId: null } as StreamState,
   reducers: {
-    open: (state, action) => {
-      /*const { id, value } = action.payload;
-      console.log(id, value);
-      if (id === 'main') saveStream({ channelId: state.mainChannelId, ...value });
-      if (value) {
-        return { ...state, [id]: { id, channelId: state.mainChannelId, ...value } };
-      }
-      return { ...state, [id]: null };*/
-    },
+    open: () => {},
 
     setMain: (state, action) => {
       const id = action.payload;

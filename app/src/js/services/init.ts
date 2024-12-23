@@ -27,15 +27,6 @@ const initApp = createMethod('initApp', async (_arg, {
   await dispatch(methods.channels.load({}));
   await dispatch(methods.emojis.load({}));
   await dispatch(methods.progress.loadBadges({}));
-  const { channelId } = getState().stream.main;
-  if (!channelId) {
-    dispatch(actions.stream.open({ id: 'main', value: { type: 'live' } }));
-  } else if (!getState().channels[channelId]) {
-    const c = await dispatch(methods.channels.find(channelId)).unwrap();
-    if (!c || c.length === 0) {
-      dispatch(actions.stream.open({ id: 'main', value: { type: 'live' } }));
-    }
-  }
 });
 
 let tryCount = 1;

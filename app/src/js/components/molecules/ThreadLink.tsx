@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { useActions, useDispatch } from '../../store';
+import { useNavigate } from 'react-router-dom';
 
 const Link = styled.span`
   color: ${(props) => props.theme.linkColor};
@@ -16,10 +16,9 @@ type ThreadLinkProps = {
 };
 
 export const ThreadLink = ({ channelId, parentId, text }: ThreadLinkProps) => {
-  const dispatch = useDispatch();
-  const actions = useActions();
+  const navigate = useNavigate();
   return (
-    <Link onClick={() => dispatch(actions.stream.open({ id: 'side', value: { type: 'live', channelId, parentId } }))}>
+    <Link onClick={() => navigate(`/${channelId}/t/${parentId}`)}>
       {text || 'Thread'}
     </Link>
   );

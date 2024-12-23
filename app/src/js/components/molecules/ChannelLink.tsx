@@ -27,7 +27,6 @@ export const ChannelLink = ({ channelId: id }: ChannelInlineProps) => {
   }, [id, channel, methods, dispatch]);
   return (
     <StyledChannelLink className='channel' data-id={id} href={`#${channel?.id || id}`} onClick={() => {
-      dispatch(actions.stream.open({ id: 'main', value: { type: 'live', channelId: channel?.id || id } }));
       dispatch(actions.view.set(null));
     }} >
       { channel?.private ? <Icon icon='lock' /> : <Icon icon="hash" /> }

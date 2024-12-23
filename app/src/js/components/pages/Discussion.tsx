@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { Conversation } from '../organisms/Conversation';
-import { useActions, useDispatch, useMessage } from '../../store';
+import { useDispatch, useMessage } from '../../store';
 import { Channel } from '../molecules/NavChannel';
 import { init } from '../../services/init';
 import { Toolbar } from '../atoms/Toolbar';
