@@ -33,6 +33,7 @@
     "styled-components": "6.1.1",
     "typescript": "5.4.5",
     "vite-plugin-http2-proxy": "0.4.3",
+    "vite-tsconfig-paths": "5.1.4",
     "workbox-navigation-preload": "7.0.0",
     "workbox-precaching": "7.0.0",
     "workbox-routing": "7.0.0",

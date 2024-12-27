@@ -4,8 +4,8 @@ import { Repository } from "./infra/mod.ts";
 
 const repo = new Repository(config);
 
-const user = await repo.user.get({ login: "admin" });
-const user2 = await repo.user.get({ login: "member" });
+const user = await repo.user.get({ email: "admin" });
+const user2 = await repo.user.get({ email: "member" });
 const channel = await repo.channel.get({ name: "main" });
 
 // await repo.message.removeMany({channelId: channel.id});

@@ -21,6 +21,15 @@ export default (core: Core) =>
           name: { type: "string", minLength: 1 },
           email: { type: "string", minLength: 3 },
           password: { type: "string", minLength: 3 },
+          sanityCheck: { type: "string" },
+          publicKey: { type: "object" },
+          secrets: { 
+            type: "object",
+            properties: {
+              encrypted: { type: "string" },
+              _iv: { type: "string" },
+            }
+          },
         },
       },
     },
@@ -29,9 +38,11 @@ export default (core: Core) =>
         type: "user:create",
         body: {
           name: req.body.name,
-          login: req.body.email,
+          email: req.body.email,
           password: req.body.password,
           token: req.params.token,
+          publicKey: req.body.publicKey,
+          secrets: req.body.secrets,
         },
       });
       const user: Partial<User> | null = await core.user.get({ id: createdId });

@@ -62,7 +62,7 @@ export const LoggedUser = () => {
         <div className="status">Online</div>
       </div>
       <div className="user-actions">
-        <ButtonWithIcon className="logout-button" icon="logout" size={32} onClick={() => client.api.logout()}/>
+        <ButtonWithIcon className="logout-button" icon="logout" size={32} onClick={() => client.api.auth.logout()}/>
       </div>
     </Container>
   );

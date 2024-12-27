@@ -7,7 +7,7 @@ import {
 import { Stream, Message, MessageBody } from '../../types';
 import { SerializeInfo, processUrls } from '../../serializer';
 import { IncommingError, OutgoingCommandExecute, OutgoingMessageCreate } from '../../core/types';
-import { encryptor } from '../../core/encryption';
+import { encryptor } from '@quack/encryption';
 
 type Query = {
   channelId: string;

@@ -5,6 +5,7 @@ import {
   ResourceNotFound,
 } from "@planigale/planigale";
 import { AppError } from "../../core/errors.ts";
+import * as AppErrors from "../../core/errors.ts";
 
 export const errorHandler: Middleware = async (req, next) => {
   try {
@@ -32,7 +33,9 @@ function mapAppError(error: AppError): ApiError {
     case "NOT_OWNER":
       return new NotOwner(error.message);
     case "USER_ALREADY_EXISTS":
-      return new ApiError(409, "USER_ALREADY_EXISTS", error.message);
+      return new UserAlreadyExists(error.message);
+    case "PASSWORD_RESET_REQUIRED":
+      return new PasswordResetRequired(error as AppErrors.PasswordResetRequired)
     case "INVALID_INVITATION": {
       const invalidInvitation = new ApiError(
         400,
@@ -47,7 +50,7 @@ function mapAppError(error: AppError): ApiError {
   }
 }
 export class NoAccess extends ApiError {
-  log = false;
+  override log = false;
 
   constructor(message: string) {
     super(403, "NO_ACCESS", message);
@@ -55,7 +58,7 @@ export class NoAccess extends ApiError {
 }
 
 export class AccessDenied extends ApiError {
-  log = false;
+  override log = false;
 
   constructor(message: string) {
     super(401, "ACCESS_DENIED", message);
@@ -63,9 +66,33 @@ export class AccessDenied extends ApiError {
 }
 
 export class NotOwner extends ApiError {
-  log = false;
+  override log = false;
 
   constructor(message: string) {
     super(403, "NOT_OWNER", message);
+  }
+}
+export class PasswordResetRequired extends ApiError {
+  override log = false;
+  token: string
+
+  constructor(error: {message: string, token: string}) {
+    super(403, "PASSWORD_RESET_REQUIRED", error.message);
+    this.token = error.token;
+  }
+
+  override serialize() {
+    return {
+      ...super.serialize(),
+      token: this.token
+    }
+  }
+}
+
+export class UserAlreadyExists extends ApiError {
+  override log = false;
+
+  constructor(message: string) {
+    super(409, "USER_ALREADY_EXISTS", message);
   }
 }

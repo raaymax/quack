@@ -8,7 +8,7 @@ import { ActionButton } from '../atoms/ActionButton';
 import * as types from '../../types';
 import { Wrap } from '../atoms/Wrap';
 import { useSelector } from '../../store';
-import { encryptor } from '../../core/encryption';
+import { encryptor } from '@quack/encryption';
 
 function is<T extends types.MessageBodyPart>(body: types.MessageBodyPart, key: string): body is T {
   return (body as T)[key as keyof T] !== undefined;

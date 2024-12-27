@@ -12,6 +12,7 @@ export default (_core: Core) =>
           ...req.state.session,
           user: req.state.user.id, // FIXME: remove
           status: "ok", // FIXME: remove
+          key: req.cookies.get("key")
         });
         res.cookies.set("token", req.state.session.token, {
           httpOnly: true,

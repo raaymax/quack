@@ -9,29 +9,38 @@ export default createCommand({
   body: v.object({
     token: v.string(),
     name: v.string(),
-    login: v.string(),
+    email: v.string(),
     password: v.string(),
+    publicKey: v.object({}),
+    secrets: v.object({
+      encrypted: v.string(),
+      _iv: v.string(),
+    }),
   }),
 }, async ({
   token,
   name,
-  login,
+  email,
   password,
+  publicKey,
+  secrets,
 }, { repo }) => {
   const invitation = await repo.invitation.get({ token });
   if (!invitation) {
     throw new InvalidInvitation();
   }
 
-  const existing = await repo.user.get({ login });
+  const existing = await repo.user.get({ email });
   if (existing) throw new UserAlreadyExists();
 
   const userId = await repo.user.create({
     name,
-    login,
+    email,
     salt: encodeBase64(crypto.getRandomValues(new Uint8Array(16))),
-    authType: "argon2",
-    password: await hash(password),
+    publicKey,
+    secrets: {
+      password: {hash: await hash(password), data: secrets, createdAt: new Date()}
+    },
     mainChannelId: invitation.channelId,
   });
 

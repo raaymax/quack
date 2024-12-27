@@ -1,35 +1,27 @@
 import * as v from "valibot";
-import * as bcrypt from "@ts-rex/bcrypt";
 import * as argon2 from "@felix/argon2";
+import * as bcrypt from "@ts-rex/bcrypt";
 import { createCommand } from "../command.ts";
+import * as enc from "@quack/encryption";
+import { PasswordResetRequired } from "../errors.ts";
 
 export default createCommand({
   type: "session:create",
   body: v.object({
-    login: v.string(),
+    email: v.string(),
     password: v.string(),
   }),
-}, async ({ login, password }, { repo }) => {
-  const user = await repo.user.get({ login });
+}, async ({ email, password }, { repo }) => {
+  const user = await repo.user.get({ email });
   if (!user) return null;
-
-  switch (user.authType) {
-    case "argon2": {
-      if (!await argon2.verify(user.password, password)) return null;
-      break;
-    }
-    default:
-    case "bcrypt": {
-      if (!bcrypt.verify(password, user.password)) return null;
-      const hash = await argon2.hash(password);
-      await repo.user.update({ id: user.id }, {
-        password: hash,
-        authType: "argon2",
-      });
-      break;
-    }
+  if (user.password) {
+    if (!bcrypt.verify(password, user.password)) return null;
+    const token = enc.generateRandomToken();
+    await repo.user.update({ email }, { resetToken: token });
+    throw new PasswordResetRequired("Authentication method is outdated - password reset is required", token);
   }
 
+  if (!await argon2.verify(user.secrets.password.hash, password)) return null;
   const sessionId = await repo.session.create({ userId: user.id });
   return sessionId;
 });

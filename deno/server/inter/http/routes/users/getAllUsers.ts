@@ -11,10 +11,11 @@ export default (core: Core) =>
       return Response.json(users.map((u: Partial<User>) => ({
         id: u.id,
         alias: u.alias,
-        login: u.login,
+        email: u.email,
         name: u.name,
         avatarFileId: u.avatarFileId,
         status: u.status,
+        publicKey: u.publicKey,
       })));
     },
   });

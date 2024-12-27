@@ -29,7 +29,8 @@ Deno.test("GET /api/users/:userId - getUser with an id and alias", async () => {
       })
       .getUser(({ state }) => state.member.id, async (user: User) => {
         assert(user.name === "Member");
-        assert(user.password === undefined);
+        assert(user.secrets === undefined);
+        assert(user.publicKey)
       })
       .end();
   });
@@ -54,7 +55,7 @@ Deno.test("GET /api/users - getAllUsers", async () => {
 
 Deno.test("POST /api/users - user creation flow", async () => {
   let url: string;
-  await repo.user.removeMany({ login: "jack" });
+  await repo.user.removeMany({ email: "jack" });
   await ensureUser(repo, "admin", { name: "Admin" });
   await Chat.test(app, { type: "handler" }, async (agent) => {
     const admin = Chat.init(repo, agent);
@@ -85,4 +86,16 @@ Deno.test("POST /api/users - user creation flow", async () => {
       await admin.end();
     }
   });
+});
+
+Deno.test("GET /api/users/password-reset/:token - password reset token check", async () => {
+  assert(false);
+});
+
+Deno.test("GET /api/users/password-reset/:token - password reset token check - token expired", async () => {
+  assert(false);
+});
+
+Deno.test("PUT /api/auth/password - password reset flow", async () => {
+  assert(false);
 });

@@ -6,7 +6,7 @@ import {
 import { Stream, Message } from '../types';
 import { SerializeInfo, processUrls } from '../serializer';
 import { IncommingError, OutgoingCommandExecute, OutgoingMessageCreate } from '../core/types';
-import { encryptor } from '../core/encryption';
+import { encryptor } from '@quack/encryption';
 
 declare global {
   const APP_VERSION: string;

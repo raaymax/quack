@@ -1,7 +1,7 @@
 /* global JsonWebKey */
 import { Message } from "../types";
 import type { Client } from "./client";
-import { encryptor } from "./encryption";
+import { encryptor } from "@quack/encryption";
 
 class MRange {
   _from: number | null;

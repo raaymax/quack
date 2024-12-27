@@ -145,13 +145,13 @@ const Container = styled.div`
 
 `
 
-type LoginProps = {
+type PasswordResetProps = {
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   error?: string | null;
   disabled?: boolean;
 }
 
-export const LoginPage = ({ onSubmit, error = null, disabled = false }: LoginProps) => {
+export const PasswordResetPage = ({ onSubmit, error = null, disabled = false }: PasswordResetProps) => {
   const theme = useTheme();
   const [localMsg] = useState(localStorage.getItem('loginMessage'));
   useEffect(() => {
@@ -167,19 +167,15 @@ export const LoginPage = ({ onSubmit, error = null, disabled = false }: LoginPro
       </div>
       <div className='form-container'>
         <div className='form'>
-          <h1>Welcome!</h1>
-          <p>{localMsg ?? 'Log-in to your quack account'}</p>
+          <h1>Reset password</h1>
+          <p>{localMsg ?? 'Set new password for your account'}</p>
           <form onSubmit={onSubmit}>
             <div className='form-group'>
-              <label htmlFor="email">E-mail</label>
-              <input id="email" type='text' name='email' placeholder='user@example.com' disabled={disabled} />
-            </div>
-            <div className='form-group'>
-              <label htmlFor="password">Password</label>
+              <label htmlFor="password">New password</label>
               <input id="password" type='password' name='password' placeholder='password' disabled={disabled} />
             </div>
             <div className='form-group'>
-              <input className="submit" type='submit' value='LOG-IN' disabled={disabled} />
+              <input className="submit" type='submit' value='SAVE' disabled={disabled} />
               {disabled && <div className='loader'><Loader /></div>}
             </div>
           </form>
@@ -192,4 +188,4 @@ export const LoginPage = ({ onSubmit, error = null, disabled = false }: LoginPro
   );
 };
 
-export default LoginPage;
+export default PasswordResetPage;

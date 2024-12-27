@@ -68,17 +68,29 @@ export type Session = {
   lastUserAgent: string;
 };
 
+export type EncryptedData = {
+  encrypted: string,
+  _iv: string
+};
+
 export type User = {
   id: EntityId;
   authType: "argon2" | "bcrypt";
   salt: string;
   alias: string | null;
-  login: string;
+  email: string;
   password: string;
   name: string;
   avatarFileId: string;
   mainChannelId: EntityId;
   status?: "active" | "inactive" | "away";
+  publicKey: JsonWebKey;
+  resetToken?: string;
+
+  secrets: {
+    password: {hash: string, data: EncryptedData, createdAt: Date},
+    backup?: {hash: string, data: EncryptedData, createdAt: Date},
+  }
 };
 
 export enum ChannelType {

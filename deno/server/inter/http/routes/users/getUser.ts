@@ -16,10 +16,11 @@ export default (core: Core) =>
       return Response.json({
         id: user.id,
         alias: user.alias,
-        login: user.login,
+        email: user.email,
         name: user.name,
         avatarFileId: user.avatarFileId,
-        statusers: user.status,
+        status: user.status,
+        publicKey: user.publicKey,
       });
     },
   });

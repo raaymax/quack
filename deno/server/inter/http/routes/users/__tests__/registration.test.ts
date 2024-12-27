@@ -2,6 +2,7 @@ import { assert, assertEquals } from "@std/assert";
 import { ensureUser } from "../../__tests__/mod.ts";
 import { createApp } from "../../__tests__/app.ts";
 import { Chat } from "../../__tests__/chat.ts";
+import * as enc from "@quack/encryption";
 
 const { app, repo, core } = createApp();
 
@@ -10,7 +11,7 @@ Deno.test("POST /api/users - user creation flow", async (t) => {
   let token: string;
   let token2: string;
   await repo.invitation.removeMany({});
-  await repo.user.removeMany({ login: "jack" });
+  await repo.user.removeMany({ email: "jack" });
   await ensureUser(repo, "admin", { name: "Admin" });
   await Chat.test(app, { type: "handler" }, async (agent) => {
     const admin = Chat.init(repo, agent);
@@ -66,12 +67,28 @@ Deno.test("POST /api/users - user creation flow", async (t) => {
       });
 
       await t.step("user already exists", async () => {
+        const email = "jack";
+        const password = "test123";
+        const salt = await enc.deriveSaltFromEmail(email);
+        const { hash, encryptionKey } = await enc.generatePasswordKeys(
+          password,
+          salt,
+        );
+        const { publicKey, privateKey } = await enc.generateECKeyPair();
+        const userEncryptionKey = await enc.generateKey();
+        const secrets = await enc.encrypt({
+          privateKey,
+          userEncryptionKey,
+          sanityCheck: "valid",
+        }, encryptionKey);
         await agent.request()
           .post(`/api/users/${token2}`)
           .json({
             name: "Jack",
-            email: "jack",
-            password: "test123",
+            email,
+            password,
+            publicKey,
+            secrets,
           })
           .expect(409, {
             errorCode: "USER_ALREADY_EXISTS",
@@ -82,6 +99,21 @@ Deno.test("POST /api/users - user creation flow", async (t) => {
       await chat.end();
 
       await t.step("check invalid token", async () => {
+        const email = "jack";
+        const password = "test123";
+        const salt = await enc.deriveSaltFromEmail(email);
+        const { hash, encryptionKey } = await enc.generatePasswordKeys(
+          password,
+          salt,
+        );
+        const { publicKey, privateKey } = await enc.generateECKeyPair();
+        const userEncryptionKey = await enc.generateKey();
+        const secrets = await enc.encrypt({
+          privateKey,
+          userEncryptionKey,
+          sanityCheck: "valid",
+        }, encryptionKey);
+
         await Chat.init(repo, agent)
           .checkToken(token, ({ valid }) => assert(!valid))
           .end();
@@ -92,6 +124,8 @@ Deno.test("POST /api/users - user creation flow", async (t) => {
             name: "Jack",
             email: "jack",
             password: "test123",
+            publicKey,
+            secrets,
           })
           .expect(400, {
             errorCode: "INVALID_INVITATION",

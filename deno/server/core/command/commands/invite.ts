@@ -27,7 +27,7 @@ export class InviteCommand {
     bus.direct(data.userId, {
       type: "message",
       clientId: `sys:${Math.random().toString(10)}`,
-      userId: (await core.repo.user.get({ login: "system" }))?.id,
+      userId: (await core.repo.user.get({ email: "system" }))?.id,
       priv: true,
       channelId: data.context.channelId,
       flat:

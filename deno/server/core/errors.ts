@@ -55,3 +55,11 @@ export class UserAlreadyExists extends AppError {
     super("USER_ALREADY_EXISTS", msg);
   }
 }
+
+export class PasswordResetRequired extends AppError {
+  token: string;
+  constructor(msg = "User password reset is required", token: string) {
+    super("PASSWORD_RESET_REQUIRED", msg);
+    this.token = token;
+  }
+}

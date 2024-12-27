@@ -10,6 +10,8 @@ import {
   ReplaceEntityId,
 } from "../../../../types.ts";
 import { AsyncLocalStorage } from "node:async_hooks";
+import API from "@quack/api";
+import * as enc from "@quack/encryption";
 
 export type RegistrationRequest = {
   token: string;
@@ -50,7 +52,9 @@ export class Chat {
 
   appVersion = "client-version";
 
-  static async test(app, opts, fn) {
+  api: API;
+
+  static async test(app, opts, fn: Parameters<typeof Agent['test']>[2]) {
     await Agent.test(app, opts, async (agent) => {
       await asyncLocalStorage.run({ instances: [] }, async () => {
         await fn(agent);
@@ -100,6 +104,7 @@ export class Chat {
     this.parentId = null; // parent and parentId are not related "parent" is a parent of this object
     this.token = "invalid";
     this.eventSource = null;
+    this.api = new API(agent.addr, { fetch: agent.fetch, sse: false });
     this._register();
   }
 
@@ -132,19 +137,12 @@ export class Chat {
     return this;
   }
 
-  login(login = "admin", password = "123") {
+  login(email = "admin", password = "123") {
     this.steps.push(async () => {
-      await ensureUser(this.repo, login);
-      const res = await this.agent.request()
-        .post("/api/auth/session")
-        .json({
-          login,
-          password,
-        })
-        .expect(200);
-      const body = await res.json();
-      this.userId = body.userId;
-      this.token = body.token;
+      await ensureUser(this.repo, email);
+      const {userId, token} = await this.api.auth.login({ email, password });
+      this.userId = userId;
+      this.token = token;
     });
     return this;
   }
@@ -152,25 +150,18 @@ export class Chat {
   checkToken(tokenData: Arg<string>, test?: (body: any) => Promise<any> | any) {
     this.steps.push(async () => {
       const token = this.arg(tokenData);
-      const res = await this.agent.request()
-        .get(`/api/users/token/${token}`)
-        .expect(200);
-      const data = await res.json();
-      await test?.(data);
+      const ret = await this.api.auth.checkRegistrationToken({token});
+      await test?.(ret);
     });
     return this;
   }
 
   register(
-    { token, ...data }: RegistrationRequest,
+    data: RegistrationRequest,
     test?: (body: any) => Promise<any> | any,
   ) {
     this.steps.push(async () => {
-      const res = await this.agent.request()
-        .post(`/api/users/${token}`)
-        .json(data)
-        .expect(200);
-      const body = await res.json();
+      const body = await this.api.auth.register(data);
       if (body.id) {
         this.cleanup.push(async () => {
           const user = await this.repo.user.get({ id: EntityId.from(body.id) });

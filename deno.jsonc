@@ -3,7 +3,9 @@
     "./deno/config",
     "./deno/server",
     "./deno/storage",
-    "./deno/migrate"
+    "./deno/migrate",
+    "./deno/encryption",
+    "./deno/api"
   ],
   "imports": {
     "@planigale/body-parser": "jsr:@planigale/body-parser",

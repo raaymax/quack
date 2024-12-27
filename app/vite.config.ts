@@ -7,6 +7,7 @@ import basicSsl from '@vitejs/plugin-basic-ssl';
 import proxy from 'vite-plugin-http2-proxy';
 import path from 'node:path';
 import process from 'node:process';
+import tsconfigPaths from 'vite-tsconfig-paths'
 
 const __dirname = new URL('.', import.meta.url).pathname;
 const sslPath = path.join(__dirname, '../ssl/');
@@ -27,7 +28,14 @@ export default defineConfig({
       ignored: ["**/src-tauri/**"],
     },
   },
+  resolve: {
+    alias: {
+      "@quack/encryption": path.resolve(__dirname, "../deno/encryption/mod.ts"),
+      "@quack/api": path.resolve(__dirname, "../deno/api/mod.ts"),
+    },
+  },
   plugins: [
+    tsconfigPaths(),
     react(),
     basicSsl({
       name: 'test',

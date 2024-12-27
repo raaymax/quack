@@ -1,5 +1,7 @@
+/* global JsonWebKey */
 import { SSESource } from '@planigale/sse';
 import { Channel } from '../types';
+import * as enc from '@quack/encryption';
 
 declare global {
   interface Window {
@@ -51,6 +53,12 @@ class API extends EventTarget {
   tokenInit: () => void;
 
   abortController: AbortController;
+
+  encryptionKey: JsonWebKey | null;
+
+  privateKey: JsonWebKey | null;
+
+  publicKey: JsonWebKey | null;
 
   set token(value: any) {
     if (typeof value === 'string' && value.trim() !== '') {
@@ -461,37 +469,6 @@ class API extends EventTarget {
     return ret;
   };
 
-  async validateSession() {
-    const ret = await this.fetch('/api/auth/session');
-    const user = await ret.json();
-    if (user.status === 'ok') {
-      localStorage.setItem('userId', user.user);
-      this.token = user.token;
-      localStorage.setItem('token', user.token); // TODO: remove
-    }
-    return user;
-  };
-  async login(value: {login: string, password: string}) {
-    const ret = await this.fetch('/api/auth/session', {
-      method: 'POST',
-      body: JSON.stringify(value),
-    });
-    const json = await ret.json();
-    this.token = json.token;
-    localStorage.setItem('token', json.token); // TODO: remove
-    return json;
-  };
-  async logout() {
-    localStorage.removeItem('token'); // TODO: remove
-    localStorage.removeItem('userId');
-
-    const ret = await this.fetch('/api/auth/session', {
-      method: 'DELETE',
-      body: '{}',
-    });
-    await ret.body?.cancel();
-    window.location.reload();
-  };
   async checkRegistrationToken(value: { token: string }) {
     const ret = await this.fetch(`/api/users/token/${value.token}`, {
       method: 'GET',
@@ -502,16 +479,6 @@ class API extends EventTarget {
     return await ret.json();
   };
 
-  async register(value: { name: string, email: string, password: string, token: string }) {
-    const ret = await this.fetch(`/api/users/${value.token}`, {
-      method: 'POST',
-      body: JSON.stringify(value),
-    });
-    if (ret.status !== 200) {
-      throw await ret.json();
-    }
-    return await ret.json();
-  };
 
   me(): string {
     if(!this.userId) {
@@ -523,9 +490,149 @@ class API extends EventTarget {
   isProbablyLogged(): Boolean{
     return !!this.token; // TODO: remove
   };
+
+  async login({ email, password } : { email: string, password: string }) {
+    const {hash, encryptionKey} = await enc.generatePasswordKeys(password);
+    const keyPair = enc.split(encryptionKey);
+    localStorage.setItem('key', keyPair[1]);
+    const ret = await this.fetch('/api/auth/session', {
+      method: 'POST',
+      body: JSON.stringify({email, passwordHash: hash, key: keyPair[0]}),
+    });
+    if (ret.status !== 200) {
+      const error = await ret.json();
+      if(error.errorCode === "PASSWORD_RESET_REQUIRED") {
+        await this.changePassword({ email, oldPassword: password, newPassword: password });
+      }
+    }
+    const session = await ret.json();
+    await this.validateSession(session);
+    return session;
+  }
+
+  async changePassword({email, oldPassword, newPassword } : { email: string, oldPassword: string, newPassword: string }) {
+    const {hash, encryptionKey} = await enc.generatePasswordKeys(newPassword);
+    const keyPair = enc.split(encryptionKey);
+    localStorage.setItem('key', keyPair[1]);
+    if(!this.privateKey || !this.publicKey) {
+      const {publicKey, privateKey} =  enc.generateECKeyPair();
+      this.publicKey = publicKey;
+      this.privateKey = privateKey;
+    }
+
+    const changePasswordRequest = {
+      email: email,
+      oldPasswordHash: enc.hashPassword(oldPassword),
+      passwordHash: hash,
+      publicKey: this.publicKey,
+      encryptedPrivateKey: enc.encrypt(this.privateKey, this.encryptionKey),
+      userEncryptionKey: enc.encrypt(this.encryptionKey, this.encryptionKey),
+      sanityCheck: enc.encrypt('valid', this.encryptionKey),
+    };
+
+    const ret = await this.fetch('/api/profile/password', {
+      method: 'PUT',
+      body: JSON.stringify(changePasswordRequest),
+    });
+    if (ret.status !== 200) {
+      throw await ret.json();
+    }
+    ret.body?.cancel();
+    return await this.login({ email: email, password: newPassword });
+  }
+
+  async restoreSession() {
+    const key = localStorage.getItem('key');
+    if (!key) return;
+    const ret = await this.fetch('/api/auth/session');
+    const session = await ret.json();
+    await this.validateSession(session);
+    return session;
+  }
+
+  async validateSession(session: Session) {
+    const key = localStorage.getItem('key');
+    if (session.status === 'ok') {
+      localStorage.setItem('userId', session.userId);
+      this.token = session.token;
+      localStorage.setItem('token', session.token);
+      const encryptionKey = enc.join([key, session.key]);
+
+      if(enc.decrypt(session.sanityCheck, encryptionKey) !== 'valid') {
+        return false;
+      }
+      this.encryptionKey = enc.decrypt(session.userEncryptionKey, encryptionKey);
+      this.privateKey = enc.decrypt(session.encryptedPrivateKey, encryptionKey);
+      this.publicKey = session.publicKey;
+
+      return true;
+    }
+    return false;
+  }
+      
+  async logout() {
+    localStorage.removeItem('key');
+    localStorage.removeItem('token');
+    localStorage.removeItem('userId');
+    const ret = await this.fetch('/api/auth/session', {
+      method: 'DELETE',
+      body: '{}',
+    });
+    await ret.body?.cancel();
+    window.location.reload();
+  }
+
+  async register(value: {name: string, email: string, password: string, token: string}) {
+    const {hash, encryptionKey} = await enc.generatePasswordKeys(value.password);
+    const sanityCheck = enc.encrypt("valid", encryptionKey);
+    const {publicKey, privateKey} =  enc.generateECKeyPair();
+    const encryptedPrivateKey = enc.encrypt(privateKey, encryptionKey);
+    const ret = await this.fetch(`/api/users/${value.token}`, {
+      method: 'POST',
+      body: JSON.stringify({
+        name: value.name,
+        email: value.email,
+        passwordHash: hash,
+        sanityCheck,
+        publicKey,
+        encryptedPrivateKey
+      }),
+    });
+    if (ret.status !== 200) {
+      throw await ret.json();
+    }
+    return await ret.json();
+  }
 }
 
+  type ChangePasswordRequest = {
+    email: string;
+    oldPasswordHash: string;
+    passwordHash: string;
+    publicKey: JsonWebKey;
+    encryptedPrivateKey: string;
+    userEncryptionKey: string;
+    sanityCheck: string;
+  }
 
+  type Session = {
+    status: 'ok' | 'error';
+    token: string;
+    userId: string;
+    publicKey: JsonWebKey;
+    userEncryptionKey: string;
+    encryptedPrivateKey: string;
+    sanityCheck: string;
+    key: string;
+  }
 
+  type RegisterRequest = {
+    name: string;
+    email: string;
+    passwordHash: string;
+    publicKey: JsonWebKey;
+    encryptedPrivateKey: string;
+    sanityCheck: string;
+  }
 
 export default API;

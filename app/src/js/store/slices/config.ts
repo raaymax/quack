@@ -6,5 +6,18 @@ export default createSlice({
   initialState: {} as UserConfig,
   reducers: {
     set: (state, action) => ({ ...state, ...action.payload }),
+    addChannelEncryptionKey: (state, action) => {
+      const { channelId, encryptionKey } = action.payload;
+      return {
+        ...state,
+        channels: {
+          ...state.channels,
+          [channelId]: {
+            ...state.channels[channelId],
+            encryptionKey,
+          },
+        },
+      };
+    }
   },
 });

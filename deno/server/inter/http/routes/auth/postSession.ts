@@ -10,10 +10,11 @@ export default (core: Core) =>
     schema: {
       body: {
         type: "object",
-        required: ["login", "password"],
+        required: ["email", "password"],
         properties: {
-          login: { type: "string" },
+          email: { type: "string" },
           password: { type: "string" },
+          key: { type: "string" },
         },
       },
     },
@@ -26,7 +27,7 @@ export default (core: Core) =>
       const sessionId = await core.dispatch({
         type: "session:create",
         body: {
-          login: req.body.login,
+          email: req.body.email,
           password: req.body.password,
         },
       });
@@ -37,8 +38,9 @@ export default (core: Core) =>
       if (!session) {
         throw new AccessDenied("Invalid login or password");
       }
-      const res = Res.json({ status: "ok", ...session });
+      const res = Res.json({ status: "ok", ...session, key: req.body.key });
       res.cookies.set("token", session.token, { httpOnly: true, path: "/" });
+      res.cookies.set("key", req.body.key, { httpOnly: true, path: "/" });
       return res;
     },
   });

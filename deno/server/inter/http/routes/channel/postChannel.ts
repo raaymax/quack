@@ -17,6 +17,7 @@ export default (core: Core) =>
             enum: [ChannelType.DIRECT, ChannelType.PUBLIC, ChannelType.PRIVATE],
             default: ChannelType.PUBLIC,
           },
+          encryptionKey: { type: "string" },
           users: {
             type: "array",
             items: { type: "string" },
@@ -32,6 +33,7 @@ export default (core: Core) =>
           name: req.body.name,
           channelType: req.body.channelType,
           users: req.body.users,
+          encryptionKey: req.body.encryptionKey,
         },
       });
       const channel = await core.channel.get({
