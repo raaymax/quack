@@ -5,7 +5,7 @@ export default (core: Core) =>
   new Route({
     public: true,
     method: "PUT",
-    url: "/password/:token",
+    url: "/reset/:token",
     schema: {
       params: {
         type: "object",
@@ -16,25 +16,25 @@ export default (core: Core) =>
       },
       body: {
         type: "object",
-        required: ["email", "password", 'publicKey', 'secrets'],
+        required: ["email", "password", "publicKey", "secrets"],
         properties: {
           email: { type: "string" },
           password: { type: "string" },
-          publicKey: { type: 'object' },
-          secrets: { 
-            type: 'object',
-            required: ['encrypted', '_iv'],
+          publicKey: { type: "object" },
+          secrets: {
+            type: "object",
+            required: ["encrypted", "_iv"],
             properties: {
-              encrypted: {type: 'string'},
-              _iv: {type: 'string'},
-            }
-          }
+              encrypted: { type: "string" },
+              _iv: { type: "string" },
+            },
+          },
         },
       },
     },
     handler: async (req) => {
       await core.dispatch({
-        type: "user:password:reset",
+        type: "user:reset",
         body: {
           email: req.body.email,
           password: req.body.password,

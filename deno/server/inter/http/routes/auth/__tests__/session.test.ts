@@ -48,7 +48,9 @@ Deno.test("Login/logout", async (t) => {
     token = body.token;
     userId = body.userId;
     key = credentials.login.key;
-    assert(res.headers.get("Set-Cookie")?.includes(`key=${credentials.login.key}`));
+    assert(
+      res.headers.get("Set-Cookie")?.includes(`key=${credentials.login.key}`),
+    );
     assert(
       /^token=.+; HttpOnly; Path=\/$/.test(
         res.headers.get("Set-Cookie")?.toString() ?? "",
@@ -67,7 +69,6 @@ Deno.test("Login/logout", async (t) => {
     assertEquals(body.userId, userId);
     assertEquals(body.token, token);
     assertEquals(body.key, key);
-
   });
 
   await t.step("DELETE /auth/session", async () => {

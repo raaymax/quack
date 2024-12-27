@@ -26,7 +26,6 @@ export default createCommand({
       debug: v.optional(v.string()),
       links: v.optional(v.array(v.string()), []),
       mentions: v.optional(IdArr, []),
-      encrypted: v.optional(v.boolean(), false),
       attachments: v.optional(
         v.array(v.object({
           id: v.string(),
@@ -71,7 +70,6 @@ export default createCommand({
     userId: msg.userId,
     links: msg.links,
     mentions: msg.mentions,
-    encrypted: msg.encrypted,
     attachments: msg.attachments?.map((file: any) => ({
       id: file.id,
       fileName: file.fileName,

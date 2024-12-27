@@ -18,7 +18,10 @@ export default createCommand({
     if (!bcrypt.verify(password, user.password)) return null;
     const token = enc.generateRandomToken();
     await repo.user.update({ email }, { resetToken: token });
-    throw new PasswordResetRequired("Authentication method is outdated - password reset is required", token);
+    throw new PasswordResetRequired(
+      "Authentication method is outdated - password reset is required",
+      token,
+    );
   }
 
   if (!await argon2.verify(user.secrets.password.hash, password)) return null;

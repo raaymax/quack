@@ -1,4 +1,4 @@
-import { Channel, Interaction, Message } from "./types.ts";
+import type { Channel, Interaction, Message } from "./types.ts";
 
 interface BaseEvent<T> {
   type: string;

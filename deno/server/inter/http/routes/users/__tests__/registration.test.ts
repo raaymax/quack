@@ -67,29 +67,14 @@ Deno.test("POST /api/users - user creation flow", async (t) => {
       });
 
       await t.step("user already exists", async () => {
-        const email = "jack";
-        const password = "test123";
-        const salt = await enc.deriveSaltFromEmail(email);
-        const { hash, encryptionKey } = await enc.generatePasswordKeys(
-          password,
-          salt,
-        );
-        const { publicKey, privateKey } = await enc.generateECKeyPair();
-        const userEncryptionKey = await enc.generateKey();
-        const secrets = await enc.encrypt({
-          privateKey,
-          userEncryptionKey,
-          sanityCheck: "valid",
-        }, encryptionKey);
+        const data = await enc.prepareRegistration({
+          name: "Jack",
+          email: "jack",
+          password: "test123",
+        });
         await agent.request()
           .post(`/api/users/${token2}`)
-          .json({
-            name: "Jack",
-            email,
-            password,
-            publicKey,
-            secrets,
-          })
+          .json(data)
           .expect(409, {
             errorCode: "USER_ALREADY_EXISTS",
             message: "User already exists",
@@ -99,20 +84,11 @@ Deno.test("POST /api/users - user creation flow", async (t) => {
       await chat.end();
 
       await t.step("check invalid token", async () => {
-        const email = "jack";
-        const password = "test123";
-        const salt = await enc.deriveSaltFromEmail(email);
-        const { hash, encryptionKey } = await enc.generatePasswordKeys(
-          password,
-          salt,
-        );
-        const { publicKey, privateKey } = await enc.generateECKeyPair();
-        const userEncryptionKey = await enc.generateKey();
-        const secrets = await enc.encrypt({
-          privateKey,
-          userEncryptionKey,
-          sanityCheck: "valid",
-        }, encryptionKey);
+        const data = await enc.prepareRegistration({
+          name: "Jack",
+          email: "jack",
+          password: "test123",
+        });
 
         await Chat.init(repo, agent)
           .checkToken(token, ({ valid }) => assert(!valid))
@@ -120,13 +96,7 @@ Deno.test("POST /api/users - user creation flow", async (t) => {
 
         await agent.request()
           .post(`/api/users/${token}`)
-          .json({
-            name: "Jack",
-            email: "jack",
-            password: "test123",
-            publicKey,
-            secrets,
-          })
+          .json(data)
           .expect(400, {
             errorCode: "INVALID_INVITATION",
             message: "Invalid invitation link",

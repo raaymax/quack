@@ -145,9 +145,9 @@ export function generateSalt() {
 }
 
 export function generateRandomToken() {
-   return Array.from(
+  return Array.from(
     crypto.getRandomValues(new Uint8Array(16)),
-    b => b.toString(16).padStart(2, "0")
+    (b) => b.toString(16).padStart(2, "0"),
   ).join("");
 }
 
@@ -199,7 +199,7 @@ export async function prepareCredentials(email: string, password: string) {
   const salt = await deriveSaltFromEmail(email);
   const { hash, encryptionKey } = await generatePasswordKeys(password, salt);
   const keys = splitJSON(encryptionKey);
-  return {login: {email, password: hash, key: keys[0]}, key: keys[1]}; 
+  return { login: { email, password: hash, key: keys[0] }, key: keys[1] };
 }
 
 export async function generateKey() {
@@ -244,7 +244,7 @@ export const splitJSON = (secret: object): [string, string] => {
 
 export const joinJSON = <T>([a, b]: [string, string]): T => {
   const joined = join([a, b]);
-  const out = JSON.parse<T>(joined);
+  const out: T = JSON.parse(joined);
   return out;
 };
 
@@ -257,13 +257,34 @@ export async function generateECKeyPair() {
     true,
     ["deriveKey", "deriveBits"],
   );
-  console.log(JSON.stringify({
-    publicKey: await crypto.subtle.exportKey("jwk", keyPair.publicKey),
-    privateKey: await crypto.subtle.exportKey("jwk", keyPair.privateKey),
-  }));
 
   return {
     publicKey: await crypto.subtle.exportKey("jwk", keyPair.publicKey),
     privateKey: await crypto.subtle.exportKey("jwk", keyPair.privateKey),
+  };
+}
+
+export async function prepareRegistration(
+  { name, email, password }: { name?: string; email: string; password: string },
+) {
+  const salt = await deriveSaltFromEmail(email);
+  const { hash, encryptionKey } = await generatePasswordKeys(
+    password,
+    salt,
+  );
+  const { publicKey, privateKey } = await generateECKeyPair();
+  const userEncryptionKey = await generateKey();
+  const secrets = await encrypt({
+    privateKey,
+    userEncryptionKey,
+    sanityCheck: "valid",
+  }, encryptionKey);
+
+  return {
+    name,
+    email,
+    password: hash,
+    publicKey,
+    secrets,
   };
 }

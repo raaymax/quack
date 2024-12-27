@@ -48,7 +48,7 @@ export class Client {
 }
 
 export const client = new Client();
-export * from './api.ts';
+export * from '@quack/api';
 
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible') {

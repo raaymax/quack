@@ -1,4 +1,3 @@
-
 Deno.test("GET /api/users/password/:token - password reset token check", async () => {
   assert(false);
 });

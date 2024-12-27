@@ -12,12 +12,10 @@ export const PasswordReset = () => {
   const [email, setEmail] = useState<string | null>(null);
 
   useEffect(() => {
-    console.log(token);
     if (!token) return setError("Invalid invitation link");
     client.api.auth
       .checkPasswordResetToken({ token })
       .then((data: { valid: boolean, email: string }) => {
-        console.log('ret', data);
         if (!data.valid) {
           setError("Invalid invitation link");
         } else {
@@ -36,11 +34,6 @@ export const PasswordReset = () => {
       const { password } = e.target as typeof e.target & {
         password: { value: string };
       };
-      console.log('change', {
-        email,
-        token,
-        password: password.value
-      })
 
       if (!token || !email) return;
       try {
@@ -58,10 +51,10 @@ export const PasswordReset = () => {
         window.location.href = "/";
       } catch (err) {
         if (err instanceof Error) {
-          console.log(err);
+          console.error(err);
           setMsg(err.message);
         }else{
-          console.log(err);
+          console.error(err);
           setMsg('Unknown error');
         }
       }
@@ -70,8 +63,14 @@ export const PasswordReset = () => {
   );
 
   if (error) {
-
-    return <ErrorPage title="404" description={["Link you are trying to open is invalid","It could expire or was copied incorectly"]} buttons={['home']} />;
+    return <ErrorPage 
+      title="404" 
+      description={[
+        "Link you are trying to open is invalid",
+        "It could expire or was copied incorectly"
+      ]}
+      buttons={['home']}
+    />;
   }
   return (<PasswordResetPage onSubmit={submit} error={msg} />);
 };

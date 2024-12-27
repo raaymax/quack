@@ -22,10 +22,12 @@
     "composite": true,
     "allowSyntheticDefaultImports": true,
     "baseUrl": "..",
+    "rootDir": "..",
     "paths": {
       "@quack/encryption": ["./deno/encryption/mod.ts"],
       "@quack/api": ["./deno/api/mod.ts"]
     }
   },
-  "include": ["src", "vite.config.ts", ".storybook", "./deno/encryption", "./deno/api"]
+  "include": ["src", "vite.config.ts", ".storybook", "../deno/encryption", "../deno/api/"],
+  "exclude": ["../**/*_test.ts"]
 }

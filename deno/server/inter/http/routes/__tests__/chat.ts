@@ -54,7 +54,7 @@ export class Chat {
 
   api: API;
 
-  static async test(app, opts, fn: Parameters<typeof Agent['test']>[2]) {
+  static async test(app, opts, fn: Parameters<typeof Agent["test"]>[2]) {
     await Agent.test(app, opts, async (agent) => {
       await asyncLocalStorage.run({ instances: [] }, async () => {
         await fn(agent);
@@ -140,7 +140,7 @@ export class Chat {
   login(email = "admin", password = "123") {
     this.steps.push(async () => {
       await ensureUser(this.repo, email);
-      const {userId, token} = await this.api.auth.login({ email, password });
+      const { userId, token } = await this.api.auth.login({ email, password });
       this.userId = userId;
       this.token = token;
     });
@@ -150,7 +150,7 @@ export class Chat {
   checkToken(tokenData: Arg<string>, test?: (body: any) => Promise<any> | any) {
     this.steps.push(async () => {
       const token = this.arg(tokenData);
-      const ret = await this.api.auth.checkRegistrationToken({token});
+      const ret = await this.api.auth.checkRegistrationToken({ token });
       await test?.(ret);
     });
     return this;

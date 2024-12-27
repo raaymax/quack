@@ -194,16 +194,16 @@ const MessageBase = ({ onClick, sameUser, navigate = () => {}, ...props }: Messa
     >
       {!sameUser
         ? <ProfilePic type='regular' userId={userId} />
-        : <div className='spacy side-time'>{formatTime(createdAt)}{msg.encrypted? 'E': ''} </div>
+        : <div className='spacy side-time'>{formatTime(createdAt)}</div>
       }
       <div className='body'>
         {!sameUser && <MessageHeader user={user} createdAt={createdAt} />}
         {editing
           ? <Input mode='edit' messageId={id}>
-              <MessageBodyRenderer body={msg.message} parent={msg} opts={{emojiOnly}} />
+              <MessageBodyRenderer body={msg.message} opts={{emojiOnly}} />
             </Input>
           : <div className={['content'].join(' ')}>
-            <MessageBodyRenderer body={msg.message} parent={msg} opts={{emojiOnly}} />
+            <MessageBodyRenderer body={msg.message} opts={{emojiOnly}} />
           </div>
         }
 
@@ -215,7 +215,7 @@ const MessageBase = ({ onClick, sameUser, navigate = () => {}, ...props }: Messa
         <ReadReceipt data={msg.progress} />
         <MessageToolbar navigate={navigate} />
         {annotations && <div className='generated'>
-          <MessageBodyRenderer body={annotations} parent={msg} />
+          <MessageBodyRenderer body={annotations} />
         </div>}
       </div>
     </MessageContainer>

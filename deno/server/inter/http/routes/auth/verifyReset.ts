@@ -5,7 +5,7 @@ export default (core: Core) =>
   new Route({
     public: true,
     method: "GET",
-    url: "/password/:token",
+    url: "/reset/:token",
     schema: {
       params: {
         type: "object",
@@ -16,7 +16,9 @@ export default (core: Core) =>
       },
     },
     handler: async (req) => {
-      const user = await core.user.checkPasswordResetToken({ token: req.params.token });
+      const user = await core.user.verifyUserReset({
+        token: req.params.token,
+      });
       return Res.json({ valid: !!user, email: user?.email });
     },
   });

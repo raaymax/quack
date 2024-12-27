@@ -35,7 +35,9 @@ function mapAppError(error: AppError): ApiError {
     case "USER_ALREADY_EXISTS":
       return new UserAlreadyExists(error.message);
     case "PASSWORD_RESET_REQUIRED":
-      return new PasswordResetRequired(error as AppErrors.PasswordResetRequired)
+      return new PasswordResetRequired(
+        error as AppErrors.PasswordResetRequired,
+      );
     case "INVALID_INVITATION": {
       const invalidInvitation = new ApiError(
         400,
@@ -74,9 +76,9 @@ export class NotOwner extends ApiError {
 }
 export class PasswordResetRequired extends ApiError {
   override log = false;
-  token: string
+  token: string;
 
-  constructor(error: {message: string, token: string}) {
+  constructor(error: { message: string; token: string }) {
     super(403, "PASSWORD_RESET_REQUIRED", error.message);
     this.token = error.token;
   }
@@ -84,8 +86,8 @@ export class PasswordResetRequired extends ApiError {
   override serialize() {
     return {
       ...super.serialize(),
-      token: this.token
-    }
+      token: this.token,
+    };
   }
 }
 

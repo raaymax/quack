@@ -1,39 +1,6 @@
 import * as v from "valibot";
-
-export class EntityId {
-  constructor(public value: string) {}
-
-  static fromArray(id: string | EntityId | string[] | EntityId[]): EntityId[] {
-    return [id].flat().map(EntityId.from);
-  }
-
-  static from(id: string | EntityId): EntityId {
-    if (id instanceof EntityId) {
-      return new EntityId(id.toString());
-    }
-    if (typeof id === "string") {
-      return new EntityId(id);
-    }
-    console.log(id);
-    throw new Error("Invalid id type");
-  }
-
-  static unique(ids: EntityId[]) {
-    return EntityId.fromArray([...new Set(ids.map((id) => id.value))]);
-  }
-
-  eq(id: EntityId) {
-    return this.value === id.value;
-  }
-
-  neq(id: EntityId) {
-    return this.value !== id.value;
-  }
-
-  toString() {
-    return this.value;
-  }
-}
+import { EntityId, MessageBody, MessageBodyPart } from "@quack/api";
+export * from "@quack/api";
 
 export type Interaction = {
   userId: EntityId;
@@ -69,14 +36,12 @@ export type Session = {
 };
 
 export type EncryptedData = {
-  encrypted: string,
-  _iv: string
+  encrypted: string;
+  _iv: string;
 };
 
 export type User = {
   id: EntityId;
-  authType: "argon2" | "bcrypt";
-  salt: string;
   alias: string | null;
   email: string;
   password: string;
@@ -88,9 +53,9 @@ export type User = {
   resetToken?: string;
 
   secrets: {
-    password: {hash: string, data: EncryptedData, createdAt: Date},
-    backup?: {hash: string, data: EncryptedData, createdAt: Date},
-  }
+    password: { hash: string; data: EncryptedData; createdAt: Date };
+    backup?: { hash: string; data: EncryptedData; createdAt: Date };
+  };
 };
 
 export enum ChannelType {
@@ -146,97 +111,6 @@ export type Invitation = {
   createdAt: Date;
 };
 
-export type MessageBodyBullet = { bullet: MessageBody };
-export type MessageBodyOrdered = { ordered: MessageBody };
-export type MessageBodyItem = { item: MessageBody };
-export type MessageBodyCodeblock = { codeblock: string };
-export type MessageBodyBlockquote = { blockquote: MessageBody };
-export type MessageBodyCode = { code: string };
-export type MessageBodyLine = { line: MessageBody };
-export type MessageBodyBr = { br: boolean };
-export type MessageBodyText = { text: string };
-export type MessageBodyBold = { bold: MessageBody };
-export type MessageBodyItalic = { italic: MessageBody };
-export type MessageBodyUnderline = { underline: MessageBody };
-export type MessageBodyStrike = { strike: MessageBody };
-export type MessageBodyImg = { img: string; _alt: string };
-export type MessageBodyLink = { link: MessageBody; _href: string };
-export type MessageBodyEmoji = { emoji: string };
-export type MessageBodyChannel = { channel: string };
-export type MessageBodyUser = { user: string };
-export type MessageBodyThread = {
-  thread: string;
-  _channelId: string;
-  _parentId: string;
-};
-
-export type MessageBodyPart =
-  | MessageBodyBullet
-  | MessageBodyOrdered
-  | MessageBodyItem
-  | MessageBodyCodeblock
-  | MessageBodyBlockquote
-  | MessageBodyCode
-  | MessageBodyLine
-  | MessageBodyBr
-  | MessageBodyText
-  | MessageBodyBold
-  | MessageBodyItalic
-  | MessageBodyUnderline
-  | MessageBodyStrike
-  | MessageBodyImg
-  | MessageBodyLink
-  | MessageBodyEmoji
-  | MessageBodyChannel
-  | MessageBodyUser
-  | MessageBodyThread;
-
-export type MessageBody = MessageBodyPart[] | MessageBodyPart;
-
-export type Message = {
-  id: EntityId;
-  flat: string;
-  message: MessageBody;
-  channelId: EntityId;
-  userId: EntityId;
-  parentId: EntityId | null;
-  channel: string;
-  clientId: string;
-  emojiOnly: boolean;
-  pinned: boolean;
-  encrypted: boolean;
-  thread: Array<{
-    userId: EntityId;
-    childId: EntityId;
-  }>;
-  reactions: Array<{
-    userId: EntityId;
-    reaction: string;
-  }>;
-  links: string[];
-  mentions: string[];
-  linkPreviews: {
-    url: string;
-    title: string;
-    siteName: string;
-    description: string;
-    mediaType: string;
-    contentType: string;
-    images: string[];
-    videos: string[];
-    favicons: string[];
-    charset: string;
-  }[];
-  parsingErrors: any[];
-  attachments: Array<{ // TODO make this a separate entity
-    id: string;
-    fileName: string;
-    contentType: string;
-  }>;
-  updatedAt: Date;
-  createdAt: Date;
-};
-
 export const vMessageBodyPart: v.GenericSchema<MessageBodyPart> = v.union([
   v.object({ bullet: v.lazy(() => vMessageBody) }),
   v.object({ ordered: v.lazy(() => vMessageBody) }),
@@ -281,23 +155,3 @@ export const Id = v.pipe(
   v.string(),
   v.transform((i: string) => EntityId.from(i)),
 );
-
-/*
-export const vMessage: v.GenericSchema<Message, ReplaceType<Partial<Message>, EntityId, string>> = v.object({
-  flat: v.string(),
-  message: vMessageBody,
-  channelId: Id,
-  userId: Id,
-  parentId: Id,
-  channel: v.string(),
-  clientId: v.string(),
-  emojiOnly: v.boolean(),
-  pinned: v.boolean(),
-  links: v.array(v.string()),
-  attachments: v.array(v.object({
-    id: v.string(),
-    fileName: v.string(),
-    contentType: v.optional(v.string(), "application/octet-stream"),
-  })),
-});
-*/

@@ -5,19 +5,19 @@ import { Repo } from "./repo.ts";
 type DbUser = User & { mainChannelId: EntityId };
 
 type Secret = {
-  hash: string,
+  hash: string;
   data: {
-    encrypted: string,
-    _iv: string,
-  },
-  createdAt: Date,
-}
+    encrypted: string;
+    _iv: string;
+  };
+  createdAt: Date;
+};
 
 type UserQuery = Partial<DbUser & { userId: EntityId }>;
 export class UserRepo extends Repo<UserQuery, DbUser> {
-  COLLECTION = "users";
+  override COLLECTION = "users";
 
-  makeQuery(data: UserQuery) {
+  override makeQuery(data: UserQuery) {
     const { userId, ...rest } = serialize(data);
     return {
       ...rest,
@@ -38,25 +38,16 @@ export class UserRepo extends Repo<UserQuery, DbUser> {
       );
   }
 
-  async updatePassword(query: UserQuery, data: Secret) {
+  async updateCredentials(query: UserQuery, type: string, data: Secret) {
     const { db } = await this.connect();
     return db.collection(this.COLLECTION)
       .updateOne(
         this.makeQuery(query),
-        { $set: { 'secrets.password': data } },
+        { $set: { [`secrets.${type}`]: data } },
       );
   }
 
-  async updateBackup(query: UserQuery, data: Secret) {
-    const { db } = await this.connect();
-    return db.collection(this.COLLECTION)
-      .updateOne(
-        this.makeQuery(query),
-        { $set: { 'secrets.backup': data } },
-      );
-  }
-
-  async upgrade(query: UserQuery, data: { publicKey: any, secrets: Secret }) {
+  async upgrade(query: UserQuery, data: { publicKey: any; secrets: Secret }) {
     const { db } = await this.connect();
     await db.collection(this.COLLECTION)
       .updateOne(
@@ -69,6 +60,6 @@ export class UserRepo extends Repo<UserQuery, DbUser> {
         { $unset: { password: 1, resetToken: 1 } },
       );
 
-    await this.updatePassword(query, data.secrets);
+    await this.updateCredentials(query, "password", data.secrets);
   }
 }

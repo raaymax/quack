@@ -1,7 +1,6 @@
-// deno-lint-ignore-file no-window
-import { Channel, Result, UserConfig, UserSession, UserSessionSecrets } from "./types.ts";
+import type { Result, UserSession, UserSessionSecrets } from "./types.ts";
 import * as enc from "@quack/encryption";
-import type API from './mod.ts';
+import type API from "./mod.ts";
 
 export class ApiError extends Error {
   payload: any;
@@ -22,7 +21,9 @@ class AuthAPI extends EventTarget {
     super();
     this.api = api;
   }
-  async checkRegistrationToken(value: { token: string }): Promise<{valid: boolean}> {
+  async checkRegistrationToken(
+    value: { token: string },
+  ): Promise<{ valid: boolean }> {
     const ret = await this.api.fetchWithCredentials(
       `/api/users/token/${value.token}`,
       {
@@ -35,14 +36,10 @@ class AuthAPI extends EventTarget {
     return await ret.json();
   }
 
-
   me(): string | null {
     return this.api.userId ?? null;
   }
 
-  isProbablyLogged(): boolean {
-    return !!this.api.token; // TODO: remove
-  }
   async login(
     { email, password }: { email: string; password: string },
   ): Promise<Result<UserSession>> {
@@ -60,57 +57,6 @@ class AuthAPI extends EventTarget {
     const session: UserSession = await ret.json();
     await this.validateSession(session);
     return session;
-  }
-
-  async changePassword(
-    { email, oldPassword, newPassword }: {
-      email: string;
-      oldPassword: string;
-      newPassword: string;
-    },
-  ) {
-    const salt = await enc.deriveSaltFromEmail(email);
-    const { hash, encryptionKey } = await enc.generatePasswordKeys(
-      newPassword,
-      salt,
-    );
-    const keyPair = enc.splitJSON(encryptionKey);
-    localStorage.setItem("key", keyPair[1]);
-    const {publicKey, privateKey} = await (async () => {
-      if (!this.api.privateKey || !this.api.publicKey) {
-        return await enc.generateECKeyPair();
-      }
-      return { publicKey: this.api.publicKey, privateKey: this.api.privateKey }
-    })();
-
-    const userEncryptionKey = await (async () => {
-      if(!this.api.userEncryptionKey) {
-        return await enc.generateKey();
-      }
-      return this.api.userEncryptionKey;
-    })()
-
-    const changePasswordRequest: ChangePasswordRequest = {
-      email: email,
-      oldPassword: await enc.hashPassword(oldPassword, salt),
-      password: hash,
-      publicKey: publicKey,
-      secrets: await enc.encrypt({
-        privateKey,
-        userEncryptionKey,
-        sanityCheck: 'valid'
-      }, encryptionKey),
-    };
-
-    const ret = await this.api.fetchWithCredentials("/api/auth/password", {
-      method: "PUT",
-      body: JSON.stringify(changePasswordRequest),
-    });
-    if (ret.status !== 200) {
-      throw await ret.json();
-    }
-    ret.body?.cancel();
-    return await this.login({ email: email, password: newPassword });
   }
 
   async restoreSession(): Promise<UserSession | null> {
@@ -131,7 +77,10 @@ class AuthAPI extends EventTarget {
       this.api.token = session.token;
       localStorage.setItem("token", session.token);
       const encryptionKey = enc.joinJSON<JsonWebKey>([key, session.key]);
-      const secrets: UserSessionSecrets = await enc.decrypt(session.secrets, encryptionKey);
+      const secrets: UserSessionSecrets = await enc.decrypt(
+        session.secrets,
+        encryptionKey,
+      );
       if (secrets.sanityCheck !== "valid") return false;
       this.api.userEncryptionKey = secrets.encryptionKey;
       this.api.privateKey = secrets.privateKey;
@@ -155,36 +104,24 @@ class AuthAPI extends EventTarget {
   async register(
     value: { name: string; email: string; password: string; token: string },
   ) {
-    const salt = await enc.deriveSaltFromEmail(value.email);
-    const { hash, encryptionKey } = await enc.generatePasswordKeys(
-      value.password,
-      salt,
+    const data = await enc.prepareRegistration(value);
+    const ret = await this.api.fetchWithCredentials(
+      `/api/users/${value.token}`,
+      {
+        method: "POST",
+        body: JSON.stringify(data),
+      },
     );
-    const { publicKey, privateKey } = await enc.generateECKeyPair();
-    const userEncryptionKey = await enc.generateKey();
-    const secrets = await enc.encrypt({
-      privateKey,
-      userEncryptionKey,
-      sanityCheck: "valid",
-    }, encryptionKey);
-    const ret = await this.api.fetchWithCredentials(`/api/users/${value.token}`, {
-      method: "POST",
-      body: JSON.stringify({
-        name: value.name,
-        email: value.email,
-        password: hash,
-        publicKey,
-        secrets
-      }),
-    });
     if (ret.status !== 200) {
       throw await ret.json();
     }
     return await ret.json();
   }
-  async checkPasswordResetToken(value: { token: string }): Promise<{valid: boolean, email: string}> {
+  async checkPasswordResetToken(
+    value: { token: string },
+  ): Promise<{ valid: boolean; email: string }> {
     const ret = await this.api.fetchWithCredentials(
-      `/api/auth/password/${value.token}`,
+      `/api/auth/reset/${value.token}`,
       {
         method: "GET",
         headers: {
@@ -195,29 +132,15 @@ class AuthAPI extends EventTarget {
     return await ret.json();
   }
 
-  async resetPassword(value: { token: string; email:string; password: string }) {
-    const salt = await enc.deriveSaltFromEmail(value.email);
-    const { hash, encryptionKey } = await enc.generatePasswordKeys(
-      value.password,
-      salt,
-    );
-    const { publicKey, privateKey } = await enc.generateECKeyPair();
-    const userEncryptionKey = await enc.generateKey();
-    const secrets = await enc.encrypt({
-      privateKey,
-      userEncryptionKey,
-      sanityCheck: "valid",
-    }, encryptionKey);
+  async resetPassword(
+    value: { token: string; email: string; password: string },
+  ) {
+    const data = await enc.prepareRegistration(value);
     const ret = await this.api.fetchWithCredentials(
-      `/api/auth/password/${value.token}`,
+      `/api/auth/reset/${value.token}`,
       {
         method: "PUT",
-        body: JSON.stringify({ 
-          email: value.email,
-          password: hash,
-          publicKey,
-          secrets
-        }),
+        body: JSON.stringify(data),
       },
     );
     if (ret.status !== 200) {
@@ -225,7 +148,6 @@ class AuthAPI extends EventTarget {
     }
     return await ret.json();
   }
-
 }
 
 type EncryptedData = {

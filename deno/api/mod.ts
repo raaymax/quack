@@ -3,6 +3,8 @@ import { SSESource } from "@planigale/sse";
 import { Channel, UserConfig } from "./types.ts";
 import AuthAPI from "./auth.ts";
 
+export * from "./types.ts";
+
 declare global {
   interface Window {
     isTauri: boolean;
@@ -77,7 +79,7 @@ class API extends EventTarget {
     return this._token;
   }
 
-  constructor(url: string, opts: { fetch: typeof fetch, sse?: boolean }) {
+  constructor(url: string, opts: { fetch: typeof fetch; sse?: boolean }) {
     super();
     this.baseUrl = isDeno || window?.isTauri ? url : "";
     this.abortController = new AbortController();
@@ -85,7 +87,7 @@ class API extends EventTarget {
     this.tokenInit = () => {
       this.abortController.abort("App is frozen");
       this.abortController = new AbortController();
-      if(this.sseEnabled) {
+      if (this.sseEnabled) {
         this.reconnect(this.abortController.signal);
       }
     };

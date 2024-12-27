@@ -18,5 +18,4 @@ export default createQuery({
     secrets: user.secrets.password.data,
     publicKey: user.publicKey,
   };
-
-})
+});

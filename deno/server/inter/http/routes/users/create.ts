@@ -23,12 +23,12 @@ export default (core: Core) =>
           password: { type: "string", minLength: 3 },
           sanityCheck: { type: "string" },
           publicKey: { type: "object" },
-          secrets: { 
+          secrets: {
             type: "object",
             properties: {
               encrypted: { type: "string" },
               _iv: { type: "string" },
-            }
+            },
           },
         },
       },

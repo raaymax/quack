@@ -30,7 +30,7 @@ Deno.test("GET /api/users/:userId - getUser with an id and alias", async () => {
       .getUser(({ state }) => state.member.id, async (user: User) => {
         assert(user.name === "Member");
         assert(user.secrets === undefined);
-        assert(user.publicKey)
+        assert(user.publicKey);
       })
       .end();
   });
@@ -86,16 +86,4 @@ Deno.test("POST /api/users - user creation flow", async () => {
       await admin.end();
     }
   });
-});
-
-Deno.test("GET /api/users/password-reset/:token - password reset token check", async () => {
-  assert(false);
-});
-
-Deno.test("GET /api/users/password-reset/:token - password reset token check - token expired", async () => {
-  assert(false);
-});
-
-Deno.test("PUT /api/auth/password - password reset flow", async () => {
-  assert(false);
 });

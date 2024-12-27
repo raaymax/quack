@@ -8,8 +8,8 @@
     "./deno/api"
   ],
   "imports": {
-    "@planigale/body-parser": "jsr:@planigale/body-parser",
-    "@planigale/planigale": "jsr:@planigale/planigale@0.6.5",
+    "@planigale/body-parser": "jsr:@planigale/body-parser@0.2.1",
+    "@planigale/planigale": "jsr:@planigale/planigale@0.6.8",
     "@planigale/testing": "jsr:@planigale/testing@0.3.3",
     "@planigale/schema": "jsr:@planigale/schema",
     "@planigale/sse": "jsr:@planigale/sse",
@@ -45,7 +45,7 @@
     "build": "deno task -c ./packages/app/deno.jsonc build",
     "migrate": "deno task -c ./deno/migrate/deno.json migrate up",
     "migrate:tests": "DATABASE_URL='mongodb://chat:chat@localhost:27017/tests?authSource=admin' deno task migrate",
-    "test": "DATABASE_URL='mongodb://chat:chat@localhost:27017/tests?authSource=admin' deno test --no-check -A",
+    "test": "DATABASE_URL='mongodb://chat:chat@localhost:27017/tests?authSource=admin' deno test -A",
     "ssl": "mkdir -p ssl && openssl req -x509 -newkey rsa:4096 -keyout ssl/key.pem -out ssl/cert.pem -days 365 -nodes -subj '/CN=localhost'",
     "types": "npm run types",
     "check": "deno run -A npm:eslint . --ignore-pattern=app/src-tauri && deno fmt && deno lint && deno task test",

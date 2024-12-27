@@ -4,7 +4,7 @@ import { createCommand } from "../command.ts";
 import { ResourceNotFound } from "../errors.ts";
 
 export default createCommand({
-  type: "user:password:reset",
+  type: "user:reset",
   body: v.object({
     email: v.string(),
     password: v.string(),
@@ -30,12 +30,12 @@ export default createCommand({
   const existing = await repo.user.get({ email });
   if (!existing) throw new ResourceNotFound("User not found");
 
-  await repo.user.upgrade({id: existing.id}, {
+  await repo.user.upgrade({ id: existing.id }, {
     publicKey,
     secrets: {
       hash: await hash(password),
       data: secrets,
       createdAt: new Date(),
     },
-  }); 
+  });
 });
