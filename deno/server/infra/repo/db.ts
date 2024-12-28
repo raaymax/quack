@@ -1,10 +1,4 @@
-import {
-  Db,
-  MongoClient,
-  ReadConcern,
-  ReadPreference,
-  W,
-} from "mongodb";
+import { Db, MongoClient, ReadConcern, ReadPreference, W } from "mongodb";
 
 export { ObjectId } from "mongodb";
 

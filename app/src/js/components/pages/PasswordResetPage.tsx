@@ -171,6 +171,10 @@ export const PasswordResetPage = ({ onSubmit, error = null, disabled = false }: 
           <p>{localMsg ?? 'Set new password for your account'}</p>
           <form onSubmit={onSubmit}>
             <div className='form-group'>
+              <label htmlFor="oldPassword">Old password</label>
+              <input id="oldPassword" type='password' name='oldPassword' placeholder='password' disabled={disabled} />
+            </div>
+            <div className='form-group'>
               <label htmlFor="password">New password</label>
               <input id="password" type='password' name='password' placeholder='password' disabled={disabled} />
             </div>

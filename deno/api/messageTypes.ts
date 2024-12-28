@@ -58,6 +58,8 @@ export type MessageBodyPart =
 
 export type MessageBody = MessageBodyPart[] | MessageBodyPart;
 
+export type DateTime = "Deno" extends keyof typeof globalThis ? Date : string;
+
 export type BaseMessage = {
   id: Eid;
   channelId: Eid;
@@ -65,9 +67,10 @@ export type BaseMessage = {
   parentId: Eid | null;
   pinned: boolean;
   clientId: string;
+  appId?: string;
 
-  updatedAt: Date;
-  createdAt: Date;
+  updatedAt: DateTime;
+  createdAt: DateTime;
 };
 
 export type MessageData = {

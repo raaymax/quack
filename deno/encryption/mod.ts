@@ -3,6 +3,8 @@ const iterations = 100_000;
 const hash = "SHA-256";
 const keyLength = 256;
 
+type EncryptedData = { encrypted: string; _iv: string };
+
 export function toBase64(buffer: ArrayBuffer) {
   let binary = "";
   const bytes = new Uint8Array(buffer);
@@ -287,4 +289,14 @@ export async function prepareRegistration(
     publicKey,
     secrets,
   };
+}
+
+export async function decryptSessionSecrets<T = any>(
+  email: string,
+  password: string,
+  secrets: EncryptedData,
+): Promise<T> {
+  const salt = await deriveSaltFromEmail(email);
+  const encryptionKey = await deriveEncryptionKeyFromPassword(password, salt);
+  return decrypt<T>(secrets, encryptionKey);
 }

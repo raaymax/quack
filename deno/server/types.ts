@@ -57,9 +57,9 @@ export type User = {
     backup?: { hash: string; data: EncryptedData; createdAt: Date };
   };
 
-  channels: { 
-    encryptionKey: JsonWebKey, 
-    channelId: EntityId 
+  channels: {
+    encryptionKey: JsonWebKey;
+    channelId: EntityId;
   }[];
 };
 
@@ -135,7 +135,12 @@ export const vMessageBodyPart: v.GenericSchema<MessageBodyPart> = v.union([
   v.object({ emoji: v.string() }),
   v.object({ channel: v.string() }),
   v.object({ user: v.string() }),
-  v.object({ button: v.string(), _action: v.string(), _style: v.string(), _payload: v.any() }),
+  v.object({
+    button: v.string(),
+    _action: v.string(),
+    _style: v.string(),
+    _payload: v.any(),
+  }),
   v.object({ wrap: v.lazy(() => vMessageBody) }),
   v.object({ column: v.lazy(() => vMessageBody), _width: v.number() }),
   v.object({

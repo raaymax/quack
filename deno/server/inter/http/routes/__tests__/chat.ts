@@ -10,7 +10,7 @@ import {
   ReplaceEntityId,
 } from "../../../../types.ts";
 import { AsyncLocalStorage } from "node:async_hooks";
-import API from "@quack/api";
+import API, { LoginError, Result, UserSession } from "@quack/api";
 import * as enc from "@quack/encryption";
 
 export type RegistrationRequest = {
@@ -56,7 +56,11 @@ export class Chat {
 
   api: API;
 
-  static async test(app: AgentTestParams[0], opts: AgentTestParams[1], fn: AgentTestParams[2]) {
+  static async test(
+    app: AgentTestParams[0],
+    opts: AgentTestParams[1],
+    fn: AgentTestParams[2],
+  ) {
     await Agent.test(app, opts, async (agent) => {
       await asyncLocalStorage.run({ instances: [] }, async () => {
         await fn(agent);
@@ -117,6 +121,28 @@ export class Chat {
     return arg;
   }
 
+  isResetValid(token: Arg<string>) {
+    this.steps.push(async () => {
+      const tokenR = this.arg(token);
+      await this.api.auth.checkPasswordResetToken({ token: tokenR });
+    });
+    return this;
+  }
+
+  reset(
+    data: Arg<
+      { token: string; email: string; password: string; oldPassword: string }
+    >,
+    test?: (session: Result) => Promise<any> | any,
+  ) {
+    this.steps.push(async () => {
+      const resetData = this.arg(data);
+      const ret = await this.api.auth.resetPassword(resetData);
+      await test?.(ret);
+    });
+    return this;
+  }
+
   connectSSE() {
     this.steps.push(async () => {
       this.eventSource = this.agent.events("/api/sse", {
@@ -139,12 +165,19 @@ export class Chat {
     return this;
   }
 
-  login(email = "admin", password = "123") {
+  login(
+    email = "admin",
+    password = "123",
+    test?: (session: Result<UserSession, LoginError>) => Promise<any> | any,
+  ) {
     this.steps.push(async () => {
       await ensureUser(this.repo, email);
-      const { userId, token } = await this.api.auth.login({ email, password });
-      this.userId = userId;
-      this.token = token;
+      const session = await this.api.auth.login({ email, password });
+      if (session.status === "ok") {
+        this.userId = session.userId;
+        this.token = session.token;
+      }
+      await test?.(session);
     });
     return this;
   }

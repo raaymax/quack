@@ -69,10 +69,12 @@ export const vMessageBodyStrike: v.GenericSchema<MessageBodyStrike> = v.object({
   strike: v.lazy(() => vMessageBody),
 });
 export const vMessageBodyImg: v.GenericSchema<MessageBodyImg> = v.object({
-  img: v.string(), _alt: v.string(),
+  img: v.string(),
+  _alt: v.string(),
 });
 export const vMessageBodyLink: v.GenericSchema<MessageBodyLink> = v.object({
-  link: v.lazy(() => vMessageBody), _href: v.string(),
+  link: v.lazy(() => vMessageBody),
+  _href: v.string(),
 });
 export const vMessageBodyEmoji: v.GenericSchema<MessageBodyEmoji> = v.object({
   emoji: v.string(),

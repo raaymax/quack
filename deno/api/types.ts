@@ -1,3 +1,5 @@
+/* global Deno */
+
 export class EntityId {
   constructor(public value: string) {}
 
@@ -33,7 +35,7 @@ export class EntityId {
   }
 }
 
-export type Eid = typeof Deno extends object ? EntityId : string;
+export type Eid = "Deno" extends keyof typeof globalThis ? EntityId : string;
 
 export type EncryptedData = {
   encrypted: string;
@@ -89,12 +91,17 @@ export type User = {
 };
 
 export type UserSession = {
-  status: "ok" | "error";
+  status: "ok";
   token: string;
   userId: string;
   publicKey: JsonWebKey;
   secrets: EncryptedData;
   key: string;
+};
+
+export type LoginError = {
+  errorCode: "PASSWORD_RESET_REQUIRED";
+  token: string;
 };
 
 export type UserSessionSecrets = {
@@ -105,7 +112,7 @@ export type UserSessionSecrets = {
 
 export type Result<T = any, E = any> =
   | (T & { status: "ok" })
-  | (E & { status: "error"; message: string });
+  | (E & { status: "error"; errorCode: string; message: string });
 
 export type ReplaceType<T, R, W> = T extends R ? W : (
   T extends object ? {

@@ -1,6 +1,5 @@
 import * as v from "valibot";
 import * as argon2 from "@felix/argon2";
-import * as bcrypt from "@ts-rex/bcrypt";
 import { createCommand } from "../command.ts";
 import * as enc from "@quack/encryption";
 import { PasswordResetRequired } from "../errors.ts";
@@ -15,7 +14,6 @@ export default createCommand({
   const user = await repo.user.get({ email });
   if (!user) return null;
   if (user.password) {
-    if (!bcrypt.verify(password, user.password)) return null;
     const token = enc.generateRandomToken();
     await repo.user.update({ email }, { resetToken: token });
     throw new PasswordResetRequired(

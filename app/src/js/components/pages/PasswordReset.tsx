@@ -31,24 +31,33 @@ export const PasswordReset = () => {
   const submit = useCallback(
     async (e: React.SyntheticEvent) => {
       e.preventDefault();
-      const { password } = e.target as typeof e.target & {
+      const { password, oldPassword } = e.target as typeof e.target & {
         password: { value: string };
+        oldPassword: { value: string};
       };
 
+      console.log({password: password.value, oldPassword: oldPassword.value})
       if (!token || !email) return;
       try {
-        await client.api.auth.resetPassword({
+        const result = await client.api.auth.resetPassword({
           email,
           token,
           password: password.value,
+          oldPassword: oldPassword.value,
         });
+        console.log({result})
 
-        localStorage.setItem("token", "");
-        localStorage.setItem(
-          "loginMessage",
-          "PasswordReset successful. You can login now.",
-        );
-        window.location.href = "/";
+        if(result.status === 'ok') {
+          localStorage.setItem("token", "");
+          localStorage.setItem(
+            "loginMessage",
+            "PasswordReset successful. You can login now.",
+          );
+          window.location.href = "/";
+        }else {
+          console.error(result);
+          setMsg(result.message);
+        }
       } catch (err) {
         if (err instanceof Error) {
           console.error(err);

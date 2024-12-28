@@ -10,7 +10,7 @@ export const up = async (db) => {
     }});
 	}
   await db.collection('users').createIndex({ email: 1 }, { unique: true});
-  await db.collection('sessions').removeMany({});
+  await db.collection('sessions').deleteMany({});
 };
 
 export const down = async (db) => {
@@ -26,5 +26,5 @@ export const down = async (db) => {
     } });
 	}
   await db.collection('users').createIndex({ login: 1 }, { unique: true });
-  await db.collection('sessions').removeMany({});
+  await db.collection('sessions').deleteMany({});
 }

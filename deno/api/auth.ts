@@ -1,4 +1,9 @@
-import type { Result, UserSession, UserSessionSecrets } from "./types.ts";
+import type {
+  LoginError,
+  Result,
+  UserSession,
+  UserSessionSecrets,
+} from "./types.ts";
 import * as enc from "@quack/encryption";
 import type API from "./mod.ts";
 
@@ -42,7 +47,7 @@ class AuthAPI extends EventTarget {
 
   async login(
     { email, password }: { email: string; password: string },
-  ): Promise<Result<UserSession>> {
+  ): Promise<Result<UserSession, LoginError>> {
     const credentials = await enc.prepareCredentials(email, password);
     localStorage.setItem("key", credentials.key);
     const ret = await this.api.fetchWithCredentials("/api/auth/session", {
@@ -51,7 +56,6 @@ class AuthAPI extends EventTarget {
     });
     if (ret.status !== 200) {
       const error = await ret.json();
-      console.log(error);
       return { status: "error", ...error };
     }
     const session: UserSession = await ret.json();
@@ -64,7 +68,6 @@ class AuthAPI extends EventTarget {
     if (!key) return { status: "error" };
     const ret = await this.api.fetchWithCredentials("/api/auth/session");
     const session = await ret.json();
-    console.log(session);
     await this.validateSession(session);
     return session;
   }
@@ -133,45 +136,29 @@ class AuthAPI extends EventTarget {
   }
 
   async resetPassword(
-    value: { token: string; email: string; password: string },
-  ) {
+    value: {
+      token: string;
+      email: string;
+      password: string;
+      oldPassword: string;
+    },
+  ): Promise<Result> {
     const data = await enc.prepareRegistration(value);
     const ret = await this.api.fetchWithCredentials(
       `/api/auth/reset/${value.token}`,
       {
         method: "PUT",
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          ...data,
+          oldPassword: value.oldPassword,
+        }),
       },
     );
     if (ret.status !== 200) {
-      throw await ret.json();
+      return { status: "error", ...await ret.json() };
     }
-    return await ret.json();
+    return { status: "ok", ...await ret.json() };
   }
 }
-
-type EncryptedData = {
-  encrypted: string;
-  _iv: string;
-};
-
-type ChangePasswordRequest = {
-  email: string;
-  oldPasswordHash: string;
-  passwordHash: string;
-  publicKey: JsonWebKey;
-  encryptedPrivateKey: EncryptedData;
-  userEncryptionKey: EncryptedData;
-  sanityCheck: EncryptedData;
-};
-
-type RegisterRequest = {
-  name: string;
-  email: string;
-  passwordHash: string;
-  publicKey: JsonWebKey;
-  encryptedPrivateKey: string;
-  sanityCheck: string;
-};
 
 export default AuthAPI;

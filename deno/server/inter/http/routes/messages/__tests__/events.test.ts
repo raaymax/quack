@@ -2,7 +2,7 @@ import { Agent } from "@planigale/testing";
 import { assertEquals } from "@std/assert";
 import { createApp } from "../../__tests__/app.ts";
 import { Chat } from "../../__tests__/chat.ts";
-import { Message } from '@quack/api'
+import { Message } from "@quack/api";
 
 const { app, repo, core } = createApp();
 

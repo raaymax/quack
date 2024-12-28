@@ -20,6 +20,7 @@ export default (core: Core) =>
         properties: {
           email: { type: "string" },
           password: { type: "string" },
+          oldPassword: { type: "string" },
           publicKey: { type: "object" },
           secrets: {
             type: "object",
@@ -38,6 +39,7 @@ export default (core: Core) =>
         body: {
           email: req.body.email,
           password: req.body.password,
+          oldPassword: req.body.oldPassword,
           publicKey: req.body.publicKey,
           secrets: req.body.secrets,
         },

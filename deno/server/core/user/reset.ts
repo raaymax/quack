@@ -1,13 +1,15 @@
 import * as v from "valibot";
+import * as bcrypt from "@ts-rex/bcrypt";
 import { hash } from "@felix/argon2";
 import { createCommand } from "../command.ts";
-import { ResourceNotFound } from "../errors.ts";
+import { AccessDenied, ResourceNotFound } from "../errors.ts";
 
 export default createCommand({
   type: "user:reset",
   body: v.object({
     email: v.string(),
     password: v.string(),
+    oldPassword: v.string(),
     publicKey: v.object({
       crv: v.string(),
       ext: v.boolean(),
@@ -24,11 +26,16 @@ export default createCommand({
 }, async ({
   email,
   password,
+  oldPassword,
   publicKey,
   secrets,
 }, { repo }) => {
   const existing = await repo.user.get({ email });
   if (!existing) throw new ResourceNotFound("User not found");
+
+  if (!bcrypt.verify(oldPassword, existing.password)) {
+    throw new AccessDenied();
+  }
 
   await repo.user.upgrade({ id: existing.id }, {
     publicKey,

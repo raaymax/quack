@@ -1,8 +1,21 @@
 import { serialize } from "./serializer.ts";
-import { EntityId, User } from "../../types.ts";
+import { EncryptedData, EntityId, User } from "../../types.ts";
 import { Repo } from "./repo.ts";
 
-type DbUser = User & { mainChannelId: EntityId };
+type DbUser = User & {
+  resetToken?: string;
+
+  secrets: {
+    password: { hash: string; data: EncryptedData; createdAt: Date };
+    backup?: { hash: string; data: EncryptedData; createdAt: Date };
+  };
+
+  channels: {
+    encryptionKey: JsonWebKey;
+    channelId: EntityId;
+  }[];
+  mainChannelId: EntityId;
+};
 
 type Secret = {
   hash: string;

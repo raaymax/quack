@@ -139,6 +139,7 @@ class API extends EventTarget {
       });
       if (!this.source) return;
       this.emit(new CustomEvent("con:open", { detail: {} }));
+      // @ts-ignore For some reason the AsyncIterator is not recognized
       for await (const event of this.source) {
         if (event.data === "") continue;
         const data = JSON.parse(event.data);
@@ -325,7 +326,7 @@ class API extends EventTarget {
     data: {
       channelId: string;
       parentId?: string;
-      appId: string;
+      appId?: string;
       clientId: string;
       action: string;
       payload: any;
@@ -559,29 +560,5 @@ class API extends EventTarget {
     return ret;
   };
 }
-
-type EncryptedData = {
-  encrypted: string;
-  _iv: string;
-};
-
-type ChangePasswordRequest = {
-  email: string;
-  oldPasswordHash: string;
-  passwordHash: string;
-  publicKey: JsonWebKey;
-  encryptedPrivateKey: EncryptedData;
-  userEncryptionKey: EncryptedData;
-  sanityCheck: EncryptedData;
-};
-
-type RegisterRequest = {
-  name: string;
-  email: string;
-  passwordHash: string;
-  publicKey: JsonWebKey;
-  encryptedPrivateKey: string;
-  sanityCheck: string;
-};
 
 export default API;

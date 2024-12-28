@@ -62,7 +62,10 @@ export const LoggedUser = () => {
         <div className="status">Online</div>
       </div>
       <div className="user-actions">
-        <ButtonWithIcon className="logout-button" icon="logout" size={32} onClick={() => client.api.auth.logout()}/>
+        <ButtonWithIcon className="logout-button" icon="logout" size={32} onClick={async () => {
+          await client.api.auth.logout();
+          document.location.reload();
+        }}/>
       </div>
     </Container>
   );
