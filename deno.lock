@@ -7,16 +7,17 @@
     "jsr:@jd1378/another-cookiejar@^5.0.7": "5.0.7",
     "jsr:@oak/commons@0.11": "0.11.0",
     "jsr:@oak/oak@^16.1.0": "16.1.0",
-    "jsr:@planigale/body-parser@*": "0.2.0",
+    "jsr:@planigale/body-parser@*": "0.2.1",
     "jsr:@planigale/body-parser@0.2.1": "0.2.1",
-    "jsr:@planigale/planigale@*": "0.6.7",
+    "jsr:@planigale/planigale@*": "0.6.8",
     "jsr:@planigale/planigale@0.6.5": "0.6.5",
     "jsr:@planigale/planigale@0.6.7": "0.6.7",
     "jsr:@planigale/planigale@0.6.8": "0.6.8",
+    "jsr:@planigale/planigale@0.6.9": "0.6.9",
     "jsr:@planigale/planigale@~0.6.1": "0.6.8",
-    "jsr:@planigale/planigale@~0.6.3": "0.6.8",
-    "jsr:@planigale/planigale@~0.6.4": "0.6.8",
-    "jsr:@planigale/planigale@~0.6.8": "0.6.8",
+    "jsr:@planigale/planigale@~0.6.3": "0.6.9",
+    "jsr:@planigale/planigale@~0.6.4": "0.6.9",
+    "jsr:@planigale/planigale@~0.6.8": "0.6.9",
     "jsr:@planigale/querystring@0.1": "0.1.0",
     "jsr:@planigale/schema@*": "0.1.4",
     "jsr:@planigale/sse@*": "0.2.4",
@@ -226,6 +227,16 @@
     },
     "@planigale/planigale@0.6.8": {
       "integrity": "40b2b2174328dd25fdb8211d22d12b505d5ff1b8deae0b85f1372db0d786ebd4",
+      "dependencies": [
+        "jsr:@planigale/querystring",
+        "jsr:@planigale/sse@~0.2.4",
+        "jsr:@std/http@~0.224.5",
+        "jsr:@std/media-types@1.0.2",
+        "jsr:@std/path@1.0.1"
+      ]
+    },
+    "@planigale/planigale@0.6.9": {
+      "integrity": "46751e13af955047ea331735d5018d8e3db4d336588f600ceafbe527e9e88ab9",
       "dependencies": [
         "jsr:@planigale/querystring",
         "jsr:@planigale/sse@~0.2.4",
@@ -6967,7 +6978,7 @@
   "workspace": {
     "dependencies": [
       "jsr:@planigale/body-parser@0.2.1",
-      "jsr:@planigale/planigale@0.6.8",
+      "jsr:@planigale/planigale@0.6.9",
       "jsr:@planigale/schema@*",
       "jsr:@planigale/sse@*",
       "jsr:@planigale/testing@0.3.3",

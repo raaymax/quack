@@ -199,7 +199,6 @@ const sendMessage = createMethod('messages/sendMessage', async ({ payload: msg}:
       const enc = encryptor(key);
       msg.message = await enc.encrypt(msg.message);
       msg.flat = JSON.stringify(await enc.encrypt(msg.flat));
-      msg.encrypted = true;
     }
     await client.api.sendMessage(msg);
   } catch (err) {

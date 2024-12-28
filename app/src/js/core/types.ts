@@ -75,7 +75,6 @@ export type OutgoingMessageCreate = {
   debug?: string,
   links?: string[],
   mentions?: string[],
-  encrypted?: boolean,
   attachments?: Array<{
     id: string,
     fileName: string,

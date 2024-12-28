@@ -59,7 +59,7 @@ class AuthAPI extends EventTarget {
     return session;
   }
 
-  async restoreSession(): Promise<UserSession | null> {
+  async restoreSession(): Promise<Result<UserSession>> {
     const key = localStorage.getItem("key");
     if (!key) return { status: "error" };
     const ret = await this.api.fetchWithCredentials("/api/auth/session");

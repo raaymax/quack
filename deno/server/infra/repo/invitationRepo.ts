@@ -4,7 +4,7 @@ import { serialize } from "./serializer.ts";
 
 type InvitationQuery = Partial<Invitation>;
 export class InvitationRepo extends Repo<InvitationQuery, Invitation> {
-  COLLECTION = "invitations";
+  override COLLECTION = "invitations";
 
   async removeOutdated() {
     const { db } = await this.connect();
@@ -12,7 +12,7 @@ export class InvitationRepo extends Repo<InvitationQuery, Invitation> {
       .deleteMany({ expireAt: { $lt: new Date() } });
   }
 
-  makeQuery(data: InvitationQuery) {
+  override makeQuery(data: InvitationQuery) {
     const query = serialize(data);
     return {
       ...query,

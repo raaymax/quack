@@ -1,3 +1,5 @@
+import {assert} from "@std/assert";
+
 Deno.test("GET /api/users/password/:token - password reset token check", async () => {
   assert(false);
 });

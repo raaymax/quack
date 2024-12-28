@@ -17,7 +17,6 @@ export default createQuery({
   return {
     appVersion: Deno.env.get("APP_VERSION"),
     mainChannelId: user?.mainChannelId ?? channel?.id,
-    encryptionKey: user?.encryptionKey,
     channels: user?.channels,
   };
 });

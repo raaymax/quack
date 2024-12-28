@@ -4,7 +4,6 @@ import {
   ReadConcern,
   ReadPreference,
   W,
-  WriteConcern,
 } from "mongodb";
 
 export { ObjectId } from "mongodb";

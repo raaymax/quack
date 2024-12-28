@@ -23,6 +23,8 @@ export type RegistrationRequest = {
 type Arg<T extends Object> = T | ((chat: Chat) => T);
 const asyncLocalStorage = new AsyncLocalStorage<{ instances: Chat[] }>();
 
+type AgentTestParams = Parameters<typeof Agent["test"]>;
+
 export class Chat {
   repo: Repository;
 
@@ -54,7 +56,7 @@ export class Chat {
 
   api: API;
 
-  static async test(app, opts, fn: Parameters<typeof Agent["test"]>[2]) {
+  static async test(app: AgentTestParams[0], opts: AgentTestParams[1], fn: AgentTestParams[2]) {
     await Agent.test(app, opts, async (agent) => {
       await asyncLocalStorage.run({ instances: [] }, async () => {
         await fn(agent);
@@ -368,7 +370,7 @@ export class Chat {
   }
 
   getMessages(
-    queryData: Arg<{ parentId?: string }> = {},
+    queryData: Arg<{ parentId?: string | null }> = {},
     test?: (messages: any[], chat: Chat) => Promise<any> | any,
   ) {
     this.steps.push(async () => {
@@ -578,7 +580,7 @@ export class Chat {
     return this;
   }
 
-  async then(resolve: (self?: any) => any, reject: (e: Error) => any) {
+  async then(resolve: (self?: any) => any, reject: (e: unknown) => any) {
     let cleanupStart = false;
     try {
       while (this.steps[this.currentStep]) {

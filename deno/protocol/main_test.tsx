@@ -1,6 +1,5 @@
 import { assertEquals } from "jsr:@std/assert";
 import { Bold, Line, Link, Message, Text } from "./main.tsx";
-import { Element } from "./types.ts";
 import { MessageType } from "./Message.ts";
 
 Deno.test("Message.parse() should parse/serialize message", () => {

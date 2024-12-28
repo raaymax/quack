@@ -17,7 +17,6 @@ export const errorHandler: Middleware = async (req, next) => {
     if (e instanceof AppError) {
       throw mapAppError(e);
     }
-    console.log(e);
     throw new InternalServerError(e);
   }
 };

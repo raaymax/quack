@@ -1,4 +1,4 @@
-import { Res, Route } from "@planigale/planigale";
+import { ApiError, Res, Route } from "@planigale/planigale";
 import type { Storage } from "../../../core/mod.ts";
 
 export const download = (storage: Storage) =>
@@ -48,7 +48,7 @@ export const download = (storage: Storage) =>
         }
         return res;
       } catch (e) {
-        if (e.message === "FILE_NOT_FOUND") {
+        if (e instanceof ApiError && e.errorCode === "FILE_NOT_FOUND") {
           const res = new Res();
           res.body = {
             errorCode: "RESOURCE_NOT_FOUND",

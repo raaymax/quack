@@ -82,7 +82,7 @@ class NodeReadable extends Readable {
     this.reader = stream.getReader();
   }
 
-  public async _read() {
+  public override async _read() {
     if (this.released) {
       this.push(null);
       return;

@@ -9,7 +9,7 @@
   ],
   "imports": {
     "@planigale/body-parser": "jsr:@planigale/body-parser@0.2.1",
-    "@planigale/planigale": "jsr:@planigale/planigale@0.6.8",
+    "@planigale/planigale": "jsr:@planigale/planigale@0.6.9",
     "@planigale/testing": "jsr:@planigale/testing@0.3.3",
     "@planigale/schema": "jsr:@planigale/schema",
     "@planigale/sse": "jsr:@planigale/sse",
@@ -51,5 +51,10 @@
     "check": "deno run -A npm:eslint . --ignore-pattern=app/src-tauri && deno fmt && deno lint && deno task test",
     "android:build": "npm run android:build",
     "desktop:build": "npm run desktop:build"
+  },
+  "compilerOptions": {
+    "jsx": "react",
+    "jsxFactory": "Message.create",
+    "jsxFragmentFactory": "myFragmentFactory"
   }
 }

@@ -79,7 +79,7 @@ export abstract class MessageBodyPart<A extends Args = object, C = any> {
     return new (this as any)(args, index.parsePart(json[this.propName]));
   }
 
-  static parseFromHtml(html: Element, parse): MessageBody | undefined {
+  static parseFromHtml(html: Element, parse: never): MessageBody | undefined {
     return undefined;
   }
 

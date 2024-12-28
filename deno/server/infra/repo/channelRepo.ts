@@ -4,9 +4,9 @@ import { Repo } from "./repo.ts";
 
 type ChannelQuery = Partial<Channel & { userId: EntityId; usersCount: number }>;
 export class ChannelRepo extends Repo<ChannelQuery, Channel> {
-  COLLECTION = "channels";
+  override COLLECTION = "channels";
 
-  makeQuery(data: ChannelQuery) {
+  override makeQuery(data: ChannelQuery) {
     const { userId, users, usersCount, ...rest } = serialize(data);
     const query = { ...rest };
     const userQuery: any = {};

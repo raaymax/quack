@@ -3,6 +3,7 @@ import type { Config } from "@quack/config";
 import { toNodeStream, toWebStream } from "./streams.ts";
 import type { FileData, FileOpts } from "./types.ts";
 import { files } from "./store/mod.ts";
+import { ApiError } from "@planigale/planigale";
 
 type ScalingOpts = {
   width?: number;
@@ -60,7 +61,7 @@ class Files {
       return this.service.get(targetId);
     }
     if (!await this.service.exists(id)) {
-      throw new Error("FILE_NOT_FOUND");
+      throw new ApiError(404, "FILE_NOT_FOUND", "File not found");
     }
 
     const sharp = await this.getSharp();
