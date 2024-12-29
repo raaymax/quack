@@ -4,6 +4,7 @@ export async function up(db) {
             login: 'system',
             name: 'System',
             avatarUrl: '/icon.png',
+            hidden: true,
         },
     ]);
 }

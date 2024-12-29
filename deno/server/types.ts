@@ -40,29 +40,6 @@ export type EncryptedData = {
   _iv: string;
 };
 
-export type User = {
-  id: EntityId;
-  alias: string | null;
-  email: string;
-  password: string;
-  name: string;
-  avatarFileId: string;
-  mainChannelId: EntityId;
-  status?: "active" | "inactive" | "away";
-  publicKey: JsonWebKey;
-  resetToken?: string;
-
-  secrets: {
-    password: { hash: string; data: EncryptedData; createdAt: Date };
-    backup?: { hash: string; data: EncryptedData; createdAt: Date };
-  };
-
-  channels: {
-    encryptionKey: JsonWebKey;
-    channelId: EntityId;
-  }[];
-};
-
 export enum ChannelType {
   PUBLIC = "PUBLIC",
   PRIVATE = "PRIVATE",

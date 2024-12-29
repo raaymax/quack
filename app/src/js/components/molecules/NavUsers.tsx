@@ -132,7 +132,7 @@ export const NavUsers = () => {
       <div className='header'>
         <span className='title'>users</span>
       </div>
-      { users && users.map((user) => (
+      { users && users.filter(u => !u.hidden).map((user) => (
         <NavUserContainer
           key={user.id}
           user={user}

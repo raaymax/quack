@@ -64,18 +64,6 @@ export type Message = {
 };
 */
 
-export type User = {
-  id: string;
-  name: string;
-  status: 'active' | 'inactive' | 'away';
-  avatar: string;
-  publicKey: JsonWebKey;
-  avatarFileId: string;
-  connected: boolean;
-  lastSeen: string;
-  system: boolean;
-};
-
 export type EmptyEmoji= {
   empty: true,
   shortname: string

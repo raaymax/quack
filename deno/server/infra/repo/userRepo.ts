@@ -3,6 +3,7 @@ import { EncryptedData, EntityId, User } from "../../types.ts";
 import { Repo } from "./repo.ts";
 
 type DbUser = User & {
+  password?: string;
   resetToken?: string;
 
   secrets: {

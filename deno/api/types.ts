@@ -63,31 +63,15 @@ export type UserConfig = {
   };
 };
 
-export type PublicUser = {
-  id: string;
-  alias: string | null;
-  email: string;
-  name: string;
-  avatarFileId: string;
-  status?: "active" | "inactive" | "away";
-  publicKey: JsonWebKey;
-};
-
 export type User = {
   id: string;
   alias: string | null;
   email: string;
-  password: string;
   name: string;
   avatarFileId: string;
-  mainChannelId: string;
   status?: "active" | "inactive" | "away";
   publicKey: JsonWebKey;
-
-  secrets: {
-    password: EncryptedData;
-    backup: EncryptedData;
-  };
+  hidden?: boolean;
 };
 
 export type UserSession = {

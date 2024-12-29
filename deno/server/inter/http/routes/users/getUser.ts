@@ -21,6 +21,7 @@ export default (core: Core) =>
         avatarFileId: user.avatarFileId,
         status: user.status,
         publicKey: user.publicKey,
+        hidden: user.hidden,
       });
     },
   });

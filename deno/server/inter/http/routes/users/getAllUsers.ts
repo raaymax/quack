@@ -1,4 +1,4 @@
-import { Route } from "@planigale/planigale";
+import { Route, Res } from "@planigale/planigale";
 import { Core } from "../../../../core/mod.ts";
 import { User } from "../../../../types.ts";
 
@@ -8,7 +8,7 @@ export default (core: Core) =>
     url: "/",
     handler: async () => {
       const users = await core.user.getAll({});
-      return Response.json(users.map((u: Partial<User>) => ({
+      return Res.json(users.map((u: Partial<User>) => ({
         id: u.id,
         alias: u.alias,
         email: u.email,
@@ -16,6 +16,7 @@ export default (core: Core) =>
         avatarFileId: u.avatarFileId,
         status: u.status,
         publicKey: u.publicKey,
+        hidden: u.hidden,
       })));
     },
   });
