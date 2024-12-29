@@ -148,8 +148,37 @@ export class MessageService{
     return Math.min(...dates);
   }
 
+  async decryptMessages(data: Message[], encryptionKey?: JsonWebKey): Promise<Message[]> {
+    if(!encryptionKey) {
+      console.warn('no encryption key - skipping decryption');
+      return data.map(item => ({...item}));
+    }
+    const enc = encryptor(encryptionKey);
+    return await Promise.all(data.map(async (item) => {
+      if(item.secured) {
+        const {
+          encrypted,
+          _iv,
+          ...rest
+        } = item;
+        try {
+          return {
+            ...rest,
+            ...await enc.decrypt({encrypted, _iv}),
+            secure: false,
+          }
+        } catch(e) {
+          console.error(e);
+          return {...item};
+        }
+      }else{
+        return {...item};
+      }
+    }));
+  }
+
+
   async _fetch(query: {before?: string, after?: string, limit?: number, channelId: string, parentId?: string, encryptionKey?: JsonWebKey}): Promise<Message[]> {
-    console.log('_fetch', query);
       const {channelId, parentId, before, after, limit, encryptionKey} = query
       const to = before ? new Date(before).getTime() : null;
       const from = after ? new Date(after).getTime() : null;
@@ -167,40 +196,18 @@ export class MessageService{
         limit,
       })
 
+      const decrypted = await this.decryptMessages(data, encryptionKey);
+
 
       if (data?.length > 0) {
         this.cache(query).update(new MsgsRes({
           from: after ? from : this.getMinDate(data),
           to: before ? to : this.getMaxDate(data),
-          data: data,
+          data: decrypted,
         }));
       }
 
-      if(!encryptionKey) {
-        return data.map(item => ({...item}));
-      }
-      const enc = encryptor(encryptionKey);
-      return await Promise.all(data.map(async (item) => {
-        if(item.encrypted) {
-          const {
-            encrypted,
-            _iv,
-            ...rest
-          } = item;
-          try {
-            return {
-              ...rest,
-              ...await enc.decrypt({encrypted, _iv}),
-              secure: false,
-            }
-          } catch(e) {
-            console.error(e);
-            return {...item};
-          }
-        }else{
-          return {...item};
-        }
-      }));
+      return decrypted;
   }
 
   async fetch(query: {before?: string, after?: string, limit?: number, channelId: string, parentId?: string, encryptionKey?: JsonWebKey}): Promise<Message[]> {

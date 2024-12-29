@@ -61,12 +61,14 @@ export default createCommand({
     msg.flat = flatten(msg.message);
   }
 
+
   if (!msg.clientId) {
     msg.clientId = crypto.randomUUID();
   }
   const message = filterUndefined({
     encrypted: msg.encrypted,
     _iv: msg._iv,
+    secured: !!msg.encrypted,
     message: msg.message,
     flat: msg.flat,
     pinned: msg.pinned,

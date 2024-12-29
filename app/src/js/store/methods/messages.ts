@@ -54,8 +54,24 @@ export const decryptMessage = async (msg: Messages, channelId: string, state: St
     throw e;
   }
 }
+const encryptMessage = async (msg: OutgoingMessageCreate, sharedKey: JsonWebKey) => {
+  const {clientId, channelId, parentId, ...data} = msg;
+  const base =  {
+    clientId,
+    channelId,
+    parentId: parentId === null ? undefined : parentId,
+  };
 
-export const load = createMethod('messages/load', async (query: Query, { actions, client, dispatch, getState }) => {
+  const e = enc.encryptor(sharedKey);
+  return {
+    ...base,
+    ...await e.encrypt(data)
+  };
+
+}
+
+export const load = createMethod('messages/load', async (query: Query, { actions, client, dispatch, getState, methods }) => {
+  await dispatch(methods.users.init());
   const state = getState();
   try{ 
     const encryptionKey = await getDirectChannelKey(query.channelId, state);
@@ -92,22 +108,6 @@ export const addDecrypted = createMethod('messages/addDecrypted', async (msg: Me
   }
 });
 
-const encryptMessage = async (msg: OutgoingMessageCreate, sharedKey: JsonWebKey) => {
-  const {clientId, channelId, parentId, ...data} = msg;
-  const base =  {
-    clientId,
-    channelId,
-    parentId: parentId === null ? undefined : parentId,
-  };
-
-  const e = enc.encryptor(sharedKey);
-  return {
-    ...base,
-    ...await e.encrypt(data),
-    secured: true,
-  };
-
-}
 
 export const sendMessage = createMethod('messages/sendMessage', async ({ payload: msg}: {payload: OutgoingMessageCreate}, { dispatch, actions, getState }) => {
   dispatch(actions.messages.add({ ...msg, userId: getState().me, pending: true, info: null }));

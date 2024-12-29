@@ -1,7 +1,8 @@
 import { createMethod } from '../store';
 import { getDirectChannelKey, decryptMessage } from './messages';
 
-export const load = createMethod('pins/load', async (channelId: string, { actions, client, dispatch, getState }) => {
+export const load = createMethod('pins/load', async (channelId: string, { actions, client, dispatch, getState, methods }) => {
+  await dispatch(methods.users.init());
   dispatch(actions.pins.clear(channelId));
   const req = await client.req({
     type: 'message:pins',
