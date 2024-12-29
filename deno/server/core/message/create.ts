@@ -61,7 +61,6 @@ export default createCommand({
     msg.flat = flatten(msg.message);
   }
 
-
   if (!msg.clientId) {
     msg.clientId = crypto.randomUUID();
   }

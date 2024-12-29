@@ -117,7 +117,7 @@ export const loadMessagesArchive = createMethod('messages/loadMessagesArchive', 
     ...stream,
     after: date,
   })).unwrap();
-  if (messages?.length > 0) dispatch(methods.progress.update(messages[0].id));
+  if (messages && messages?.length > 0) dispatch(methods.progress.update(messages[0].id));
   loadingDone();
 });
 
@@ -125,8 +125,7 @@ export const loadMessagesLive = createMethod('messages/loadMessagesLive', async 
   if (!stream.channelId) return;
   const loadingDone = loading(dispatch, actions);
   const messages = await dispatch(methods.messages.load(stream)).unwrap();
-  console.log('messages', messages);
-  if (messages?.length > 0) dispatch(methods.progress.update(messages[0].id));
+  if (messages && messages?.length > 0) dispatch(methods.progress.update(messages[0].id));
   loadingDone();
 });
 

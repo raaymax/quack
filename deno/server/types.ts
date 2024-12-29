@@ -1,6 +1,31 @@
 import * as v from "valibot";
-import { EntityId, MessageBody, MessageBodyPart } from "@quack/api";
+import { EntityId, MessageBody, MessageBodyPart, User } from "@quack/api";
 export * from "@quack/api";
+
+export type DbUser = User & {
+  password?: string;
+  resetToken?: string;
+
+  secrets: {
+    password: { hash: string; data: EncryptedData; createdAt: Date };
+    backup?: { hash: string; data: EncryptedData; createdAt: Date };
+  };
+
+  channels: {
+    encryptionKey: JsonWebKey;
+    channelId: EntityId;
+  }[];
+  mainChannelId: EntityId;
+};
+
+export type Secret = {
+  hash: string;
+  data: {
+    encrypted: string;
+    _iv: string;
+  };
+  createdAt: Date;
+};
 
 export type Interaction = {
   userId: EntityId;

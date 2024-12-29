@@ -29,7 +29,7 @@ Deno.test("GET /api/users/:userId - getUser with an id and alias", async () => {
       })
       .getUser(({ state }) => state.member.id, async (user: User) => {
         assert(user.name === "Member");
-        assert(user.secrets === undefined);
+        assert((user as any).secrets === undefined);
         assert(user.publicKey);
       })
       .end();
@@ -46,8 +46,8 @@ Deno.test("GET /api/users - getAllUsers", async () => {
         const userNames = users.map((u: User) => u.name);
         assert(userNames.includes("Admin"));
         assert(userNames.includes("Member"));
-        assert(users[0].password === undefined);
-        assert(users[1].password === undefined);
+        assert((users[0] as any).password === undefined);
+        assert((users[1] as any).password === undefined);
       })
       .end();
   });

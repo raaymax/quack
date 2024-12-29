@@ -101,11 +101,11 @@ class API extends EventTarget {
   init = () => {
     if (typeof document !== "undefined") {
       document.addEventListener("freeze", () => {
-        console.log("[SSE] App is frozen");
+        console.debug("[SSE] App is frozen");
         this.abortController.abort("App is frozen");
       });
       document.addEventListener("resume", () => {
-        console.log("[SSE] App is resumed");
+        console.debug("[SSE] App is resumed");
         this.abortController = new AbortController();
         this.reconnect(this.abortController.signal);
       });
@@ -115,7 +115,7 @@ class API extends EventTarget {
 
   async reconnect(signal?: AbortSignal) {
     try {
-      console.log("events reconnecting SSE");
+      console.debug("events reconnecting SSE");
       await this.listen();
     } catch (e) {
       console.error("[API_SSE]", e);
@@ -129,7 +129,7 @@ class API extends EventTarget {
   async listen(signal?: AbortSignal) {
     if (signal && signal.aborted) return;
     try {
-      console.log(`events listening ${this.baseUrl}/api/sse`);
+      console.debug(`events listening ${this.baseUrl}/api/sse`);
       this.source = new SSESource(`${this.baseUrl}/api/sse`, {
         signal,
         fetch: this.fetch,
@@ -146,7 +146,7 @@ class API extends EventTarget {
         console.debug("[SSE]", data);
         this.dispatchEvent(new CustomEvent(data.type, { detail: data }));
       }
-      console.log("event disconnected");
+      console.debug("event disconnected");
     } finally {
       this.emit(new CustomEvent("con:close", { detail: {} }));
       if (this.source) {
@@ -208,7 +208,7 @@ class API extends EventTarget {
     if (res.status >= 500) {
       if (retries > 0) {
         try {
-          console.log(await res.json());
+          console.error(await res.json());
         } catch { /*ignore*/ }
         await waitBeforeRetry(retry);
         return this.callApi(url, {
@@ -247,7 +247,7 @@ class API extends EventTarget {
     if (res.status >= 500) {
       if (retries > 0) {
         try {
-          console.log(await res.json());
+          console.error(await res.json());
         } catch { /*ignore*/ }
         await waitBeforeRetry(retry);
         return this.getResource(url, retries - 1, retry + 1);
@@ -436,7 +436,6 @@ class API extends EventTarget {
           query.search = msg.search;
         }
         query.parentId = msg.parentId || null;
-        console.log("query", query);
         const params = new URLSearchParams(query);
         return this.callApi(
           `/api/channels/${msg.channelId}/messages?${params.toString()}`,

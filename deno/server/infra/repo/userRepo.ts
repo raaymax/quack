@@ -1,31 +1,6 @@
 import { serialize } from "./serializer.ts";
-import { EncryptedData, EntityId, User } from "../../types.ts";
+import { DbUser, EntityId, Secret } from "../../types.ts";
 import { Repo } from "./repo.ts";
-
-type DbUser = User & {
-  password?: string;
-  resetToken?: string;
-
-  secrets: {
-    password: { hash: string; data: EncryptedData; createdAt: Date };
-    backup?: { hash: string; data: EncryptedData; createdAt: Date };
-  };
-
-  channels: {
-    encryptionKey: JsonWebKey;
-    channelId: EntityId;
-  }[];
-  mainChannelId: EntityId;
-};
-
-type Secret = {
-  hash: string;
-  data: {
-    encrypted: string;
-    _iv: string;
-  };
-  createdAt: Date;
-};
 
 type UserQuery = Partial<DbUser & { userId: EntityId }>;
 export class UserRepo extends Repo<UserQuery, DbUser> {

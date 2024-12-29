@@ -14,7 +14,7 @@ export class EntityId {
     if (typeof id === "string") {
       return new EntityId(id);
     }
-    console.log(id);
+    console.error(id);
     throw new Error("Invalid id type");
   }
 
@@ -64,7 +64,7 @@ export type UserConfig = {
 };
 
 export type User = {
-  id: string;
+  id: EntityId;
   alias: string | null;
   email: string;
   name: string;

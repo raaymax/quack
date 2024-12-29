@@ -32,6 +32,9 @@ export default createCommand({
 }, { repo }) => {
   const existing = await repo.user.get({ email });
   if (!existing) throw new ResourceNotFound("User not found");
+  if (!existing.password) {
+    throw new ResourceNotFound("No old credentials to reset");
+  }
 
   if (!bcrypt.verify(oldPassword, existing.password)) {
     throw new AccessDenied();

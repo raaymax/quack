@@ -1,6 +1,7 @@
 import { InternalServerError, Res, Route } from "@planigale/planigale";
 import { Core } from "../../../../core/mod.ts";
-import { User } from "../../../../types.ts";
+import { serializeUser } from "./_serializeUser.ts";
+import { DbUser } from "../../../../types.ts";
 
 export default (core: Core) =>
   new Route({
@@ -55,13 +56,12 @@ export default (core: Core) =>
           secrets: req.body.secrets,
         },
       });
-      const user: Partial<User> | null = await core.user.get({ id: createdId });
+      const user: DbUser | null = await core.user.get({ id: createdId });
       if (!user) {
         throw new InternalServerError(
           new Error("User not created, but no error thrown"),
         );
       }
-      delete user.password;
-      return Res.json(user);
+      return Res.json(serializeUser(user));
     },
   });

@@ -36,7 +36,7 @@ const register = async (config: UserConfig, retry = false) => navigator.serviceW
   } as OutgoingUserPushSubscribe))
   .then(() => console.log('Notifications service worker registered successfully'))
   .catch((err) => {
-    console.log('Service Worker registration failed: ', err);
+    //console.error('Service Worker registration failed: ', err);
     if (retry) return;
     navigator.serviceWorker.getRegistration('/')
       .then((registration) => registration?.pushManager?.getSubscription())

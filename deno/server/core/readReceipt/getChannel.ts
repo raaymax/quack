@@ -14,6 +14,5 @@ export default createQuery({
   const channel = await core.channel.access({ id: channelId, userId: _userId })
     .internal();
   const all = await core.repo.badge.getAll({ channelId: channel.id, parentId });
-  console.log({all})
   return all;
 });

@@ -1,3 +1,4 @@
+/* global JsonWebKey */
 import { client } from '../../core';
 import { StateType, createMethod } from '../store';
 import { Message } from '../../types';
@@ -26,8 +27,8 @@ export const getDirectChannelKey = async (channelId: string, state: StateType): 
       const userPublicKey = state.users[state.me]?.publicKey;
       return await enc.deriveSharedKey(client.api.privateKey, userPublicKey);
     }
+    console.warn('direct channel - no encryption key');
   }
-  console.log('not direct channel - no key');
   return null;
 }
 
@@ -42,7 +43,6 @@ export const decryptMessage = async (msg: Messages, channelId: string, state: St
     const e = enc.encryptor(encryptionKey);
 
     return Promise.all([msg].flat().map(async (msg) => {
-      console.log('msg', msg);
       if (!msg.secured) return msg;
 
       const {encrypted, _iv, ...rest} = msg;
@@ -83,10 +83,8 @@ export const load = createMethod('messages/load', async (query: Query, { actions
     if(encryptionKey){
       req.encryptionKey = encryptionKey;
     }
-    console.log('req test', req);
 
     const data = await client.messages.fetch(req);
-    console.log('data', data);
     dispatch(actions.messages.add(data));
     return data;
   }catch(e){
@@ -119,7 +117,7 @@ export const sendMessage = createMethod('messages/sendMessage', async ({ payload
     }
     return await client.api.sendMessage(msg);
   } catch (err) {
-    console.log(err);
+    console.error(err);
     dispatch(actions.messages.add({
       clientId: msg.clientId,
       channelId: msg.channelId,

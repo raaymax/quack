@@ -17,7 +17,7 @@ const TagContainer = styled.div`
   margin-left: 12px;
 `;
 
-const Tag = ({ children, tooltip }: { children: React.ReactNode, tooltip: string }) => (
+const Tag = ({ children, tooltip }: { children: React.ReactNode, tooltip: string | string[] }) => (
   <TagContainer><Tooltip text={tooltip}>{children}</Tooltip></TagContainer>
 );
 
@@ -71,7 +71,7 @@ export const InlineChannel = ({
   <Container className={cn('channel', 'inline-channel', className)} data-id={id} onClick={onClick}>
     <TextWithIcon icon={icon}>{children}</TextWithIcon>
     {(badge && badge > 0) ? <Badge>{badge}</Badge> : null}
-    {secured ? <Tag tooltip="This channel is fully encrypted">E2EE</Tag> : null}
+    {secured ? <Tag tooltip={["Messages in this channel are encrypted", "using your password", "Files encription not yet implemented"]}>E2EE</Tag> : null}
   </Container>
 );
 

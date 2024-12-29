@@ -13,14 +13,12 @@ declare global {
 const initApp = createMethod('initApp', async (_arg, {
   dispatch, getState, methods, actions,
 }) => {
-  console.log('app init');
   if (isMobile()) {
     document.body.setAttribute('class', 'mobile');
   }
   dispatch(actions.connection.connected());
   dispatch(actions.info.reset());
   const config = await dispatch(methods.config.load({})).unwrap();
-  console.log('config', config);
   dispatch(actions.stream.setMain(config.mainChannelId));
   await initNotifications(config);
   await dispatch(methods.users.load({}));
@@ -36,7 +34,7 @@ export const init = createMethod('init', async (_arg, { dispatch, actions }) => 
     tryCount = 1;
   } catch (err) {
      
-    console.log(err);
+    console.error(err);
     if (tryCount < 4) {
       setTimeout(() => {
         dispatch(actions.system.initFailed(false));

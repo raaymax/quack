@@ -32,13 +32,11 @@ export default createCommand({
       parentId,
     }),
   };
-  console.log({data});
 
   const lastRead = message.createdAt;
   const progress = await repo.badge.get({ channelId, parentId, userId });
   if (progress && progress.lastRead > lastRead) return;
 
-  console.log({progress})
   if (!progress) {
     await repo.badge.create({
       channelId,
