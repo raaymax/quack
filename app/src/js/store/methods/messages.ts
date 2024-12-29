@@ -1,5 +1,5 @@
 import { client } from '../../core';
-import { createMethod } from '../store';
+import { StateType, createMethod } from '../store';
 import { Message } from '../../types';
 import { OutgoingMessageCreate } from '../../core/types';
 import * as enc from '@quack/encryption';
@@ -12,24 +12,53 @@ type Query = {
   limit?: number,
 }
 
+type Messages = Message | Message[];
+
+export const getDirectChannelKey = async (channelId: string, state: StateType): Promise<JsonWebKey | null> => {
+  const channel = state.channels[channelId];
+  if(channel.channelType === 'DIRECT', client.api.privateKey) {
+    const otherId = channel.users.find(u => u !== state.me);
+    if(otherId){
+      const userPublicKey = state.users[otherId]?.publicKey;
+      return await enc.deriveSharedKey(client.api.privateKey, userPublicKey);
+    }
+    if(channel.users.length === 1 && channel.users[0] === state.me) {
+      const userPublicKey = state.users[state.me]?.publicKey;
+      return await enc.deriveSharedKey(client.api.privateKey, userPublicKey);
+    }
+  }
+  console.log('not direct channel - no key');
+  return null;
+}
+
+export const decryptMessage = async (msg: Messages, channelId: string, state: StateType): Promise<Message[]> => {
+  try{ 
+    const encryptionKey = await getDirectChannelKey(channelId, state);
+
+    if(!encryptionKey){
+      console.warn('no encryption key - skipping decryption');
+      return [msg].flat();
+    }
+    const e = enc.encryptor(encryptionKey);
+
+    return Promise.all([msg].flat().map(async (msg) => {
+      console.log('msg', msg);
+      if (!msg.secured) return msg;
+
+      const {encrypted, _iv, ...rest} = msg;
+      const decrypted = await e.decrypt({encrypted, _iv});
+      return {...rest, ...decrypted, secure: false};
+    }));
+  }catch(e){
+    console.error(e);
+    throw e;
+  }
+}
+
 export const load = createMethod('messages/load', async (query: Query, { actions, client, dispatch, getState }) => {
   const state = getState();
-  let encryptionKey = null;
-
-
   try{ 
-    const channel = state.channels[query.channelId];
-    if(channel.channelType === 'DIRECT', client.api.privateKey) {
-      const otherId = channel.users.find(u => u !== state.me);
-      if(otherId){
-        const userPublicKey = state.users[otherId]?.publicKey;
-        encryptionKey = await enc.deriveSharedKey(client.api.privateKey, userPublicKey);
-      }
-      if(channel.users.length === 1 && channel.users[0] === state.me) {
-        const userPublicKey = state.users[state.me]?.publicKey;
-        encryptionKey = await enc.deriveSharedKey(client.api.privateKey, userPublicKey);
-      }
-    }
+    const encryptionKey = await getDirectChannelKey(query.channelId, state);
 
     const req: Parameters<typeof client.messages.fetch>[0] = {
       limit: 50,
@@ -55,37 +84,15 @@ export const addDecrypted = createMethod('messages/addDecrypted', async (msg: Me
   }
 
   const state = getState();
-  let encryptionKey = null;
-
-
   try{ 
-    const channel = state.channels[msg.channelId];
-    if(channel.channelType === 'DIRECT', client.api.privateKey) {
-      const otherId = channel.users.find(u => u !== state.me);
-      if(otherId){
-        const userPublicKey = state.users[otherId]?.publicKey;
-        encryptionKey = await enc.deriveSharedKey(client.api.privateKey, userPublicKey);
-      }
-      if(channel.users.length === 1 && channel.users[0] === state.me) {
-        const userPublicKey = state.users[state.me]?.publicKey;
-        encryptionKey = await enc.deriveSharedKey(client.api.privateKey, userPublicKey);
-      }
-    }
-
-    if(!encryptionKey){
-      return dispatch(actions.messages.add(msg));
-    }
-    const {encrypted, _iv, ...rest} = msg;
-    const e = enc.encryptor(encryptionKey);
-    const decrypted = await e.decrypt({encrypted, _iv});
-    dispatch(actions.messages.add({...rest, ...decrypted, secure: false}));
+    const decrypted = await decryptMessage(msg, msg.channelId, state);
+    dispatch(actions.messages.add(decrypted));
   }catch(e){
     console.error(e);
   }
 });
 
-const encryptMessage = async (msg: OutgoingMessageCreate, privateKey: JsonWebKey, publicKey: JsonWebKey) => {
-  const sharedKey = await enc.deriveSharedKey(privateKey, publicKey);
+const encryptMessage = async (msg: OutgoingMessageCreate, sharedKey: JsonWebKey) => {
   const {clientId, channelId, parentId, ...data} = msg;
   const base =  {
     clientId,
@@ -106,19 +113,11 @@ export const sendMessage = createMethod('messages/sendMessage', async ({ payload
   dispatch(actions.messages.add({ ...msg, userId: getState().me, pending: true, info: null }));
   try {
     const state = getState();
-    const channel = state.channels[msg.channelId];
-    if(channel.channelType === 'DIRECT', client.api.privateKey) {
-      const otherId = channel.users.find(u => u !== state.me);
-      if(otherId){
-        const userPublicKey = state.users[otherId]?.publicKey;
-        return await client.api.sendMessage(await encryptMessage(msg, client.api.privateKey, userPublicKey));
-      }
-      if(channel.users.length === 1 && channel.users[0] === state.me) {
-        const userPublicKey = state.users[state.me]?.publicKey;
-        return await client.api.sendMessage(await encryptMessage(msg, client.api.privateKey, userPublicKey));
-      }
+    const encryptionKey = await getDirectChannelKey(msg.channelId, state);
+    if( encryptionKey ) {
+      return await client.api.sendMessage(await encryptMessage(msg, encryptionKey));
     }
-    await client.api.sendMessage({...msg, secured: false});
+    return await client.api.sendMessage(msg);
   } catch (err) {
     console.log(err);
     dispatch(actions.messages.add({

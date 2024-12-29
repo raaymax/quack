@@ -1,13 +1,16 @@
 import { createMethod } from '../store';
+import { getDirectChannelKey, decryptMessage } from './messages';
 
-export const load = createMethod('pins/load', async (channelId: string, { actions, client, dispatch }) => {
+export const load = createMethod('pins/load', async (channelId: string, { actions, client, dispatch, getState }) => {
   dispatch(actions.pins.clear(channelId));
   const req = await client.req({
     type: 'message:pins',
     channelId,
     limit: 50,
   });
-  dispatch(actions.pins.add(req.data));
+  const decrypted = await decryptMessage(req.data, channelId, getState());
+  console.log('decrypted', decrypted);
+  dispatch(actions.pins.add(decrypted));
 });
 
 type Pin = {
@@ -23,7 +26,7 @@ export const pin = createMethod('pins/pin', async ({ id, channelId }: Pin, {
     id,
     pinned: true,
   });
-  dispatch(actions.messages.add(req.data));
+  dispatch(methods.messages.addDecrypted(req.data));
   await dispatch(methods.pins.load(channelId));
 });
 
@@ -35,6 +38,6 @@ export const unpin = createMethod('pins/unpin', async ({ id, channelId }: Pin, {
     id,
     pinned: false,
   });
-  dispatch(actions.messages.add(req.data));
+  dispatch(methods.messages.addDecrypted(req.data));
   await dispatch(methods.pins.load(channelId));
 });

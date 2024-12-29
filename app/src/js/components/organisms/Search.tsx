@@ -3,55 +3,21 @@ import { useCallback, useEffect, useState } from 'react';
 import { HoverProvider } from '../contexts/hover';
 import {
   useSelector, useMethods, useDispatch,
+  methods,
 } from '../../store';
 import { formatTime, formatDate } from '../../utils';
 
-import { SearchBox } from '../atoms/SearchBox';
 import { Message } from '../organisms/Message';
 import { Toolbar } from '../atoms/Toolbar';
 import { ButtonWithIcon } from '../molecules/ButtonWithIcon';
 import { Message as MessageType } from '../../types';
-import { useNavigate, useParams } from 'react-router-dom';
-import { useSidebar } from '../contexts/useSidebar';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { MessageListArgsProvider } from '../contexts/messageListArgs';
 
 const StyledHeader = styled.div`
   display: flex;
   flex-direction: row;
-  border-bottom: 1px solid #565856;
-  height: 51px;
-
-
-  & .channel{
-    padding-left: 30px;
-    vertical-align: middle;
-    font-size: 20px;
-    font-weight: bold;
-  }
-  & .channel i{
-    font-size: 1.3em;
-  }
-  & .channel .name{
-    padding-left: 10px;
-  }
-
-  & .toolbar {
-    flex: 0 100px;
-    display:flex;
-    flex-direction: row;
-  }
-  i {
-    flex: 0 50px;
-    line-height: 50px;
-    text-align: center;
-    vertical-align: middle;
-  }
-
-  input{ 
-    flex:1;
-    margin: 3px;
-    height: auto;
-  }
+  padding: 16px 16px 16px 16px;
 `;
 
 const SearchSeparator = styled.div`
@@ -76,59 +42,33 @@ const StyledList = styled.div`
 `;
 
 const StyledSearch = styled.div`
-  height: 100vh;
-  flex: 0 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  border-left: 1px solid #565856;
-  border-right: 1px solid #565856;
-  &.hidden {
-    flex: 0 0px;
-    width: 0px;
+
+  .message-list-scroll {
+    padding: 0px 16px 16px 16px;
+    padding-bottom: 50px;
   }
-  & .form {
-    background-color: #1a1d21;
-    border-bottom: 1px solid #565856;
-    & input {
-      height: 70px;
-    }
+  .message {
+    background-color: ${(props) => props.theme.Chatbox.Background};
+    border-radius: 8px;
+    margin: 8px 0px;
+  }
+  & .message:hover {
+      background-color: var(--primary_active_mask);
   }
 `;
 
 export const Header = () => {
-  const { channelId } = useParams()!;
-  const dispatch = useDispatch();
-  const methods = useMethods();
-  const { toggleSidebar } = useSidebar();
   const navigate = useNavigate();
-  const [value, setValue] = useState('');
-
-  useEffect(() => {
-    if(!channelId) {
-      return navigate('/');
-    }
-  }, [channelId, navigate]);
-
-  const submit = useCallback(async () => {
-    if (!channelId) return;
-    dispatch(methods.search.find({ channelId, text: value }));
-  }, [methods, channelId, value, dispatch]);
-
-  const onKeyDown = useCallback(async (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && e.shiftKey === false) {
-      await submit();
-      e.preventDefault();
-    }
-  }, [submit]);
 
   return (
     <StyledHeader>
-      <ButtonWithIcon size={50} icon="bars" onClick={toggleSidebar} />
-      <i className='fa-solid fa-magnifying-glass' />
-      <SearchBox className='search-input' placeholder='search...' onKeyDown={onKeyDown} value={value} onChange={(e) => setValue(e.target.value)}/>
-
-      <Toolbar className="toolbar" size={50}>
-        <ButtonWithIcon icon="send" onClick={() => submit()} />
+      <Toolbar className="toolbar" size={28}>
+        <h2>
+        Search results
+        </h2>
         <ButtonWithIcon icon="xmark" onClick={() => navigate('..', {relative: 'path'})} />
       </Toolbar>
     </StyledHeader>
@@ -136,7 +76,10 @@ export const Header = () => {
 };
 
 export function SearchResults() {
+  const location = useLocation();
+  const { channelId } = useParams()!;
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const results = useSelector((state) => state.search.results);
   const gotoMessage = useCallback((msg: MessageType) => {
     navigate(`/${msg.channelId}`, {
@@ -149,11 +92,18 @@ export function SearchResults() {
       }
     });
   }, [navigate]);
+  useEffect(() => {
+    if (!channelId || !location.state?.search) return;
+    const value = location.state?.search;
+    dispatch(methods.search.find({ channelId, text: value }));
+  }, [channelId, location.state?.search, dispatch]);
+
+
   return (
     <StyledList>
       <div key='bottom' id='scroll-stop' />
       {results.map((result) => (
-        <div key={`search:${result.text}`}>
+        <div key={`search:${result.searchedAt}`}>
           <SearchSeparator >
             <div>{formatTime(result.searchedAt)} - {formatDate(result.searchedAt)}</div>
             <div>Search results for keyword &quot;{result.text}&quot;:</div>
@@ -176,6 +126,10 @@ export function SearchResults() {
 }
 
 export const Search = () => {
+  const location = useLocation();
+  console.log('state', location.state);
+  if(location.state?.search === undefined) return null;
+
   return (
     <MessageListArgsProvider streamId="search">
       <StyledSearch>
