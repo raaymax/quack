@@ -23,25 +23,25 @@ function importKey(key: JsonWebKey | CryptoKey): Promise<CryptoKey> {
   if (key instanceof CryptoKey) {
     return Promise.resolve(key);
   }
-  return crypto.subtle.importKey("jwk", key, { name: "AES-CBC" }, false, [
+  return crypto.subtle.importKey("jwk", key, { name: "AES-GCM" }, false, [
     "encrypt",
     "decrypt",
   ]);
 }
 
 export function encryptor(jwk: JsonWebKey) {
-  const key = crypto.subtle.importKey("jwk", jwk, { name: "AES-CBC" }, false, [
+  const key = crypto.subtle.importKey("jwk", jwk, { name: "AES-GCM" }, false, [
     "encrypt",
     "decrypt",
   ]);
 
   return {
     encrypt: async (message: any) => {
-      const iv = crypto.getRandomValues(new Uint8Array(16));
+      const iv = crypto.getRandomValues(new Uint8Array(12)); // GCM uses 12 bytes IV
       const encoded = new TextEncoder().encode(JSON.stringify(message));
       const keyy = await key;
       const encrypted = await crypto.subtle.encrypt(
-        { name: "AES-CBC", iv },
+        { name: "AES-GCM", iv },
         keyy,
         encoded,
       );
@@ -55,7 +55,7 @@ export function encryptor(jwk: JsonWebKey) {
       const ciphertext = fromBase64(data.encrypted);
       const iv = fromBase64(data._iv);
       const plaintext = await crypto.subtle.decrypt(
-        { name: "AES-CBC", iv },
+        { name: "AES-GCM", iv },
         await key,
         ciphertext,
       );
@@ -74,11 +74,11 @@ export async function encrypt(
   encryptionKey: JsonWebKey | CryptoKey,
 ) {
   const key = importKey(encryptionKey);
-  const iv = crypto.getRandomValues(new Uint8Array(16));
+  const iv = crypto.getRandomValues(new Uint8Array(12)); // GCM uses 12 bytes IV
   const encoded = new TextEncoder().encode(JSON.stringify(message));
   const keyy = await key;
   const encrypted = await crypto.subtle.encrypt(
-    { name: "AES-CBC", iv },
+    { name: "AES-GCM", iv },
     keyy,
     encoded,
   );
@@ -99,7 +99,7 @@ export async function decrypt<T = any>(
   const ciphertext = fromBase64(data.encrypted);
   const iv = fromBase64(data._iv);
   const plaintext = await crypto.subtle.decrypt(
-    { name: "AES-CBC", iv },
+    { name: "AES-GCM", iv },
     await key,
     ciphertext,
   );
@@ -132,7 +132,7 @@ export async function deriveEncryptionKeyFromPassword(
     },
     passwordKey,
     {
-      name: "AES-CBC",
+      name: "AES-GCM",
       length: keyLength,
     },
     true,
@@ -207,7 +207,7 @@ export async function prepareCredentials(email: string, password: string) {
 export async function generateKey() {
   const key = await crypto.subtle.generateKey(
     {
-      name: "AES-CBC", // Algorithm
+      name: "AES-GCM", // Algorithm
       length: 256, // Key length (256 bits)
     },
     true, // Extractable (true if you need to export it later)
@@ -299,4 +299,40 @@ export async function decryptSessionSecrets<T = any>(
   const salt = await deriveSaltFromEmail(email);
   const encryptionKey = await deriveEncryptionKeyFromPassword(password, salt);
   return decrypt<T>(secrets, encryptionKey);
+}
+
+export async function deriveSharedKey(
+  privateKey: JsonWebKey,
+  otherPublicKey: JsonWebKey,
+): Promise<JsonWebKey> {
+  const privKey = await crypto.subtle.importKey(
+    "jwk",
+    privateKey,
+    { name: "ECDH", namedCurve: "P-256" },
+    true,
+    ["deriveKey"],
+  );
+  const pubKey = await crypto.subtle.importKey(
+    "jwk",
+    otherPublicKey,
+    { name: "ECDH", namedCurve: "P-256" },
+    true,
+    [],
+  );
+
+  const sharedKey = await crypto.subtle.deriveKey(
+    {
+      name: "ECDH",
+      public: pubKey,
+    },
+    privKey,
+    {
+      name: "AES-GCM",
+      length: 256,
+    },
+    true,
+    ["encrypt", "decrypt"],
+  );
+
+  return await crypto.subtle.exportKey("jwk", sharedKey);
 }

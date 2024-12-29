@@ -59,7 +59,12 @@ Deno.test("POST /api/users - user creation flow", async (t) => {
             email: "jack",
             password: "test123",
           })
-          .login("jack", "test123")
+          .login("jack", "test123", (session) => {
+            assert(session.status == "ok");
+            assert(session.publicKey?.kty == "EC");
+            assert(session.secrets.encrypted);
+            assert(session.secrets._iv);
+          })
           .openChannel("user-invite-test")
           .getMessages({}, (msgs: any[]) => {
             assertEquals(msgs[0].flat, "secret");

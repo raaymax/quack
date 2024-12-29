@@ -13,7 +13,7 @@ export const Register = () => {
   useEffect(() => {
     console.log(token);
     if (!token) return setError("Invalid invitation link");
-    client.api
+    client.api.auth
       .checkRegistrationToken({ token })
       .then(({ valid }: { valid: boolean }) => {
         if (!valid) {
@@ -39,7 +39,7 @@ export const Register = () => {
 
       if (!token) return;
       try {
-        await client.api.register({
+        await client.api.auth.register({
           name: name.value,
           email: email.value,
           password: password.value,

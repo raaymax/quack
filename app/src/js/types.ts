@@ -1,4 +1,4 @@
-import { MessageBody } from '@quack/api';
+import { EncryptedData, MessageBody } from '@quack/api';
 export * from '@quack/api';
 
 /* global JsonWebKey */
@@ -69,6 +69,7 @@ export type User = {
   name: string;
   status: 'active' | 'inactive' | 'away';
   avatar: string;
+  publicKey: JsonWebKey;
   avatarFileId: string;
   connected: boolean;
   lastSeen: string;
@@ -147,6 +148,6 @@ export type UserConfig = {
   encryptionKey: JsonWebKey,
   channels: {
     channelId: string,
-    encryptionKey: JsonWebKey,
-  }
+    encryptionKey: EncryptedData,
+  }[]
 }

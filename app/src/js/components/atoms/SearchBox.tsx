@@ -13,6 +13,7 @@ const Container = styled.div`
   }
 `;
 const SearchBoxInput = styled.input`
+  display: block;
   flex: 0 0 30px;
   height: 32px;
   border-radius: 8px;

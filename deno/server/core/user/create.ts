@@ -10,7 +10,14 @@ export default createCommand({
     name: v.string(),
     email: v.string(),
     password: v.string(),
-    publicKey: v.object({}),
+    publicKey: v.object({
+      crv: v.string(),
+      ext: v.boolean(),
+      key_ops: v.array(v.string()),
+      kty: v.string(),
+      x: v.string(),
+      y: v.string(),
+    }),
     secrets: v.object({
       encrypted: v.string(),
       _iv: v.string(),

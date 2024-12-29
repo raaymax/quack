@@ -33,7 +33,7 @@ client
     if (sound) {
       play();
     }
-    store.dispatch(actions.messages.add({ ...msg, pending: false }));
+    store.dispatch(methods.messages.addDecrypted({ ...msg, pending: false }));
   })
   .on('message:remove', (msg) => store.dispatch(actions.messages.rm(msg)))
   .on('notification', () => { try { play(); } catch (err) { /* ignore */ } })

@@ -122,7 +122,6 @@ export function flatten(tree: MessageBody): string {
 }
 
 const mapNodes = (dom: HTMLElement, info: SerializeInfo): MessageBody => (
-  console.log('mapNodes', dom),
   !dom.childNodes ? [] : ([...dom.childNodes] as HTMLElement[]).map((n): MessageBody => {
     if (n.nodeName === '#text') return processUrls(n.nodeValue ?? '', info);
     if (n.nodeName === 'U') return { underline: mapNodes(n, info) };

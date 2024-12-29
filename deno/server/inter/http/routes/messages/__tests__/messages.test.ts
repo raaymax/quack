@@ -134,6 +134,7 @@ Deno.test("/api/channels/:channelId/messages - Auth successful", async (t) => {
           .expect(204);
         const body = await repo.message.get({ id: EntityId.from(messageId) });
         assert(body);
+        assert(!body.secured);
         assert(body.message);
         assert(!Array.isArray(body.message));
         assert("text" in body.message);
@@ -525,16 +526,19 @@ Deno.test("auto generate message or flat fields if missing", async (t) => {
       .login("admin")
       .createChannel({ name: "test-messages-partials" })
       .sendMessage({ flat: "Hello", clientId: "hello0" }, (msg) => {
+        assert(!msg.secured);
         assert("text" in msg.message);
         assertEquals(msg.message?.text, "Hello");
       })
       .sendMessage(
         { message: { text: "Hello" }, clientId: "hello1" },
         (msg) => {
+          assert(!msg.secured);
           assertEquals(msg.flat, "Hello");
         },
       )
       .sendMessage({ flat: "test" }, (msg) => {
+        assert(!msg.secured);
         assertEquals(msg.flat, "test");
         assert(msg.clientId);
       })

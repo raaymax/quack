@@ -149,6 +149,7 @@ export class MessageService{
   }
 
   async _fetch(query: {before?: string, after?: string, limit?: number, channelId: string, parentId?: string, encryptionKey?: JsonWebKey}): Promise<Message[]> {
+    console.log('_fetch', query);
       const {channelId, parentId, before, after, limit, encryptionKey} = query
       const to = before ? new Date(before).getTime() : null;
       const from = after ? new Date(after).getTime() : null;
@@ -181,11 +182,16 @@ export class MessageService{
       const enc = encryptor(encryptionKey);
       return await Promise.all(data.map(async (item) => {
         if(item.encrypted) {
+          const {
+            encrypted,
+            _iv,
+            ...rest
+          } = item;
           try {
             return {
-              ...item,
-              message: await enc.decrypt(item.message),
-              flat: await enc.decrypt(item.flat),
+              ...rest,
+              ...await enc.decrypt({encrypted, _iv}),
+              secure: false,
             }
           } catch(e) {
             console.error(e);

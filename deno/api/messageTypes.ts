@@ -68,6 +68,10 @@ export type BaseMessage = {
   pinned: boolean;
   clientId: string;
   appId?: string;
+  reactions: Array<{
+    userId: Eid;
+    reaction: string;
+  }>;
 
   updatedAt: DateTime;
   createdAt: DateTime;
@@ -81,10 +85,6 @@ export type MessageData = {
   thread: Array<{
     userId: Eid;
     childId: Eid;
-  }>;
-  reactions: Array<{
-    userId: Eid;
-    reaction: string;
   }>;
   links: string[];
   mentions: string[];
@@ -108,5 +108,6 @@ export type MessageData = {
   }>;
 };
 
-export type Message = BaseMessage & MessageData;
-export type EncryptedMessage = BaseMessage & EncryptedData;
+export type EncryptedMessage = BaseMessage & EncryptedData & { secured: true };
+export type FullMessage = BaseMessage & MessageData & { secured: false };
+export type Message = FullMessage | EncryptedMessage;

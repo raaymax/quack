@@ -1,6 +1,6 @@
 import { ObjectId } from "./db.ts";
 import { deserialize, serialize } from "./serializer.ts";
-import { EntityId, Message } from "../../types.ts";
+import { EncryptedMessage, EntityId, Message } from "../../types.ts";
 import { Repo } from "./repo.ts";
 
 export type Pagination = {

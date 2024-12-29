@@ -22,7 +22,17 @@ export default (core: Core) =>
           email: { type: "string", minLength: 3 },
           password: { type: "string", minLength: 3 },
           sanityCheck: { type: "string" },
-          publicKey: { type: "object" },
+          publicKey: {
+            type: "object",
+            properties: {
+              crv: { type: "string" },
+              ext: { type: "boolean" },
+              key_ops: { type: "array", items: { type: "string" } },
+              kty: { type: "string" },
+              x: { type: "string" },
+              y: { type: "string" },
+            },
+          },
           secrets: {
             type: "object",
             properties: {
