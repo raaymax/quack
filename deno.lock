@@ -71,6 +71,7 @@
     "npm:@babel/plugin-syntax-decorators@7.23.3": "7.23.3_@babel+core@7.26.0",
     "npm:@babel/plugin-syntax-jsx@7.23.3": "7.23.3_@babel+core@7.26.0",
     "npm:@chromatic-com/storybook@3.2.3": "3.2.3_storybook@8.4.7_react@18.2.0",
+    "npm:@faker-js/faker@^9.3.0": "9.3.0",
     "npm:@google-cloud/storage@7.6.0": "7.6.0",
     "npm:@jsr/planigale__sse@0.2.4": "0.2.4",
     "npm:@reduxjs/toolkit@2.2.3": "2.2.3_react@18.2.0_react-redux@9.1.0__@types+react@18.3.18__react@18.2.0__redux@5.0.1_@types+react@18.3.18_redux@5.0.1",
@@ -1314,6 +1315,9 @@
     },
     "@eslint/js@8.57.1": {
       "integrity": "sha512-d9zaMRSTIKDLhctzH12MtXvJKSSUhaHcjV+2Z+GK+EEY7XKpP5yR4x+N3TAcHTcu963nIr+TMcCb4DBCYX1z6Q=="
+    },
+    "@faker-js/faker@9.3.0": {
+      "integrity": "sha512-r0tJ3ZOkMd9xsu3VRfqlFR6cz0V/jFYRswAIpC+m/DIfAUXq7g8N7wTAlhSANySXYGKzGryfDXwtwsY8TxEIDw=="
     },
     "@google-cloud/paginator@5.0.2": {
       "integrity": "sha512-DJS3s0OVH4zFDB1PzjxAsHqJT6sKVbRwwML0ZBP9PbU7Yebtu/7SWMRzvO2J3nUi9pRNITCfu4LJeooM2w4pjg==",
@@ -5921,6 +5925,7 @@
           "jsr:@std/path@^1.0.1",
           "jsr:@std/uuid@^1.0.4",
           "jsr:@ts-rex/bcrypt@^1.0.3",
+          "npm:@faker-js/faker@^9.3.0",
           "npm:mongodb@^6.8.0",
           "npm:valibot@~0.31.1"
         ]

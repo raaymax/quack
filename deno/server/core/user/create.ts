@@ -53,7 +53,10 @@ export default createCommand({
     mainChannelId: invitation.channelId,
   });
 
-  await repo.channel.join({ id: invitation.channelId }, userId);
+  const channel = await repo.channel.get({ id: invitation.channelId });
+  if (channel && channel.channelType !== "DIRECT") {
+    await repo.channel.join({ id: invitation.channelId }, userId);
+  }
   await repo.invitation.remove({ id: invitation.id });
 
   return userId;

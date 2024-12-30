@@ -165,7 +165,7 @@ export class MessageService{
           return {
             ...rest,
             ...await enc.decrypt({encrypted, _iv}),
-            secure: false,
+            secured: false,
           }
         } catch(e) {
           console.error(e);

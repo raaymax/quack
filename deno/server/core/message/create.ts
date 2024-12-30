@@ -69,7 +69,7 @@ export default createCommand({
     _iv: msg._iv,
     secured: !!msg.encrypted,
     message: msg.message,
-    flat: msg.flat,
+    flat: msg.flat ?? "",
     pinned: msg.pinned,
     channelId: channel.id,
     parentId: msg.parentId,
