@@ -13,7 +13,6 @@ import { Toolbar } from '../atoms/Toolbar';
 import { ButtonWithIcon } from '../molecules/ButtonWithIcon';
 import { useMessageListArgs } from '../contexts/useMessageListArgs';
 import { MessageListArgsProvider } from '../contexts/messageListArgs';
-import { SearchBox } from '../atoms/SearchBox';
 
 const WORKSPACES_WIDTH = 80;
 
@@ -192,7 +191,6 @@ export const Container = styled.div`
       }
     }
     .context-bar {
-      background-color: ${(props) => props.theme.Channel.Background};
       padding: 0px;
       margin: 0px;
       flex: 1 1 50%;
@@ -299,7 +297,6 @@ export const MainConversation = ({ channelId, children}: MainConversationProps) 
           <Toolbar className="toolbar" size={32}>
             <ButtonWithIcon icon="bars" onClick={toggleSidebar} iconSize={24} />
             <Channel channelId={channelId} />
-            { !isMobile() && <SearchBox /> }
             {stream.type === 'archive' && (
               <ButtonWithIcon icon='down' onClick = {() => {
                 navigate(".", { relative: "path", state: {

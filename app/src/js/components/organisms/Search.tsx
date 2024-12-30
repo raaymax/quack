@@ -1,18 +1,16 @@
-import styled from 'styled-components';
-import { useCallback, useEffect, useState } from 'react';
-import { HoverProvider } from '../contexts/hover';
-import {
-  useSelector, useMethods, useDispatch,
-  methods,
-} from '../../store';
-import { formatTime, formatDate } from '../../utils';
+import styled from "styled-components";
+import { useCallback, useEffect, useState } from "react";
+import { HoverProvider } from "../contexts/hover";
+import { useSelector, useMethods, useDispatch, methods } from "../../store";
+import { formatTime, formatDate, isMobile } from "../../utils";
 
-import { Message } from '../organisms/Message';
-import { Toolbar } from '../atoms/Toolbar';
-import { ButtonWithIcon } from '../molecules/ButtonWithIcon';
-import { Message as MessageType } from '../../types';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { MessageListArgsProvider } from '../contexts/messageListArgs';
+import { Message } from "../organisms/Message";
+import { Toolbar } from "../atoms/Toolbar";
+import { ButtonWithIcon } from "../molecules/ButtonWithIcon";
+import { Message as MessageType } from "../../types";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { MessageListArgsProvider } from "../contexts/messageListArgs";
+import { SearchBox } from "../atoms/SearchBox";
 
 const StyledHeader = styled.div`
   display: flex;
@@ -56,21 +54,43 @@ const StyledSearch = styled.div`
     margin: 8px 0px;
   }
   & .message:hover {
-      background-color: var(--primary_active_mask);
+    background-color: var(--primary_active_mask);
+  }
+  .mobile-search {
+    flex: 1;
   }
 `;
 
 export const Header = () => {
   const navigate = useNavigate();
+  const { channelId } = useParams()!;
+  const onSearch = useCallback(
+    (search: string) => {
+      console.log("searching", search);
+      navigate("/" + channelId + "/search", { state: { search } });
+    },
+    [channelId, navigate],
+  );
 
   return (
     <StyledHeader>
-      <Toolbar className="toolbar" size={28}>
-        <h2>
-        Search results
-        </h2>
-        <ButtonWithIcon icon="xmark" onClick={() => navigate('..', {relative: 'path'})} />
-      </Toolbar>
+      {isMobile() ? (
+        <Toolbar className="toolbar" size={28}>
+          <SearchBox className="mobile-search" onSearch={onSearch} />
+          <ButtonWithIcon
+            icon="xmark"
+            onClick={() => navigate("..", { relative: "path" })}
+          />
+        </Toolbar>
+      ) : (
+        <Toolbar className="toolbar" size={28}>
+          <h2>Search results</h2>
+          <ButtonWithIcon
+            icon="xmark"
+            onClick={() => navigate("..", { relative: "path" })}
+          />
+        </Toolbar>
+      )}
     </StyledHeader>
   );
 };
@@ -81,45 +101,51 @@ export function SearchResults() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const results = useSelector((state) => state.search.results);
-  const gotoMessage = useCallback((msg: MessageType) => {
-    navigate(`/${msg.channelId}`, {
-      state: {
-        type: 'archive',
-        channelId: msg.channelId,
-        parentId: msg.parentId,
-        selected: msg.id,
-        date: msg.createdAt,
-      }
-    });
-  }, [navigate]);
+  const gotoMessage = useCallback(
+    (msg: MessageType) => {
+      navigate(`/${msg.channelId}`, {
+        state: {
+          type: "archive",
+          channelId: msg.channelId,
+          parentId: msg.parentId,
+          selected: msg.id,
+          date: msg.createdAt,
+        },
+      });
+    },
+    [navigate],
+  );
   useEffect(() => {
     if (!channelId || !location.state?.search) return;
     const value = location.state?.search;
     dispatch(methods.search.find({ channelId, text: value }));
   }, [channelId, location.state?.search, dispatch]);
 
-
   return (
     <StyledList>
-      <div key='bottom' id='scroll-stop' />
+      <div key="bottom" id="scroll-stop" />
       {results.map((result) => (
         <div key={`search:${result.searchedAt}`}>
-          <SearchSeparator >
-            <div>{formatTime(result.searchedAt)} - {formatDate(result.searchedAt)}</div>
+          <SearchSeparator>
+            <div>
+              {formatTime(result.searchedAt)} - {formatDate(result.searchedAt)}
+            </div>
             <div>Search results for keyword &quot;{result.text}&quot;:</div>
           </SearchSeparator>
-          
-          {result.data.map((msg: MessageType) => (
-            <Message
-              onClick={() => gotoMessage(msg)}
-              className={msg.priv ? ['private'] : []}
-              data-id={msg.id}
-              client-id={msg.clientId}
-              key={`search:${result.text}:${msg.id || msg.clientId}`}
-              sameUser={false}
-              data={msg}
-            />
-          )).reverse()}
+
+          {result.data
+            .map((msg: MessageType) => (
+              <Message
+                onClick={() => gotoMessage(msg)}
+                className={msg.priv ? ["private"] : []}
+                data-id={msg.id}
+                client-id={msg.clientId}
+                key={`search:${result.text}:${msg.id || msg.clientId}`}
+                sameUser={false}
+                data={msg}
+              />
+            ))
+            .reverse()}
         </div>
       ))}
     </StyledList>
@@ -127,9 +153,6 @@ export function SearchResults() {
 }
 
 export const Search = () => {
-  const location = useLocation();
-  if(location.state?.search === undefined) return null;
-
   return (
     <MessageListArgsProvider streamId="search">
       <StyledSearch>
@@ -140,4 +163,4 @@ export const Search = () => {
       </StyledSearch>
     </MessageListArgsProvider>
   );
-}
+};
