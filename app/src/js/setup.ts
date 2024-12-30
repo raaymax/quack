@@ -33,23 +33,11 @@ client
     if (sound) {
       play();
     }
-    store.dispatch(actions.messages.add({ ...msg, pending: false }));
+    store.dispatch(methods.messages.addDecrypted({ ...msg, pending: false }));
   })
   .on('message:remove', (msg) => store.dispatch(actions.messages.rm(msg)))
   .on('notification', () => { try { play(); } catch (err) { /* ignore */ } })
-  .on('notification', () => { try { navigator.vibrate([100, 30, 100]); } catch (err) { /* ignore */ } })
-  .on('notification:click', (e: Notification) => {
-    store.dispatch(actions.stream.open({
-      id: 'main',
-      value: {
-        type: 'archive',
-        date: e.createdAt,
-        selected: e.messageId,
-        channelId: e.channelId,
-        parentId: e.parentId,
-      },
-    }));
-  });
+  .on('notification', () => { try { navigator.vibrate([100, 30, 100]); } catch (err) { /* ignore */ } });
 
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) {

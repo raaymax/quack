@@ -1,6 +1,7 @@
 import { InternalServerError, Res, Route } from "@planigale/planigale";
 import { Core } from "../../../../core/mod.ts";
-import { User } from "../../../../types.ts";
+import { serializeUser } from "./_serializeUser.ts";
+import { DbUser } from "../../../../types.ts";
 
 export default (core: Core) =>
   new Route({
@@ -21,6 +22,25 @@ export default (core: Core) =>
           name: { type: "string", minLength: 1 },
           email: { type: "string", minLength: 3 },
           password: { type: "string", minLength: 3 },
+          sanityCheck: { type: "string" },
+          publicKey: {
+            type: "object",
+            properties: {
+              crv: { type: "string" },
+              ext: { type: "boolean" },
+              key_ops: { type: "array", items: { type: "string" } },
+              kty: { type: "string" },
+              x: { type: "string" },
+              y: { type: "string" },
+            },
+          },
+          secrets: {
+            type: "object",
+            properties: {
+              encrypted: { type: "string" },
+              _iv: { type: "string" },
+            },
+          },
         },
       },
     },
@@ -29,18 +49,19 @@ export default (core: Core) =>
         type: "user:create",
         body: {
           name: req.body.name,
-          login: req.body.email,
+          email: req.body.email,
           password: req.body.password,
           token: req.params.token,
+          publicKey: req.body.publicKey,
+          secrets: req.body.secrets,
         },
       });
-      const user: Partial<User> | null = await core.user.get({ id: createdId });
+      const user: DbUser | null = await core.user.get({ id: createdId });
       if (!user) {
         throw new InternalServerError(
           new Error("User not created, but no error thrown"),
         );
       }
-      delete user.password;
-      return Res.json(user);
+      return Res.json(serializeUser(user));
     },
   });

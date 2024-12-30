@@ -4,10 +4,31 @@ import { useDispatch, useMethods, useSelector } from '../../store';
 import { Badge } from '../atoms/Badge';
 import { TextWithIcon } from './TextWithIcon';
 import { cn, ClassNames } from '../../utils';
+import { Tooltip } from '../atoms/Tooltip';
+
+const TagContainer = styled.div`
+  font-size: 16px;
+  border: 1px solid ${(props) => props.theme.PrimaryButton.Background};
+  color: ${(props) => props.theme.PrimaryButton.Text};
+  line-height: 26px;
+  vertical-align: middle;
+  padding: 2px 12px;
+  border-radius: 8px;
+  margin-left: 12px;
+`;
+
+const Tag = ({ children, tooltip }: { children: React.ReactNode, tooltip: string | string[] }) => (
+  <TagContainer><Tooltip text={tooltip}>{children}</Tooltip></TagContainer>
+);
 
 const Container = styled.div`
+  display: flex;
+  flex-direction: row;
   cursor: pointer;
   overflow: hidden;
+  & :first-child {
+    flex: 1;
+  }
   .text-with-icon {
     max-width: 100%;
     white-space: nowrap;
@@ -41,14 +62,16 @@ type InlineChannelProps = {
   className?: ClassNames;
   onClick?: () => void;
   icon?: string;
+  secured?: boolean;
 };
 
 export const InlineChannel = ({
-  id, children, badge, className, onClick, icon = 'fa-solid fa-hashtag',
+  id, children, badge, className, onClick, icon = 'fa-solid fa-hashtag', secured
 }: InlineChannelProps) => (
   <Container className={cn('channel', 'inline-channel', className)} data-id={id} onClick={onClick}>
     <TextWithIcon icon={icon}>{children}</TextWithIcon>
     {(badge && badge > 0) ? <Badge>{badge}</Badge> : null}
+    {secured ? <Tag tooltip={["Messages in this channel are encrypted", "using your password", "Files encription not yet implemented"]}>E2EE</Tag> : null}
   </Container>
 );
 
@@ -56,6 +79,7 @@ type DirectChannelProps = {
   channel: {
     id: string;
     name: string;
+    channelType: 'DIRECT' | 'PRIVATE' | 'PUBLIC';
     users: string[];
   };
   badge?: number;
@@ -70,13 +94,15 @@ const DirectChannel = ({
   let other = channel.users.find((u) => u !== me);
   if (!other) [other] = channel.users;
   const user = useSelector((state) => state.users[other ?? '']);
+  const secured = channel.channelType === 'DIRECT';
   if (!user) {
     return (
       <InlineChannel
         className={className}
         id={channel.id}
         onClick={onClick}
-        badge={badge}>
+        badge={badge}
+        secured={secured}>
         {channel.name}
       </InlineChannel>
     );
@@ -88,7 +114,9 @@ const DirectChannel = ({
         id={channel.id}
         onClick={onClick}
         icon='fa-solid fa-user-gear'
-        badge={badge}>
+        badge={badge}
+        secured={secured}
+        >
         {user.name}
       </InlineChannel>
     );
@@ -101,6 +129,7 @@ const DirectChannel = ({
       recent: Boolean(active),
       system: user.system,
     })}
+    secured={secured}
     id={channel.id} onClick={onClick} icon='fa-solid fa-user' badge={badge}>{user.name}</InlineChannel>);
 };
 

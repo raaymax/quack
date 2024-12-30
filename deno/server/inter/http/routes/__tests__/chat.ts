@@ -10,6 +10,8 @@ import {
   ReplaceEntityId,
 } from "../../../../types.ts";
 import { AsyncLocalStorage } from "node:async_hooks";
+import API, { LoginError, Result, UserSession } from "@quack/api";
+import * as enc from "@quack/encryption";
 
 export type RegistrationRequest = {
   token: string;
@@ -20,6 +22,8 @@ export type RegistrationRequest = {
 
 type Arg<T extends Object> = T | ((chat: Chat) => T);
 const asyncLocalStorage = new AsyncLocalStorage<{ instances: Chat[] }>();
+
+type AgentTestParams = Parameters<typeof Agent["test"]>;
 
 export class Chat {
   repo: Repository;
@@ -50,7 +54,13 @@ export class Chat {
 
   appVersion = "client-version";
 
-  static async test(app, opts, fn) {
+  api: API;
+
+  static async test(
+    app: AgentTestParams[0],
+    opts: AgentTestParams[1],
+    fn: AgentTestParams[2],
+  ) {
     await Agent.test(app, opts, async (agent) => {
       await asyncLocalStorage.run({ instances: [] }, async () => {
         await fn(agent);
@@ -100,6 +110,7 @@ export class Chat {
     this.parentId = null; // parent and parentId are not related "parent" is a parent of this object
     this.token = "invalid";
     this.eventSource = null;
+    this.api = new API(agent.addr, { fetch: agent.fetch, sse: false });
     this._register();
   }
 
@@ -108,6 +119,28 @@ export class Chat {
       return arg(this);
     }
     return arg;
+  }
+
+  isResetValid(token: Arg<string>) {
+    this.steps.push(async () => {
+      const tokenR = this.arg(token);
+      await this.api.auth.checkPasswordResetToken({ token: tokenR });
+    });
+    return this;
+  }
+
+  reset(
+    data: Arg<
+      { token: string; email: string; password: string; oldPassword: string }
+    >,
+    test?: (session: Result) => Promise<any> | any,
+  ) {
+    this.steps.push(async () => {
+      const resetData = this.arg(data);
+      const ret = await this.api.auth.resetPassword(resetData);
+      await test?.(ret);
+    });
+    return this;
   }
 
   connectSSE() {
@@ -132,19 +165,19 @@ export class Chat {
     return this;
   }
 
-  login(login = "admin", password = "123") {
+  login(
+    email = "admin",
+    password = "123",
+    test?: (session: Result<UserSession, LoginError>) => Promise<any> | any,
+  ) {
     this.steps.push(async () => {
-      await ensureUser(this.repo, login);
-      const res = await this.agent.request()
-        .post("/api/auth/session")
-        .json({
-          login,
-          password,
-        })
-        .expect(200);
-      const body = await res.json();
-      this.userId = body.userId;
-      this.token = body.token;
+      await ensureUser(this.repo, email);
+      const session = await this.api.auth.login({ email, password });
+      if (session.status === "ok") {
+        this.userId = session.userId;
+        this.token = session.token;
+      }
+      await test?.(session);
     });
     return this;
   }
@@ -152,25 +185,18 @@ export class Chat {
   checkToken(tokenData: Arg<string>, test?: (body: any) => Promise<any> | any) {
     this.steps.push(async () => {
       const token = this.arg(tokenData);
-      const res = await this.agent.request()
-        .get(`/api/users/token/${token}`)
-        .expect(200);
-      const data = await res.json();
-      await test?.(data);
+      const ret = await this.api.auth.checkRegistrationToken({ token });
+      await test?.(ret);
     });
     return this;
   }
 
   register(
-    { token, ...data }: RegistrationRequest,
+    data: RegistrationRequest,
     test?: (body: any) => Promise<any> | any,
   ) {
     this.steps.push(async () => {
-      const res = await this.agent.request()
-        .post(`/api/users/${token}`)
-        .json(data)
-        .expect(200);
-      const body = await res.json();
+      const body = await this.api.auth.register(data);
       if (body.id) {
         this.cleanup.push(async () => {
           const user = await this.repo.user.get({ id: EntityId.from(body.id) });
@@ -377,7 +403,7 @@ export class Chat {
   }
 
   getMessages(
-    queryData: Arg<{ parentId?: string }> = {},
+    queryData: Arg<{ parentId?: string | null }> = {},
     test?: (messages: any[], chat: Chat) => Promise<any> | any,
   ) {
     this.steps.push(async () => {
@@ -587,7 +613,7 @@ export class Chat {
     return this;
   }
 
-  async then(resolve: (self?: any) => any, reject: (e: Error) => any) {
+  async then(resolve: (self?: any) => any, reject: (e: unknown) => any) {
     let cleanupStart = false;
     try {
       while (this.steps[this.currentStep]) {

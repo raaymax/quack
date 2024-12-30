@@ -1,7 +1,8 @@
 import { Agent } from "@planigale/testing";
-import { assertEquals } from "@std/assert";
+import { assert, assertEquals } from "@std/assert";
 import { createApp } from "../../__tests__/app.ts";
 import { Chat } from "../../__tests__/chat.ts";
+import { Message } from "@quack/api";
 
 const { app, repo, core } = createApp();
 
@@ -22,6 +23,7 @@ Deno.test("[EVENTS] When message is sent message:created should be emitted", asy
       flat: "Hello",
     });
     const msg = await promise;
+    assert(!msg.secured);
     assertEquals(msg.flat, "Hello");
     await admin.end();
   });

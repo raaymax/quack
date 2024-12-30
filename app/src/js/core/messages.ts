@@ -1,5 +1,7 @@
+/* global JsonWebKey */
 import { Message } from "../types";
 import type { Client } from "./client";
+import { encryptor } from "@quack/encryption";
 
 class MRange {
   _from: number | null;
@@ -104,8 +106,6 @@ class MessagesCache<T> {
       acc.push(item);
       return acc;
     }, [])
-    console.log('relevant', relevant.map((r) => r.toString()), relevant);
-    console.log(r.toString());
 
     const cache = relevant.find((rel: MsgsRes<T>) => r.containsEntirely(rel))
     if(cache) {
@@ -115,9 +115,19 @@ class MessagesCache<T> {
   }
 }
 
+type MessageQuery = {
+  pinned?: boolean,
+  before?: string,
+  after?: string,
+  limit?: number,
+  channelId: string,
+  parentId?: string,
+  preprocess?: (m: Message[]) => Promise<Message[]>
+}
+
 export class MessageService{
   _cache: {[key: string]: MessagesCache<Message[]>};
-  pending: {[key: string]: Promise<Message[]> | undefined} = {};
+  pending: {[key: string]: Promise<Message[]>} = {};
   dataContainer: (r1: Message[], r2: Message[]) => Message[];
   client: Client;
 
@@ -147,62 +157,56 @@ export class MessageService{
     return Math.min(...dates);
   }
 
-  async _fetch(query: {before?: string, after?: string, limit?: number, channelId: string, parentId?: string}) {
-      const {channelId, parentId, before, after, limit} = query
+
+
+  async _fetch(query: MessageQuery): Promise<Message[]> {
+      const {channelId, parentId, before, after, limit, preprocess} = query
       const to = before ? new Date(before).getTime() : null;
       const from = after ? new Date(after).getTime() : null;
       if ( to || from ) {
         const cache = this.cache(query).get(new QRange({ from, to }));
         if(cache) {
-          console.log('cache hit');
-          return cache.map(item => ({...item})) //remove clonning
+          return cache.map(item => ({...item})); //remove clonning
         }
       }
       const data = await this.client.api.getMessages({
+        pinned: query.pinned,
         channelId: channelId,
         parentId: parentId,
         before,
         after,
         limit,
       })
-      console.log('cache miss');
+
+      const preprocessedData = preprocess ? await preprocess(data) : data;
+
 
       if (data?.length > 0) {
         this.cache(query).update(new MsgsRes({
           from: after ? from : this.getMinDate(data),
           to: before ? to : this.getMaxDate(data),
-          data: data,
+          data: preprocessedData,
         }));
       }
 
-      return data.map(item => ({...item})); //remove clonning 
+      return preprocessedData;
   }
 
-  async fetch(query: {before?: string, after?: string, limit?: number, channelId: string, parentId?: string}) {
+  async fetch(query: MessageQuery): Promise<Message[]> {
     const key = JSON.stringify(query);
-    if(this.pending[key]){
-      return this.pending[key];
+    const promise = this.pending[key]
+    if(promise) {
+      return await promise;
     }
     this.pending[key] = new Promise<Message[]>((resolve) => {
       (async () => {
         const data = await this._fetch(query);
+        const ret = resolve(data);
         delete this.pending[key];
-        return resolve(data);
+        return ret;
       })();
     });
-    return this.pending[key];
+    return await this.pending[key];
   }
 }
-
-
-/*
-- add message store with owner 
-- hot area for reloading
-- freeze / resume events handling
-- bindings to react
-- ability to navigate next / prev messages
-- goto specific message
-- ability to pins support?
-
-*/
 

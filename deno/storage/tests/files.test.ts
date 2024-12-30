@@ -13,7 +13,7 @@ const __dirname = new URL(".", import.meta.url).pathname;
 const testTextFilePath = path.join(__dirname, "test.txt");
 const testImagePath = path.join(__dirname, "quack.png");
 
-const configs: Config["storage"][] = [
+const configs: (Config["storage"] & { ignore?: boolean })[] = [
   {
     type: "fs",
     directory: "tests/uploads",

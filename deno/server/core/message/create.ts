@@ -17,6 +17,8 @@ export default createCommand({
     v.object({
       userId: Id,
       message: v.optional(v.any()),
+      encrypted: v.optional(v.string()),
+      _iv: v.optional(v.string()),
       channelId: Id,
       parentId: v.optional(Id),
       flat: v.optional(v.string()),
@@ -44,8 +46,12 @@ export default createCommand({
     userId: msg.userId,
   }).internal();
 
-  if (!msg.message && !msg.flat) {
+  if (!msg.message && !msg.flat && !msg.encrypted) {
     throw new InvalidMessage("Message or flat must be provided");
+  }
+
+  if (msg.encrypted && !msg._iv) {
+    throw new InvalidMessage("IV must be provided when message is encrypted");
   }
 
   if (!msg.message && msg.flat) {
@@ -59,8 +65,11 @@ export default createCommand({
     msg.clientId = crypto.randomUUID();
   }
   const message = filterUndefined({
+    encrypted: msg.encrypted,
+    _iv: msg._iv,
+    secured: !!msg.encrypted,
     message: msg.message,
-    flat: msg.flat,
+    flat: msg.flat ?? "",
     pinned: msg.pinned,
     channelId: channel.id,
     parentId: msg.parentId,
@@ -77,7 +86,6 @@ export default createCommand({
     })),
     createdAt: new Date(),
   });
-
   const id: EntityId = await (async () => {
     const existing = await repo.message.get({
       channelId: channel.id,

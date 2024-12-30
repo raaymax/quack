@@ -23,6 +23,7 @@ export const messageSchema = {
         { $ref: "message#/definitions/channel" },
         { $ref: "message#/definitions/user" },
         { $ref: "message#/definitions/thread" },
+        { $ref: "message#/definitions/encrypted" },
       ],
     },
     array: { type: "array", items: { $ref: "message#/definitions/body" } },
@@ -129,6 +130,14 @@ export const messageSchema = {
         thread: { type: "string" },
         _channelId: { type: "string", format: "entity-id" },
         _parentId: { type: "string", format: "entity-id" },
+      },
+    },
+    encrypted: {
+      type: "object",
+      required: ["encrypted", "_iv"],
+      properties: {
+        encrypted: { type: "string" },
+        _iv: { type: "string" },
       },
     },
   },

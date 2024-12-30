@@ -10,7 +10,6 @@ export type OutgoingPayload = (
   | OutgoingMessageCreate
   | OutgoingMessageGetAll
   | OutgoingMessagePin
-  | OutgoingMessagePins
   | OutgoingMessageReact
   | OutgoingMessageRemove
   | OutgoingMessageSearch
@@ -95,14 +94,6 @@ export type OutgoingMessagePin = {
   type: 'message:pin',
   id: string,
   pinned: boolean,
-}
-
-export type OutgoingMessagePins = {
-  type: 'message:pins',
-  channelId: string,
-  before?: string,
-  after?: string,
-  limit?: number,
 }
 
 export type OutgoingMessageReact = {

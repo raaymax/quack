@@ -1,8 +1,5 @@
-import { useThemeControl } from "../contexts/useThemeControl";
-import { NavButton } from "../molecules/NavButton";
 import { NavChannels } from "../molecules/NavChannels";
 import { NavUsers } from "../molecules/NavUsers";
-import { logout } from '../../services/session';
 import { ClassNames, cn } from "../../utils";
 import styled from "styled-components";
 import { ThemeButtonS } from "../atoms/ThemeButton";

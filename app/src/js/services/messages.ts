@@ -1,11 +1,13 @@
+/* global JsonWebKey */
 import { client } from '../core';
 import { createCounter } from '../utils';
 import {
   createMethod, StateType, DispatchType, ActionsType,
 } from '../store';
-import { Stream, Message } from '../types';
+import { Stream, Message, BaseMessage, MessageData } from '../types';
 import { SerializeInfo, processUrls } from '../serializer';
 import { IncommingError, OutgoingCommandExecute, OutgoingMessageCreate } from '../core/types';
+import * as enc from '@quack/encryption';
 
 declare global {
   const APP_VERSION: string;
@@ -115,7 +117,7 @@ export const loadMessagesArchive = createMethod('messages/loadMessagesArchive', 
     ...stream,
     after: date,
   })).unwrap();
-  if (messages?.length > 0) dispatch(methods.progress.update(messages[0].id));
+  if (messages && messages?.length > 0) dispatch(methods.progress.update(messages[0].id));
   loadingDone();
 });
 
@@ -123,12 +125,11 @@ export const loadMessagesLive = createMethod('messages/loadMessagesLive', async 
   if (!stream.channelId) return;
   const loadingDone = loading(dispatch, actions);
   const messages = await dispatch(methods.messages.load(stream)).unwrap();
-  if (messages?.length > 0) dispatch(methods.progress.update(messages[0].id));
+  if (messages && messages?.length > 0) dispatch(methods.progress.update(messages[0].id));
   loadingDone();
 });
 
 export const loadMessages = createMethod('messages/loadMessages', async (stream: Stream, { dispatch }) => {
-  console.log('loadMessages', stream);
   if (stream.type === 'archive') {
     dispatch(loadMessagesArchive(stream));
   } else {
@@ -141,9 +142,9 @@ type SendArgs = {
   payload: OutgoingMessageCreate | OutgoingCommandExecute;
 };
 
-export const send = createMethod('messages/send', async ({ stream, payload }: SendArgs, { dispatch }) => {
+export const send = createMethod('messages/send', async ({ stream, payload }: SendArgs, { dispatch, methods }) => {
   if (payload.type === 'message:create') {
-    dispatch(sendMessage({ payload, info: null }));
+    dispatch(methods.messages.sendMessage({ payload, info: null }));
   }
   if (payload.type === 'command:execute') {
     dispatch(sendCommand({ stream, payload }));
@@ -180,34 +181,11 @@ export const sendCommand = createMethod('messages/sendCommand', async ({ stream,
   }
 });
 
-type MessageInfo = {
-  msg: string;
-  type: string;
-  action?: string;
-}
 
-const sendMessage = createMethod('messages/sendMessage', async ({ payload: msg}: {payload: OutgoingMessageCreate}, { dispatch, actions, getState }) => {
-  dispatch(actions.messages.add({ ...msg, userId: getState().me, pending: true, info: null }));
-  try {
-    await client.api.sendMessage(msg);
-  } catch (err) {
-    dispatch(actions.messages.add({
-      clientId: msg.clientId,
-      channelId: msg.channelId,
-      parentId: msg.parentId,
-      info: {
-        msg: 'Sending message failed - click here to resend',
-        type: 'error',
-        action: 'resend',
-      } as MessageInfo,
-    }));
-  }
-});
-
-export const resend = createMethod('messages/resend', async (id: string, { dispatch, getState }) => {
+export const resend = createMethod('messages/resend', async (id: string, { dispatch, getState, methods }) => {
   const msg = selectors.getMessage(id, getState());
   if (!msg) return;
-  dispatch(sendMessage({
+  await dispatch(methods.messages.sendMessage({
     payload: {
       type: 'message:create',
       ...msg,

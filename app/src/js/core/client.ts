@@ -1,4 +1,4 @@
-import Api from './api.ts';
+import Api from '@quack/api';
 import {MessageService} from './messages.ts';
 
 declare global {
@@ -6,12 +6,25 @@ declare global {
 }
 
 export class Client {
-  _api: Api;
+  _api: Api | null = null;
+  _http: Promise<any> | null = null;
   messages: MessageService;
 
-  get api() {
+  getFetch(): typeof fetch {
+    return async (...args: Parameters<typeof fetch>): ReturnType<typeof fetch> => {
+      if(window.isTauri) {
+        if(!this._http){
+          this._http = import('@tauri-apps/plugin-http');
+        }
+        return await (await this._http).fetch(...args);
+      }
+      return await fetch(...args);
+    }
+  }
+
+  get api(): Api {
     if (!this._api) {
-      this._api = new Api(API_URL);
+      this._api = new Api(API_URL, { fetch: this.getFetch() });
     }
     return this._api;
   }
@@ -20,7 +33,7 @@ export class Client {
     this.messages = new MessageService(this);
   }
 
-  req(...args: any[]) {
+  req(...args: Parameters<Api['req']>) {
     return this.api.req(...args);
   }
 
@@ -35,4 +48,12 @@ export class Client {
 }
 
 export const client = new Client();
-export * from './api.ts';
+export * from '@quack/api';
+
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') {
+    client.emit('win.visible', {});
+  }
+});
+
+

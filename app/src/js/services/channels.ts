@@ -22,6 +22,5 @@ export const gotoDirectChannel = createMethod('gotoDirectChannel', async (
     return;
   }
   if (!direct) return;
-  dispatch(actions.stream.open({ id: 'main', value: { channelId: direct.id } }));
   dispatch(actions.view.set(null));
 });

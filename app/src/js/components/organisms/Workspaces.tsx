@@ -1,7 +1,5 @@
 import { SizeProvider } from "../contexts/size";
 import { LogoPic } from "../atoms/Logo";
-import { ButtonWithIcon } from "../molecules/ButtonWithIcon";
-import { ProfilePic } from "../atoms/ProfilePic";
 import { useSelector } from "../../store";
 import styled from "styled-components";
 

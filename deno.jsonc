@@ -3,16 +3,20 @@
     "./deno/config",
     "./deno/server",
     "./deno/storage",
-    "./deno/migrate"
+    "./deno/migrate",
+    "./deno/encryption",
+    "./deno/api"
   ],
   "imports": {
-    "@planigale/body-parser": "jsr:@planigale/body-parser",
-    "@planigale/planigale": "jsr:@planigale/planigale@0.6.5",
+    "@planigale/body-parser": "jsr:@planigale/body-parser@0.2.1",
+    "@planigale/planigale": "jsr:@planigale/planigale@0.6.9",
     "@planigale/testing": "jsr:@planigale/testing@0.3.3",
     "@planigale/schema": "jsr:@planigale/schema",
     "@planigale/sse": "jsr:@planigale/sse",
     "@std/assert": "jsr:@std/assert@^1.0.1",
+    "@std/encoding": "jsr:@std/encoding@^1.0.6",
     "@std/path": "jsr:@std/path@^1.0.2",
+    "@felix/argon2": "jsr:@felix/argon2@^2.0.2",
     "@std/uuid": "jsr:@std/uuid@^1.0.4",
     "mongodb": "npm:mongodb@^6.8.0",
     "valibot": "npm:valibot@^0.36.0"
@@ -42,10 +46,16 @@
     "build": "deno task -c ./packages/app/deno.jsonc build",
     "migrate": "deno task -c ./deno/migrate/deno.json migrate up",
     "migrate:tests": "DATABASE_URL='mongodb://chat:chat@localhost:27017/tests?authSource=admin' deno task migrate",
-    "test": "DATABASE_URL='mongodb://chat:chat@localhost:27017/tests?authSource=admin' deno test --no-check -A",
+    "test": "DATABASE_URL='mongodb://chat:chat@localhost:27017/tests?authSource=admin' deno test -A",
     "ssl": "mkdir -p ssl && openssl req -x509 -newkey rsa:4096 -keyout ssl/key.pem -out ssl/cert.pem -days 365 -nodes -subj '/CN=localhost'",
+    "types": "npm run types",
     "check": "deno run -A npm:eslint . --ignore-pattern=app/src-tauri && deno fmt && deno lint && deno task test",
     "android:build": "npm run android:build",
     "desktop:build": "npm run desktop:build"
+  },
+  "compilerOptions": {
+    "jsx": "react",
+    "jsxFactory": "Message.create",
+    "jsxFragmentFactory": "myFragmentFactory"
   }
 }

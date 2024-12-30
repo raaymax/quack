@@ -1,6 +1,7 @@
-import { Route } from "@planigale/planigale";
+import { Res, Route } from "@planigale/planigale";
 import { Core } from "../../../../core/mod.ts";
-import { User } from "../../../../types.ts";
+import { serializeUser } from "./_serializeUser.ts";
+import { DbUser } from "../../../../types.ts";
 
 export default (core: Core) =>
   new Route({
@@ -8,10 +9,6 @@ export default (core: Core) =>
     url: "/",
     handler: async () => {
       const users = await core.user.getAll({});
-      return Response.json(users.map((u: Partial<User>) => {
-        delete u.password;
-        delete u.mainChannelId;
-        return u;
-      }));
+      return Res.json(users.map((u: DbUser) => serializeUser(u)));
     },
   });

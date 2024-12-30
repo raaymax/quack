@@ -3,6 +3,7 @@ import { Agent } from "@planigale/testing";
 import { Emoji } from "../../../../../types.ts";
 import { createApp } from "../../__tests__/app.ts";
 import { Chat } from "../../__tests__/chat.ts";
+import { ensureUser } from "../../__tests__/mod.ts";
 
 const { app, repo } = createApp();
 
@@ -16,6 +17,7 @@ Deno.test("GET /api/emojis - unauthorized", async () => {
 });
 
 Deno.test("GET /api/emojis - getAllEmojis empty list", async () => {
+  await ensureUser(repo, "member", { name: "Member" });
   await Chat.test(app, { type: "handler" }, async (agent) => {
     await Chat.init(repo, agent)
       .login("member")

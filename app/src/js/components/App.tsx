@@ -1,6 +1,7 @@
 import { createRoot } from "react-dom/client";
 import { Suspense, lazy } from "react";
 import { Register } from "./pages/Register";
+import { PasswordReset } from "./pages/PasswordReset";
 import { Login } from "./pages/Login";
 import { ThemeSelectorProvider } from "./contexts/theme";
 
@@ -25,6 +26,14 @@ export const App = () => {
     return (
       <ThemeSelectorProvider>
         <Register />
+      </ThemeSelectorProvider>
+    );
+  }
+
+  if (hash.startsWith("#/reset")) {
+    return (
+      <ThemeSelectorProvider>
+        <PasswordReset />
       </ThemeSelectorProvider>
     );
   }

@@ -1,7 +1,7 @@
 export class AppError extends Error {
   errorCode: string;
 
-  constructor(public code: string, public message: string) {
+  constructor(public code: string, public override message: string) {
     super(message);
     this.errorCode = code;
   }
@@ -53,5 +53,13 @@ export class InvalidChannelValue extends AppError {
 export class UserAlreadyExists extends AppError {
   constructor(msg = "User already exists") {
     super("USER_ALREADY_EXISTS", msg);
+  }
+}
+
+export class PasswordResetRequired extends AppError {
+  token: string;
+  constructor(msg = "User password reset is required", token: string) {
+    super("PASSWORD_RESET_REQUIRED", msg);
+    this.token = token;
   }
 }

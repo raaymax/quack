@@ -16,6 +16,9 @@ export class InviteCommand {
     }).internal();
 
     await repo.invitation.removeOutdated();
+    const channel = await repo.channel.get({ id: data.context.channelId });
+    const isDirect = channel?.channelType === "DIRECT";
+
     await repo.invitation.create({
       token,
       userId: data.userId,
@@ -24,17 +27,24 @@ export class InviteCommand {
       createdAt: new Date(),
     });
     const link = `${config.baseUrl}/#/invite/${token}`;
+
     bus.direct(data.userId, {
       type: "message",
       clientId: `sys:${Math.random().toString(10)}`,
-      userId: (await core.repo.user.get({ login: "system" }))?.id,
+      userId: (await core.repo.user.get({ email: "system" }))?.id,
       priv: true,
       channelId: data.context.channelId,
       flat:
         `Invitation link (valid 5 days from now):\n${config.baseUrl}/#/invite/${token}`,
       message: [
         { line: { text: "Invitation link: " } },
-        { line: { code: link } },
+        { codeblock: link },
+        { line: { text: "Link will be valid for 5 days" } },
+        !isDirect
+          ? {
+            line: { text: "User will be automatically added to this channel" },
+          }
+          : undefined,
       ],
       createdAt: new Date().toISOString(),
     });

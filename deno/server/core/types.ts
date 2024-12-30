@@ -69,10 +69,12 @@ export const vMessageBodyStrike: v.GenericSchema<MessageBodyStrike> = v.object({
   strike: v.lazy(() => vMessageBody),
 });
 export const vMessageBodyImg: v.GenericSchema<MessageBodyImg> = v.object({
-  img: v.object({ src: v.string(), alt: v.string() }),
+  img: v.string(),
+  _alt: v.string(),
 });
 export const vMessageBodyLink: v.GenericSchema<MessageBodyLink> = v.object({
-  link: v.object({ href: v.string(), children: v.lazy(() => vMessageBody) }),
+  link: v.lazy(() => vMessageBody),
+  _href: v.string(),
 });
 export const vMessageBodyEmoji: v.GenericSchema<MessageBodyEmoji> = v.object({
   emoji: v.string(),
@@ -83,11 +85,9 @@ export const vMessageBodyUser: v.GenericSchema<MessageBodyUser> = v.object({
   user: v.string(),
 });
 export const vMessageBodyThread: v.GenericSchema<MessageBodyThread> = v.object({
-  thread: v.object({
-    channelId: v.string(),
-    parentId: v.string(),
-    text: v.string(),
-  }),
+  thread: v.string(),
+  _channelId: v.string(),
+  _parentId: v.string(),
 });
 
 export const vMessageBodyPart: v.GenericSchema<MessageBodyPart> = v.union([

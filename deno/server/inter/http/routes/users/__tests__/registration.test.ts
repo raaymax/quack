@@ -2,6 +2,7 @@ import { assert, assertEquals } from "@std/assert";
 import { ensureUser } from "../../__tests__/mod.ts";
 import { createApp } from "../../__tests__/app.ts";
 import { Chat } from "../../__tests__/chat.ts";
+import * as enc from "@quack/encryption";
 
 const { app, repo, core } = createApp();
 
@@ -10,7 +11,7 @@ Deno.test("POST /api/users - user creation flow", async (t) => {
   let token: string;
   let token2: string;
   await repo.invitation.removeMany({});
-  await repo.user.removeMany({ login: "jack" });
+  await repo.user.removeMany({ email: "jack" });
   await ensureUser(repo, "admin", { name: "Admin" });
   await Chat.test(app, { type: "handler" }, async (agent) => {
     const admin = Chat.init(repo, agent);
@@ -58,7 +59,12 @@ Deno.test("POST /api/users - user creation flow", async (t) => {
             email: "jack",
             password: "test123",
           })
-          .login("jack", "test123")
+          .login("jack", "test123", (session) => {
+            assert(session.status == "ok");
+            assert(session.publicKey?.kty == "EC");
+            assert(session.secrets.encrypted);
+            assert(session.secrets._iv);
+          })
           .openChannel("user-invite-test")
           .getMessages({}, (msgs: any[]) => {
             assertEquals(msgs[0].flat, "secret");
@@ -66,13 +72,14 @@ Deno.test("POST /api/users - user creation flow", async (t) => {
       });
 
       await t.step("user already exists", async () => {
+        const data = await enc.prepareRegistration({
+          name: "Jack",
+          email: "jack",
+          password: "test123",
+        });
         await agent.request()
           .post(`/api/users/${token2}`)
-          .json({
-            name: "Jack",
-            email: "jack",
-            password: "test123",
-          })
+          .json(data)
           .expect(409, {
             errorCode: "USER_ALREADY_EXISTS",
             message: "User already exists",
@@ -82,17 +89,19 @@ Deno.test("POST /api/users - user creation flow", async (t) => {
       await chat.end();
 
       await t.step("check invalid token", async () => {
+        const data = await enc.prepareRegistration({
+          name: "Jack",
+          email: "jack",
+          password: "test123",
+        });
+
         await Chat.init(repo, agent)
           .checkToken(token, ({ valid }) => assert(!valid))
           .end();
 
         await agent.request()
           .post(`/api/users/${token}`)
-          .json({
-            name: "Jack",
-            email: "jack",
-            password: "test123",
-          })
+          .json(data)
           .expect(400, {
             errorCode: "INVALID_INVITATION",
             message: "Invalid invitation link",

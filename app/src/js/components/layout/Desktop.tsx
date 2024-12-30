@@ -6,7 +6,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Workspaces } from '../organisms/Workspaces';
 import { Sidebar } from '../organisms/Sidebar';
 import { Conversation } from '../organisms/Conversation';
-import { useDispatch, useMessage } from '../../store';
+import { useMessage } from '../../store';
 import { Channel } from '../molecules/NavChannel';
 import { Toolbar } from '../atoms/Toolbar';
 import { ButtonWithIcon } from '../molecules/ButtonWithIcon';
@@ -246,8 +246,6 @@ export const MainConversation = ({ channelId, children}: MainConversationProps) 
             <ButtonWithIcon icon="thumbtack" onClick={() => {
               navigate("/"+ channelId + "/pins")
             }}  iconSize={16}/>
-            {/* <ButtonWithIcon icon="search" onClick={() => navigate("/"+ channelId + "/search")}  iconSize={24}/>
-            <ButtonWithIcon icon="refresh" onClick={() => dispatch(init({}))} iconSize={24} />*/}
           </Toolbar>
         </div>
         <CollapsableColumns className={cn('conversation-with-context-bar', {'has-context-bar': Boolean(children)})} 

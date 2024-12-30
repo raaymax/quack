@@ -7,7 +7,7 @@ import { resend } from '../../services/messages';
 import { ProfilePic } from '../atoms/ProfilePic';
 import { LinkPreviewList } from '../atoms/LinkPreview';
 import { ReadReceipt } from '../molecules/ReadReceipt';
-import { buildMessageBody } from '../molecules/MessageBody';
+import { MessageBodyRenderer } from '../molecules/MessageBody';
 import { Files } from '../molecules/Files';
 import { Reactions } from '../molecules/Reactions';
 import { MessageToolbar } from '../molecules/MessageToolbar';
@@ -199,9 +199,11 @@ const MessageBase = ({ onClick, sameUser, navigate = () => {}, ...props }: Messa
       <div className='body'>
         {!sameUser && <MessageHeader user={user} createdAt={createdAt} />}
         {editing
-          ? <Input mode='edit' messageId={id}>{buildMessageBody(message, { emojiOnly })}</Input>
+          ? <Input mode='edit' messageId={id}>
+              <MessageBodyRenderer body={msg.message} opts={{emojiOnly}} />
+            </Input>
           : <div className={['content'].join(' ')}>
-            {buildMessageBody(message, { emojiOnly })}
+            <MessageBodyRenderer body={msg.message} opts={{emojiOnly}} />
           </div>
         }
 
@@ -213,7 +215,7 @@ const MessageBase = ({ onClick, sameUser, navigate = () => {}, ...props }: Messa
         <ReadReceipt data={msg.progress} />
         <MessageToolbar navigate={navigate} />
         {annotations && <div className='generated'>
-          {buildMessageBody(annotations)}
+          <MessageBodyRenderer body={annotations} />
         </div>}
       </div>
     </MessageContainer>

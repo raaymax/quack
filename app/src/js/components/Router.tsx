@@ -2,12 +2,12 @@ import { Main } from './layout/Main';
 import { Discussion } from './layout/Discussion';
 import { Search } from './organisms/Search';
 import { Pins } from './organisms/Pins';
-import { redirect, useRouteError ,
+import { redirect,
   createHashRouter,
   Outlet,
   RouterProvider,
 } from 'react-router-dom';
-import { client, ApiError } from '../core'
+import { client } from '../core'
 import { ErrorPageS } from './pages/ErrorPage';
 
 import { PageNotFoundError } from './errors';
@@ -47,7 +47,7 @@ const router = createHashRouter([
   {
     path: "/*",
     loader: async () => {
-      const {mainChannelId} = await client.api.getUserConfig()
+      const {mainChannelId} = await client.api.getUserConfig() || {};
       return redirect(`/${mainChannelId}`);
     },
     errorElement: <ErrorPageS />,

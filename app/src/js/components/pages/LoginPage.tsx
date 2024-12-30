@@ -147,7 +147,7 @@ const Container = styled.div`
 
 type LoginProps = {
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
-  error?: string | null;
+  error?: React.ReactNode | string | null;
   disabled?: boolean;
 }
 
@@ -171,8 +171,8 @@ export const LoginPage = ({ onSubmit, error = null, disabled = false }: LoginPro
           <p>{localMsg ?? 'Log-in to your quack account'}</p>
           <form onSubmit={onSubmit}>
             <div className='form-group'>
-              <label htmlFor="login">E-mail</label>
-              <input id="login" type='text' name='login' placeholder='user@example.com' disabled={disabled} />
+              <label htmlFor="email">E-mail</label>
+              <input id="email" type='text' name='email' placeholder='user@example.com' disabled={disabled} />
             </div>
             <div className='form-group'>
               <label htmlFor="password">Password</label>

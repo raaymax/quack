@@ -1,6 +1,8 @@
 export * from "./auth.ts";
 export * from "./channels.ts";
 export * from "./users.ts";
+export * from "./app.ts";
+export * from "./chat.ts";
 
 /*
 import { repo } from "../../../../infra/mod.ts";

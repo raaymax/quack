@@ -166,8 +166,8 @@ export const RegistrationPage = ({ onSubmit, error = null, disabled = false }: R
           <p>free and open-source chat application</p>
           <form onSubmit={onSubmit}>
             <div className='form-group'>
-              <label htmlFor="login">E-mail</label>
-              <input id="login" type='text' name='email' placeholder='user@example.com' disabled={disabled} />
+              <label htmlFor="email">E-mail</label>
+              <input id="email" type='text' name='email' placeholder='user@example.com' disabled={disabled} />
             </div>
             <div className='form-group'>
               <label htmlFor="name">Visible name</label>

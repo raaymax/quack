@@ -15,8 +15,10 @@ export default (core: Core) =>
       },
       body: {
         type: "object",
-        requireAny: ["message", "flat"],
+        requireAny: ["message", "flat", "encrypted"],
         properties: {
+          encrypted: { type: "string" },
+          _iv: { type: "string" },
           message: { $ref: "message#/definitions/body" },
           parentId: { type: "string", format: "entity-id" },
           flat: { type: "string" },

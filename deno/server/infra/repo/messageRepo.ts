@@ -18,9 +18,9 @@ type MessageQuery = Partial<
 >;
 
 export class MessageRepo extends Repo<MessageQuery, Message> {
-  COLLECTION = "messages";
+  override COLLECTION = "messages";
 
-  makeQuery(data: MessageQuery) {
+  override makeQuery(data: MessageQuery) {
     const {
       search,
       before,
@@ -41,7 +41,7 @@ export class MessageRepo extends Repo<MessageQuery, Message> {
     );
   }
 
-  async getAll(
+  override async getAll(
     arg: MessageQuery,
     { limit = 50, offset = 0, order = 1 }: Pagination = {},
   ) {

@@ -1,12 +1,10 @@
 import styled from 'styled-components';
 import { useCallback, useEffect } from 'react';
-import { Channel } from '../molecules/NavChannel';
 import { useDispatch, useMethods, useSelector } from '../../store';
 import { HoverProvider } from '../contexts/hover';
 import { MessageList } from '../organisms/MessageListScroller';
 import { Message as MessageType } from '../../types';
 import { useNavigate, useNavigation, useParams } from 'react-router-dom';
-import { useSidebar } from '../contexts/useSidebar';
 import { ButtonWithIcon } from '../molecules/ButtonWithIcon';
 import { MessageListArgsProvider } from '../contexts/messageListArgs';
 import { Toolbar } from '../atoms/Toolbar';

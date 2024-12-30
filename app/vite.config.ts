@@ -27,6 +27,12 @@ export default defineConfig({
       ignored: ["**/src-tauri/**"],
     },
   },
+  resolve: {
+    alias: {
+      "@quack/encryption": path.resolve(__dirname, "../deno/encryption/mod.ts"),
+      "@quack/api": path.resolve(__dirname, "../deno/api/mod.ts"),
+    },
+  },
   plugins: [
     react(),
     basicSsl({
@@ -59,13 +65,13 @@ export default defineConfig({
         theme_color: '#673ab8',
         icons: [
           {
-            src: '/icons/android-chrome-192x192.png',
+            src: '/icons/android_192x192.png',
             type: 'image/png',
             sizes: '192x192',
             purpose: 'any maskable',
           },
           {
-            src: '/icons/android-chrome-512x512.png',
+            src: '/icons/android_512x512.png',
             type: 'image/png',
             sizes: '512x512',
             purpose: 'any maskable',
