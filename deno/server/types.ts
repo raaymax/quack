@@ -11,10 +11,6 @@ export type DbUser = User & {
     backup?: { hash: string; data: EncryptedData; createdAt: Date };
   };
 
-  channels: {
-    encryptionKey: JsonWebKey;
-    channelId: EntityId;
-  }[];
   mainChannelId: EntityId;
 };
 

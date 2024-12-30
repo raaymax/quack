@@ -147,7 +147,7 @@ const Container = styled.div`
 
 type LoginProps = {
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
-  error?: string | null;
+  error?: React.ReactNode | string | null;
   disabled?: boolean;
 }
 

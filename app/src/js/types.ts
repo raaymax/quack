@@ -1,68 +1,5 @@
-import { EncryptedData, MessageBody } from '@quack/api';
 export * from '@quack/api';
 
-/* global JsonWebKey */
-/*
-export type Message = {
-  id?: string;
-  clientId: string;
-  message: MessageBody;
-  flat: string;
-  channelId: string;
-  parentId: string;
-  userId: string;
-  appId: string;
-  emojiOnly: boolean;
-  createdAt: string;
-  updatedAt: string;
-  links: string[];
-  pinned: boolean;
-  editing: boolean;
-  linkPreviews: {
-    url: string;
-    title: string;
-    siteName: string;
-    description: string;
-    mediaType: string;
-    contentType: string;
-    images: string[];
-    videos: string[];
-    favicons: string[];
-    charset: string;
-  }[];
-  attachments: {
-    id: string;
-    fileName: string;
-    contentType: string;
-    url?: string;
-    size?: number;
-  }[];
-  reactions: {
-    reaction: string;
-    userId: string;
-  }[];
-  info?: {
-    type: string;
-    action?: string;
-    msg: string;
-  };
-  thread?: {
-    childId: string;
-    userId: string;
-  }[];
-  // TODO: is it correct?
-  progress?: {
-    userId: string;
-    user: {
-      avatarUrl: string;
-      name: string;
-    }
-  }[];
-  priv?: boolean;
-  encrypted?: boolean;
-  annotations?: MessageBody;
-};
-*/
 
 export type EmptyEmoji= {
   empty: true,
@@ -110,7 +47,6 @@ export type Channel = {
   priv?: boolean;
   direct?: boolean;
   private?: boolean;
-  encryptionKey?: JsonWebKey | null;
 };
 
 export type Progress = {
@@ -133,9 +69,4 @@ export type Notification = {
 export type UserConfig = {
   appVersion: string,
   mainChannelId: string,
-  encryptionKey: JsonWebKey,
-  channels: {
-    channelId: string,
-    encryptionKey: EncryptedData,
-  }[]
 }

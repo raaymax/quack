@@ -10,7 +10,7 @@ type LoginProps = {
 export const Login = ({ children }: LoginProps) => {
   const [status, setStatus] = useState('pending');
   const [userId, setUser] = useState<string | null>(null);
-  const [msg, setMsg] = useState<any>(null);
+  const [msg, setMsg] = useState<React.ReactNode | null>(null);
 
   useEffect(() => {
     localStorage.removeItem('loginMessage');
