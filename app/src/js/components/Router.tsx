@@ -47,7 +47,7 @@ const router = createHashRouter([
   {
     path: "/*",
     loader: async () => {
-      const {mainChannelId} = await client.api.getUserConfig() ?? {};
+      const {mainChannelId} = await client.api.getUserConfig() || {};
       return redirect(`/${mainChannelId}`);
     },
     errorElement: <ErrorPageS />,
