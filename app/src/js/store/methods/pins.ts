@@ -1,17 +1,20 @@
+import { Message } from '../../types';
 import { createMethod } from '../store';
-import { getDirectChannelKey, decryptMessage } from './messages';
+import { decryptMessage } from './messages';
 
 export const load = createMethod('pins/load', async (channelId: string, { actions, client, dispatch, getState, methods }) => {
   await dispatch(methods.users.init());
+  const state = getState();
+  const preprocess = async (m: Message[]) => decryptMessage(m, channelId, state);
+
   dispatch(actions.pins.clear(channelId));
-  const req = await client.req({
-    type: 'message:pins',
+  const data = await client.messages.fetch({
+    limit: 1000,
+    preprocess,
+    pinned:true,
     channelId,
-    limit: 50,
   });
-  const decrypted = await decryptMessage(req.data, channelId, getState());
-  console.log('decrypted', decrypted);
-  dispatch(actions.pins.add(decrypted));
+  dispatch(actions.pins.add(data));
 });
 
 type Pin = {
@@ -20,7 +23,7 @@ type Pin = {
 };
 
 export const pin = createMethod('pins/pin', async ({ id, channelId }: Pin, {
-  actions, methods, client, dispatch,
+  methods, client, dispatch,
 }) => {
   const req = await client.req({
     type: 'message:pin',
@@ -32,7 +35,7 @@ export const pin = createMethod('pins/pin', async ({ id, channelId }: Pin, {
 });
 
 export const unpin = createMethod('pins/unpin', async ({ id, channelId }: Pin, {
-  actions, methods, client, dispatch,
+  methods, client, dispatch,
 }) => {
   const req = await client.req({
     type: 'message:pin',

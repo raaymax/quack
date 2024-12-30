@@ -115,6 +115,15 @@ class MessagesCache<T> {
   }
 }
 
+type MessageQuery = {
+  pinned?: boolean,
+  before?: string,
+  after?: string,
+  limit?: number,
+  channelId: string,
+  parentId?: string,
+  preprocess?: (m: Message[]) => Promise<Message[]>
+}
 
 export class MessageService{
   _cache: {[key: string]: MessagesCache<Message[]>};
@@ -150,7 +159,7 @@ export class MessageService{
 
 
 
-  async _fetch(query: {before?: string, after?: string, limit?: number, channelId: string, parentId?: string, preprocess?: (m: Message[]) => Promise<Message[]> }): Promise<Message[]> {
+  async _fetch(query: MessageQuery): Promise<Message[]> {
       const {channelId, parentId, before, after, limit, preprocess} = query
       const to = before ? new Date(before).getTime() : null;
       const from = after ? new Date(after).getTime() : null;
@@ -161,6 +170,7 @@ export class MessageService{
         }
       }
       const data = await this.client.api.getMessages({
+        pinned: query.pinned,
         channelId: channelId,
         parentId: parentId,
         before,
@@ -182,7 +192,7 @@ export class MessageService{
       return preprocessedData;
   }
 
-  async fetch(query: {before?: string, after?: string, limit?: number, channelId: string, parentId?: string, preprocess?: (m: Message[]) => Promise<Message[]>}): Promise<Message[]> {
+  async fetch(query: MessageQuery): Promise<Message[]> {
     const key = JSON.stringify(query);
     const promise = this.pending[key]
     if(promise) {

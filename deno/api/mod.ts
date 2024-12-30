@@ -276,6 +276,7 @@ class API extends EventTarget {
 
   getMessages = async (
     q: {
+      pinned?: boolean;
       before?: string;
       after?: string;
       limit?: number;
@@ -414,60 +415,6 @@ class API extends EventTarget {
         return await this.callApi(`/api/messages/${createRes.data[0].id}`, {
           method: "GET",
         });
-      }
-      case "message:getAll": {
-        const query: any = {};
-        if (msg.before) {
-          query.before = msg.before;
-        }
-        if (msg.after) {
-          query.after = msg.after;
-        }
-        if (msg.limit) {
-          query.limit = msg.limit;
-        }
-        if (msg.offset) {
-          query.offset = msg.offset;
-        }
-        if (msg.order) {
-          query.order = msg.order;
-        }
-        if (msg.search) {
-          query.search = msg.search;
-        }
-        query.parentId = msg.parentId || null;
-        const params = new URLSearchParams(query);
-        return this.callApi(
-          `/api/channels/${msg.channelId}/messages?${params.toString()}`,
-          { seqId: msg.seqId, mapFn: (i: any) => ({ type: "message", ...i }) },
-        );
-      }
-      case "message:pins": {
-        const query: any = { pinned: true };
-        if (msg.before) {
-          query.before = msg.before;
-        }
-        if (msg.after) {
-          query.after = msg.after;
-        }
-        if (msg.limit) {
-          query.limit = msg.limit;
-        }
-        if (msg.offset) {
-          query.offset = msg.offset;
-        }
-        if (msg.order) {
-          query.order = msg.order;
-        }
-        if (msg.search) {
-          query.search = msg.search;
-        }
-
-        const params = new URLSearchParams(query);
-        return this.callApi(
-          `/api/channels/${msg.channelId}/messages?${params.toString()}`,
-          { seqId: msg.seqId, mapFn: (i: any) => ({ type: "message", ...i }) },
-        );
       }
       case "message:remove": {
         return await this.callApi(`/api/messages/${msg.id}`, {

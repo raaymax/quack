@@ -36,7 +36,6 @@ export const PasswordReset = () => {
         oldPassword: { value: string};
       };
 
-      console.log({password: password.value, oldPassword: oldPassword.value})
       if (!token || !email) return;
       try {
         const result = await client.api.auth.resetPassword({
@@ -45,7 +44,6 @@ export const PasswordReset = () => {
           password: password.value,
           oldPassword: oldPassword.value,
         });
-        console.log({result})
 
         if(result.status === 'ok') {
           localStorage.setItem("token", "");

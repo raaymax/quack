@@ -108,6 +108,7 @@ export function SearchResults() {
             <div>{formatTime(result.searchedAt)} - {formatDate(result.searchedAt)}</div>
             <div>Search results for keyword &quot;{result.text}&quot;:</div>
           </SearchSeparator>
+          
           {result.data.map((msg: MessageType) => (
             <Message
               onClick={() => gotoMessage(msg)}

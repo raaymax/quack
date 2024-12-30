@@ -61,15 +61,6 @@ export default createCommand({
     encrypted: !!encryptionKey,
   });
 
-  if (encryptionKey) {
-    await repo.user.addChannelEncryptionKey(userId, channelId, encryptionKey);
-    bus.direct(userId, {
-      type: "config:channels:added",
-      channelId,
-      encryptionKey,
-    });
-  }
-
   const created = await repo.channel.get({ id: channelId });
 
   bus.group(created?.users ?? [], {

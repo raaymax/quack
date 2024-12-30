@@ -1,6 +1,6 @@
 import { Message } from '../../types';
 import { StateType, createMethod } from '../store';
-import { getDirectChannelKey } from './messages';
+import { decryptMessage } from './messages';
 
 type Query = {
   channelId: string;
@@ -8,23 +8,18 @@ type Query = {
 };
 
 
-export const find = createMethod('search/find', async ({ channelId, text }: Query, { actions, client, dispatch, getState}) => {
+export const find = createMethod('search/find', async ({ channelId, text }: Query, { actions, client, dispatch, methods, getState}) => {
+  await dispatch(methods.users.init());
   const state: StateType = getState();
+  const preprocess = async (m: Message[]) => decryptMessage(m, channelId, state);
   if(state.channels[channelId]?.channelType === 'DIRECT') {
     const results: Message[] = [];
 
-    const encryptionKey = await getDirectChannelKey(channelId, state);
-    if(!encryptionKey) {
-      return;
-    }
-    
-    const req: Parameters<typeof client.messages.fetch>[0] = {
+    const data = await client.messages.fetch({
       limit: 1000,
-      encryptionKey,
+      preprocess,
       channelId,
-    }
-
-    const data = await client.messages.fetch(req);
+    });
 
     results.push(...data.filter((m) => {
       if(m.secured) return false;
@@ -36,7 +31,6 @@ export const find = createMethod('search/find', async ({ channelId, text }: Quer
     return;
   }
 
-  console.log('searching', text);
   const data = await client.req({ type: 'message:search', channelId, text });
   dispatch(actions.search.push({ text, data: data.data, searchedAt: new Date().toISOString() }));
 });

@@ -73,16 +73,13 @@ const encryptMessage = async (msg: OutgoingMessageCreate, sharedKey: JsonWebKey)
 export const load = createMethod('messages/load', async (query: Query, { actions, client, dispatch, getState, methods }) => {
   await dispatch(methods.users.init());
   const state = getState();
+  const preprocess = async (m: Message[]) => decryptMessage(m, query.channelId, state);
   try{ 
-    const preprocess = async (m: Message[]) => decryptMessage(m, query.channelId, state);
-
-    const req: Parameters<typeof client.messages.fetch>[0] = {
+    const data = await client.messages.fetch({
       limit: 50,
       preprocess,
       ...query,
-    }
-
-    const data = await client.messages.fetch(req);
+    });
     dispatch(actions.messages.add(data));
     return data;
   }catch(e){

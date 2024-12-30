@@ -14,19 +14,6 @@ export class UserRepo extends Repo<UserQuery, DbUser> {
     };
   }
 
-  async addChannelEncryptionKey(
-    userId: EntityId,
-    channelId: EntityId,
-    encryptionKey: string,
-  ) {
-    const { db } = await this.connect();
-    return db.collection(this.COLLECTION)
-      .updateOne(
-        { _id: userId },
-        { $push: { channels: serialize({ channelId, encryptionKey }) } },
-      );
-  }
-
   async updateCredentials(query: UserQuery, type: string, data: Secret) {
     const { db } = await this.connect();
     return db.collection(this.COLLECTION)

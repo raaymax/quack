@@ -37,8 +37,7 @@ client
   })
   .on('message:remove', (msg) => store.dispatch(actions.messages.rm(msg)))
   .on('notification', () => { try { play(); } catch (err) { /* ignore */ } })
-  .on('notification', () => { try { navigator.vibrate([100, 30, 100]); } catch (err) { /* ignore */ } })
-  .on('config:channels:added', (msg) => store.dispatch(actions.config.addChannelEncryptionKey(msg)));
+  .on('notification', () => { try { navigator.vibrate([100, 30, 100]); } catch (err) { /* ignore */ } });
 
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) {
