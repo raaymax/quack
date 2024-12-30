@@ -18,7 +18,7 @@ type Messages = Message | Message[];
 export const getDirectChannelKey = async (channelId: string, state: StateType): Promise<JsonWebKey | null> => {
   const channel = state.channels[channelId];
   if(channel.channelType === 'DIRECT' && client.api.privateKey) {
-    const otherId = channel.users.find(u => u !== state.me);
+    const otherId = channel.users.find((u:string) => u !== state.me);
     if(otherId){
       const userPublicKey = state.users[otherId]?.publicKey;
       return await enc.deriveSharedKey(client.api.privateKey, userPublicKey);
@@ -74,14 +74,12 @@ export const load = createMethod('messages/load', async (query: Query, { actions
   await dispatch(methods.users.init());
   const state = getState();
   try{ 
-    const encryptionKey = await getDirectChannelKey(query.channelId, state);
+    const preprocess = async (m: Message[]) => decryptMessage(m, query.channelId, state);
 
     const req: Parameters<typeof client.messages.fetch>[0] = {
       limit: 50,
+      preprocess,
       ...query,
-    }
-    if(encryptionKey){
-      req.encryptionKey = encryptionKey;
     }
 
     const data = await client.messages.fetch(req);

@@ -148,38 +148,10 @@ export class MessageService{
     return Math.min(...dates);
   }
 
-  async decryptMessages(data: Message[], encryptionKey?: JsonWebKey): Promise<Message[]> {
-    if(!encryptionKey) {
-      console.warn('no encryption key - skipping decryption');
-      return data.map(item => ({...item}));
-    }
-    const enc = encryptor(encryptionKey);
-    return await Promise.all(data.map(async (item) => {
-      if(item.secured) {
-        const {
-          encrypted,
-          _iv,
-          ...rest
-        } = item;
-        try {
-          return {
-            ...rest,
-            ...await enc.decrypt({encrypted, _iv}),
-            secured: false,
-          }
-        } catch(e) {
-          console.error(e);
-          return {...item};
-        }
-      }else{
-        return {...item};
-      }
-    }));
-  }
 
 
-  async _fetch(query: {before?: string, after?: string, limit?: number, channelId: string, parentId?: string, encryptionKey?: JsonWebKey}): Promise<Message[]> {
-      const {channelId, parentId, before, after, limit, encryptionKey} = query
+  async _fetch(query: {before?: string, after?: string, limit?: number, channelId: string, parentId?: string, preprocess?: (m: Message[]) => Promise<Message[]> }): Promise<Message[]> {
+      const {channelId, parentId, before, after, limit, preprocess} = query
       const to = before ? new Date(before).getTime() : null;
       const from = after ? new Date(after).getTime() : null;
       if ( to || from ) {
@@ -196,21 +168,21 @@ export class MessageService{
         limit,
       })
 
-      const decrypted = await this.decryptMessages(data, encryptionKey);
+      const preprocessedData = preprocess ? await preprocess(data) : data;
 
 
       if (data?.length > 0) {
         this.cache(query).update(new MsgsRes({
           from: after ? from : this.getMinDate(data),
           to: before ? to : this.getMaxDate(data),
-          data: decrypted,
+          data: preprocessedData,
         }));
       }
 
-      return decrypted;
+      return preprocessedData;
   }
 
-  async fetch(query: {before?: string, after?: string, limit?: number, channelId: string, parentId?: string, encryptionKey?: JsonWebKey}): Promise<Message[]> {
+  async fetch(query: {before?: string, after?: string, limit?: number, channelId: string, parentId?: string, preprocess?: (m: Message[]) => Promise<Message[]>}): Promise<Message[]> {
     const key = JSON.stringify(query);
     const promise = this.pending[key]
     if(promise) {
