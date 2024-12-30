@@ -1,7 +1,7 @@
 /* global JsonWebKey */
 import { client } from '../../core';
 import { StateType, createMethod } from '../store';
-import { Message } from '../../types';
+import { BaseMessage, EncryptedData, EncryptedMessage, FullMessage, Message, MessageData } from '../../types';
 import { OutgoingMessageCreate } from '../../core/types';
 import * as enc from '@quack/encryption';
 
@@ -46,8 +46,10 @@ export const decryptMessage = async (msg: Messages, channelId: string, state: St
       if (!msg.secured) return msg;
 
       const {encrypted, _iv, ...rest} = msg;
-      const decrypted = await e.decrypt({encrypted, _iv});
-      return {...rest, ...decrypted, secure: false};
+      const base: BaseMessage = rest;
+      const decrypted: MessageData = await e.decrypt({encrypted, _iv});
+      const ret: FullMessage = {...base, ...decrypted, secured: false};
+      return ret;
     }));
   }catch(e){
     console.error(e);
@@ -56,18 +58,20 @@ export const decryptMessage = async (msg: Messages, channelId: string, state: St
 }
 const encryptMessage = async (msg: OutgoingMessageCreate, sharedKey: JsonWebKey) => {
   const {clientId, channelId, parentId, ...data} = msg;
-  const base =  {
+  const e = enc.encryptor(sharedKey);
+  const base: Partial<BaseMessage> =  {
     clientId,
     channelId,
     parentId: parentId === null ? undefined : parentId,
   };
-
-  const e = enc.encryptor(sharedKey);
-  return {
+  const encrypted: EncryptedData = await e.encrypt(data);
+  const m: Partial<EncryptedMessage> = {
     ...base,
-    ...await e.encrypt(data)
+    ...encrypted,
+    secured: true,
   };
 
+  return m;
 }
 
 export const load = createMethod('messages/load', async (query: Query, { actions, client, dispatch, getState, methods }) => {

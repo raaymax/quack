@@ -128,7 +128,6 @@ export function SearchResults() {
 
 export const Search = () => {
   const location = useLocation();
-  console.log('state', location.state);
   if(location.state?.search === undefined) return null;
 
   return (
