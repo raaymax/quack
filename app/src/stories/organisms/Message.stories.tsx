@@ -151,7 +151,7 @@ export const Ephemeral: Story = {
     mode: 'default',
     data: {
       ...BaseMessage,
-      priv: true,
+      ephemeral: true,
     }
   },
 };

@@ -170,7 +170,7 @@ const MessageBase = ({ onClick, sameUser, navigate = () => {}, ...props }: Messa
     linkPreviews,
     reactions,
     annotations,
-    priv: ephemeral,
+    ephemeral,
   } = msg;
   const { onEnter, toggleHovered, onLeave } = useHoverCtrl(msg.id);
   const [{ selected, id: streamName }] = useMessageListArgs();
@@ -200,10 +200,10 @@ const MessageBase = ({ onClick, sameUser, navigate = () => {}, ...props }: Messa
         {!sameUser && <MessageHeader user={user} createdAt={createdAt} />}
         {editing
           ? <Input mode='edit' messageId={id}>
-              <MessageBodyRenderer body={msg.message} opts={{emojiOnly}} />
+              <MessageBodyRenderer body={message} opts={{emojiOnly}} />
             </Input>
           : <div className={['content'].join(' ')}>
-            <MessageBodyRenderer body={msg.message} opts={{emojiOnly}} />
+            <MessageBodyRenderer body={message} opts={{emojiOnly}} />
           </div>
         }
 

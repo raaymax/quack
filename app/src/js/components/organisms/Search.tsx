@@ -1,7 +1,7 @@
 import styled from "styled-components";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { HoverProvider } from "../contexts/hover";
-import { useSelector, useMethods, useDispatch, methods } from "../../store";
+import { useSelector, useDispatch, methods } from "../../store";
 import { formatTime, formatDate, isMobile } from "../../utils";
 
 import { Message } from "../organisms/Message";
@@ -54,7 +54,7 @@ const StyledSearch = styled.div`
     margin: 8px 0px;
   }
   & .message:hover {
-    background-color: var(--primary_active_mask);
+    background-color: ${(props) => props.theme.Chatbox.Message.Hover}
   }
   .mobile-search {
     flex: 1;
@@ -136,8 +136,8 @@ export function SearchResults() {
           {result.data
             .map((msg: MessageType) => (
               <Message
+                navigate={navigate}
                 onClick={() => gotoMessage(msg)}
-                className={msg.priv ? ["private"] : []}
                 data-id={msg.id}
                 client-id={msg.clientId}
                 key={`search:${result.text}:${msg.id || msg.clientId}`}
