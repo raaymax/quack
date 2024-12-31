@@ -1,8 +1,7 @@
 import styled from 'styled-components';
 import { cn, ClassNames } from '../../utils';
 import { Icon } from './Icon';
-import { useNavigate } from 'react-router-dom';
-import { useCallback, useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const Container = styled.div`
   position: relative;
@@ -18,6 +17,7 @@ const SearchBoxInput = styled.input`
   display: block;
   flex: 0 0 30px;
   height: 32px;
+  width: 100%;
   border-radius: 8px;
   box-sizing: border-box;
   padding: 0 15px;
@@ -37,21 +37,29 @@ const SearchBoxInput = styled.input`
 type SearchBoxProps = {
   onSearch?: (value: string) => void;
   defaultValue?: string;
+  value?: string;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   className?: ClassNames;
   placeholder?: string;
 }
 
 export const SearchBox = ({
-  placeholder = 'Search here...', className, onSearch, defaultValue
+  placeholder = 'Search here...', className, onSearch, onChange, value: v, defaultValue
 }: SearchBoxProps) => {
   const [value, setValue] = useState(defaultValue ?? '');
 
-  return (<Container>
+  useEffect(() => {
+    setValue(v ?? '');
+  }, [v]);
+
+  return (<Container className={cn(className)}>
     <SearchBoxInput
       type="text"
-      onChange={(e) => setValue(e.target.value)}
+      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+        onChange?.(e);
+        setValue(e.target.value);
+      }}
       onKeyDown={(e) => e.key === 'Enter' && value.trim() && onSearch?.(value)}
-      className={cn(className)}
       value={value}
       placeholder={placeholder}
     />

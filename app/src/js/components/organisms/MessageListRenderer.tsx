@@ -34,7 +34,6 @@ export const BaseRenderer = ({
             stream={stream}
             context={context}
             onClick={() => onMessageClicked(msg)}
-            className={msg.priv ? ['private'] : []}
             data-id={msg.id}
             data-date={msg.createdAt}
             client-id={msg.clientId}
@@ -55,7 +54,7 @@ export const MessageListRenderer = ({
     {[...messages].reverse().map((msg) => {
       let sameUser = false;
       let sameDate = false;
-      if (!msg.priv) {
+      if (!msg.ephemeral) {
         sameUser = prev
           && prev?.userId === msg?.userId
           && (new Date(msg.createdAt).getTime() - new Date(prev.createdAt).getTime()) < 60000;
@@ -74,7 +73,6 @@ export const MessageListRenderer = ({
             stream={stream}
             context={context}
             onClick={() => onMessageClicked(msg)}
-            className={msg.priv ? ['private'] : []}
             data-id={msg.id}
             data-date={msg.createdAt}
             client-id={msg.clientId}

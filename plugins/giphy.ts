@@ -71,7 +71,7 @@ export default (config) => async (app, core) => {
           type: "message",
           appId: APP_ID,
           clientId: loc.clientId,
-          priv: true,
+          ephemeral: true,
           channelId: loc.channelId,
           flat: 'Giphy search results',
           message: [

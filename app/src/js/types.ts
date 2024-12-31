@@ -24,7 +24,7 @@ export type Notif = {
   notifType: string;
   notif: string;
   createdAt: string;
-  priv?: boolean;
+  ephemeral?: boolean;
 }
 
 export type Stream = {

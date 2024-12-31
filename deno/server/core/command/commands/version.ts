@@ -8,7 +8,7 @@ export class VersionCommand {
       type: "message",
       clientId: `sys:${Math.random().toString(10)}`,
       userId: (await core.repo.user.get({ name: "System" })).id,
-      priv: true,
+      ephemeral: true,
       flat: `Server version: ${
         Deno.env.get("APP_VERSION") ?? "3.x.x"
       }\nClient version: ${data.context?.appVersion ?? "3.x.x"}`,
