@@ -39,8 +39,11 @@ Inspired by Slack but more affordable for private use, Quack combines the best f
 - Plugin system for extensibility
 
 ## Quick Start
+### Using Docker Hub
+[https://registry.hub.docker.com/r/codecat/quack](https://registry.hub.docker.com/r/codecat/quack)
 
-The fastest way to get started is to use the Docker compose. Using following command will start the application with default settings in no time.
+### Using GitHub repository
+The fastest way to get started is to use the Docker compose after the code checkout. Using following command will start the application with default settings in no time.
 ```
 docker compose up -d
 ```
