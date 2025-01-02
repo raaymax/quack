@@ -1,6 +1,5 @@
 // In this file you can configure migrate-mongo
-import { createRequire } from 'node:module';
-import { default as appConfig } from '@quack/config';
+import { default as appConfig } from '@quack/config/load';
 
 const config = {
   mongodb: {

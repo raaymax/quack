@@ -1,6 +1,5 @@
 import { assert, assertEquals } from "@std/assert";
 import { Agent } from "@planigale/testing";
-import config from "@quack/config";
 
 import { createApp } from "../../__tests__/app.ts";
 import { Chat } from "../../__tests__/chat.ts";

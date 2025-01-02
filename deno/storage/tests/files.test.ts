@@ -2,7 +2,7 @@ import { Agent } from "@planigale/testing";
 import { assert, assertEquals } from "@std/assert";
 import * as path from "@std/path";
 
-import config, { type Config } from "@quack/config";
+import config, { Config } from "./config.ts";
 import { buildApp } from "../src/interfaces/http/mod.ts";
 import { initStorage } from "../src/core/mod.ts";
 

@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import config from "@quack/config";
+import config from "@quack/config/load";
 import { Repository } from "../infra/repo/mod.ts";
 
 const repo = new Repository(config);
