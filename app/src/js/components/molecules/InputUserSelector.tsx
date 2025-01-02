@@ -92,9 +92,9 @@ export const UserSelector = () => {
   useEffect(() => {
     const { current } = input;
     if (!current) return;
-    current.addEventListener('keydown', ctrl);
+    current.addEventListener('keydown', ctrl as any);
     return () => {
-      current.removeEventListener('keydown', ctrl);
+      current.removeEventListener('keydown', ctrl as any);
     };
   }, [input, ctrl]);
 

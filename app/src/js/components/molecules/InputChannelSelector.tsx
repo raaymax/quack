@@ -85,8 +85,8 @@ export const ChannelSelector = () => {
     }
   }, [currentText, scope, create, remove, submit]);
 
-  const onSelect = useCallback((idx: number, e: Event) => {
-    submit(e, { selected: idx });
+  const onSelect = useCallback((idx: number, e: React.MouseEvent) => {
+    submit(e.nativeEvent, { selected: idx });
   }, [submit]);
 
   useEffect(() => {

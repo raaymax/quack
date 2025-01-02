@@ -68,6 +68,7 @@ export type BaseMessage = {
   pinned: boolean;
   clientId: string;
   appId?: string;
+  ephemeral?: boolean;
   reactions: Array<{
     userId: Eid;
     reaction: string;
@@ -81,15 +82,14 @@ export type MessageData = {
   flat: string;
   message: MessageBody;
   annotations?: MessageBody;
-  emojiOnly: boolean;
-  ephemeral?: boolean;
-  thread: Array<{
+  emojiOnly?: boolean;
+  thread?: Array<{
     userId: Eid;
     childId: Eid;
   }>;
-  links: string[];
-  mentions: string[];
-  linkPreviews: {
+  links?: string[];
+  mentions?: string[];
+  linkPreviews?: {
     url: string;
     title: string;
     siteName: string;
@@ -101,8 +101,8 @@ export type MessageData = {
     favicons: string[];
     charset: string;
   }[];
-  parsingErrors: any[];
-  attachments: Array<{ // TODO make this a separate entity
+  parsingErrors?: any[];
+  attachments?: Array<{ // TODO make this a separate entity
     id: string;
     fileName: string;
     contentType: string;

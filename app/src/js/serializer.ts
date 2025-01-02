@@ -37,7 +37,7 @@ export type CommandToSend = {
   createdAt: string;
   info: null;
   name: string;
-  args: string[];
+  text: string;
   flat: string;
 };
 

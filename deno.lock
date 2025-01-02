@@ -78,7 +78,6 @@
     "npm:@reduxjs/toolkit@2.2.3": "2.2.3_react@18.2.0_react-redux@9.1.0__@types+react@18.3.18__react@18.2.0__redux@5.0.1_@types+react@18.3.18_redux@5.0.1",
     "npm:@storybook/addon-essentials@8.4.4": "8.4.4_storybook@8.4.7_@types+react@18.3.18",
     "npm:@storybook/addon-interactions@8.4.4": "8.4.4_storybook@8.4.7",
-    "npm:@storybook/addon-onboarding@8.4.4": "8.4.4_storybook@8.4.7_react@18.2.0",
     "npm:@storybook/addon-themes@8.4.7": "8.4.7_storybook@8.4.7",
     "npm:@storybook/blocks@8.4.4": "8.4.4_react@18.2.0_react-dom@18.2.0__react@18.2.0_storybook@8.4.7",
     "npm:@storybook/react-vite@8.4.7": "8.4.7_react@18.2.0_react-dom@18.2.0__react@18.2.0_storybook@8.4.7_vite@5.4.11__@types+node@20.10.4_typescript@5.4.5_@types+node@20.10.4",
@@ -1826,13 +1825,6 @@
         "@storybook/global",
         "storybook",
         "tiny-invariant"
-      ]
-    },
-    "@storybook/addon-onboarding@8.4.4_storybook@8.4.7_react@18.2.0": {
-      "integrity": "sha512-LCCQez5xzFQ6wunXnpNjgiuqh8SYPd2AgrRPDKo5Yf1QyXnT4xSFjZr/4QFyzPsOBnpsq8MlNPS4l063Y+Qkgg==",
-      "dependencies": [
-        "react-confetti",
-        "storybook"
       ]
     },
     "@storybook/addon-outline@8.4.4_storybook@8.4.7": {
@@ -6055,7 +6047,7 @@
             "npm:@reduxjs/toolkit@2.2.3",
             "npm:@storybook/addon-essentials@8.4.4",
             "npm:@storybook/addon-interactions@8.4.4",
-            "npm:@storybook/addon-onboarding@8.4.4",
+            "npm:@storybook/addon-onboarding@8.4.7",
             "npm:@storybook/addon-themes@8.4.7",
             "npm:@storybook/blocks@8.4.4",
             "npm:@storybook/react-vite@8.4.7",

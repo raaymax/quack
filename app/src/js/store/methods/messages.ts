@@ -1,8 +1,7 @@
 /* global JsonWebKey */
 import { client } from '../../core';
 import { StateType, createMethod } from '../store';
-import { BaseMessage, EncryptedData, EncryptedMessage, FullMessage, Message, MessageData } from '../../types';
-import { OutgoingMessageCreate } from '../../core/types';
+import { BaseMessage, EncryptedData, EncryptedMessage, FullMessage, Message, MessageData, ViewMessage } from '../../types';
 import * as enc from '@quack/encryption';
 
 type Query = {
@@ -32,13 +31,15 @@ export const getDirectChannelKey = async (channelId: string, state: StateType): 
   return null;
 }
 
-export const decryptMessage = async (msg: Messages, channelId: string, state: StateType): Promise<Message[]> => {
+export const decryptMessage = async (msg: Messages, channelId: string, state: StateType): Promise<FullMessage[]> => {
   try{ 
     const encryptionKey = await getDirectChannelKey(channelId, state);
 
     if(!encryptionKey){
-      console.warn('no encryption key - skipping decryption');
-      return [msg].flat();
+      return [msg].flat().filter((m) => {
+        if (m.secured) console.warn('no encryption key - skipping decryption');
+        return !m.secured;
+      }) as FullMessage[];
     }
     const e = enc.encryptor(encryptionKey);
 
@@ -56,7 +57,7 @@ export const decryptMessage = async (msg: Messages, channelId: string, state: St
     throw e;
   }
 }
-const encryptMessage = async (msg: OutgoingMessageCreate, sharedKey: JsonWebKey) => {
+const encryptMessage = async (msg: ViewMessage, sharedKey: JsonWebKey): Promise<Partial<Message>> => {
   const {clientId, channelId, parentId, ...data} = msg;
   const e = enc.encryptor(sharedKey);
   const base: Partial<BaseMessage> =  {
@@ -106,7 +107,7 @@ export const addDecrypted = createMethod('messages/addDecrypted', async (msg: Me
 });
 
 
-export const sendMessage = createMethod('messages/sendMessage', async ({ payload: msg}: {payload: OutgoingMessageCreate}, { dispatch, actions, getState }) => {
+export const sendMessage = createMethod('messages/sendMessage', async ({ payload: msg}: {payload: ViewMessage}, { dispatch, actions, getState }) => {
   dispatch(actions.messages.add({ ...msg, userId: getState().me, pending: true, info: null }));
   try {
     const state = getState();

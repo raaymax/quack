@@ -41,6 +41,7 @@ type Story = StoryObj<typeof Message>;
  
 const BaseMessage = {
   id: '321',
+  secured: false as const,
   channelId: 'main',
   userId: '123',
   createdAt: '2021-01-01T00:00:00Z',
@@ -49,6 +50,9 @@ const BaseMessage = {
   links: [],
   emojiOnly: false,
   reactions: [],
+  mentions: [],
+  thread: [],
+  parsingErrors: [],
   attachments: [],
   linkPreviews: [],
   parentId: '',

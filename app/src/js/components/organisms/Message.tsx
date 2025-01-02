@@ -11,7 +11,6 @@ import { MessageBodyRenderer } from '../molecules/MessageBody';
 import { Files } from '../molecules/Files';
 import { Reactions } from '../molecules/Reactions';
 import { MessageToolbar } from '../molecules/MessageToolbar';
-import { Input } from './Input';
 import { ThreadInfo } from '../molecules/ThreadInfo';
 
 import { MessageHeader } from '../atoms/MessageHeader';
@@ -24,7 +23,7 @@ import {
   cn, ClassNames, formatTime
 } from '../../utils';
 
-import { Message as MessageType } from '../../types';
+import { ViewMessage } from '../../types';
 import { useMessageListArgs } from '../contexts/useMessageListArgs';
 //import { useNavigate } from 'react-router-dom';
 
@@ -58,7 +57,7 @@ const MessageContainer = styled.div`
   }
 
   &.selected {
-    background-color: ${(props) => props.theme.Chatbox.Selected};
+    background-color: ${(props) => props.theme.Chatbox.Message.Hover};
   }
 
   .side-time {
@@ -199,16 +198,14 @@ const MessageBase = ({ onClick, sameUser, navigate = () => {}, ...props }: Messa
       <div className='body'>
         {!sameUser && <MessageHeader user={user} createdAt={createdAt} />}
         {editing
-          ? <Input mode='edit' messageId={id}>
-              <MessageBodyRenderer body={message} opts={{emojiOnly}} />
-            </Input>
+          ? <div> Editing not implemented </div>
           : <div className={['content'].join(' ')}>
             <MessageBodyRenderer body={message} opts={{emojiOnly}} />
           </div>
         }
 
         <Files list={msg.attachments || []} />
-        <LinkPreviewList links={linkPreviews} />
+        {linkPreviews && <LinkPreviewList links={linkPreviews} />}
         <Info />
         <Reactions messageId={id} reactions={reactions}/>
         {streamName != 'side' && <ThreadInfo navigate={navigate} msg={msg}/>}
@@ -223,7 +220,7 @@ const MessageBase = ({ onClick, sameUser, navigate = () => {}, ...props }: Messa
 };
 
 type MessageProps = MessageBaseProps & {
-  data: MessageType;
+  data: ViewMessage;
   navigate?: (path: string) => void;
 };
 

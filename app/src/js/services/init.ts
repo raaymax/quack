@@ -11,7 +11,7 @@ declare global {
 }
 
 const initApp = createMethod('initApp', async (_arg, {
-  dispatch, getState, methods, actions,
+  dispatch, methods, actions,
 }) => {
   if (isMobile()) {
     document.body.setAttribute('class', 'mobile');

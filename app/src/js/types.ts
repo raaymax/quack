@@ -1,4 +1,18 @@
 export * from '@quack/api';
+import { FullMessage } from '@quack/api';
+
+export type ViewMessage = FullMessage & {
+  progress?: ViewProgress[];
+  info?: {
+    type: 'error' | 'info',
+    msg: string,
+    action?: string,
+  }
+  attachments?: {
+    url: string,
+  }[]
+  editing?: boolean;
+}
 
 
 export type EmptyEmoji= {
@@ -39,15 +53,6 @@ export type MessageListArgs = {
   date?: string,
 };
 
-export type Channel = {
-  id: string;
-  name: string;
-  users: string[];
-  channelType: string;
-  priv?: boolean;
-  direct?: boolean;
-  private?: boolean;
-};
 
 export type Progress = {
   channelId: string;
@@ -55,6 +60,15 @@ export type Progress = {
   parentId: string;
   count: number;
   lastMessageId: string;
+}
+
+export type ViewProgress = {
+  userId: string;
+  user: {
+    id?: string;
+    name: string;
+    avatarUrl: string;
+  }
 }
 
 export type Notification = {

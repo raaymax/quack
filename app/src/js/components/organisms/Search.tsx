@@ -7,7 +7,7 @@ import { formatTime, formatDate, isMobile } from "../../utils";
 import { Message } from "../organisms/Message";
 import { Toolbar } from "../atoms/Toolbar";
 import { ButtonWithIcon } from "../molecules/ButtonWithIcon";
-import { Message as MessageType } from "../../types";
+import { ViewMessage as MessageType } from "../../types";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { MessageListArgsProvider } from "../contexts/messageListArgs";
 import { SearchBox } from "../atoms/SearchBox";

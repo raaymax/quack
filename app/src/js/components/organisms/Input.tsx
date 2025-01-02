@@ -128,13 +128,12 @@ export const InputContainer = styled.div`
 `;
 
 type InputFormProps = {
-  children?: React.ReactNode,
   className?: ClassNames,
   channelId: string,
   parentId?: string,
 }
 
-export const InputForm = ({ children, className, channelId, parentId }: InputFormProps) => {
+export const InputForm = ({ className, channelId, parentId }: InputFormProps) => {
   const [showEmojis, setShowEmojis] = useState(false);
   const {
     mode, messageId,

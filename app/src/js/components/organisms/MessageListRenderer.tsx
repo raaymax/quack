@@ -6,7 +6,7 @@ import * as types from '../../types';
 import { useNavigate } from 'react-router-dom';
 
 export type MessageListRendererProps = {
-  list: (types.Message| types.Notif)[];
+  list: (types.ViewMessage| types.Notif)[];
   stream?: unknown;
   context?: unknown;
   onMessageClicked?: (msg: types.Message) => void;
@@ -19,10 +19,8 @@ export const BaseRenderer = ({
   list: messages, stream, context, onMessageClicked = (() => undefined),
 }: MessageListRendererProps) => {
     const navigate = useNavigate();
-  let prev: types.Message | types.Notif;
   return (<>
     {[...messages].reverse().map((msg) => {
-      prev = msg;
       return <React.Fragment key={`${msg.id}-${msg.clientId}`}>
         {isNotif(msg)
           ? <div
@@ -49,7 +47,7 @@ export const MessageListRenderer = ({
   list: messages, stream, context, onMessageClicked = (() => undefined),
 }: MessageListRendererProps) => {
     const navigate = useNavigate();
-  let prev: types.Message | types.Notif;
+  let prev: types.ViewMessage | types.Notif;
   return (<>
     {[...messages].reverse().map((msg) => {
       let sameUser = false;

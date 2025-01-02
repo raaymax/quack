@@ -35,6 +35,16 @@ export class EntityId {
   }
 }
 
+export class ApiErrorResponse extends Error {
+  type = "response";
+  status = "error";
+  error: unknown;
+  constructor(public errorCode: string, message: string, originalError: unknown) {
+    super(message);
+    this.error = originalError;
+  }
+}
+
 export type Eid = "Deno" extends keyof typeof globalThis ? EntityId : string;
 
 export type EncryptedData = {
@@ -46,11 +56,10 @@ export type Channel = {
   id: string;
   name: string;
   users: string[];
-  channelType: string;
+  channelType: 'PUBLIC' | 'PRIVATE' | 'DIRECT';
   priv?: boolean;
   direct?: boolean;
   private?: boolean;
-  encryptionKey?: JsonWebKey | null;
 };
 
 export type UserConfig = {
@@ -64,12 +73,13 @@ export type UserConfig = {
 };
 
 export type User = {
-  id: EntityId;
+  id: Eid;
   alias: string | null;
   email: string;
   name: string;
   avatarFileId: string;
   status?: "active" | "inactive" | "away";
+  lastSeen?: string;
   publicKey: JsonWebKey;
   hidden?: boolean;
 };
