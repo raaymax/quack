@@ -1,4 +1,4 @@
-import { ObjectId } from 'npm:mongodb';
+import { ObjectId } from 'mongodb';
  
 export async function up(db) {
   const cursor = await db.collection('messages')

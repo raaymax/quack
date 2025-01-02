@@ -1,14 +1,11 @@
 import { play } from './services/sound';
-import { sendShareMessage } from './services/messages';
 import { init } from './services/init';
 import { client } from './core';
 import { store, actions, methods } from './store';
-import { Notification } from './types';
 
 let sound = false;
 
 client
-  .on('share', ({ data }) => store.dispatch(sendShareMessage(data)))
   .on('user', (msg) => store.dispatch(actions.users.add(msg)))
   .on('emoji', (msg) => store.dispatch(actions.emojis.add({ ...msg, category: 'c' })))
   .on('badge', (msg) => store.dispatch(actions.progress.add(msg)))

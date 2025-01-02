@@ -38,7 +38,14 @@ export class Client {
   }
 
   on(name: string, cb: (e: any) => void) {
-    this.api.on(name, (ev: CustomEvent) => cb(ev.detail));
+    this.api.on(name, (ev: Event) => {
+      if(ev instanceof CustomEvent){
+        cb(ev.detail)
+      } else {
+        console.warn("Event is not CustomEvent", ev);
+        cb(ev);
+      }
+    });
     return this;
   }
 

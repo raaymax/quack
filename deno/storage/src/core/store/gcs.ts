@@ -1,5 +1,5 @@
 /* eslint-disable class-methods-use-this */
-import { GoogleAuth } from "npm:google-auth-library";
+import { GoogleAuth } from "google-auth-library";
 import { ResourceNotFound } from "@planigale/planigale";
 import type { FileData, FileOpts } from "../types.ts";
 

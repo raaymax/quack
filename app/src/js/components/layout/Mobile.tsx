@@ -7,7 +7,7 @@ import { useEffect } from 'react';
 import { Workspaces } from '../organisms/Workspaces';
 import { Sidebar } from '../organisms/Sidebar';
 import { Conversation } from '../organisms/Conversation';
-import { useDispatch, useMessage } from '../../store';
+import { useMessage } from '../../store';
 import { Channel } from '../molecules/NavChannel';
 import { Toolbar } from '../atoms/Toolbar';
 import { ButtonWithIcon } from '../molecules/ButtonWithIcon';
@@ -58,7 +58,6 @@ export const Container = styled.div`
     flex: 1 100vh;
     width: 100%;
     display: flex;
-    background-color: ${(props) => props.theme.Channels.Container};
     flex-direction: column;
   
 
@@ -285,7 +284,6 @@ type MainConversationProps = {
 export const MainConversation = ({ channelId, children}: MainConversationProps) => {
   const location = useLocation();
   const [stream] = useMessageListArgs();
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { toggleSidebar } = useSidebar();
 

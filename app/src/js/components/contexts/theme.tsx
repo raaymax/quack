@@ -432,7 +432,12 @@ const themes: Themes = {
   },
 };
 
-export const ThemeSelectorContext = createContext<ThemeControl>({theme: 'dark', themeNames: ['dark'], themes: themes.dark, setTheme: () => {}});
+export const ThemeSelectorContext = createContext<ThemeControl>({
+  theme: 'dark',
+  themeNames: ['dark'],
+  themes: themes,
+  setTheme: () => {}
+});
 
 type ThemeSelectorContextProps = {
   children: React.ReactNode;

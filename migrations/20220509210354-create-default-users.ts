@@ -1,4 +1,4 @@
-import { ObjectId } from 'npm:mongodb';
+import { ObjectId } from 'mongodb';
 import { hash } from "@felix/argon2";
 import * as enc from '@quack/encryption';
 

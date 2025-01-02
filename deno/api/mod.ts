@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-window
 import { SSESource } from "@planigale/sse";
-import { Channel, UserConfig } from "./types.ts";
+import { ApiErrorResponse, Channel, Message, UserConfig } from "./types.ts";
 import AuthAPI from "./auth.ts";
 
 export * from "./types.ts";
@@ -217,21 +217,18 @@ class API extends EventTarget {
           retry: retry + 1,
         });
       } else {
-        return {
-          type: "response",
-          status: "error",
-          seqId: opts.seqId,
-          error: await res.json(),
-        };
+        return new ApiErrorResponse(
+          "INTERNAL_SERVER_ERROR",
+          "Server error",
+          await res.json(),
+        );
       }
     }
-
-    return {
-      type: "response",
-      status: "error",
-      seqId: opts.seqId,
-      error: await res.json(),
-    };
+    return new ApiErrorResponse(
+      "CLIENT_ERROR",
+      "Client error",
+      await res.json(),
+    );
   }
 
   getResource = async <T = any>(
@@ -340,7 +337,7 @@ class API extends EventTarget {
     await res.body?.cancel();
   }
 
-  async sendMessage(msg: any): Promise<any> {
+  async sendMessage(msg: Partial<Message>): Promise<any> {
     const res = await this.fetchWithCredentials(
       `/api/channels/${msg.channelId}/messages`,
       {

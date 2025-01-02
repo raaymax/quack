@@ -1,4 +1,4 @@
-import * as path from "jsr:@std/path";
+import * as path from "@std/path";
 import { Db, MongoClient, ReadConcern, ReadPreference, W } from "mongodb";
 
 export { ObjectId } from "mongodb";

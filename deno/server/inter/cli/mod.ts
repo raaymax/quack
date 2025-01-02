@@ -1,4 +1,4 @@
-import { Command } from "jsr:@cliffy/command@1.0.0-rc.5";
+import { Command } from "@cliffy/command";
 
 const run = new Command()
   .arguments("<config:string>")

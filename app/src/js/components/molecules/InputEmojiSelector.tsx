@@ -29,12 +29,16 @@ export const EmojiSelector = () => {
   const options = useMemo(() => {
     let em = fuse.search(currentText || '').slice(0, 5).map(({ item }) => item);
     em = em.length ? em : emojis.slice(0, 5);
-    const opts: MenuOption[] = [...em.map((item) => ({
-      label: item.unicode && String.fromCodePoint(parseInt(item.unicode, 16)),
-      url: item.fileId && getUrl(item.fileId),
-      name: item.shortname,
-      item,
-    })), { label: '❌', name: 'no emoji', action: 'close' }];
+    const opts: MenuOption[] = [...em.map((item) => {
+      if (item.empty) return item;
+      return ({
+        empty: false,
+        label: item.unicode && String.fromCodePoint(parseInt(item.unicode, 16)),
+        url: item.fileId && getUrl(item.fileId),
+        name: item.shortname,
+        item,
+      });
+    }).filter(e=>!e.empty) as MenuOption[], { label: '❌', name: 'no emoji', action: 'close' }];
     return opts;
   }, [fuse, emojis, currentText]);
 
@@ -168,7 +172,7 @@ export const EmojiSelector = () => {
     <TextMenu
       open={true}
       options={options}
-      onSelect={(...ar) => onSelect(...ar)}
+      onSelect={(idx, ev) => onSelect(idx, ev.nativeEvent)}
       selected={selected}
       setSelected={setSelected} />
   );

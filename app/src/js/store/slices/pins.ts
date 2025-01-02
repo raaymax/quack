@@ -1,8 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { Message } from '../../types';
+import { ViewMessage } from '../../types';
 
 type PinsState = {
-  [channelId: string]: Message[];
+  [channelId: string]: ViewMessage[];
 };
 
 export default createSlice({

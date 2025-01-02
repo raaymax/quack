@@ -11,7 +11,6 @@ import { Toolbar } from '../atoms/Toolbar';
 import { ButtonWithEmoji } from './ButtonWithEmoji';
 import { ButtonWithIcon } from './ButtonWithIcon';
 import { useParams } from 'react-router-dom';
-import { Tooltip } from '../atoms/Tooltip';
 
 export const Container = styled.div`
   position: absolute;

@@ -1,6 +1,5 @@
 import { SizeProvider } from "../contexts/size";
 import { LogoPic } from "../atoms/Logo";
-import { useSelector } from "../../store";
 import styled from "styled-components";
 
 const Container = styled.div`
@@ -22,7 +21,7 @@ const Container = styled.div`
 `;
 
 export const Workspaces = () => {
-  const userId = useSelector((state) => state?.me);
+  //const userId = useSelector((state) => state?.me);
   return (
     <Container className="workspaces">
       <SizeProvider value={64}>

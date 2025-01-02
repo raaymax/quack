@@ -10,7 +10,7 @@ import { reinit } from '../../services/init';
 import { HoverProvider } from '../contexts/hover';
 import { useMessages } from '../contexts/useMessages';
 import { LoadingIndicator } from '../molecules/LoadingIndicator';
-import { Message as MessageType } from '../../types';
+import { ViewMessage as MessageType } from '../../types';
 import { useMessageListArgs } from '../contexts/useMessageListArgs';
 import { ClassNames, cn } from '../../utils';
 
@@ -75,7 +75,7 @@ export function Conversation({channelId, parentId, className}: {channelId: strin
   }, []);
 
   const bumpProgress = useCallback(() => {
-    const latest = list.find(({ priv }) => !priv);
+    const latest = list.find(({ ephemeral }) => !ephemeral);
     if (latest?.id) dispatch(methods.progress.update(latest.id));
   }, [methods, list, dispatch]);
 

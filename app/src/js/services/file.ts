@@ -125,10 +125,8 @@ async function uploadFile(args: UploadArgs): Promise<UploadResponse> {
   );
   const res = await fetch(FILES_URL, {
     method: 'POST',
-    get duplex() {
-      console.log('duplex');
-      return 'half';
-    },
+    // @ts-ignore
+    duplex: 'half',
     headers: {
       Authorization: `Bearer ${localStorage.token}`,
       'Content-Type': args.contentType || 'application/octet-stream',

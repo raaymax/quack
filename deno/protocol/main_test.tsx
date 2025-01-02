@@ -1,4 +1,4 @@
-import { assertEquals } from "jsr:@std/assert";
+import { assertEquals } from "@std/assert";
 import { Bold, Line, Link, Message, Text } from "./main.tsx";
 import { MessageType } from "./Message.ts";
 

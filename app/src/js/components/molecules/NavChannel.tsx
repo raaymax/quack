@@ -5,6 +5,7 @@ import { Badge } from '../atoms/Badge';
 import { TextWithIcon } from './TextWithIcon';
 import { cn, ClassNames } from '../../utils';
 import { Tooltip } from '../atoms/Tooltip';
+import { User } from '../../types';
 
 const TagContainer = styled.div`
   font-size: 16px;
@@ -36,22 +37,10 @@ const Container = styled.div`
     text-overflow: ellipsis;
   }
   &.active {
-    background-color: var(--primary_active_mask);
+    background: ${(props) => props.theme.ActiveOverlay};
   }
   &:hover {
-    background-color: var(--primary_active_mask);
-  }
-  &.system {
-    color: ${(props) => props.theme.userSystem};
-  }
-  &.connected {
-    color: ${(props) => props.theme.userConnected};
-  }
-  &.recent {
-    color: ${(props) => props.theme.userActive};
-  }
-  &.offline {
-    color: ${(props) => props.theme.userDisconnected};
+    background-color: ${(props) => props.theme.Channel.Hover}; 
   }
 `;
 
@@ -93,7 +82,7 @@ const DirectChannel = ({
   const me = useSelector((state) => state.me);
   let other = channel.users.find((u) => u !== me);
   if (!other) [other] = channel.users;
-  const user = useSelector((state) => state.users[other ?? '']);
+  const user: User = useSelector((state) => state.users[other ?? '']);
   const secured = channel.channelType === 'DIRECT';
   if (!user) {
     return (
@@ -107,30 +96,22 @@ const DirectChannel = ({
       </InlineChannel>
     );
   }
-  if (user.system) {
-    return (
-      <InlineChannel
-        className={className}
-        id={channel.id}
-        onClick={onClick}
-        icon='fa-solid fa-user-gear'
-        badge={badge}
-        secured={secured}
-        >
-        {user.name}
-      </InlineChannel>
-    );
-  }
   const active = user.lastSeen && new Date(user.lastSeen).getTime() > Date.now() - 1000 * 60 * 5;
-  return (<InlineChannel
-    className={cn(className, 'user', {
-      connected: user.connected,
-      offline: !user.connected,
-      recent: Boolean(active),
-      system: user.system,
-    })}
-    secured={secured}
-    id={channel.id} onClick={onClick} icon='fa-solid fa-user' badge={badge}>{user.name}</InlineChannel>);
+  return (
+    <InlineChannel
+      className={cn(className, 'user', {
+        connected: user.status === 'active',
+        offline: user.status === 'inactive',
+        recent: Boolean(active),
+      })}
+      secured={secured}
+      id={channel.id}
+      onClick={onClick}
+      icon='fa-solid fa-user'
+      badge={badge}>
+      {user.name}
+    </InlineChannel>
+   );
 };
 
 type ChannelProps = {

@@ -10,6 +10,7 @@ const meta: Meta<typeof ActionButton> = {
   render: ({children, action, payload, style}) => (
     <MessageProvider value={{
       id: '123',
+      secured: false,
       channelId: 'main',
       userId: '123',
       createdAt: '2021-01-01T00:00:00Z',
