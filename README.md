@@ -21,8 +21,9 @@ Welcome to Quack, a free and open-source chat application designed for private u
 
 Inspired by Slack but more affordable for private use, Quack combines the best features from other communicators while prioritizing privacy and security. Users can host their own app, ensuring complete control over their data.
 
-## Features
+# Features
 
+- E2EE support for more privacy
 - Progressive Web Application (PWA)
 - Self-hosted for privacy and security
 - Multi-channel support
@@ -35,21 +36,20 @@ Inspired by Slack but more affordable for private use, Quack combines the best f
 - Message threading
 - User mentions
 - Link previews
-- Customizable notifications
 - Plugin system for extensibility
 
-## Quick Start
-### Using Docker Hub
+# Quick Start
+## Using Docker Hub
 [https://registry.hub.docker.com/r/codecat/quack](https://registry.hub.docker.com/r/codecat/quack)
 
-### Using GitHub repository
+## Using GitHub repository
 The fastest way to get started is to use the Docker compose after the code checkout. Using following command will start the application with default settings in no time.
 ```
 docker compose up -d
 ```
 navigate to [http://localhost:8080](http://localhost:8080) and use default credentials to login `admin / 123`.
 
-## Configuration
+# Configuration
 
 To override default settings `chat.config.ts` file can be created in root directory of the project. You can use `chat.config.example.ts` as a template.
 File should export folowing object:
@@ -74,25 +74,68 @@ type Config = {
 };
 ```
 
-## Environment variables
+## port
+port on which application will start
+## sessionSecret
+this value will overwrite the one from `secrets.json`
+## trustProxy
+to trust proxy or not. 
+## databaseUrl
+connection string to mongodb instance. By default this value is taken from env variable `DATABASE_URL`.
+example:
+```
+mongodb://chat:chat@localhost:27017/chat?authSource=admin
+```
+## cors
+This allows to host frontend and backend on different domains
+For development this option is set to:
+```
+ cors: [ 'https?://localhost(:[0-9]{,4})' ]
+```
+to allow running vite and deno together in separate processes to have full automatic reloads on code changes
+## storage
+Storage option for file uploads.
+```
+storage: {
+  type: 'memory' | 'fs' | 'gcs'
+}
+```
+### memory
+Used for tests no files need to be stored persistently
 
-`GOOGLE_APPLICATION_CREDENTIALS` [string] - (optional) when gcs storage method is used
+### FS
+Store files in filesystem
+You can configure folder in which files will be stored using `storage.directory` field.
 
-## Running the Project
+### GCS
+Save files in Google Cloud Storage good choice for prroduction use.
+in this case you need to specify `storage.bucket` field and env variable needs to be defined
+`GOOGLE_APPLICATION_CREDENTIALS` [string] with path to google application credentials
 
-### Pre-requisites
+### S3
+Not implemented, I will implement it if there will be some interest in it. 
+Please create issue for it.
+
+## apiUrl
+url to the api if different than appUrl
+## appUrl
+url to the app used for links generation 
+
+# Running the Project
+
+## Pre-requisites
 - Install [Deno](https://deno.land/)
 - Node.js and npm (for managing frontend dependencies and running React)
 - MongoDB
 
-### Backend
+## Backend
 To start the server:
 ```sh
 cd ./deno/server
 deno task dev
 ```
 
-### Frontend
+## Frontend
 Install dependencies and start the React app:
 ```sh
 cd ./app
@@ -100,7 +143,7 @@ npm install
 npm run dev
 ```
 
-### Storybook
+## Storybook
 To start the storybook:
 ```sh
 cd ./app
@@ -108,40 +151,23 @@ npm install
 npm run storybook
 ```
 
-## Files persistence
-Currently supporting Google Cloud Storage. To enable it set `fileStorage` in config file to `gcs` specify `gcsBucket`
-and set `GOOGLE_APPLICATION_CREDENTIALS` environment variable.
-
-## Decisions
-
-### Database
-We're using a serverless MongoDB instance because of its reliability and cost-effectiveness - we only pay for what we use.
-The cheapest option available on Mongo Atlas is sufficient for application, as we don't require any internal pub/sub functionality.
-
-
-### Server
-It would be nice to have a serverless solution, but for now, the cheapest option is using GCE. 
-I have no idea how to propagate messages to other serverless instances without a hosted pub/sub service.
-MongoDB, Redis, and Postgres need to be hosted to watch for messages.
-Perhaps Google Cloud Pub/Sub would be a good option?
-
-## Plugins
+# Plugins
 Chat have plugin system. Example plugin can be found in `plugins/example`.
 How to use plugins and plugin hook points TBA.
 
 
-## Default credentials
+# Default credentials
 
 ```
 admin / 123
 ```
 New users can be invited with `/invite` command which will generate single use link for user registration.
 
-## Contributing
+# Contributing
 
 Contributions are welcome. For major changes, please open an issue first to discuss what you would like to change. Ensure to update tests as appropriate.
 
-## License
+# License
 
 MIT License
 
