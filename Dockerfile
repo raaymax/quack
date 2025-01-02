@@ -5,7 +5,7 @@ COPY ./package.json ./package.json
 COPY ./package-lock.json ./package-lock.json
 COPY ./app/package.json ./app/package.json
 RUN npm install
-COPY ./app ./app
+COPY . .
 ENV APP_NAME=quack
 COPY ./version* ./
 RUN APP_VERSION=$(cat ./version 2>/dev/null || echo 3) npm run build

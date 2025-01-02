@@ -1,8 +1,8 @@
-import react from "npm:eslint-plugin-react@7.37.1";
-import eslint from "npm:@eslint/js@9.12.0";
-import tseslint from "npm:typescript-eslint@8.8.1";
-import importPlugin from "npm:eslint-plugin-import@2.31.0";
-import globals from "npm:globals@15.10.0";
+import react from "eslint-plugin-react";
+import eslint from "@eslint/js";
+import tseslint from "typescript-eslint";
+import importPlugin from "eslint-plugin-import";
+import globals from "globals";
 
 function merge(...configs) {
   return configs.reduce((acc, config) => {

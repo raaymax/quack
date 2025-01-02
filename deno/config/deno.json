@@ -10,7 +10,7 @@
     "dev": "deno run --watch main.ts"
   },
   "imports": {
-    "@std/path": "jsr:@std/path@^1.0.0",
+    "@std/path": "jsr:@std/path@1.0.0",
     "web-push": "npm:web-push@3.6.7"
   }
 }
