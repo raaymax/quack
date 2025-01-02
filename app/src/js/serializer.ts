@@ -19,6 +19,7 @@ export type MessageToSend = {
   emojiOnly?: boolean;
 };
 
+
 export type MessageToUpdate = {
   type: 'message:update';
   clientId: string;
@@ -47,7 +48,7 @@ export type SerializeInfo = {
   errors?: SerializeError[];
 };
 
-export const fromDom = (dom: HTMLElement): MessageToSend | CommandToSend => {
+export const fromDom = (dom: HTMLElement): MessageToSend | CommandToSend | MessageToUpdate => {
   const command = (dom.textContent ?? '').trim().match(/^\/\w+( \S+)*/);
   if (command) {
     const m = (dom.textContent ?? '').trim().replace('\n', '').slice(1).split(/\s+/);

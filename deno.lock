@@ -103,7 +103,6 @@
     "npm:eslint-plugin-react-hooks@^4.6.0": "4.6.2_eslint@8.57.1",
     "npm:eslint-plugin-react-refresh@~0.4.5": "0.4.16_eslint@8.57.1",
     "npm:eslint-plugin-react@7.37.1": "7.37.1_eslint@8.57.1",
-    "npm:eslint-plugin-react@^7.33.2": "7.37.3_eslint@8.57.1",
     "npm:eslint-plugin-storybook@0.11.1": "0.11.1_eslint@8.57.1_typescript@5.4.5",
     "npm:eslint@^8.55.0": "8.57.1",
     "npm:eslint@^9.17.0": "9.17.0",
@@ -3426,30 +3425,6 @@
         "string.prototype.repeat"
       ]
     },
-    "eslint-plugin-react@7.37.3_eslint@8.57.1": {
-      "integrity": "sha512-DomWuTQPFYZwF/7c9W2fkKkStqZmBd3uugfqBYLdkZ3Hii23WzZuOLUskGxB8qkSKqftxEeGL1TB2kMhrce0jA==",
-      "dependencies": [
-        "array-includes",
-        "array.prototype.findlast",
-        "array.prototype.flatmap",
-        "array.prototype.tosorted",
-        "doctrine@2.1.0",
-        "es-iterator-helpers",
-        "eslint@8.57.1",
-        "estraverse",
-        "hasown",
-        "jsx-ast-utils",
-        "minimatch@3.1.2",
-        "object.entries",
-        "object.fromentries",
-        "object.values",
-        "prop-types",
-        "resolve@2.0.0-next.5",
-        "semver@6.3.1",
-        "string.prototype.matchall",
-        "string.prototype.repeat"
-      ]
-    },
     "eslint-plugin-storybook@0.11.1_eslint@8.57.1_typescript@5.4.5": {
       "integrity": "sha512-yGKpAYkBm/Q2hZg476vRUAvd9lAccjjSvzU5nYy3BSQbKTPy7uopx7JEpwk2vSuw4weTMZzWF64z9/gp/K5RCg==",
       "dependencies": [
@@ -6067,7 +6042,7 @@
             "npm:chromatic@11.18.1",
             "npm:eslint-plugin-react-hooks@^4.6.0",
             "npm:eslint-plugin-react-refresh@~0.4.5",
-            "npm:eslint-plugin-react@^7.33.2",
+            "npm:eslint-plugin-react@7.37.1",
             "npm:eslint-plugin-storybook@0.11.1",
             "npm:eslint@^8.55.0",
             "npm:filesize@10.1.6",

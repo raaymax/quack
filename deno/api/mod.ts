@@ -217,10 +217,18 @@ class API extends EventTarget {
           retry: retry + 1,
         });
       } else {
-        return new ApiErrorResponse("INTERNAL_SERVER_ERROR", "Server error", await res.json());
+        return new ApiErrorResponse(
+          "INTERNAL_SERVER_ERROR",
+          "Server error",
+          await res.json(),
+        );
       }
     }
-    return new ApiErrorResponse("CLIENT_ERROR", "Client error", await res.json());
+    return new ApiErrorResponse(
+      "CLIENT_ERROR",
+      "Client error",
+      await res.json(),
+    );
   }
 
   getResource = async <T = any>(

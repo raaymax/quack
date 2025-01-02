@@ -49,7 +49,7 @@
     "test": "DATABASE_URL='mongodb://chat:chat@localhost:27017/tests?authSource=admin' deno test -A",
     "ssl": "mkdir -p ssl && openssl req -x509 -newkey rsa:4096 -keyout ssl/key.pem -out ssl/cert.pem -days 365 -nodes -subj '/CN=localhost'",
     "types": "npm run types",
-    "check": "deno run -A npm:eslint . --ignore-pattern=app/src-tauri && deno fmt && deno lint && deno task test",
+    "check": "deno run -A npm:eslint . --ignore-pattern=app/src-tauri && deno fmt && deno lint && deno task types && deno task test",
     "android:build": "npm run android:build",
     "desktop:build": "npm run desktop:build"
   },

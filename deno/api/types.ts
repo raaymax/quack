@@ -39,7 +39,11 @@ export class ApiErrorResponse extends Error {
   type = "response";
   status = "error";
   error: unknown;
-  constructor(public errorCode: string, message: string, originalError: unknown) {
+  constructor(
+    public errorCode: string,
+    message: string,
+    originalError: unknown,
+  ) {
     super(message);
     this.error = originalError;
   }
@@ -56,7 +60,7 @@ export type Channel = {
   id: string;
   name: string;
   users: string[];
-  channelType: 'PUBLIC' | 'PRIVATE' | 'DIRECT';
+  channelType: "PUBLIC" | "PRIVATE" | "DIRECT";
   priv?: boolean;
   direct?: boolean;
   private?: boolean;
