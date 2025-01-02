@@ -29,7 +29,7 @@ type MessageHeaderProps = {
   createdAt: string;
 };
 
-export const MessageHeader = ({ user = {}, createdAt }: MessageHeaderProps) => {
+export const MessageHeader = ({ user, createdAt }: MessageHeaderProps) => {
   return (
     <Container className='header'>
       <span className='author'>{user?.name || 'Unknown'}</span>

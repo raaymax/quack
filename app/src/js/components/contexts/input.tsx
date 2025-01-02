@@ -20,7 +20,7 @@ export type InputContextType = {
   messageId: string | null;
   input: MutableRefObject<HTMLDivElement | null>;
   fileInput: MutableRefObject<HTMLInputElement| null>;
-  onPaste: (e: React.SyntheticEvent) => void;
+  onPaste: (e: React.ClipboardEvent) => void;
   onKeyDown: (e: React.KeyboardEvent) => void;
   onInput: () => void;
   onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -158,8 +158,8 @@ export const InputProvider = (args: InputContextProps) => {
   const send = useCallback((e: React.SyntheticEvent) => {
     if (!input.current) return;
     if (!filesAreReady) return;
-    const payload = fromDom(input.current);
-    if (payload.type === 'message:create' && mode === 'edit') {
+    const payload: any = fromDom(input.current);
+    if (mode === 'edit') {
       payload.type = 'message:update';
       payload.id = messageId;
       payload.clientId = message?.clientId;
@@ -174,7 +174,7 @@ export const InputProvider = (args: InputContextProps) => {
 
     if (mode === 'default') {
       input.current.innerHTML = '';
-      focus(e);
+      focus(e.nativeEvent);
     } else {
       dispatch(actions.messages.editClose(messageId));
     }

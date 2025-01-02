@@ -1,9 +1,7 @@
 import { useMemo } from 'react';
 import { useSelector } from './useSelector';
 import { useUsers } from './useUsers';
-import { Progress, User } from '../../types';
-
-type UserProgress = Progress & { user: User };
+import { ViewProgress } from '../../types';
 
 export const useProgress = ({ channelId, parentId }: {channelId: string, parentId?: string}) => {
   const channels = useSelector((state) => state.channels);
@@ -20,8 +18,8 @@ export const useProgress = ({ channelId, parentId }: {channelId: string, parentI
       ...p,
       user: users.find((u) => u.id === p.userId),
     }))
-    .reduce<Record<string, UserProgress[]>>((acc, p) => ({
+    .reduce<Record<string, ViewProgress[]>>((acc, p) => ({
       ...acc,
-      [p.lastMessageId]: [...(acc[p.lastMessageId] || []), p] as UserProgress[],
+      [p.lastMessageId]: [...(acc[p.lastMessageId] || []), p] as ViewProgress[],
     }), {}) : {}), [channel, progress, parentId, users]);
 };

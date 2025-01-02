@@ -18,6 +18,6 @@ export const LogoPic = ({ onClick, size }: {onClick: () => void, size?: number})
       lineHeight: `${$size}px`,
       fontSize: `${$size}px`,
       borderRadius: "8px",
-    } : undefined}/>
+    } : undefined} onClick={onClick}/>
   );
 }

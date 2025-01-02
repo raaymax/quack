@@ -1,4 +1,4 @@
-import { MessageBody } from '../types';
+import { MessageBody, ViewMessage } from '../types';
 
 export type OutgoingPayload = (
   OutgoingChannelCreate
@@ -63,7 +63,7 @@ export type OutgoingEmojiGet = {
 export type OutgoingEmojiGetAll = {
   type: 'emoji:getAll',
 }
-export type OutgoingMessageCreate = {
+export type OutgoingMessageCreate = ViewMessage & {
   type: 'message:create',
   message: MessageBody,
   channelId: string,

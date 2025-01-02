@@ -4,10 +4,8 @@ import { createCounter } from '../utils';
 import {
   createMethod, StateType, DispatchType, ActionsType,
 } from '../store';
-import { Stream, Message, BaseMessage, MessageData } from '../types';
-import { SerializeInfo, processUrls } from '../serializer';
+import { Stream, Message, ViewMessage, ApiErrorResponse } from '../types';
 import { IncommingError, OutgoingCommandExecute, OutgoingMessageCreate } from '../core/types';
-import * as enc from '@quack/encryption';
 
 declare global {
   const APP_VERSION: string;
@@ -58,7 +56,7 @@ export const selectors = {
     }
     //return data.length ? data[data.length - 1].createdAt : new Date().toISOString();
   },
-  getMessage: (id: string, state: StateType): Message | null => state.messages.data
+  getMessage: (id: string, state: StateType): ViewMessage | null => state.messages.data
     .find((m) => m.id === id || m.clientId === id) || null,
 };
 
@@ -92,7 +90,7 @@ export const loadNext = createMethod('messages/loadNext', async (stream: Stream,
     ...stream,
     after: date,
   })).unwrap();
-  if (messages?.length > 0) {
+  if (messages && messages?.length > 0) {
     dispatch(methods.progress.update(messages[0].id));
   }
   if (selectors.countMessagesInStream(stream, getState()) > 100) {
@@ -101,12 +99,12 @@ export const loadNext = createMethod('messages/loadNext', async (stream: Stream,
     }, 10);
   }
   loadingDone();
-  return messages.length;
+  return messages?.length ?? 0;
 });
 
 export const loadMessagesArchive = createMethod('messages/loadMessagesArchive', async (stream: Stream, { dispatch, actions, methods }) => {
   if (!stream.channelId) return;
-  const { date } = stream;
+  const { date } = {date: new Date().toISOString()}; //  = stream; // FIXME: get date from stream
   const loadingDone = loading(dispatch, actions);
   dispatch(actions.messages.clear({ stream }));
   await dispatch(methods.messages.load({
@@ -130,11 +128,11 @@ export const loadMessagesLive = createMethod('messages/loadMessagesLive', async 
 });
 
 export const loadMessages = createMethod('messages/loadMessages', async (stream: Stream, { dispatch }) => {
-  if (stream.type === 'archive') {
-    dispatch(loadMessagesArchive(stream));
-  } else {
+  //if (stream.type === 'archive') {
+  //  dispatch(loadMessagesArchive(stream));
+  //} else {
     dispatch(loadMessagesLive(stream));
-  }
+  //}
 });
 
 type SendArgs = {
@@ -144,7 +142,7 @@ type SendArgs = {
 
 export const send = createMethod('messages/send', async ({ stream, payload }: SendArgs, { dispatch, methods }) => {
   if (payload.type === 'message:create') {
-    dispatch(methods.messages.sendMessage({ payload, info: null }));
+    dispatch(methods.messages.sendMessage({ payload }));
   }
   if (payload.type === 'command:execute') {
     dispatch(sendCommand({ stream, payload }));
@@ -172,8 +170,9 @@ export const sendCommand = createMethod('messages/sendCommand', async ({ stream,
     dispatch(actions.messages.add({ ...notif, notifType: 'success', notif: `${msg.name} executed successfully` }));
   } catch (err) {
     try {
-      dispatch(actions.messages.add({ ...notif, notifType: 'error', notif: `command "${msg.name}" error: ${err.res?.message ?? err.error?.message ?? err.message}` }));
-       
+      if (err instanceof ApiErrorResponse) {
+        dispatch(actions.messages.add({ ...notif, notifType: 'error', notif: `command "${msg.name}" error: ${ err.error ?? err.message}` }));
+      }
       if (!isError(err)) return console.error(err);
     } catch (e) {
       console.log(e);
@@ -187,12 +186,7 @@ export const resend = createMethod('messages/resend', async (id: string, { dispa
   if (!msg) return;
   await dispatch(methods.messages.sendMessage({
     payload: {
-      type: 'message:create',
       ...msg,
-    },
-    info: {
-      msg: 'Resending',
-      type: 'warning',
     },
   }));
 });
@@ -213,52 +207,3 @@ export const removeMessage = createMethod('messages/removeMessage', async (msg: 
   }
 });
 
-type ShareMessage = {
-  title?: string;
-  text?: string;
-  url?: string;
-};
-
-export const sendShareMessage = createMethod('messages/sendShareMessage', async (data: ShareMessage, { dispatch, getState, actions }) => {
-  const { channelId, parentId } = getState().stream.main;
-  const info: SerializeInfo = { links: [], mentions: [] };
-  const msg: OutgoingMessageCreate = {
-    type: 'message:create',
-    clientId: tempId(),
-    channelId,
-    parentId,
-    flat: `${data.title} ${data.text} ${data.url}`,
-    message: buildShareMessage(data, info),
-    links: [] as string[],
-  };
-  msg.links = info.links;
-  dispatch(actions.messages.add({ ...msg, pending: true, info: null }));
-  try {
-    await client.notif(msg);
-  } catch (err) {
-    dispatch(actions.messages.add({
-      clientId: msg.clientId,
-      channelId: msg.channelId,
-      parentId: msg.parentId,
-      info: {
-        msg: 'Sending message failed',
-        type: 'error',
-        action: 'resend',
-      },
-    }));
-  }
-});
-
-const buildShareMessage = (data: ShareMessage, info: SerializeInfo) => {
-  const lines = [];
-  if (data.title) {
-    lines.push({ line: { bold: processUrls(data.title, info) } });
-  }
-  if (data.text) {
-    lines.push({ line: processUrls(data.text, info) });
-  }
-  if (data.url) {
-    lines.push({ line: processUrls(data.url, info) });
-  }
-  return lines;
-};
