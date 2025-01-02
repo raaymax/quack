@@ -1,5 +1,4 @@
 /* eslint-disable class-methods-use-this */
-import type { Config } from "@quack/config";
 import { GoogleAuth } from "npm:google-auth-library";
 import { ResourceNotFound } from "@planigale/planigale";
 import type { FileData, FileOpts } from "../types.ts";

@@ -56,7 +56,7 @@ const defaults: Partial<Config> = {
 
 const secrets = generateSecrets();
 
-async function load(): Promise<Config> {
+export async function load(): Promise<Config> {
   if (ENV === "test") {
     return await importTestConfig();
   }
@@ -154,18 +154,4 @@ function loadJSON(file: string): Config | null {
   } catch {
     return null;
   }
-}
-
-let config: Config;
-try {
-  config = await load();
-} catch (e) {
-  console.error(e);
-  Deno.exit(1);
-}
-
-export default config;
-
-if (import.meta.main) {
-  console.log(config);
 }

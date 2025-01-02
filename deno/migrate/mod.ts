@@ -1,18 +1,10 @@
 import * as path from "jsr:@std/path";
-import {
-  Db,
-  MongoClient,
-  ReadConcern,
-  ReadPreference,
-  W,
-  WriteConcern,
-} from "mongodb";
-import config from "@quack/config";
+import { Db, MongoClient, ReadConcern, ReadPreference, W } from "mongodb";
 
 export { ObjectId } from "mongodb";
 
 const __dirname = path.dirname(path.fromFileUrl(import.meta.url));
-const DATABASE_URL = Deno.env.get("DATABASE_URL") ?? config.databaseUrl ??
+const DATABASE_URL = Deno.env.get("DATABASE_URL") ??
   "mongodb://chat:chat@localhost:27017/chat?authSource=admin";
 
 export class Database {

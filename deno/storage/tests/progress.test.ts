@@ -3,7 +3,7 @@ import * as mime from "@std/media-types";
 import { assert, assertEquals } from "@std/assert";
 import * as path from "@std/path";
 
-import config from "@quack/config";
+import config from "./config.ts";
 import { buildApp } from "../src/interfaces/http/mod.ts";
 import { initStorage } from "../src/core/mod.ts";
 

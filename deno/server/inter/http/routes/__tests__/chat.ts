@@ -11,7 +11,6 @@ import {
 } from "../../../../types.ts";
 import { AsyncLocalStorage } from "node:async_hooks";
 import API, { LoginError, Result, UserSession } from "@quack/api";
-import * as enc from "@quack/encryption";
 
 export type RegistrationRequest = {
   token: string;

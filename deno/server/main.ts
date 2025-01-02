@@ -1,5 +1,5 @@
 import * as path from "@std/path";
-import config from "@quack/config";
+import config from "@quack/config/load";
 import app from "./app.ts";
 
 const ssl: {
