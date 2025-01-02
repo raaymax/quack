@@ -82,6 +82,7 @@ export type MessageData = {
   message: MessageBody;
   annotations?: MessageBody;
   emojiOnly: boolean;
+  ephemeral?: boolean;
   thread: Array<{
     userId: Eid;
     childId: Eid;

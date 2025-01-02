@@ -32,7 +32,7 @@ export class InviteCommand {
       type: "message",
       clientId: `sys:${Math.random().toString(10)}`,
       userId: (await core.repo.user.get({ email: "system" }))?.id,
-      priv: true,
+      ephemeral: true,
       channelId: data.context.channelId,
       flat:
         `Invitation link (valid 5 days from now):\n${config.baseUrl}/#/invite/${token}`,

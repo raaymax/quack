@@ -8,8 +8,87 @@ export type Theme = {
     logo: string,
     loginIlustration: string,
     registerIlustration: string,
-    [prop: string]: any
+
+    borderColor: string,
+    backgroundColor: string,
+    highlightedBackgroundColor: string,
+    inputBackgroundColor: string,
+    dateBarBackgroundColor: string,
+    fontColor: string,
+    frontHoverColor: string,
+    userActive: string,
+    userConnected: string,
+    userSystem: string,
+    userDisconnected: string,
+    actionButtonBackgroundColor: string,
+    actionButtonHoverBackgroundColor: string,
+    actionButtonActiveBackgroundColor: string,
+    actionButtonFontColor: string,
+    buttonHoverBackground: string,
+    buttonActiveBackground: string,
+    borderColorHover: string,
+    searchBoxBackgroundColor: string,
+    labelColor: string,
+    linkColor: string,
+    mentionsColor: string,
+    Text: string,
+    Labels: string,
+    SecondaryButton: {
+      Hover: string,
+      Default: string,
+      Background: string,
+    },
+    Navbar: {
+      Background: string,
+      Icons: string,
+      Hover: string,
+    },
+    Input: {
+      Background: string,
+    },
+    Strokes: string,
+    Chatbox: {
+      Background: string,
+      Message: {
+        Hover: string,
+        ProgressDone: string,
+        ReactionButton: string,
+        InputActive: string,
+      },
+      Div: string,
+    },
+    PrimaryButton: {
+      Background: string,
+      Text: string,
+    },
+    ToggleButtons: {
+      Default: string,
+      Hover: string,
+    },
+    Channel: {
+      Active: string,
+      Hover: string,
+      Inactive: string,
+      Background: string,
+    },
+    User: {
+      Active: string,
+      Inactive: string,
+      AFK: string,
+    },
+    Channels: {
+      HoverText: string,
+    },
+    Icons: {
+      Static: string,
+      Hover: string,
+    },
+    ActiveOverlay: string,
 };
+
+declare module 'styled-components' {
+  export interface DefaultTheme extends Theme {}
+}
 
 export type Themes = {
   [id: string]: Theme

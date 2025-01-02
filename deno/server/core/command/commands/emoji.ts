@@ -36,7 +36,7 @@ export class EmojiCommand {
       type: "message",
       clientId: `sys:${Math.random().toString(10)}`,
       userId: "system",
-      priv: true,
+      ephemeral: true,
       channelId: data.context.channelId,
       flat: `Emoji ${shortname} created`,
       message: {

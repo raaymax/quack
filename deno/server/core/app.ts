@@ -27,7 +27,7 @@ class App {
       type: "message",
       id: `ephemeral:${Math.random().toString(10)}`,
       appId,
-      priv: true,
+      ephemeral: true,
       channelId: message.channelId,
       parentId: message.parentId,
       flat: message.flat,
