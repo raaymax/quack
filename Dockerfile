@@ -8,7 +8,9 @@ RUN npm install
 COPY . .
 ENV APP_NAME=quack
 COPY ./version* ./
-RUN APP_VERSION=$(cat ./version 2>/dev/null || echo 3) npm run build
+ARG APP_VERSION=3.x.x
+ENV APP_VERSION=$APP_VERSION
+RUN npm run build
 
 FROM denoland/deno:alpine-2.1.2
 RUN apk -U upgrade
