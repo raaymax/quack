@@ -16,6 +16,7 @@ type Messages = Message | Message[];
 
 export const getDirectChannelKey = async (channelId: string, state: StateType): Promise<JsonWebKey | null> => {
   const channel = state.channels[channelId];
+  if(!channel) return null;
   if(channel.channelType === 'DIRECT' && client.api.privateKey) {
     const otherId = channel.users.find((u:string) => u !== state.me);
     if(otherId){
