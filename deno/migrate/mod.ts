@@ -1,11 +1,10 @@
 import * as path from "@std/path";
+import config, { type Config } from "@quack/config/load";
 import { Db, MongoClient, ReadConcern, ReadPreference, W } from "mongodb";
 
 export { ObjectId } from "mongodb";
 
 const __dirname = path.dirname(path.fromFileUrl(import.meta.url));
-const DATABASE_URL = Deno.env.get("DATABASE_URL") ??
-  "mongodb://chat:chat@localhost:27017/chat?authSource=admin";
 
 export class Database {
   db: Db | undefined = undefined;
@@ -88,7 +87,7 @@ export class Database {
 export class Repository {
   db: Database;
 
-  constructor(config) {
+  constructor(config: Config) {
     const databaseUrl = config.databaseUrl ?? Deno.env.get("DATABASE_URL") ??
       "mongodb://chat:chat@localhost:27017/chat?authSource=admin";
     const db = new Database(databaseUrl);
@@ -100,7 +99,7 @@ export class Repository {
     return db.collection("migrations").find().sort({ createdAt: 1 }).toArray();
   }
 
-  async push(fileName) {
+  async push(fileName: string) {
     const { db } = await this.db.connect();
     await db.collection("migrations").insertOne({
       fileName,
@@ -123,7 +122,7 @@ export class Repository {
   }
 }
 
-const repo = new Repository({ databaseUrl: DATABASE_URL });
+const repo = new Repository(config);
 
 export class Migrations {
   async up() {
@@ -167,7 +166,6 @@ export class Migrations {
   }
 
   async list() {
-    const { db } = await repo.db.connect();
     const migrations = await repo.getMigrations();
     migrations.forEach((m) => console.log(m.fileName));
   }

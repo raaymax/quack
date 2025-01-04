@@ -178,7 +178,7 @@ export const InputForm = ({ className, channelId, parentId }: InputFormProps) =>
             onInput={onInput}
             onKeyDown={(e) => onKeyDown(e)}
           ></div>
-          {!currentText && <div className="cta">
+          {!input.current?.innerHTML && <div className="cta">
             Write here..
           </div>}
           <Attachments className="input-attachments" />
