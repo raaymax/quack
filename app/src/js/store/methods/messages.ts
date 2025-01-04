@@ -76,7 +76,7 @@ const encryptMessage = async (msg: ViewMessage, sharedKey: JsonWebKey): Promise<
   return m;
 }
 
-export const load = createMethod('messages/load', async (query: Query, { actions, client, dispatch, getState, methods }) => {
+export const load = createMethod('messages/load', async (query: Query, { actions, client, dispatch, getState, methods}) => {
   await dispatch(methods.users.init());
   const state = getState();
   if(!state.channels[query.channelId]){
@@ -118,7 +118,7 @@ export const sendMessage = createMethod('messages/sendMessage', async ({ payload
   dispatch(actions.messages.add({ ...msg, userId: getState().me, pending: true, info: null }));
   try {
     const state = getState();
-    if(!state.channels[msg.channelId]){ {
+    if(!state.channels[msg.channelId]){
       await dispatch(methods.channels.find({ id: msg.channelId }));
     }
     const encryptionKey = await getDirectChannelKey(msg.channelId, state);
