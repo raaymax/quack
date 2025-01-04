@@ -1,4 +1,6 @@
-export async function up(db) {
+import { Db } from "mongodb";
+
+export async function up(db: Db) {
     const users = await db.collection('users').find({}).toArray();
     await db.collection('channels').insertOne({
         cid: 'main',
@@ -15,6 +17,6 @@ export async function up(db) {
         createdAt: new Date(),
     })));
 }
-export async function down(db) {
+export async function down(db: Db) {
     return db.collection('channels').deleteMany({});
 }

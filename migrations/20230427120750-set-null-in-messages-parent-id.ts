@@ -1,9 +1,9 @@
- 
-export async function up(db) {
-    const cursor = await db.collection('messages')
+import { Db } from "mongodb";
+
+export async function up(db: Db) {
+    const cursor = db.collection('messages')
         .find({ parentId: { $exists: false } });
-    while (await cursor.hasNext()) {
-        const message = await cursor.next();
+    for await (const message of cursor) {
         await db.collection('messages')
             .updateOne({ _id: message._id }, {
                 $set: { parentId: null },

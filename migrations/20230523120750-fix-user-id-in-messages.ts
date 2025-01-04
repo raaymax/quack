@@ -1,10 +1,8 @@
-import { ObjectId } from 'mongodb';
+import { Db, ObjectId } from 'mongodb';
  
-export async function up(db) {
-  const cursor = await db.collection('messages')
-    .find({});
-  while (await cursor.hasNext()) {
-    const message = await cursor.next();
+export async function up(db: Db) {
+  const cursor = db.collection('messages').find({});
+  for await (const message of cursor) {
     if (message.userId instanceof ObjectId) {
       await db.collection('messages')
         .updateOne({ _id: message._id }, {
