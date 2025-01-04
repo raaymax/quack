@@ -11,6 +11,9 @@ type Query = {
 export const find = createMethod('search/find', async ({ channelId, text }: Query, { actions, client, dispatch, methods, getState}) => {
   await dispatch(methods.users.init());
   const state: StateType = getState();
+  if(!state.channels[channelId]){
+    await dispatch(methods.channels.find({ id: channelId }));
+  }
   const preprocess = async (m: Message[]) => decryptMessage(m, channelId, state);
   if(state.channels[channelId]?.channelType === 'DIRECT') {
     const results: Message[] = [];

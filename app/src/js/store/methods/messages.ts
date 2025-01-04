@@ -76,9 +76,12 @@ const encryptMessage = async (msg: ViewMessage, sharedKey: JsonWebKey): Promise<
   return m;
 }
 
-export const load = createMethod('messages/load', async (query: Query, { actions, client, dispatch, getState, methods }) => {
+export const load = createMethod('messages/load', async (query: Query, { actions, client, dispatch, getState, methods}) => {
   await dispatch(methods.users.init());
   const state = getState();
+  if(!state.channels[query.channelId]){
+    await dispatch(methods.channels.find({ id: query.channelId }));
+  }
   const preprocess = async (m: Message[]) => decryptMessage(m, query.channelId, state);
   try{ 
     const data = await client.messages.fetch({
@@ -93,12 +96,15 @@ export const load = createMethod('messages/load', async (query: Query, { actions
   }
 });
 
-export const addDecrypted = createMethod('messages/addDecrypted', async (msg: Message, { actions, dispatch, getState}) => {
+export const addDecrypted = createMethod('messages/addDecrypted', async (msg: Message, { actions, dispatch, getState, methods}) => {
   if (!msg.secured){
     return dispatch(actions.messages.add(msg));
   }
 
   const state = getState();
+  if(!state.channels[msg.channelId]){
+    await dispatch(methods.channels.find({ id: msg.channelId }));
+  }
   try{ 
     const decrypted = await decryptMessage(msg, msg.channelId, state);
     dispatch(actions.messages.add(decrypted));
@@ -108,10 +114,13 @@ export const addDecrypted = createMethod('messages/addDecrypted', async (msg: Me
 });
 
 
-export const sendMessage = createMethod('messages/sendMessage', async ({ payload: msg}: {payload: ViewMessage}, { dispatch, actions, getState }) => {
+export const sendMessage = createMethod('messages/sendMessage', async ({ payload: msg}: {payload: ViewMessage}, { dispatch, actions, getState, methods }) => {
   dispatch(actions.messages.add({ ...msg, userId: getState().me, pending: true, info: null }));
   try {
     const state = getState();
+    if(!state.channels[msg.channelId]){
+      await dispatch(methods.channels.find({ id: msg.channelId }));
+    }
     const encryptionKey = await getDirectChannelKey(msg.channelId, state);
     if( encryptionKey ) {
       return await client.api.sendMessage(await encryptMessage(msg, encryptionKey));
