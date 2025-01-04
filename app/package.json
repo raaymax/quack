@@ -29,7 +29,7 @@
     "react-redux": "9.1.0",
     "react-router-dom": "6.26.2",
     "styled-components": "6.1.1",
-    "typescript": "5.4.5",
+    "typescript": "5.7.2",
     "workbox-navigation-preload": "7.3.0",
     "workbox-precaching": "7.0.0",
     "workbox-routing": "7.0.0",
