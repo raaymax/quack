@@ -1,9 +1,8 @@
- 
+import { Db } from "mongodb";
 
-export async function up(db) {
-    const cursor = await db.collection('channels').find({});
-    while (await cursor.hasNext()) {
-        const channel = await cursor.next();
+export async function up(db: Db) {
+    const cursor = db.collection('channels').find({});
+    for await (const channel of cursor) {
         await db.collection('channels')
             .updateOne({ _id: channel._id }, {
                 $set: {

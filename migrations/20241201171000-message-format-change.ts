@@ -1,3 +1,4 @@
+import { Db } from "mongodb";
 
 const transform = (json: any, prop: string) => {
 	return {
@@ -69,8 +70,8 @@ export const update = (json: any): any  => {
 	return json;
 }
  
-export const up = async (db) => {
-	const docs = await db.collection('messages').find({});
+export const up = async (db: Db) => {
+	const docs = db.collection('messages').find({});
 	for await (const doc of docs) {
     const newMessage = [doc.message].flat().map(m => update(m));
     if (JSON.stringify(doc.message) === JSON.stringify(newMessage)) {

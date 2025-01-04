@@ -1,8 +1,8 @@
-import { ObjectId } from 'mongodb';
+import { Db, ObjectId } from 'mongodb';
 import { hash } from "@felix/argon2";
 import * as enc from '@quack/encryption';
 
-export async function up(db) {
+export async function up(db: Db) {
   if (await db.collection('users').countDocuments() === 0) {
     const data = await enc.prepareRegistration({ email: 'admin', password: "123" });
     await db.collection('users').insertMany([
@@ -25,6 +25,6 @@ export async function up(db) {
   }
 }
 
-export async function down(db) {
+export async function down(db: Db) {
   return db.collection('users').deleteMany({});
 }
