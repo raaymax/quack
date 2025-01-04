@@ -5,6 +5,9 @@ import { decryptMessage } from './messages';
 export const load = createMethod('pins/load', async (channelId: string, { actions, client, dispatch, getState, methods }) => {
   await dispatch(methods.users.init());
   const state = getState();
+  if(!state.channels[channelId]){
+    await dispatch(methods.channels.find({ id: channelId }));
+  }
   const preprocess = async (m: Message[]) => decryptMessage(m, channelId, state);
 
   dispatch(actions.pins.clear(channelId));
