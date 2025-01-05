@@ -80,7 +80,7 @@ export const load = createMethod('messages/load', async (query: Query, { actions
   await dispatch(methods.users.init());
   const state = getState();
   if(!state.channels[query.channelId]){
-    await dispatch(methods.channels.find({ id: query.channelId }));
+    await dispatch(methods.channels.find(query.channelId));
   }
   const preprocess = async (m: Message[]) => decryptMessage(m, query.channelId, state);
   try{ 
@@ -103,7 +103,7 @@ export const addDecrypted = createMethod('messages/addDecrypted', async (msg: Me
 
   const state = getState();
   if(!state.channels[msg.channelId]){
-    await dispatch(methods.channels.find({ id: msg.channelId }));
+    await dispatch(methods.channels.find(msg.channelId));
   }
   try{ 
     const decrypted = await decryptMessage(msg, msg.channelId, state);
@@ -119,7 +119,7 @@ export const sendMessage = createMethod('messages/sendMessage', async ({ payload
   try {
     const state = getState();
     if(!state.channels[msg.channelId]){
-      await dispatch(methods.channels.find({ id: msg.channelId }));
+      await dispatch(methods.channels.find(msg.channelId));
     }
     const encryptionKey = await getDirectChannelKey(msg.channelId, state);
     if( encryptionKey ) {
