@@ -1,5 +1,5 @@
 import * as v from "valibot";
-import { hash } from "@felix/argon2";
+import { hash } from "argon2";
 import { createCommand } from "../command.ts";
 import { InvalidInvitation, UserAlreadyExists } from "../errors.ts";
 

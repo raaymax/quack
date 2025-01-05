@@ -6,7 +6,7 @@ export const load = createMethod('pins/load', async (channelId: string, { action
   await dispatch(methods.users.init());
   const state = getState();
   if(!state.channels[channelId]){
-    await dispatch(methods.channels.find({ id: channelId }));
+    await dispatch(methods.channels.find(channelId));
   }
   const preprocess = async (m: Message[]) => decryptMessage(m, channelId, state);
 
