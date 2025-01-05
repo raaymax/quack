@@ -1,7 +1,7 @@
 {
   "imports": {
     "@faker-js/faker": "npm:@faker-js/faker@9.3.0",
-    "@felix/argon2": "jsr:@felix/argon2@2.0.2",
+    "argon2": "npm:@node-rs/argon2@2.0.2",
     "@oak/oak": "jsr:@oak/oak@16.1.0",
     "@planigale/body-parser": "jsr:@planigale/body-parser",
     "@planigale/planigale": "jsr:@planigale/planigale",

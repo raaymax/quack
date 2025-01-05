@@ -1,4 +1,4 @@
-FROM node:20-alpine3.20 as build
+FROM node:22-alpine3.20 as build
 RUN mkdir -p /app
 WORKDIR /app
 COPY ./package.json ./package.json
@@ -7,10 +7,9 @@ COPY ./app/package.json ./app/package.json
 RUN npm install
 COPY . .
 ENV APP_NAME=quack
-COPY ./version* ./
 ARG APP_VERSION=3.x.x
 ENV APP_VERSION=$APP_VERSION
-RUN npm run build
+RUN APP_NAME=quack APP_VERSION=$APP_VERSION npm run build
 
 FROM denoland/deno:alpine-2.1.2
 RUN apk -U upgrade
@@ -33,6 +32,7 @@ ENV PUBLIC_DIR=/app/public
 ENV PORT=8080
 ARG APP_VERSION=3.x.x
 ENV APP_VERSION=$APP_VERSION
+RUN echo "APP_VERSION=$APP_VERSION"
 RUN chmod +x ./entrypoint.sh
 EXPOSE 8080
 CMD sh ./entrypoint.sh

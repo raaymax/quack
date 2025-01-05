@@ -1,17 +1,12 @@
-name: Create and publish a Docker image
+name: Create dev Docker image
 
 on:
-  push:
-    tags:
-      - v*
-
-permissions:
-  contents: write
-  pull-requests: write
+  pull_request:
+    branches: [ main ]
 
 env:
-  REGISTRY: index.docker.io
-  IMAGE_NAME: codecat/quack
+  REGISTRY: ghcr.io
+  IMAGE_NAME:  ${{ github.repository }}
   DOCKERHUB_USER: codecat
 
 jobs:
@@ -48,15 +43,10 @@ jobs:
     - run: deno task migrate:tests
     - run: deno task check
 
-
-  build-and-push-image:
+  build-image:
     needs: tests
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-      attestations: write
-      id-token: write
+    permissions: write-all
 
     steps:
       - name: Checkout repository
@@ -65,8 +55,9 @@ jobs:
       - name: Log in to the Container registry
         uses: docker/login-action@v3
         with:
-          username: ${{ env.DOCKERHUB_USER }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -78,26 +69,33 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.IMAGE_NAME }}
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
       - name: Build and push Docker image
         id: push
         uses: docker/build-push-action@v6
         with:
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           context: .
           push: true
           platforms: linux/amd64,linux/arm64
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:build-${{ github.run_number }}
+          labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            APP_VERSION=${{ github.ref_name }}
+            APP_VERSION=build-${{ github.run_number }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-      
-      - name: Generate artifact attestation
-        uses: actions/attest-build-provenance@v2
+
+      - run: echo '### Output image' >> $GITHUB_STEP_SUMMARY
+      - run: echo '```\n${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:build-${{ github.run_number }}\n```\n' >> $GITHUB_STEP_SUMMARY
+
+      - uses: actions/github-script@v7
         with:
-          subject-name: ${{env.REGISTRY}}/${{ env.IMAGE_NAME}}
-          subject-digest: ${{ steps.push.outputs.digest }}
-          push-to-registry: true
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '### Docker image\n\n```\n${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:build-${{ github.run_number }}\n```\n'
+            })

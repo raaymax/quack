@@ -1,5 +1,5 @@
 import * as v from "valibot";
-import * as argon2 from "@felix/argon2";
+import * as argon2 from "argon2";
 import { createCommand } from "../command.ts";
 import * as enc from "@quack/encryption";
 import { PasswordResetRequired } from "../errors.ts";
