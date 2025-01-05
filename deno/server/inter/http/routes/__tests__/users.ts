@@ -1,5 +1,5 @@
 import { Repository } from "../../../../infra/mod.ts";
-import { hash } from "@felix/argon2";
+import { hash } from "argon2";
 import * as enc from "@quack/encryption";
 
 export const ensureUser = async (
