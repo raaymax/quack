@@ -97,5 +97,5 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '### Docker image\n\nbased on commit: `${{github.sha}}`\n\n```\n${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:build-${{ github.run_number }}\n```\n'
+              body: '### Docker image\n\n```\n${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:build-${{ github.run_number }}\n```\n'
             })
