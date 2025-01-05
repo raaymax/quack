@@ -1,5 +1,5 @@
 import { Db, ObjectId } from 'mongodb';
-import { hash } from "@felix/argon2";
+import { hash } from "argon2";
 import * as enc from '@quack/encryption';
 
 export async function up(db: Db) {
