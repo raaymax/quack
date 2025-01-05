@@ -75,6 +75,7 @@ jobs:
         id: push
         uses: docker/build-push-action@v6
         with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           context: .
           push: true
           platforms: linux/amd64,linux/arm64
@@ -82,6 +83,8 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             APP_VERSION=build-${{ github.run_number }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - run: echo '### Output image' >> $GITHUB_STEP_SUMMARY
       - run: echo '```\n${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:build-${{ github.run_number }}\n```\n' >> $GITHUB_STEP_SUMMARY
