@@ -4,8 +4,6 @@ on:
   pull_request:
     branches: [ main ]
 
-permissions: write-all
-
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME:  ${{ github.repository }}
@@ -31,17 +29,6 @@ jobs:
       NODE_ENV: 'test'
       DATABASE_URL: 'mongodb://chat:chat@localhost:27017/tests?authSource=admin'
     steps:
-    - uses: actions/github-script@v7
-      with:
-        github-token: ${{secrets.GITHUB_TOKEN}}
-        script: |
-          github.rest.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: '### Docker image\n\n```\n${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:build-${{ github.run_number }}\n```\n'
-          })
-
     - uses: actions/checkout@v3
     - name: Use Node.js 22.x
       uses: actions/setup-node@v3
@@ -59,11 +46,7 @@ jobs:
   build-image:
     needs: tests
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-      attestations: write
-      id-token: write
+    permissions: write-all
 
     steps:
       - name: Checkout repository
