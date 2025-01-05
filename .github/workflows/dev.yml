@@ -80,7 +80,8 @@ jobs:
           platforms: linux/amd64,linux/arm64
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:build-${{ github.run_number }}
           labels: ${{ steps.meta.outputs.labels }}
-          build-args: APP_VERSION=build-${{ github.run_number }}
+          build-args: |
+            APP_VERSION=build-${{ github.run_number }}
 
       - run: echo '### Output image' >> $GITHUB_STEP_SUMMARY
       - run: echo '```\n${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:build-${{ github.run_number }}\n```\n' >> $GITHUB_STEP_SUMMARY
