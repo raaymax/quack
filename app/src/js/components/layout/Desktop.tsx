@@ -7,7 +7,6 @@ import { Workspaces } from '../organisms/Workspaces';
 import { Sidebar } from '../organisms/Sidebar';
 import { Conversation } from '../organisms/Conversation';
 import { useMessage } from '../../store';
-import { Channel } from '../molecules/NavChannel';
 import { Toolbar } from '../atoms/Toolbar';
 import { ButtonWithIcon } from '../molecules/ButtonWithIcon';
 import { useMessageListArgs } from '../contexts/useMessageListArgs';
