@@ -7,13 +7,13 @@ import { Workspaces } from '../organisms/Workspaces';
 import { Sidebar } from '../organisms/Sidebar';
 import { Conversation } from '../organisms/Conversation';
 import { useMessage } from '../../store';
-import { Channel } from '../molecules/NavChannel';
 import { Toolbar } from '../atoms/Toolbar';
 import { ButtonWithIcon } from '../molecules/ButtonWithIcon';
 import { useMessageListArgs } from '../contexts/useMessageListArgs';
 import { MessageListArgsProvider } from '../contexts/messageListArgs';
 import { SearchBox } from '../atoms/SearchBox';
 import { CollapsableColumns } from '../atoms/CollapsableColumns';
+import { DiscussionHeader } from '../molecules/DiscussionHeader';
 
 const WORKSPACES_WIDTH = 80;
 const RESIZER_WIDTH = 8;
@@ -83,18 +83,8 @@ export const Container = styled.div`
           }
         }
 
-        .channel{
+        .discussion-header {
           flex: 1;
-          padding-left: 30px;
-          vertical-align: middle;
-          font-size: 20px;
-          font-weight: bold;
-        }
-        .channel i{
-          font-size: 1.3em;
-        }
-        .channel .name{
-          padding-left: 10px;
         }
         .toolbar {
           max-width: 100%;
@@ -193,7 +183,7 @@ export const SideConversation = ({ channelId, parentId}: SideConversationProps) 
 
           <Toolbar className="toolbar" size={32}>
               Thread
-            <Channel channelId={channelId} />
+            <DiscussionHeader channelId={channelId} />
             <ButtonWithIcon icon='back' onClick={() => {
               navigate(`/${channelId}`, {state: {
                 type: 'archive', selected: message?.id, date: message?.createdAt,
@@ -232,7 +222,7 @@ export const MainConversation = ({ channelId, children}: MainConversationProps) 
       <div className={cn('main-conversation-container', 'conversation-container')}>
         <div className='header'>
           <Toolbar className="toolbar" size={32}>
-            <Channel channelId={channelId} />
+            <DiscussionHeader channelId={channelId} />
             <SearchBox onSearch={onSearch} defaultValue={searchTerm} />
             {stream.type === 'archive' && (
               <ButtonWithIcon icon='down' onClick = {() => {
@@ -273,6 +263,7 @@ export const Discussion = ({ className, children }: DiscussionProps) => {
       columns={[
         <MainConversation key={1} channelId={channelId}>{children}</MainConversation>,
         parentId && <SideConversation key={2} channelId={channelId} parentId={parentId} />
+        
       ].filter(Boolean) as [React.ReactNode, React.ReactNode?]}
     />
   );

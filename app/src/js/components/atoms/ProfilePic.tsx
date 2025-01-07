@@ -33,6 +33,11 @@ const Pic = styled.div`
     .image {
       border-radius: 8px;
     }
+    .status-ball {
+      bottom: -1px;
+      right: -1px;
+    }
+
   }
   &.status {
     width: 24px;
@@ -40,7 +45,7 @@ const Pic = styled.div`
     .image {
       border-radius: 4px;
     }
-    .status {
+    .status-ball {
       width: 4px;
       height: 4px;
     }
@@ -67,7 +72,7 @@ const Pic = styled.div`
     }
   }
 
-  .status {
+  .status-ball {
     position: absolute;
     bottom: 0;
     right: 0;
@@ -105,7 +110,7 @@ export const ProfilePic = ({ type = 'regular', showStatus = false, userId, class
           ? <img src={getUrl(user?.avatarFileId)} alt='avatar' />
           : <img src="/avatar.png" alt='avatar' /> }
       </div>
-      {showStatus && <div className={cn('status', status)} />}
+      {showStatus && <div className={cn('status-ball', status)} />}
     </Pic>
   );
 };
