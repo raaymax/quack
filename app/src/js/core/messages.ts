@@ -120,7 +120,7 @@ type MessageQuery = {
   after?: string,
   limit?: number,
   channelId: string,
-  parentId?: string,
+  parentId?: string | null,
   preprocess?: (m: Message[]) => Promise<Message[]>
 }
 

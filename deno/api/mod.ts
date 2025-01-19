@@ -278,7 +278,7 @@ class API extends EventTarget {
       after?: string;
       limit?: number;
       channelId: string;
-      parentId?: string;
+      parentId?: string | null;
     },
   ) => {
     const { channelId, ...query } = q;

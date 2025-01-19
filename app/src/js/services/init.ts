@@ -1,6 +1,7 @@
 import { createMethod } from '../store';
 import { isMobile } from '../utils';
 import { initNotifications } from './notifications';
+import { app } from '../core';
 
 declare global {
   interface Navigator{
@@ -13,6 +14,7 @@ declare global {
 const initApp = createMethod('initApp', async (_arg, {
   dispatch, methods, actions,
 }) => {
+  await app.init();
   if (isMobile()) {
     document.body.setAttribute('class', 'mobile');
   }
