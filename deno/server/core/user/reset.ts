@@ -1,6 +1,6 @@
 import * as v from "valibot";
 import * as bcrypt from "@ts-rex/bcrypt";
-import { hash } from "@felix/argon2";
+import { hash } from "argon2";
 import { createCommand } from "../command.ts";
 import { AccessDenied, ResourceNotFound } from "../errors.ts";
 
