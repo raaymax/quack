@@ -1,6 +1,7 @@
 import { useSelector, useTyping } from '../../store';
+import { observer } from 'mobx-react-lite';
 
-export const StatusLine = ({channelId, parentId}: {channelId: string, parentId?: string}) => {
+export const StatusLine = observer(({channelId, parentId}: {channelId: string, parentId?: string}) => {
   const info = useSelector((state) => state.info);
   const typing = useTyping(channelId, parentId); // FIXME: status line should work in context
 
@@ -19,4 +20,4 @@ export const StatusLine = ({channelId, parentId}: {channelId: string, parentId?:
   }
 
   return <div className='info' />;
-};
+});

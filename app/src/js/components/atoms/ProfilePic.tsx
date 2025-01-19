@@ -2,6 +2,7 @@ import { ClassNames, cn } from '../../utils';
 import { useUser } from '../../store';
 import { getUrl } from '../../services/file';
 import styled from 'styled-components';
+import { observer } from 'mobx-react-lite';
 
 const Pic = styled.div`
   position: relative;
@@ -99,7 +100,7 @@ type NotificationProps = {
   showStatus?: boolean;
 }
 
-export const ProfilePic = ({ type = 'regular', showStatus = false, userId, className = [] }: NotificationProps) => {
+export const ProfilePic = observer(({ type = 'regular', showStatus = false, userId, className = [] }: NotificationProps) => {
   const user = useUser(userId);
   const status = user?.status || 'inactive';
 
@@ -113,5 +114,5 @@ export const ProfilePic = ({ type = 'regular', showStatus = false, userId, class
       {showStatus && <div className={cn('status-ball', status)} />}
     </Pic>
   );
-};
+});
 

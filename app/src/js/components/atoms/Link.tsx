@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { observer } from 'mobx-react-lite';
 
 const StyledLink = styled.a`
   overflow-wrap: break-word;
@@ -12,8 +13,8 @@ type LinkProps = {
   href: string;
 };
 
-export const Link = ({ children, href }: LinkProps) => (
+export const Link = observer(({ children, href }: LinkProps) => (
   <StyledLink href={href} target="_blank" rel="noopener noreferrer">
     {children}
   </StyledLink>
-);
+));

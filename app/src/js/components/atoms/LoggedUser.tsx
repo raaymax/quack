@@ -4,6 +4,7 @@ import { useUser } from '../../store';
 import { useLoggedUserId } from '../contexts/useLoggedUserId';
 import { ButtonWithIcon } from '../molecules/ButtonWithIcon';
 import { client } from '../../core';
+import { observer } from 'mobx-react-lite';
 
 const Container = styled.div`
   display: flex;
@@ -45,7 +46,7 @@ const Container = styled.div`
   }
 `;
 
-export const LoggedUser = () => {
+export const LoggedUser = observer(() => {
   const userId = useLoggedUserId();
   const user = useUser(userId);
   if (!user) {
@@ -69,4 +70,4 @@ export const LoggedUser = () => {
       </div>
     </Container>
   );
-}
+});

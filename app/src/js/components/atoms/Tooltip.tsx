@@ -1,6 +1,7 @@
 import { useCallback, useRef } from 'react';
 import { cn, ClassNames } from '../../utils';
 import { useTooltip } from '../contexts/useTooltip';
+import { observer } from 'mobx-react-lite';
 
 interface TooltipProps {
   children: React.ReactNode;
@@ -8,7 +9,7 @@ interface TooltipProps {
   text: string | string[];
 }
 
-export const Tooltip = ({ children, text, className = '' }: TooltipProps) => {
+export const Tooltip = observer(({ children, text, className = '' }: TooltipProps) => {
   const {show, hide} = useTooltip(); 
   const source = useRef<HTMLDivElement>(null);
 
@@ -40,5 +41,5 @@ export const Tooltip = ({ children, text, className = '' }: TooltipProps) => {
       {children}
     </div>
   );
-};
+});
 
