@@ -12,6 +12,7 @@ import { useDirectChannel } from '../contexts/useDirectChannel';
 import { ProfilePic } from '../atoms/ProfilePic';
 import { useSidebar } from '../contexts/useSidebar';
 import { useNavigate, useParams } from 'react-router-dom';
+import { observer } from 'mobx-react-lite';
 
 const UserListContainer = styled.div`
 
@@ -73,7 +74,7 @@ type NavUserButtonProps = {
   onClick: () => void;
 };
 
-export const NavUserButton = ({
+export const NavUserButton = observer(({
   user, size, badge, className, onClick,
 }: NavUserButtonProps) => {
   if (user.system) {
@@ -100,9 +101,9 @@ export const NavUserButton = ({
       {user.name}
       </span>
     </NavButton>);
-};
+});
 
-const NavUserContainer = ({user, badges}: {user: User, badges: Record<string, number>}) => {
+const NavUserContainer = observer(({user, badges}: {user: User, badges: Record<string, number>}) => {
   const channel = useDirectChannel(user.id);
   let navigate = (_path: string) => {};
   try { navigate = useNavigate(); }catch {/*ignore*/}
@@ -121,9 +122,9 @@ const NavUserContainer = ({user, badges}: {user: User, badges: Record<string, nu
       navigate(`/${channel.id}`);
     }}
   />
-}
+})
 
-export const NavUsers = () => {
+export const NavUsers = observer(() => {
   const users = useUsers();
   const userId = useSelector((state) => state.me);
   const badges = useBadges(userId);
@@ -141,4 +142,4 @@ export const NavUsers = () => {
       ))}
     </UserListContainer>
   );
-};
+});

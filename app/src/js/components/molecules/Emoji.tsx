@@ -5,6 +5,7 @@ import { Tooltip } from '../atoms/Tooltip';
 import { useSize } from '../contexts/useSize';
 import { ClassNames, cn } from '../../utils';
 import { useState } from 'react';
+import { observer } from 'mobx-react-lite';
 
 const StyledEmoji = styled.span<{$size?: number}>`
   padding: 0;
@@ -34,7 +35,7 @@ interface EmojiBaseProps {
   size?: number;
 }
 
-export const EmojiBase = ({ className, shortname, emoji, size}: EmojiBaseProps) => {
+export const EmojiBase = observer(({ className, shortname, emoji, size}: EmojiBaseProps) => {
   const $size = useSize(size);
   const [error, setError] = useState(false);
   const onError = () => {
@@ -49,7 +50,7 @@ export const EmojiBase = ({ className, shortname, emoji, size}: EmojiBaseProps) 
         : <img src={getUrl(emoji.fileId ?? '')} onError={onError} alt={shortname} />}
     </StyledEmoji>
   );
-};
+});
 
 interface EmojiProps {
   className?: ClassNames;
@@ -57,11 +58,11 @@ interface EmojiProps {
   size?: number;
 }
 
-export const Emoji = ({ className, shortname, size}: EmojiProps) => {
+export const Emoji = observer(({ className, shortname, size}: EmojiProps) => {
   const emoji = useEmoji(shortname);
   return (
     <Tooltip className={className} text={shortname}>
       <EmojiBase className={className} shortname={shortname} emoji={emoji} size={size} />
     </Tooltip>
   );
-};
+});

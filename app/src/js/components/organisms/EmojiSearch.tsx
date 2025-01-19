@@ -7,6 +7,7 @@ import { Icon } from '../atoms/Icon';
 import { ClassNames, cn } from '../../utils';
 import { Emoji } from '../molecules/Emoji';
 import { Button } from '../atoms/Button';
+import { observer } from 'mobx-react-lite';
 
 export const Label = styled.div`
   width: 100%;
@@ -135,7 +136,7 @@ type EmojiSearchProps = {
   className?: ClassNames;
 }
 
-export const EmojiSearch = ({ className, onSelect }: EmojiSearchProps) => {
+export const EmojiSearch = observer(({ className, onSelect }: EmojiSearchProps) => {
   const [name, setName] = useState('');
   const [results, setResults] = useState<Record<string, DefinedEmoji[]>>({});
   const emojis = useSelector((state) => state.emojis.data) as DefinedEmoji[];
@@ -192,4 +193,4 @@ export const EmojiSearch = ({ className, onSelect }: EmojiSearchProps) => {
       </div>
     </EmojiSearchContainer>
   );
-};
+});

@@ -6,6 +6,7 @@ import { MessageListRenderer, MessageListRendererProps } from './MessageListRend
 import { Message as MessageType } from '../../types';
 import { useMessageListArgs } from '../contexts/useMessageListArgs';
 import { ClassNames, cn } from '../../utils';
+import { observer } from 'mobx-react-lite';
 
 const ListContainer = styled.div`
   display: flex;
@@ -32,7 +33,7 @@ type MessageListProps = MessageListRendererProps & {
   className?: ClassNames;
 };
 
-export const MessageList = (props: MessageListProps) => {
+export const MessageList = observer((props: MessageListProps) => {
   const Renderer = props.renderer ?? MessageListRenderer;
   const {
     list, onScrollTop, onScrollBottom, onDateChange, date, ...rest
@@ -124,6 +125,6 @@ export const MessageList = (props: MessageListProps) => {
       <Renderer list={list} {...rest} />
     </ListContainer>
   );
-};
+});
 
 export default MessageList;

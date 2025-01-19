@@ -7,6 +7,7 @@ import { useInput } from '../contexts/useInput';
 import { getUrl } from '../../services/file';
 import { buildEmojiNode } from '../../utils';
 import { EmojiDescriptor } from '../../types';
+import { observer } from 'mobx-react-lite';
 
 const SCOPE = 'emoji';
 
@@ -18,7 +19,7 @@ type MenuOption = {
   item?: EmojiDescriptor;
 };
 
-export const EmojiSelector = () => {
+export const EmojiSelector = observer(() => {
   const [selected, setSelected] = useState(0);
   const {
     input, currentText, scope, insert, scopeContainer, replace,
@@ -176,4 +177,4 @@ export const EmojiSelector = () => {
       selected={selected}
       setSelected={setSelected} />
   );
-};
+});

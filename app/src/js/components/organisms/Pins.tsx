@@ -9,6 +9,7 @@ import { ButtonWithIcon } from '../molecules/ButtonWithIcon';
 import { MessageListArgsProvider } from '../contexts/messageListArgs';
 import { Toolbar } from '../atoms/Toolbar';
 import { BaseRenderer } from './MessageListRenderer';
+import { observer } from 'mobx-react-lite';
 
 const StyledPins = styled.div`
   height: 100%;
@@ -35,7 +36,7 @@ const StyledHeader = styled.div`
   padding: 16px 16px 16px 16px;
 `;
 
-export const Header = () => {
+export const Header = observer(() => {
   const navigate = useNavigate();
   return (
     <StyledHeader>
@@ -47,9 +48,9 @@ export const Header = () => {
       </Toolbar>
     </StyledHeader>
   );
-};
+});
 
-export const PinsInner = () => {
+export const PinsInner = observer(() => {
   const { channelId } = useParams()!;
   const dispatch = useDispatch();
   const navigation = useNavigation();
@@ -85,12 +86,12 @@ export const PinsInner = () => {
       </HoverProvider>
     </StyledPins>
   );
-};
+});
 
-export const Pins = () => {
+export const Pins = observer(() => {
   return (
     <MessageListArgsProvider streamId="pins">
       <PinsInner />
     </MessageListArgsProvider>
   );
-}
+})

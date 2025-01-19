@@ -4,6 +4,7 @@ import {
   useActions, useDispatch, useMethods, useSelector,
 } from '../../store';
 import { Icon } from '../atoms/Icon';
+import { observer } from 'mobx-react-lite';
 
 const StyledChannelLink = styled.a`
   span {
@@ -15,7 +16,7 @@ type ChannelInlineProps = {
   channelId: string;
 };
 
-export const ChannelLink = ({ channelId: id }: ChannelInlineProps) => {
+export const ChannelLink = observer(({ channelId: id }: ChannelInlineProps) => {
   const dispatch = useDispatch();
   const methods = useMethods();
   const actions = useActions();
@@ -33,4 +34,4 @@ export const ChannelLink = ({ channelId: id }: ChannelInlineProps) => {
       <span className='name'>{channel?.name || channel?.id || id}</span>
     </StyledChannelLink>
   );
-};
+});

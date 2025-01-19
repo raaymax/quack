@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { useSelector, useDispatch } from '../../store';
 import { gotoDirectChannel } from '../../services/channels';
+import { observer } from 'mobx-react-lite';
 
 const StyledLink = styled.a`
   span {
@@ -13,7 +14,7 @@ type UserMentionProps = {
   userId: string;
 };
 
-export const UserMention = ({ userId: id }: UserMentionProps) => {
+export const UserMention = observer(({ userId: id }: UserMentionProps) => {
   // FIXME: dispatch and state type
   const dispatch = useDispatch();
   const user = useSelector((state) => state.users[id]);
@@ -23,4 +24,4 @@ export const UserMention = ({ userId: id }: UserMentionProps) => {
       <span className='name'>@{user?.name || id}</span>
     </StyledLink>
   );
-};
+});

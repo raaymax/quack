@@ -5,6 +5,8 @@ import { cn, formatDate } from '../../utils';
 import * as types from '../../types';
 import { useNavigate } from 'react-router-dom';
 
+import { observer } from 'mobx-react-lite';
+
 export type MessageListRendererProps = {
   list: (types.ViewMessage| types.Notif)[];
   stream?: unknown;
@@ -15,7 +17,7 @@ export type MessageListRendererProps = {
 function isNotif(data: types.Message | types.Notif): data is types.Notif {
   return (data as types.Notif).notif !== undefined;
 }
-export const BaseRenderer = ({
+export const BaseRenderer = observer(({
   list: messages, stream, context, onMessageClicked = (() => undefined),
 }: MessageListRendererProps) => {
     const navigate = useNavigate();
@@ -41,9 +43,9 @@ export const BaseRenderer = ({
       </React.Fragment>;
     }).reverse()}
   </>);
-};
+});
 
-export const MessageListRenderer = ({
+export const MessageListRenderer = observer(({
   list: messages, stream, context, onMessageClicked = (() => undefined),
 }: MessageListRendererProps) => {
     const navigate = useNavigate();
@@ -81,4 +83,4 @@ export const MessageListRenderer = ({
       </React.Fragment>;
     }).reverse()}
   </>);
-};
+});

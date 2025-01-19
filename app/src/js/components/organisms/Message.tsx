@@ -27,6 +27,7 @@ import { ViewMessage } from '../../types';
 import { useMessageListArgs } from '../contexts/useMessageListArgs';
 //import { useNavigate } from 'react-router-dom';
 
+import { observer } from 'mobx-react-lite';
 
 const MessageContainer = styled.div`
   position: relative;
@@ -132,7 +133,7 @@ const MessageContainer = styled.div`
   }
 `;
 
-const Info = () => {
+const Info = observer(() => {
   const { clientId, info } = useMessageData();
   const dispatch = useDispatch();
 
@@ -148,7 +149,7 @@ const Info = () => {
       {info.msg}
     </div>
   );
-};
+});
 
 
 type MessageBaseProps = {
@@ -159,7 +160,7 @@ type MessageBaseProps = {
   [key: string]: unknown;
 };
 
-const MessageBase = ({ onClick, sameUser, navigate = () => {}, ...props }: MessageBaseProps) => {
+const MessageBase = observer(({ onClick, sameUser, navigate = () => {}, ...props }: MessageBaseProps) => {
   const msg = useMessageData();
   const {
     id, message, emojiOnly,
@@ -217,15 +218,15 @@ const MessageBase = ({ onClick, sameUser, navigate = () => {}, ...props }: Messa
       </div>
     </MessageContainer>
   );
-};
+});
 
 type MessageProps = MessageBaseProps & {
   data: ViewMessage;
   navigate?: (path: string) => void;
 };
 
-export const Message = ({ data, ...props }: MessageProps) => (
+export const Message = observer(({ data, ...props }: MessageProps) => (
   <MessageProvider value={data}>
     <MessageBase {...props} />
   </MessageProvider>
-);
+));

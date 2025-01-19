@@ -8,6 +8,7 @@ import { Channel } from './NavChannel';
 import { useSidebar } from '../contexts/useSidebar';
 import { isMobile } from '../../utils';
 import { useNavigate, useParams } from 'react-router-dom';
+import { observer } from 'mobx-react-lite';
 
 const ChannelsContainer = styled.div`
   .header {
@@ -51,7 +52,7 @@ type NavChannelsProps = {
   icon?: string;
 };
 
-export const NavChannels = ({ icon }: NavChannelsProps) => {
+export const NavChannels = observer(({ icon }: NavChannelsProps) => {
   const [show, setShow] = useState(false);
   const channels = useChannels();
   let navigate = (_path: string) => {};
@@ -85,4 +86,4 @@ export const NavChannels = ({ icon }: NavChannelsProps) => {
       ))}
     </ChannelsContainer>
   );
-};
+});

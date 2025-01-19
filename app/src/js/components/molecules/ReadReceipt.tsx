@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { ProfilePic } from '../atoms/ProfilePic';
+import { observer } from 'mobx-react-lite';
 
 const StyledReadReceipt = styled.div`
   position: relative;
@@ -26,7 +27,7 @@ type ReadReceiptProps = {
   }[];
 };
 
-export const ReadReceipt = ({ data }: ReadReceiptProps) => {
+export const ReadReceipt = observer(({ data }: ReadReceiptProps) => {
   if (!data) return null;
 
   return (
@@ -41,4 +42,4 @@ export const ReadReceipt = ({ data }: ReadReceiptProps) => {
       </div>}
     </StyledReadReceipt>
   );
-};
+});

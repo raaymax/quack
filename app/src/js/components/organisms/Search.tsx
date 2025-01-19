@@ -12,6 +12,8 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { MessageListArgsProvider } from "../contexts/messageListArgs";
 import { SearchBox } from "../atoms/SearchBox";
 
+import { observer } from "mobx-react-lite";
+
 const StyledHeader = styled.div`
   display: flex;
   flex-direction: row;
@@ -61,7 +63,7 @@ const StyledSearch = styled.div`
   }
 `;
 
-export const Header = () => {
+export const Header = observer(() => {
   const navigate = useNavigate();
   const { channelId } = useParams()!;
   const onSearch = useCallback(
@@ -93,9 +95,9 @@ export const Header = () => {
       )}
     </StyledHeader>
   );
-};
+});
 
-export function SearchResults() {
+export const SearchResults = observer(() =>{
   const location = useLocation();
   const { channelId } = useParams()!;
   const navigate = useNavigate();
@@ -150,9 +152,9 @@ export function SearchResults() {
       ))}
     </StyledList>
   );
-}
+})
 
-export const Search = () => {
+export const Search = observer(() => {
   return (
     <MessageListArgsProvider streamId="search">
       <StyledSearch>
@@ -163,4 +165,4 @@ export const Search = () => {
       </StyledSearch>
     </MessageListArgsProvider>
   );
-};
+});

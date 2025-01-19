@@ -6,6 +6,7 @@ import { TextWithIcon } from './TextWithIcon';
 import { cn, ClassNames } from '../../utils';
 import { Tooltip } from '../atoms/Tooltip';
 import { User } from '../../types';
+import { observer } from 'mobx-react-lite';
 
 const TagContainer = styled.div`
   font-size: 16px;
@@ -18,9 +19,9 @@ const TagContainer = styled.div`
   margin-left: 12px;
 `;
 
-const Tag = ({ children, tooltip }: { children: React.ReactNode, tooltip: string | string[] }) => (
+const Tag = observer(({ children, tooltip }: { children: React.ReactNode, tooltip: string | string[] }) => (
   <TagContainer><Tooltip text={tooltip}>{children}</Tooltip></TagContainer>
-);
+));
 
 const Container = styled.div`
   display: flex;
@@ -54,7 +55,7 @@ type InlineChannelProps = {
   secured?: boolean;
 };
 
-export const InlineChannel = ({
+export const InlineChannel = observer(({
   id, children, badge, className, onClick, icon = 'fa-solid fa-hashtag', secured
 }: InlineChannelProps) => (
   <Container className={cn('channel', 'inline-channel', className)} data-id={id} onClick={onClick}>
@@ -62,7 +63,7 @@ export const InlineChannel = ({
     {(badge && badge > 0) ? <Badge>{badge}</Badge> : null}
     {secured ? <Tag tooltip={["Messages in this channel are encrypted", "using your password", "Files encription not yet implemented"]}>E2EE</Tag> : null}
   </Container>
-);
+));
 
 type DirectChannelProps = {
   channel: {
@@ -76,7 +77,7 @@ type DirectChannelProps = {
   className?: ClassNames;
 };
 
-const DirectChannel = ({
+const DirectChannel = observer(({
   channel, badge, onClick, className,
 }: DirectChannelProps) => {
   const me = useSelector((state) => state.me);
@@ -112,7 +113,7 @@ const DirectChannel = ({
       {user.name}
     </InlineChannel>
    );
-};
+});
 
 type ChannelProps = {
   channelId: string;
@@ -122,7 +123,7 @@ type ChannelProps = {
   className?: ClassNames;
 };
 
-export const Channel = ({
+export const Channel = observer(({
   channelId: id, onClick, icon, badge, className,
 }: ChannelProps) => {
   const dispatch = useDispatch();
@@ -148,6 +149,6 @@ export const Channel = ({
       {name}
     </InlineChannel>
   );
-};
+});
 
 export const NavChannel = Channel;

@@ -5,10 +5,11 @@ import Fuse from 'fuse.js';
 import { TextMenu } from './TextMenu';
 import { useInput } from '../contexts/useInput';
 import { useUsers } from '../../store';
+import { observer } from 'mobx-react-lite';
 
 const SCOPE = 'user';
 
-export const UserSelector = () => {
+export const UserSelector = observer(() => {
   const [selected, setSelected] = useState(0);
   const {
     input, currentText, scope, insert, scopeContainer,
@@ -108,4 +109,4 @@ export const UserSelector = () => {
       selected={selected}
       setSelected={setSelected} />
   );
-};
+});

@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from '../../store';
 import { abort } from '../../services/file';
 import { useMessageListArgs } from '../contexts/useMessageListArgs';
 import { ClassNames, cn } from '../../utils';
+import { observer } from 'mobx-react-lite';
 
 const Container = styled.div`
   .attachment-list {
@@ -123,7 +124,7 @@ type AttachmentProps = {
   onDelete: () => void;
 };
 
-export const Attachment = ({
+export const Attachment = observer(({
   data: {
     fileName, contentType, progress, status, fileSize,
   },
@@ -140,9 +141,9 @@ export const Attachment = ({
     </div>
     <div className='remove' onClick={onDelete}><i className='fa-solid fa-xmark' /></div>
   </div>
-);
+));
 
-export const Attachments = ({className}: {className?:ClassNames}) => {
+export const Attachments = observer(({className}: {className?:ClassNames}) => {
   const [args] = useMessageListArgs();
   const files = useSelector((state) => state.files);
   const list = useMemo(() => files.filter((file) => file.streamId === args.id), [files, args.id]);
@@ -170,4 +171,4 @@ export const Attachments = ({className}: {className?:ClassNames}) => {
       {/*<div className={status === 'ok' ? 'progress done' : 'progress'} style={{ width: `${progress}%` }} />*/}
     </Container>
   );
-};
+});

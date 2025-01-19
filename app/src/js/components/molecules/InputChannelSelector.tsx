@@ -5,10 +5,11 @@ import Fuse from 'fuse.js';
 import { TextMenu } from './TextMenu';
 import { useInput } from '../contexts/useInput';
 import { useChannels } from '../../store';
+import { observer } from 'mobx-react-lite';
 
 const SCOPE = 'channel';
 
-export const ChannelSelector = () => {
+export const ChannelSelector = observer(() => {
   const [selected, setSelected] = useState(0);
   const {
     input, currentText, scope, insert, scopeContainer,
@@ -103,4 +104,4 @@ export const ChannelSelector = () => {
   return (
     <TextMenu open={true} options={options} onSelect={onSelect} selected={selected} setSelected={setSelected} />
   );
-};
+});

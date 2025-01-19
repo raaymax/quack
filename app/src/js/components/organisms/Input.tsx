@@ -19,6 +19,8 @@ import { ButtonWithIcon } from '../molecules/ButtonWithIcon';
 
 import { EmojiSearch } from './EmojiSearch';
 
+import { observer } from 'mobx-react-lite';
+
 export const InputContainer = styled.div`
   position: relative;
   max-height: 50%;
@@ -133,7 +135,7 @@ type InputFormProps = {
   parentId?: string,
 }
 
-export const InputForm = ({ className, channelId, parentId }: InputFormProps) => {
+export const InputForm = observer(({ className, channelId, parentId }: InputFormProps) => {
   const [showEmojis, setShowEmojis] = useState(false);
   const {
     mode, messageId,
@@ -216,7 +218,7 @@ export const InputForm = ({ className, channelId, parentId }: InputFormProps) =>
       />
     </InputContainer>
   );
-};
+});
 
 type InputProps = {
   mode?: string;
@@ -226,8 +228,8 @@ type InputProps = {
   parentId?: string;
 };
 
-export const Input = ({ className, ...args }: InputProps) => (
+export const Input = observer(({ className, ...args }: InputProps) => (
   <InputProvider {...args} >
     <InputForm className={className} {...args}/>
   </InputProvider>
-);
+));

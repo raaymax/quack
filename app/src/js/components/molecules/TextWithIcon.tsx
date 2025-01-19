@@ -3,6 +3,7 @@ import { Icon } from '../atoms/Icon';
 import { Text } from '../atoms/Text';
 import { useSize } from '../contexts/useSize';
 import { cn, ClassNames } from '../../utils';
+import { observer } from 'mobx-react-lite';
 
 const Container = styled.div`
   display: inline-block;
@@ -18,7 +19,7 @@ type TextWithIconProps = {
   icon: string;
 };
 
-export const TextWithIcon = ({
+export const TextWithIcon = observer(({
   children, size, className, icon,
 }: TextWithIconProps) => {
   const $size = useSize(size);
@@ -28,4 +29,4 @@ export const TextWithIcon = ({
       <Text size={$size ? $size / 2.3 : $size}>{children}</Text>
     </Container>
   );
-};
+});

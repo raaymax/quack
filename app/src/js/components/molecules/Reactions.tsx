@@ -4,6 +4,7 @@ import { Tag } from '../atoms/Tag';
 import { Tooltip } from '../atoms/Tooltip';
 import styled from 'styled-components';
 import { Icon } from '../atoms/Icon';
+import { observer } from 'mobx-react-lite';
 
 
 type ReactionProps = {
@@ -12,7 +13,7 @@ type ReactionProps = {
   userNames: string[];
   onClick: () => void;
 };
-const Reaction = ({shortname, userNames, onClick}: ReactionProps) => {
+const Reaction = observer(({shortname, userNames, onClick}: ReactionProps) => {
   const emoji = useEmoji(shortname);
 
 
@@ -24,7 +25,7 @@ const Reaction = ({shortname, userNames, onClick}: ReactionProps) => {
       </Tag>
     </Tooltip>
   );
-}
+})
 
 const Container = styled.div`
   display: flex;
@@ -49,7 +50,7 @@ type ReactionsProps = {
   reactions?: { reaction: string, userId: string }[];
   onClick?: () => void;
 };
-export const Reactions = ({messageId, reactions = [], onClick}: ReactionsProps) => {
+export const Reactions = observer(({messageId, reactions = [], onClick}: ReactionsProps) => {
   const dispatch = useDispatch();
   const methods = useMethods();
   const users = useSelector((state) => state.users);
@@ -81,4 +82,4 @@ export const Reactions = ({messageId, reactions = [], onClick}: ReactionsProps) 
       )}
     </Container>
   );
-};
+});

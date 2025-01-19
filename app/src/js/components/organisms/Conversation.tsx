@@ -13,6 +13,7 @@ import { LoadingIndicator } from '../molecules/LoadingIndicator';
 import { ViewMessage as MessageType } from '../../types';
 import { useMessageListArgs } from '../contexts/useMessageListArgs';
 import { ClassNames, cn } from '../../utils';
+import { observer } from 'mobx-react-lite';
 
 const ReInit = styled.div`
   cursor: pointer;
@@ -32,12 +33,12 @@ type InitFailedButtonProps = {
   onClick?: () => void;
 };
 
-export const InitFailedButton = ({ onClick }: InitFailedButtonProps) => (
+export const InitFailedButton = observer(({ onClick }: InitFailedButtonProps) => (
   <ReInit onClick={onClick}>
     Failed to initialize<br />
     Click to retry...
   </ReInit>
-);
+));
 
 export const Container = styled.div`
   width: 100%;
@@ -52,7 +53,7 @@ export const Container = styled.div`
   }
 `;
 
-export function Conversation({channelId, parentId, className}: {channelId: string, parentId?: string, className?: ClassNames}) {
+export const Conversation = observer(({channelId, parentId, className}: {channelId: string, parentId?: string, className?: ClassNames}) => {
   const [args, setArgs] = useMessageListArgs();
   const dispatch = useDispatch();
   const methods = useMethods();
@@ -111,5 +112,5 @@ export function Conversation({channelId, parentId, className}: {channelId: strin
       </HoverProvider>
     </Container>
   );
-}
+})
 

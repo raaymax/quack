@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import { formatDateDetailed, formatTime } from "../../utils";
 import { ProfilePic } from "../atoms/ProfilePic";
+import { observer } from "mobx-react-lite";
 
 const Container = styled.div`
   width: auto;
@@ -50,7 +51,7 @@ type ThreadInfoProps = {
   };
 };
 
-export const ThreadInfo = ({navigate = () => {}, msg}: ThreadInfoProps) => {
+export const ThreadInfo = observer(({navigate = () => {}, msg}: ThreadInfoProps) => {
   const {
     updatedAt, thread, channelId, id,
   } = msg;
@@ -71,4 +72,4 @@ export const ThreadInfo = ({navigate = () => {}, msg}: ThreadInfoProps) => {
       </div>
     </Container>
   );
-};
+});

@@ -3,6 +3,7 @@ import { useSelector } from "../../store";
 import { ProfilePic } from "../atoms/ProfilePic";
 import { Icon } from "../atoms/Icon";
 import { Tooltip } from "../atoms/Tooltip";
+import { observer } from "mobx-react-lite";
 
 const Container = styled.div`
   display: flex;
@@ -54,10 +55,11 @@ const TagContainer = styled.div`
   }
 `;
 
-const Tag = ({ children, tooltip }: { children: React.ReactNode, tooltip: string | string[] }) => (
+const Tag = observer(({ children, tooltip }: { children: React.ReactNode, tooltip: string | string[] }) => (
   <TagContainer><Tooltip text={tooltip}>{children}</Tooltip></TagContainer>
-);
-export const DiscussionHeader = ({ channelId }: { channelId: string}) => {
+));
+
+export const DiscussionHeader = observer(({ channelId }: { channelId: string}) => {
   const channel = useSelector((state) => state.channels[channelId]);
   const me = useSelector((state) => state.me);
   const otherUser = channel?.users.find((id) => id !== me);
@@ -80,4 +82,4 @@ export const DiscussionHeader = ({ channelId }: { channelId: string}) => {
       {isEncrypted ? <Tag tooltip={["Messages in this channel are encrypted", "using your password", "Files encription not yet implemented"]}>E2EE</Tag> : null}
     </Container>
   );
-}
+})

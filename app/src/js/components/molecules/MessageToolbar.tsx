@@ -11,6 +11,7 @@ import { Toolbar } from '../atoms/Toolbar';
 import { ButtonWithEmoji } from './ButtonWithEmoji';
 import { ButtonWithIcon } from './ButtonWithIcon';
 import { useParams } from 'react-router-dom';
+import { observer } from 'mobx-react-lite';
 
 export const Container = styled.div`
   position: absolute;
@@ -51,7 +52,7 @@ export const Container = styled.div`
   }
 `;
 
-export const MessageToolbar = ({navigate}: {navigate: (path: string) => void}) => {
+export const MessageToolbar = observer(({navigate}: {navigate: (path: string) => void}) => {
   const message = useMessageData();
   const user = useMessageUser();
   const { id, pinned, channelId } = message;
@@ -116,4 +117,4 @@ export const MessageToolbar = ({navigate}: {navigate: (path: string) => void}) =
       </Toolbar>
     </Container>
   );
-};
+});

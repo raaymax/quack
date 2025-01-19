@@ -14,6 +14,7 @@ import { MessageListArgsProvider } from '../contexts/messageListArgs';
 import { SearchBox } from '../atoms/SearchBox';
 import { CollapsableColumns } from '../atoms/CollapsableColumns';
 import { DiscussionHeader } from '../molecules/DiscussionHeader';
+import { observer } from 'mobx-react-lite';
 
 const WORKSPACES_WIDTH = 80;
 const RESIZER_WIDTH = 8;
@@ -152,7 +153,7 @@ export const Container = styled.div`
   }
 `;
 
-export const UpdateArgs = () => {
+export const UpdateArgs = observer(() => {
   const location = useLocation();
   const {channelId } = useParams();
   const [args, setArgs] = useMessageListArgs();
@@ -165,7 +166,7 @@ export const UpdateArgs = () => {
   }, [location.state, channelId]);
 
   return null
-}
+})
 
 
 type SideConversationProps = {
@@ -173,7 +174,7 @@ type SideConversationProps = {
   parentId?: string;
 };
 
-export const SideConversation = ({ channelId, parentId}: SideConversationProps) => {
+export const SideConversation = observer(({ channelId, parentId}: SideConversationProps) => {
   const message = useMessage(parentId);
   const navigate = useNavigate();
   return (
@@ -200,13 +201,13 @@ export const SideConversation = ({ channelId, parentId}: SideConversationProps) 
       </div>
     </MessageListArgsProvider>
   );
-}
+})
 
 type MainConversationProps = {
   channelId: string;
   children?: React.ReactNode;
 };
-export const MainConversation = ({ channelId, children}: MainConversationProps) => {
+export const MainConversation = observer(({ channelId, children}: MainConversationProps) => {
   const location = useLocation();
   const [stream] = useMessageListArgs();
   const navigate = useNavigate();
@@ -248,13 +249,13 @@ export const MainConversation = ({ channelId, children}: MainConversationProps) 
       </div>
     </MessageListArgsProvider>
   );
-}
+})
 
 type DiscussionProps = {
   className?: string;
   children?: React.ReactNode;
 };
-export const Discussion = ({ className, children }: DiscussionProps) => {
+export const Discussion = observer(({ className, children }: DiscussionProps) => {
   const {channelId='', parentId} = useParams();
 
   return (
@@ -267,9 +268,9 @@ export const Discussion = ({ className, children }: DiscussionProps) => {
       ].filter(Boolean) as [React.ReactNode, React.ReactNode?]}
     />
   );
-}
+})
 
-export const Desktop = ({children}: {children: React.ReactNode}) => {
+export const Desktop = observer(({children}: {children: React.ReactNode}) => {
   const { parentId } = useParams();
   const [size, setSize] = useState(Number(localStorage.getItem('sidebar-size')) || 356);
   const theme = useTheme();
@@ -295,6 +296,6 @@ export const Desktop = ({children}: {children: React.ReactNode}) => {
       </div>
     </Container>
   );
-};
+});
 
 export default Desktop;
