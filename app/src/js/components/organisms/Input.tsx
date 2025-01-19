@@ -24,7 +24,7 @@ export const InputContainer = styled.div`
   max-height: 50%;
   max-width: 100%;
   font-size: 16px;
-  margin: 0px 16px 16px 16px;
+  margin: 0px 16px 32px 16px;
   display: flex;
   padding: 0;
   flex-direction: column;
