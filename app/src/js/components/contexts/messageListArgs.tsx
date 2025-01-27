@@ -12,6 +12,7 @@ type MessageListArgsParams = {
 };
 
 export const MessageListArgsProvider = ({ streamId, children, value = {}}: MessageListArgsParams) => {
+  console.log('streamId', streamId, value, children);
   const [state, setState] = useState<MessageListArgs>({type: 'live', ...value, id: streamId});
   return (
     <MessageListArgsContext.Provider value={[state, (a: Partial<MessageListArgs>) => {

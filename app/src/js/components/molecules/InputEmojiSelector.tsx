@@ -1,13 +1,13 @@
 import {
   useCallback, useEffect, useState, useMemo,
 } from 'react';
-import { useSelector, useEmojiFuse } from '../../store';
 import { TextMenu } from './TextMenu';
 import { useInput } from '../contexts/useInput';
 import { getUrl } from '../../services/file';
 import { buildEmojiNode } from '../../utils';
 import { EmojiDescriptor } from '../../types';
 import { observer } from 'mobx-react-lite';
+import { useApp } from '../contexts/appState';
 
 const SCOPE = 'emoji';
 
@@ -21,11 +21,12 @@ type MenuOption = {
 
 export const EmojiSelector = observer(() => {
   const [selected, setSelected] = useState(0);
+  const app = useApp();
   const {
     input, currentText, scope, insert, scopeContainer, replace,
   } = useInput();
-  const emojis = useSelector((state) => state.emojis.data);
-  const fuse = useEmojiFuse();
+  const emojis = app.emojis.getAll();
+  const fuse = app.emojis.getFuse();
 
   const options = useMemo(() => {
     let em = fuse.search(currentText || '').slice(0, 5).map(({ item }) => item);

@@ -1,14 +1,12 @@
 import { useState } from 'react';
 import styled from 'styled-components';
-import {
-  useSelector, useBadges, useChannels,
-} from '../../store';
 import { ChannelCreate } from './ChannelCreate';
 import { Channel } from './NavChannel';
 import { useSidebar } from '../contexts/useSidebar';
 import { isMobile } from '../../utils';
 import { useNavigate, useParams } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
+import { useApp } from '../contexts/appState';
 
 const ChannelsContainer = styled.div`
   .header {
@@ -54,13 +52,13 @@ type NavChannelsProps = {
 
 export const NavChannels = observer(({ icon }: NavChannelsProps) => {
   const [show, setShow] = useState(false);
-  const channels = useChannels();
+  const app = useApp();
   let navigate = (_path: string) => {};
   try { navigate = useNavigate(); }catch {/* ignore */}
-  const userId = useSelector((state) => state.me);
-  const badges = useBadges(userId);
+  const badges = app.readReceipts.getMap();
   const {channelId: id} = useParams();
   const { hideSidebar } = useSidebar();
+  const channels = app.channels.getAll(['PUBLIC', 'PRIVATE']);
   return (
     <ChannelsContainer>
       <div className='header'>

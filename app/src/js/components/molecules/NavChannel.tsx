@@ -1,12 +1,13 @@
 import { useEffect } from 'react';
 import styled from 'styled-components';
-import { useDispatch, useMethods, useSelector } from '../../store';
 import { Badge } from '../atoms/Badge';
 import { TextWithIcon } from './TextWithIcon';
 import { cn, ClassNames } from '../../utils';
 import { Tooltip } from '../atoms/Tooltip';
 import { User } from '../../types';
 import { observer } from 'mobx-react-lite';
+import { useApp } from '../contexts/appState';
+import type { ChannelModel } from '../../core/models/channel';
 
 const TagContainer = styled.div`
   font-size: 16px;
@@ -66,12 +67,7 @@ export const InlineChannel = observer(({
 ));
 
 type DirectChannelProps = {
-  channel: {
-    id: string;
-    name: string;
-    channelType: 'DIRECT' | 'PRIVATE' | 'PUBLIC';
-    users: string[];
-  };
+  channel: ChannelModel;
   badge?: number;
   onClick?: () => void;
   className?: ClassNames;
@@ -80,23 +76,9 @@ type DirectChannelProps = {
 const DirectChannel = observer(({
   channel, badge, onClick, className,
 }: DirectChannelProps) => {
-  const me = useSelector((state) => state.me);
-  let other = channel.users.find((u) => u !== me);
-  if (!other) [other] = channel.users;
-  const user: User = useSelector((state) => state.users[other ?? '']);
-  const secured = channel.channelType === 'DIRECT';
-  if (!user) {
-    return (
-      <InlineChannel
-        className={className}
-        id={channel.id}
-        onClick={onClick}
-        badge={badge}
-        secured={secured}>
-        {channel.name}
-      </InlineChannel>
-    );
-  }
+  const user: User | null = channel.otherUser || channel.user;
+  const secured = channel.isDirect;
+  if (!user) return null; 
   const active = user.lastSeen && new Date(user.lastSeen).getTime() > Date.now() - 1000 * 60 * 5;
   return (
     <InlineChannel
@@ -126,18 +108,16 @@ type ChannelProps = {
 export const Channel = observer(({
   channelId: id, onClick, icon, badge, className,
 }: ChannelProps) => {
-  const dispatch = useDispatch();
-  const methods = useMethods();
-  const channel = useSelector((state) => state.channels[id]);
+  const app = useApp();
+  const channel = app.channels.get(id)
   useEffect(() => {
     if (!channel) {
-      dispatch(methods.channels.find(id));
+      app.channels.find(id);
     }
-  }, [id, channel, methods, dispatch]);
-  const { name, private: priv, direct } = channel || {};
+  }, [id, channel]);
   let ico = icon;
-  if (priv) ico = 'fa-solid fa-lock';
-  if (direct) return (<DirectChannel className={className} channel={channel || {}} onClick={onClick} badge={badge} />);
+  if (channel?.isPrivate) ico = 'fa-solid fa-lock';
+  if (channel?.isDirect) return (<DirectChannel className={className} channel={channel} onClick={onClick} badge={badge} />);
   return (
     <InlineChannel
       className={className}
@@ -146,7 +126,7 @@ export const Channel = observer(({
       icon={ico}
       badge={badge}
     >
-      {name}
+      {channel?.name ?? id}
     </InlineChannel>
   );
 });

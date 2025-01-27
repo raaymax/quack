@@ -1,7 +1,8 @@
 import styled from 'styled-components';
-import { useSelector, useDispatch } from '../../store';
-import { gotoDirectChannel } from '../../services/channels';
 import { observer } from 'mobx-react-lite';
+import { useApp } from '../contexts/appState';
+import type { UserModel } from '../../core/models/user';
+import { useNavigate } from 'react-router-dom';
 
 const StyledLink = styled.a`
   span {
@@ -10,18 +11,29 @@ const StyledLink = styled.a`
   }
 `;
 
+type UserMentionBaseProps = {
+  user: UserModel;
+};
+
+export const UserMentionBase = observer(({ user }: UserMentionBaseProps) => {
+  // FIXME: dispatch and state type
+  const navigate = useNavigate()
+
+  return (
+    <StyledLink className='channel' onClick={() => navigate('/'+user.channelId)} data-id={user.id} href={'#'} >
+      <span className='name'>@{user?.name || user.id}</span>
+    </StyledLink>
+  );
+});
 type UserMentionProps = {
   userId: string;
 };
 
-export const UserMention = observer(({ userId: id }: UserMentionProps) => {
-  // FIXME: dispatch and state type
-  const dispatch = useDispatch();
-  const user = useSelector((state) => state.users[id]);
-
-  return (
-    <StyledLink className='channel' onClick={() => dispatch(gotoDirectChannel({ userId: id }))} data-id={id} href={'#'} >
-      <span className='name'>@{user?.name || id}</span>
-    </StyledLink>
-  );
+export const UserMention= observer(({ userId: id }: UserMentionProps) => {
+  const app = useApp();
+  const user = app.users.get(id);
+  if (!user) {
+    return <span>@{id}</span>;
+  }
+  return <UserMentionBase user={user} />;
 });

@@ -1,9 +1,10 @@
-import { useSelector } from '../../store';
 import { Loader } from '../atoms/Loader';
 import { observer } from 'mobx-react-lite';
+import { useApp } from '../contexts/appState';
 
 export const LoadingIndicator = observer(() => {
-  const loading = useSelector((state) => state.messages.loading);
+  const app = useApp();
+  const loading = app.loading;
   if (!loading) return null;
   return <Loader />;
 })

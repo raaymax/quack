@@ -1,37 +1,31 @@
 import React from 'react';
 import { Message } from './Message';
-import { DateSeparator } from '../atoms/DateSeparator';
 import { cn, formatDate } from '../../utils';
 import * as types from '../../types';
 import { useNavigate } from 'react-router-dom';
 
 import { observer } from 'mobx-react-lite';
+import type { MessagesModel } from '../../core/models/messages';
+import type { MessageModel } from '../../core/models/message';
+import { DateSeparator } from '../atoms/DateSeparator';
+import { ReadReceipt } from '../molecules/ReadReceipt';
 
 export type MessageListRendererProps = {
-  list: (types.ViewMessage| types.Notif)[];
-  stream?: unknown;
+  model: MessagesModel;
   context?: unknown;
-  onMessageClicked?: (msg: types.Message) => void;
+  onMessageClicked?: (msg: MessageModel) => void;
 };
 
-function isNotif(data: types.Message | types.Notif): data is types.Notif {
-  return (data as types.Notif).notif !== undefined;
-}
 export const BaseRenderer = observer(({
-  list: messages, stream, context, onMessageClicked = (() => undefined),
+  model, context, onMessageClicked = (() => undefined),
 }: MessageListRendererProps) => {
     const navigate = useNavigate();
   return (<>
-    {[...messages].reverse().map((msg) => {
-      return <React.Fragment key={`${msg.id}-${msg.clientId}`}>
-        {isNotif(msg)
-          ? <div
-            className={cn('notification', msg.notifType)}>
-            {msg.notif}
-          </div>
-          : <Message
+    {[...model.list].reverse().map((msg: MessageModel) => {
+      return <Message
+            key={`${msg.id}-${msg.clientId}`}
+            model={msg}
             navigate={navigate}
-            stream={stream}
             context={context}
             onClick={() => onMessageClicked(msg)}
             data-id={msg.id}
@@ -39,19 +33,20 @@ export const BaseRenderer = observer(({
             client-id={msg.clientId}
             sameUser={false}
             data={msg}
-          />}
-      </React.Fragment>;
+          />;
     }).reverse()}
   </>);
 });
 
 export const MessageListRenderer = observer(({
-  list: messages, stream, context, onMessageClicked = (() => undefined),
+  model, context, onMessageClicked = (() => undefined),
 }: MessageListRendererProps) => {
     const navigate = useNavigate();
-  let prev: types.ViewMessage | types.Notif;
+  let prev: MessageModel;
+  const readReceipts = model.getReadReceipts();
+  console.log('rendering conversation', model.list.length);
   return (<>
-    {[...messages].reverse().map((msg) => {
+    {[...model.list].reverse().map((msg) => {
       let sameUser = false;
       let sameDate = false;
       if (!msg.ephemeral) {
@@ -63,14 +58,10 @@ export const MessageListRenderer = observer(({
         && formatDate(prev?.createdAt) === formatDate(msg?.createdAt);
       prev = msg;
       return <React.Fragment key={`${msg.id}-${msg.clientId}`}>
-        {isNotif(msg)
-          ? <div
-            className={cn('notification', msg.notifType)}>
-            {msg.notif}
-          </div>
-          : <Message
+        <ReadReceipt model={readReceipts.filter((r) => r.lastMessageId === msg.id)} />
+        <Message
+            model={msg}
             navigate={navigate}
-            stream={stream}
             context={context}
             onClick={() => onMessageClicked(msg)}
             data-id={msg.id}
@@ -78,9 +69,9 @@ export const MessageListRenderer = observer(({
             client-id={msg.clientId}
             sameUser={sameUser}
             data={msg}
-          />}
+          />
         {!sameDate ? <DateSeparator key={`date:${msg.createdAt}`} date={msg.createdAt} /> : null}
-      </React.Fragment>;
+      </React.Fragment>
     }).reverse()}
   </>);
 });

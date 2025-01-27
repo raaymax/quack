@@ -1,9 +1,9 @@
 import styled from "styled-components";
-import { useSelector } from "../../store";
 import { ProfilePic } from "../atoms/ProfilePic";
 import { Icon } from "../atoms/Icon";
 import { Tooltip } from "../atoms/Tooltip";
 import { observer } from "mobx-react-lite";
+import { useApp } from "../contexts/appState";
 
 const Container = styled.div`
   display: flex;
@@ -60,25 +60,22 @@ const Tag = observer(({ children, tooltip }: { children: React.ReactNode, toolti
 ));
 
 export const DiscussionHeader = observer(({ channelId }: { channelId: string}) => {
-  const channel = useSelector((state) => state.channels[channelId]);
-  const me = useSelector((state) => state.me);
-  const otherUser = channel?.users.find((id) => id !== me);
-  const user = useSelector((state) => state.users[otherUser ?? me ?? '']);
-  const isDirect = channel?.channelType === 'DIRECT';
-  const isEncrypted = isDirect;
-  if (!channel || !me) {
-    return null;
-  }
+  const app = useApp();
+  const channel = app.channels.get(channelId);
+  if (!channel) return null;
+  const user = channel.otherUser || channel.user;
+  if (!user) return null;
+  const isEncrypted = channel.isDirect;
   return (
     <Container className="discussion-header">
-      {isDirect 
+      {channel.isDirect 
         ? <div className="avatar">
           <ProfilePic showStatus={true} userId={user.id} type="personal" />
         </div>
         : <div className="channel-icon">
           <Icon icon={channel.channelType === 'PUBLIC' ? "hash" : "lock"} size={24}/>
         </div>}
-      <div className="name">{isDirect ? user.name :  channel.name}</div>
+      <div className="name">{channel.isDirect ? user.name :  channel.name}</div>
       {isEncrypted ? <Tag tooltip={["Messages in this channel are encrypted", "using your password", "Files encription not yet implemented"]}>E2EE</Tag> : null}
     </Container>
   );

@@ -1,5 +1,6 @@
 import { play } from './services/sound';
 import { init } from './services/init';
+import { app } from './core';
 import { client } from './core';
 import { store, actions, methods } from './store';
 
@@ -12,7 +13,7 @@ client
   .on('channel', (msg) => store.dispatch(actions.channels.add(msg)))
   .on('removeChannel', (msg) => store.dispatch(actions.channels.remove(msg.channelId)))
   .on('typing', (msg) => store.dispatch(methods.typing.ack(msg)))
-  .on('con:open', () => store.dispatch(init({})))
+  .on('con:open', () => app.init())
   .on('auth:user', (user) => store.dispatch(actions.me.set(user)))
   .on('auth:logout', () => store.dispatch(actions.me.set(null)))
   .on('con:close', () => {

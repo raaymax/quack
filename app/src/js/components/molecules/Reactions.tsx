@@ -1,10 +1,11 @@
-import { useDispatch, useEmoji, useMethods, useSelector } from '../../store';
 import { EmojiBase } from './Emoji';
 import { Tag } from '../atoms/Tag';
 import { Tooltip } from '../atoms/Tooltip';
 import styled from 'styled-components';
 import { Icon } from '../atoms/Icon';
 import { observer } from 'mobx-react-lite';
+import { useApp } from '../contexts/appState';
+import { MessageModel } from '../../core/models/message';
 
 
 type ReactionProps = {
@@ -14,8 +15,7 @@ type ReactionProps = {
   onClick: () => void;
 };
 const Reaction = observer(({shortname, userNames, onClick}: ReactionProps) => {
-  const emoji = useEmoji(shortname);
-
+  const emoji = useApp().emojis.get(shortname);
 
   return (
     <Tooltip text={[shortname, ...userNames]}>
@@ -46,23 +46,20 @@ const Container = styled.div`
 
 `;
 type ReactionsProps = {
-  messageId?: string;
-  reactions?: { reaction: string, userId: string }[];
+  messageModel: MessageModel;
   onClick?: () => void;
 };
-export const Reactions = observer(({messageId, reactions = [], onClick}: ReactionsProps) => {
-  const dispatch = useDispatch();
-  const methods = useMethods();
-  const users = useSelector((state) => state.users);
+export const Reactions = observer(({messageModel, onClick}: ReactionsProps) => {
+  const users = useApp().users;
 
-  const reactionMap = reactions
+  const reactionMap = messageModel.reactions
     .map((r) => ({
       ...r,
-      userName: users[r.userId]?.name || 'Unknown'
+      userName: users.get(r.userId)?.name || 'Unknown'
     }))
     .reduce<{[reaction: string]: string[]}>((acc, r) => ({ ...acc, [r.reaction]: [...(acc[r.reaction] || []), r.userName] }), {});
 
-  if ( reactions.length === 0 ) return null;
+  if ( messageModel.reactions.length === 0 ) return null;
   return (
     <Container className="cmp-reactions">
       {Object.entries(reactionMap).map(([shortname, userNames]) => (
@@ -70,7 +67,7 @@ export const Reactions = observer(({messageId, reactions = [], onClick}: Reactio
           key={shortname} 
           shortname={shortname} 
           userNames={userNames} 
-          onClick={() => messageId && dispatch(methods.messages.addReaction({ id: messageId, text: shortname}))}
+          onClick={() => messageModel.addReaction(shortname)}
         />
       ))}
       {onClick && (

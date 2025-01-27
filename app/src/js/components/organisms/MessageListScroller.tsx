@@ -7,6 +7,8 @@ import { Message as MessageType } from '../../types';
 import { useMessageListArgs } from '../contexts/useMessageListArgs';
 import { ClassNames, cn } from '../../utils';
 import { observer } from 'mobx-react-lite';
+import { MessagesModel } from '../../core/models/messages';
+import { autorun } from 'mobx';
 
 const ListContainer = styled.div`
   display: flex;
@@ -24,7 +26,7 @@ const ListContainer = styled.div`
 const getMax = (list: MessageType[]) => list.reduce((acc, item) => Math.max(acc, new Date(item.createdAt).getTime()), new Date('1970-01-01').getTime());
 
 type MessageListProps = MessageListRendererProps & {
-  list: MessageType[];
+  model: MessagesModel;
   renderer?: React.ComponentType<MessageListRendererProps>;
   onScrollTop?: () => void;
   onScrollBottom?: () => void;
@@ -36,13 +38,19 @@ type MessageListProps = MessageListRendererProps & {
 export const MessageList = observer((props: MessageListProps) => {
   const Renderer = props.renderer ?? MessageListRenderer;
   const {
-    list, onScrollTop, onScrollBottom, onDateChange, date, ...rest
+    model, onScrollTop, onScrollBottom, onDateChange, date, ...rest
   } = props;
   const element = useRef<HTMLDivElement>(null);
   const [oldList, setOldList] = useState<MessageType[]>([]);
   const [current, setCurrent] = useState<[Date | undefined, DOMRect | undefined]>([date, undefined]);
   const [selected, setSelected] = useState<string | undefined>();
   const [stream] = useMessageListArgs()
+  const [list, setList] = useState<MessageType[]>([]);
+  useEffect(() => {
+    autorun(() => {
+      setList(model.getAll());
+    })
+  }, [model]);
 
   const detectDate = useCallback((e: React.SyntheticEvent) => {
     const target = e.target as HTMLElement;
@@ -103,7 +111,7 @@ export const MessageList = observer((props: MessageListProps) => {
       }, 500);
       setSelected(stream.selected);
     }
-  }, [stream, list, selected, setSelected]);
+  }, [stream, selected, setSelected]);
 
   const scroll = useCallback((e: React.SyntheticEvent) => {
     detectDate(e);
@@ -122,7 +130,7 @@ export const MessageList = observer((props: MessageListProps) => {
   return (
     <ListContainer ref={element} onScroll={scroll} className={cn("message-list-scroll", props.className)} >
       <div className='v-space'>&nbsp;</div>
-      <Renderer list={list} {...rest} />
+      <Renderer model={model} {...rest} />
     </ListContainer>
   );
 });

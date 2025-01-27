@@ -4,17 +4,18 @@ import {
 import Fuse from 'fuse.js';
 import { TextMenu } from './TextMenu';
 import { useInput } from '../contexts/useInput';
-import { useChannels } from '../../store';
 import { observer } from 'mobx-react-lite';
+import { useApp } from '../contexts/appState';
 
 const SCOPE = 'channel';
 
 export const ChannelSelector = observer(() => {
   const [selected, setSelected] = useState(0);
+  const app = useApp();
   const {
     input, currentText, scope, insert, scopeContainer,
   } = useInput();
-  const channels = useChannels();
+  const channels = app.channels.getAll(['PUBLIC', 'PRIVATE']);
   const fuse = useMemo(() => new Fuse(channels, {
     keys: ['name'],
     findAllMatches: true,

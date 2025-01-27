@@ -1,8 +1,8 @@
 import { ClassNames, cn } from '../../utils';
-import { useUser } from '../../store';
 import { getUrl } from '../../services/file';
 import styled from 'styled-components';
 import { observer } from 'mobx-react-lite';
+import { useApp } from '../contexts/appState';
 
 const Pic = styled.div`
   position: relative;
@@ -101,7 +101,7 @@ type NotificationProps = {
 }
 
 export const ProfilePic = observer(({ type = 'regular', showStatus = false, userId, className = [] }: NotificationProps) => {
-  const user = useUser(userId);
+  const user = useApp().users.get(userId);
   const status = user?.status || 'inactive';
 
   return (

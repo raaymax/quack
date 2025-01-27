@@ -1,11 +1,10 @@
 import { useMemo } from 'react';
 import { filesize } from 'filesize';
 import styled from 'styled-components';
-import { useDispatch, useSelector } from '../../store';
-import { abort } from '../../services/file';
 import { useMessageListArgs } from '../contexts/useMessageListArgs';
 import { ClassNames, cn } from '../../utils';
 import { observer } from 'mobx-react-lite';
+import { useApp } from '../contexts/appState';
 
 const Container = styled.div`
   .attachment-list {
@@ -145,9 +144,9 @@ export const Attachment = observer(({
 
 export const Attachments = observer(({className}: {className?:ClassNames}) => {
   const [args] = useMessageListArgs();
-  const files = useSelector((state) => state.files);
+  const app = useApp();
+  const files = app.files.getAll();
   const list = useMemo(() => files.filter((file) => file.streamId === args.id), [files, args.id]);
-  const dispatch = useDispatch();
 
   //const totalSize = list.reduce((acc, file) => acc + file.fileSize, 1);
   //const progress = list.reduce((acc, file) => acc + file.progress * file.fileSize, 1) / totalSize;
@@ -162,7 +161,7 @@ export const Attachments = observer(({className}: {className?:ClassNames}) => {
               key={file.clientId}
               data={{ ...file }}
               onDelete={() => {
-                dispatch(abort(file.clientId));
+                app.files.abort(file.clientId);
               }}
             />
           ))}

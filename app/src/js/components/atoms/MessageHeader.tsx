@@ -3,6 +3,7 @@ import {
   formatTime, formatDateDetailed, isToday
 } from '../../utils';
 import { observer } from 'mobx-react-lite';
+import type { UserModel } from '../../core/models/user';
 
 const Container = styled.div`
   .author {
@@ -24,9 +25,7 @@ const Container = styled.div`
 `;
 
 type MessageHeaderProps = {
-  user: {
-    name: string;
-  } | null,
+  user: UserModel | null,
   createdAt: string;
 };
 

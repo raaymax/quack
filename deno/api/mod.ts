@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-window
 import { SSESource } from "@planigale/sse";
-import { ApiErrorResponse, Channel, Message, UserConfig } from "./types.ts";
+import { ApiErrorResponse, Channel, Message, ReadReceipt, User, UserConfig, Emoji, CreateChannelRequest } from "./types.ts";
 import AuthAPI from "./auth.ts";
 
 export * from "./types.ts";
@@ -256,7 +256,9 @@ class API extends EventTarget {
     if (res.status >= 400) {
       throw new ApiError("Api error", res.status, url, await res.json());
     }
-    return await res.json();
+    const data = await res.json();
+    console.debug("[API] getResource", url, data);
+    return data;
   };
 
   getUserConfig = async (): Promise<UserConfig | null> => (
@@ -271,6 +273,24 @@ class API extends EventTarget {
     await this.getResource<Channel[]>(`/api/channels`) ?? []
   );
 
+  getUsers = async (): Promise<User[]> => (
+    await this.getResource<User[]>(`/api/users`) ?? []
+  );
+
+  getChannelReadReceipts = async (channelId: string): Promise<ReadReceipt[]> => (
+    await this.getResource<ReadReceipt[]>(
+      `/api/channels/${channelId}/read-receipts`,
+    ) ?? []
+  );
+
+  getOwnReadReceipts = async (): Promise<ReadReceipt[]> => (
+    await this.getResource<ReadReceipt[]>(`/api/read-receipts`) ?? []
+  );
+
+  getEmojis = async (): Promise<Emoji[]> => (
+    await this.getResource<Emoji[]>(`/api/emojis`) ?? []
+  );
+
   getMessages = async (
     q: {
       pinned?: boolean;
@@ -279,6 +299,7 @@ class API extends EventTarget {
       limit?: number;
       channelId: string;
       parentId?: string | null;
+      q?: string;
     },
   ) => {
     const { channelId, ...query } = q;
@@ -292,6 +313,16 @@ class API extends EventTarget {
       `/api/channels/${channelId}/messages?${params.toString()}`,
     );
   };
+
+  createChannel = async ({name, users, channelType}: CreateChannelRequest) => {
+    return await this.callApi("/api/channels", {
+      method: "POST",
+      body: JSON.stringify({ name, users, channelType }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  }
 
   async putDirectChannel(userId: string): Promise<Channel> {
     const res = await this.fetchWithCredentials(
@@ -318,6 +349,36 @@ class API extends EventTarget {
       console.log(e);
       throw e;
     }
+  }
+
+  async addReaction(msgId: string, reaction: string): Promise<void> {
+    const res = await this.fetchWithCredentials(`/api/messages/${msgId}/react`, {
+      method: "PUT",
+      body: JSON.stringify({ reaction }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    await res.body?.cancel();
+  }
+
+  async pinMessage(msgId: string, pinned: boolean): Promise<void> {
+    const res = await this.fetchWithCredentials(`/api/messages/${msgId}/pin`, {
+      method: "PUT",
+      body: JSON.stringify({ pinned }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    await res.body?.cancel();
+  }
+
+  async removeMessage(msgId: string): Promise<void> {
+    const res = await this.fetchWithCredentials(`/api/messages/${msgId}`, {
+      method: "DELETE",
+      body: JSON.stringify({}),
+    });
+    await res.body?.cancel();
   }
 
   async postInteraction(

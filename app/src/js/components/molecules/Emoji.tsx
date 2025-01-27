@@ -1,11 +1,11 @@
 import styled from 'styled-components';
-import { useEmoji } from '../../store';
 import { getUrl } from '../../services/file';
 import { Tooltip } from '../atoms/Tooltip';
 import { useSize } from '../contexts/useSize';
 import { ClassNames, cn } from '../../utils';
 import { useState } from 'react';
 import { observer } from 'mobx-react-lite';
+import { useApp } from '../contexts/appState';
 
 const StyledEmoji = styled.span<{$size?: number}>`
   padding: 0;
@@ -59,7 +59,7 @@ interface EmojiProps {
 }
 
 export const Emoji = observer(({ className, shortname, size}: EmojiProps) => {
-  const emoji = useEmoji(shortname);
+  const emoji = useApp().emojis.get(shortname);
   return (
     <Tooltip className={className} text={shortname}>
       <EmojiBase className={className} shortname={shortname} emoji={emoji} size={size} />

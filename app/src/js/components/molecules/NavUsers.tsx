@@ -1,18 +1,13 @@
 import styled from 'styled-components';
-import {
-  useBadges,
-  useSelector,
-  useUsers,
-} from '../../store';
 import { NavButton } from './NavButton';
 import { ClassNames, cn, isMobile } from '../../utils';
 import { client } from '../../core';
 import { User } from '../../types';
-import { useDirectChannel } from '../contexts/useDirectChannel';
 import { ProfilePic } from '../atoms/ProfilePic';
 import { useSidebar } from '../contexts/useSidebar';
 import { useNavigate, useParams } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
+import { useApp } from '../contexts/appState';
 
 const UserListContainer = styled.div`
 
@@ -104,7 +99,8 @@ export const NavUserButton = observer(({
 });
 
 const NavUserContainer = observer(({user, badges}: {user: User, badges: Record<string, number>}) => {
-  const channel = useDirectChannel(user.id);
+  const app = useApp();
+  const channel = app.channels.getDirect(user.id)
   let navigate = (_path: string) => {};
   try { navigate = useNavigate(); }catch {/*ignore*/}
   const {channelId: id} = useParams();
@@ -125,15 +121,16 @@ const NavUserContainer = observer(({user, badges}: {user: User, badges: Record<s
 })
 
 export const NavUsers = observer(() => {
-  const users = useUsers();
-  const userId = useSelector((state) => state.me);
-  const badges = useBadges(userId);
+  const app = useApp();
+  const badges = app.readReceipts.getMap();
+  const users = app.users.getAll();
+
   return (
     <UserListContainer>
       <div className='header'>
         <span className='title'>users</span>
       </div>
-      { users && users.filter(u => !u.hidden).map((user) => (
+      { users && users.map((user) => (
         <NavUserContainer
           key={user.id}
           user={user}

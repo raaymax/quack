@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { useSelector, useEmojiFuse } from '../../store';
 import { SearchBox } from '../atoms/SearchBox';
-import { EmojiDescriptor, DefinedEmoji } from '../../types';
+import { EmojiDescriptor, type Emoji as EmojiType } from '../../types';
 import { Icon } from '../atoms/Icon';
 import { ClassNames, cn } from '../../utils';
 import { Emoji } from '../molecules/Emoji';
 import { Button } from '../atoms/Button';
 import { observer } from 'mobx-react-lite';
+import { useApp } from '../contexts/appState';
 
 export const Label = styled.div`
   width: 100%;
@@ -138,27 +138,28 @@ type EmojiSearchProps = {
 
 export const EmojiSearch = observer(({ className, onSelect }: EmojiSearchProps) => {
   const [name, setName] = useState('');
-  const [results, setResults] = useState<Record<string, DefinedEmoji[]>>({});
-  const emojis = useSelector((state) => state.emojis.data) as DefinedEmoji[];
-  const fuse = useEmojiFuse();
+  const [results, setResults] = useState<Record<string, EmojiType[]>>({});
+  const app = useApp();
+  const emojis = app.emojis.getAll();
+  const fuse = app.emojis.getFuse();
 
   useEffect(() => {
-    let all: DefinedEmoji[] = (emojis || []).filter((e) => !e.empty);
+    let all: EmojiType[] = emojis;
     if (name && fuse) {
       const ret = fuse.search(name, { limit: 100 });
-      all = ret.map((r) => r.item).filter((e) => !e.empty) as DefinedEmoji[];
+      all = ret.map((r) => r.item).filter((e) => !e.empty) as EmojiType[];
     }
 
     setResults(
       (all || [])
-        .reduce<Record<string, DefinedEmoji[]>>((acc, emoji) => {
+        .reduce<Record<string, EmojiType[]>>((acc, emoji) => {
           const category = emoji.category || 'x';
           acc[category] = acc[category] || [];
           acc[category].push(emoji);
           return acc;
         }, {}),
     );
-  }, [name, fuse, emojis]);
+  }, [name, fuse]);
 
   return (
     <EmojiSearchContainer className={cn('cmp-emoji-search', className)}>

@@ -15,8 +15,6 @@ import { ThreadInfo } from '../molecules/ThreadInfo';
 
 import { MessageHeader } from '../atoms/MessageHeader';
 import { MessageProvider } from '../contexts/message';
-import { useMessageData } from '../contexts/useMessageData';
-import { useMessageUser } from '../contexts/useMessageUser';
 import { useHoverCtrl } from '../contexts/useHoverCtrl';
 
 import {
@@ -28,6 +26,8 @@ import { useMessageListArgs } from '../contexts/useMessageListArgs';
 //import { useNavigate } from 'react-router-dom';
 
 import { observer } from 'mobx-react-lite';
+import { useApp } from '../contexts/appState';
+import { MessageModel } from '../../core/models/message';
 
 const MessageContainer = styled.div`
   position: relative;
@@ -133,15 +133,14 @@ const MessageContainer = styled.div`
   }
 `;
 
-const Info = observer(() => {
-  const { clientId, info } = useMessageData();
-  const dispatch = useDispatch();
+const Info = observer(({messageModel}: {messageModel: MessageModel}) => {
+  const { clientId, info } = messageModel;
 
   const onAction = useCallback(() => {
     if (info?.action === 'resend') {
-      dispatch(resend(clientId));
+      console.warn('resend not implemented', messageModel);
     }
-  }, [dispatch, clientId, info]);
+  }, [clientId, info]);
 
   if (!info) return null;
   return (
@@ -153,6 +152,7 @@ const Info = observer(() => {
 
 
 type MessageBaseProps = {
+  model: MessageModel;
   onClick?: (e?: React.MouseEvent) => void;
   sameUser?: boolean;
   className?: ClassNames;
@@ -160,21 +160,19 @@ type MessageBaseProps = {
   [key: string]: unknown;
 };
 
-const MessageBase = observer(({ onClick, sameUser, navigate = () => {}, ...props }: MessageBaseProps) => {
-  const msg = useMessageData();
+const MessageBase = observer(({ model, onClick, sameUser, navigate = () => {}, ...props }: MessageBaseProps) => {
   const {
     id, message, emojiOnly,
     createdAt, pinned,
     editing,
     userId,
     linkPreviews,
-    reactions,
     annotations,
     ephemeral,
-  } = msg;
-  const { onEnter, toggleHovered, onLeave } = useHoverCtrl(msg.id);
+  } = model;
+  const { onEnter, toggleHovered, onLeave } = useHoverCtrl(model.id);
   const [{ selected, id: streamName }] = useMessageListArgs();
-  const user = useMessageUser();
+  const user = useApp().users.get(userId);
 
   return (
     <MessageContainer
@@ -205,13 +203,12 @@ const MessageBase = observer(({ onClick, sameUser, navigate = () => {}, ...props
           </div>
         }
 
-        <Files list={msg.attachments || []} />
+        <Files list={model.attachments || []} />
         {linkPreviews && <LinkPreviewList links={linkPreviews} />}
-        <Info />
-        <Reactions messageId={id} reactions={reactions}/>
-        {streamName != 'side' && <ThreadInfo navigate={navigate} msg={msg}/>}
-        <ReadReceipt data={msg.progress} />
-        <MessageToolbar navigate={navigate} />
+        <Info messageModel={model} />
+        <Reactions messageModel={model}/>
+        {streamName != 'side' && <ThreadInfo navigate={navigate} msg={model}/>}
+        <MessageToolbar navigate={navigate} messageModel={model} />
         {annotations && <div className='generated'>
           <MessageBodyRenderer body={annotations} />
         </div>}
@@ -221,12 +218,12 @@ const MessageBase = observer(({ onClick, sameUser, navigate = () => {}, ...props
 });
 
 type MessageProps = MessageBaseProps & {
-  data: ViewMessage;
+  model: MessageModel;
   navigate?: (path: string) => void;
 };
 
-export const Message = observer(({ data, ...props }: MessageProps) => (
-  <MessageProvider value={data}>
-    <MessageBase {...props} />
+export const Message = observer(({ model, ...props }: MessageProps) => (
+  <MessageProvider value={model}>
+    <MessageBase model={model} {...props} />
   </MessageProvider>
 ));

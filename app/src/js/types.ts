@@ -53,7 +53,6 @@ export type MessageListArgs = {
   date?: string,
 };
 
-
 export type Progress = {
   channelId: string;
   userId: string;

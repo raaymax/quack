@@ -10,7 +10,8 @@ import { redirect,
 import { client } from '../core'
 import { ErrorPageS } from './pages/ErrorPage';
 
-import { PageNotFoundError } from './errors';
+import { InitFailedError, PageNotFoundError } from './errors';
+import { app } from '../core';
 
 
 const router = createHashRouter([
@@ -20,10 +21,12 @@ const router = createHashRouter([
       {
         path: "/:channelId",
         loader: async ({ params }) => {
+          await app.init();
+          if(app.initFailed) throw new InitFailedError();
           const {channelId} = params;
-          if(!channelId) throw new PageNotFoundError()
+          if(!channelId) throw new PageNotFoundError();
           const channel = await client.api.getChannelById(channelId);
-          if(!channel) throw new PageNotFoundError()
+          if(!channel) throw new PageNotFoundError();
           return null;
         },
         element: <Discussion />,

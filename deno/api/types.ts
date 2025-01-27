@@ -56,14 +56,26 @@ export type EncryptedData = {
   _iv: string;
 };
 
+export type ChannelType = "PUBLIC" | "PRIVATE" | "DIRECT";
+
 export type Channel = {
   id: string;
   name: string;
   users: string[];
-  channelType: "PUBLIC" | "PRIVATE" | "DIRECT";
+  channelType: ChannelType;
   priv?: boolean;
   direct?: boolean;
   private?: boolean;
+};
+
+export type ReadReceipt = {
+  id: Eid;
+  channelId: Eid;
+  parentId: Eid;
+  userId: Eid;
+  count: number;
+  lastRead: Date;
+  lastMessageId: Eid;
 };
 
 export type UserConfig = {
@@ -107,6 +119,21 @@ export type UserSessionSecrets = {
   encryptionKey: JsonWebKey;
   sanityCheck: string;
 };
+
+export type Emoji = {
+  empty?: boolean;
+  unicode?: string,
+  fileId?: string,
+  shortname: string
+  category?: string,
+}
+
+export type CreateChannelRequest = {
+  name: string;
+  channelType?: ChannelType;
+  users?: string[];
+};
+
 
 export type Result<T = any, E = any> =
   | (T & { status: "ok" })

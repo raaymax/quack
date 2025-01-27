@@ -1,9 +1,8 @@
- 
-import { UserConfig } from '../types';
 import { client } from '../core';
 import { OutgoingUserPushSubscribe } from '../core/types';
+import type { AppModel } from '../core/models/app';
 
-export const initNotifications = async (config: UserConfig) => {
+export const initNotifications = async (app: AppModel) => {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.addEventListener('message', ({ data }) => {
       if (data.type) {
@@ -11,7 +10,7 @@ export const initNotifications = async (config: UserConfig) => {
       }
     });
 
-    await register(config);
+    await register(app);
     if ('Notification' in window) {
       document.querySelector('body')?.addEventListener('click', () => {
         Notification.requestPermission((status) => {
@@ -22,7 +21,7 @@ export const initNotifications = async (config: UserConfig) => {
   }
 };
 
-const register = async (config: UserConfig, retry = false) => navigator.serviceWorker.getRegistration('/')
+const register = async (app: AppModel, retry = false) => navigator.serviceWorker.getRegistration('/')
   .then((registration) => {
     if (!registration) throw new Error('No service worker registered');
     return registration.pushManager.subscribe({
@@ -40,5 +39,5 @@ const register = async (config: UserConfig, retry = false) => navigator.serviceW
     navigator.serviceWorker.getRegistration('/')
       .then((registration) => registration?.pushManager?.getSubscription())
       .then((sub) => sub && sub.unsubscribe())
-      .then(() => register(config, true));
+      .then(() => register(app, true));
   });

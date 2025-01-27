@@ -1,10 +1,9 @@
 import styled from 'styled-components';
 import { ProfilePic } from './ProfilePic';
-import { useUser } from '../../store';
-import { useLoggedUserId } from '../contexts/useLoggedUserId';
 import { ButtonWithIcon } from '../molecules/ButtonWithIcon';
 import { client } from '../../core';
 import { observer } from 'mobx-react-lite';
+import { useApp } from '../contexts/appState';
 
 const Container = styled.div`
   display: flex;
@@ -47,8 +46,7 @@ const Container = styled.div`
 `;
 
 export const LoggedUser = observer(() => {
-  const userId = useLoggedUserId();
-  const user = useUser(userId);
+  const user = useApp().profile;
   if (!user) {
     return null;
   }
