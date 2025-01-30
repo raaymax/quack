@@ -14,6 +14,7 @@ import { observer } from "mobx-react-lite";
 import { useApp } from "../contexts/appState";
 import { BaseRenderer } from "./MessageListRenderer";
 import { MessageModel } from "../../core/models/message";
+import { MessagesModel } from "../../core/models/messages";
 
 const StyledHeader = styled.div`
   display: flex;
@@ -87,12 +88,8 @@ export const Header = observer(() => {
   );
 });
 
-export const SearchResults = observer(() =>{
-  const app = useApp();
-  const location = useLocation();
-  const { channelId } = useParams()!;
+export const SearchResults = observer(({model}: {model: MessagesModel | null}) =>{
   const navigate = useNavigate();
-  const messagesModel = app.getSearch(channelId ?? '', location.state?.search);
   const gotoMessage = useCallback(
     (msg: MessageModel) => {
       navigate(`/${msg.channelId}`, {
@@ -107,13 +104,14 @@ export const SearchResults = observer(() =>{
     },
     [navigate],
   );
+  if (!model) return null;
 
   return (
     <StyledList>
       <div key="bottom" id="scroll-stop" />
         <MessageList
           renderer={BaseRenderer}
-          model={messagesModel}
+          model={model}
           onMessageClicked={(msg: MessageModel) => {
             gotoMessage(msg);
           }}
@@ -123,12 +121,17 @@ export const SearchResults = observer(() =>{
 })
 
 export const Search = observer(() => {
+  const app = useApp();
+  const location = useLocation();
+  const { channelId } = useParams()!;
+  const messagesModel = app.getSearch(channelId ?? '', location.state?.search);
+  if (!messagesModel) return null;
   return (
     <MessageListArgsProvider streamId="search">
       <StyledSearch>
         <HoverProvider>
           <Header />
-          <SearchResults />
+          <SearchResults model={messagesModel} />
         </HoverProvider>
       </StyledSearch>
     </MessageListArgsProvider>

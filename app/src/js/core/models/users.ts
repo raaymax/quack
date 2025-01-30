@@ -14,17 +14,26 @@ export class UsersModel {
         })
         this.root = root;
         this.users = {};
+
+        client.on('user', (user: User) => this.add(user));
+    }
+
+    async dispose() {
+      await Promise.all(Object.values(this.users).map(user => user.dispose()));
+      this.users = {};
+    }
+
+    add(user: User) {
+      if(!this.users[user.id]) {
+        this.users[user.id] = new UserModel(user, this.root);
+      }else{
+        this.users[user.id].patch(user);
+      }
     }
 
     load = flow(function*(this: UsersModel) {
       const users = yield client.api.getUsers();
-      users.forEach((user: User) => {
-        if(!this.users[user.id]) {
-          this.users[user.id] = new UserModel(user, this.root);
-        }else{
-          this.users[user.id].patch(user);
-        }
-      });
+      users.forEach((user: User) => this.add(user));
     })
 
     get(id: string): UserModel | null{

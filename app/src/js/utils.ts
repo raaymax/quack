@@ -1,3 +1,5 @@
+import { client } from "./core";
+
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 export type ClassNames = string | undefined | string[] | Record<string, boolean>;
@@ -136,7 +138,7 @@ export const buildEmojiNode = (
     }
     if (result.fileId) {
       const img = document.createElement('img');
-      img.src = getUrl(result.fileId);
+      img.src = client.api.getUrl(result.fileId);
       img.alt = result.shortname;
       return img;
     }

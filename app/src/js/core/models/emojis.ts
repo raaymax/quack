@@ -20,6 +20,14 @@ export class EmojiModel {
     this.patch(value);
   }
 
+  async dispose() {
+    this.empty = undefined;
+    this.unicode = undefined;
+    this.fileId = undefined
+    this.category = undefined;
+    this.shortname = '';
+  }
+
   patch = (value: Emoji) => {
     this.empty = value.empty;
     this.unicode = value.unicode;
@@ -38,18 +46,26 @@ export class EmojisModel {
         })
         this.root = root;
         this.emojis = {};
+        client.on('emoji', (emoji: Emoji) => this.add(emoji));
+    }
+
+    async dispose() {
+      await Promise.all(Object.values(this.emojis).map(emoji => emoji.dispose()));
+      this.emojis = {};
+    }
+
+    add(emoji: Emoji) {
+      if(!this.emojis[emoji.shortname]) {
+        this.emojis[emoji.shortname] = new EmojiModel(emoji, this.root);
+      }else{
+        this.emojis[emoji.shortname].patch(emoji);
+      }
     }
 
     load = flow(function*(this: EmojisModel) {
       const emojis = yield client.api.getEmojis();
       const {default: baseEmojis} = yield import('../../../assets/emoji_list.json');
-      [...baseEmojis, ...emojis].forEach((emoji: Emoji) => {
-        if(!this.emojis[emoji.shortname]) {
-          this.emojis[emoji.shortname] = new EmojiModel(emoji, this.root);
-        }else{
-          this.emojis[emoji.shortname].patch(emoji);
-        }
-      });
+      [...baseEmojis, ...emojis].forEach((emoji: Emoji) => this.add(emoji));
     })
 
     get(shortname: string) {

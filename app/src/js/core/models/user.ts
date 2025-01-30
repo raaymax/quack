@@ -35,6 +35,20 @@ export class UserModel {
       this.loadChannel();
     }
 
+    async dispose() {
+      this.id = '';
+      this.alias = null;
+      this.email = '';
+      this.name = '';
+      this.avatarFileId = '';
+      this.status = undefined;
+      this.lastSeen = undefined;
+      this.publicKey = {} as JsonWebKey;
+      this.privateKey = undefined;
+      this.hidden = undefined;
+      this.channelId = null;
+    }
+
     get channel() {
       return this.root.channels.get(this.channelId || '');
     }

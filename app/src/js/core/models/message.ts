@@ -1,7 +1,6 @@
 import type { AppModel } from "./app"
 import { flow, makeAutoObservable } from "mobx"
 import { DateTime, Eid, FullMessage, MessageBody, ViewMessage, ViewProgress } from "../../types"
-import { getUrl } from "../../services/file";
 import { client } from "../client";
 
 export class MessageModel implements ViewMessage {
@@ -87,33 +86,64 @@ export class MessageModel implements ViewMessage {
           id: attachment.id,
           fileName: attachment.fileName,
           contentType: attachment.contentType,
-          url: getUrl(attachment.id),
+          url: client.api.getUrl(attachment.id),
         }
       });
 
       this.root = root;
     }
 
-    patch = (value: FullMessage) => {
-      this.pinned = value.pinned;
-      this.reactions = value.reactions ?? [];
-      this.updatedAt = value.updatedAt;
-      this.message = value.message;
-      this.annotations = value.annotations;
-      this.emojiOnly = value.emojiOnly;
-      this.thread = value.thread;
-      this.links = value.links;
-      this.mentions = value.mentions;
-      this.linkPreviews = value.linkPreviews;
-      this.parsingErrors = value.parsingErrors;
-      this.attachments = value.attachments?.map((attachment) => {
-        return {
-          id: attachment.id,
-          fileName: attachment.fileName,
-          contentType: attachment.contentType,
-          url: getUrl(attachment.id),
+    async dispose() {
+      this.id = '';
+      this.channelId = '';
+      this.userId = '';
+      this.parentId = null;
+      this.pinned = false;
+      this.clientId = '';
+      this.appId = '';
+      this.ephemeral = false;
+      this.reactions = [];
+      this.updatedAt = '';
+      this.createdAt = '';
+      this.flat = '';
+      this.message = [];
+      this.annotations = [];
+      this.emojiOnly = false;
+      this.thread = [];
+      this.links = [];
+      this.mentions = [];
+      this.linkPreviews = [];
+      this.parsingErrors = [];
+      this.attachments = [];
+      this.progress = [];
+      this.info = undefined;
+      this.editing = false;
+    }
+
+    static updateableFields = [
+      'id', 'pinned', 'reactions', 'updatedAt', 'message', 'flat',
+      'annotations', 'emojiOnly', 'thread', 'links',
+      'mentions', 'linkPreviews', 'parsingErrors',
+      'info', 'editing'
+    ];
+
+    patch = (value: Partial<FullMessage>) => {
+
+      MessageModel.updateableFields.forEach((field) => {
+        if(value[field as keyof typeof value] !== undefined) {
+          this[field as any] = value[field as keyof typeof value];
         }
       });
+      if (value.attachments) {
+        this.attachments = value.attachments?.map((attachment) => {
+          return {
+            id: attachment.id,
+            fileName: attachment.fileName,
+            contentType: attachment.contentType,
+            url: client.api.getUrl(attachment.id),
+          }
+        });
+      }
       return this;
     }
 

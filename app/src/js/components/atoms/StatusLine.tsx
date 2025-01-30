@@ -1,23 +1,14 @@
-import { useSelector, useTyping } from '../../store';
 import { observer } from 'mobx-react-lite';
+import { useApp } from '../contexts/appState';
 
-export const StatusLine = observer(({channelId, parentId}: {channelId: string, parentId?: string}) => {
-  const info = useSelector((state) => state.info);
-  const typing = useTyping(channelId, parentId); // FIXME: status line should work in context
-
-  const names = (typing || []).map((u) => u.name).join(', ');
-
-  if (info?.type) {
-    return (
-      <div className={['info', info.type].join(' ')}>{info.message}</div>
-    );
+export const StatusLine = observer(({channelId, parentId}: {channelId: string, parentId?: string | null}) => {
+  const app = useApp();
+  const typingModel = app.getThread(channelId, parentId).typing;
+  
+  if(app.message) {
+      console.log('app.message', app.message);
+      return <div className='info'>{app.message}</div>
   }
 
-  if (names) {
-    return (
-      <div className='info'>{names} is typing!</div>
-    );
-  }
-
-  return <div className='info' />;
+  return <div className='info'>{typingModel.getStatusLine()}</div>
 });

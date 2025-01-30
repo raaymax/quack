@@ -3,11 +3,11 @@ import {
 } from 'react';
 import { TextMenu } from './TextMenu';
 import { useInput } from '../contexts/useInput';
-import { getUrl } from '../../services/file';
 import { buildEmojiNode } from '../../utils';
 import { EmojiDescriptor } from '../../types';
 import { observer } from 'mobx-react-lite';
 import { useApp } from '../contexts/appState';
+import { client } from '../../core';
 
 const SCOPE = 'emoji';
 
@@ -36,7 +36,7 @@ export const EmojiSelector = observer(() => {
       return ({
         empty: false,
         label: item.unicode && String.fromCodePoint(parseInt(item.unicode, 16)),
-        url: item.fileId && getUrl(item.fileId),
+        url: item.fileId && client.api.getUrl(item.fileId),
         name: item.shortname,
         item,
       });
@@ -73,7 +73,7 @@ export const EmojiSelector = observer(() => {
       ? emojis.find((e) => e.shortname === name)
       : options[s ?? selected].item;
     const node = emoji
-      ? buildEmojiNode(emoji, getUrl)
+      ? buildEmojiNode(emoji, client.api.getUrl)
       : document.createTextNode(name);
     const fresh = document.createTextNode('\u00A0');
     const r = document.createRange();

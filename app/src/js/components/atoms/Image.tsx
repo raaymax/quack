@@ -1,8 +1,8 @@
 import styled from 'styled-components';
-import { getUrl, getThumbnail } from '../../services/file';
 import { ClassNames, cn } from '../../utils';
 import {filesize} from "filesize"
 import { observer } from 'mobx-react-lite';
+import { client } from '../../core';
 
 const ImageContainer = styled.div`
   cursor: pointer;
@@ -37,7 +37,7 @@ const ImageContainer = styled.div`
 `;
 
 const download = async (fileId: string) => {
-  window.open(getUrl(fileId));
+  window.open(client.api.getUrl(fileId));
 };
 
 type ImgProps = {
@@ -63,9 +63,9 @@ const Img = ({raw, fileName, id, url}: ImgProps) => {
   if (url) {
     return <img src={url} alt={fileName} />;
   } else if (raw) {
-    return <img className='raw-image' src={getUrl(id ?? '')} alt={fileName} />;
+    return <img className='raw-image' src={client.api.getUrl(id ?? '')} alt={fileName} />;
   } else {
-    return <img src={getThumbnail(id ?? '', {h: 240})} alt={fileName} />;
+    return <img src={cliemt.api.getThumbnail(id ?? '', {h: 240})} alt={fileName} />;
   }
 }
 

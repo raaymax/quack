@@ -1,16 +1,16 @@
 import { makeAutoObservable, observable, computed, action, flow, autorun } from "mobx"
 import { Channel } from "../../types"
-import { MessagesModel } from "./messages"
 import type { AppModel } from "./app";
 import * as enc from '@quack/encryption';
 import { client } from "../client";
+import { ThreadModel } from "./thread";
 
 
 export class ChannelModel {
     id: string;
     name: string;
     users: string[];
-    messages: Record<string, MessagesModel>;
+    threads: Record<string, ThreadModel>;
     channelType: 'DIRECT' | 'PRIVATE' | 'PUBLIC';
     root: AppModel;
 
@@ -23,7 +23,17 @@ export class ChannelModel {
         this.name = value.name
         this.users = value.users
         this.channelType = value.channelType
-        this.messages = {}
+        this.threads = {}
+    }
+
+    async dispose() {
+      this.id = '';
+      this.name = '';
+      this.users = [];
+      this.channelType = 'DIRECT';
+      this.channelKey = null;
+      await Promise.all(Object.values(this.threads).map(thread => thread.dispose()));
+      this.threads = {};
     }
 
     get user() {
@@ -43,37 +53,36 @@ export class ChannelModel {
       return this.channelType === 'PRIVATE';
     }
 
-    getMessages = (parentId?: string | null) => {
-      const parentKey = parentId || 'null';
-      if(this.messages[parentKey]) {
-        return this.messages[parentKey]
+    getThread = (key?: string | null, opts: {parentId?: string | null, pinned?: boolean, search?: string} = {}) => {
+      const parentKey = key || 'null';
+      if (key === 'search') {
+        if (opts.search != this.threads[parentKey]?.search) {
+          this.threads[parentKey] = new ThreadModel({channelId: this.id, ...opts}, this.root)
+          this.threads[parentKey].load();
+        }
+        return this.threads[parentKey]
       }
-      this.messages[parentKey] = new MessagesModel({channelId: this.id, parentId}, this.root)
-      this.messages[parentKey].load()
 
-      return this.messages[parentKey]
+      if(this.threads[parentKey]) {
+        return this.threads[parentKey]
+      }
+      this.threads[parentKey] = new ThreadModel({channelId: this.id, ...opts}, this.root)
+      this.threads[parentKey].load()
+
+      return this.threads[parentKey]
+    }
+
+
+    getMessages = (parentId?: string | null) => {
+      return this.getThread(parentId).messages
     }
 
     getPins = () => {
-      const parentKey = 'pins';
-      if(this.messages[parentKey]) {
-        return this.messages[parentKey]
-      }
-      this.messages[parentKey] = new MessagesModel({channelId: this.id, pinned: true}, this.root)
-      this.messages[parentKey].load()
-
-      return this.messages[parentKey]
+      return this.getThread('pins', {pinned: true}).messages
     }
 
     getSearch = (search: string) => {
-      const parentKey = 'search';
-      if(this.messages[parentKey] && this.messages[parentKey].search === search) {
-        return this.messages[parentKey]
-      }
-      this.messages[parentKey] = new MessagesModel({channelId: this.id, search}, this.root)
-      this.messages[parentKey].load()
-
-      return this.messages[parentKey]
+      return this.getThread('search', {search}).messages
     }
 
     load = flow(function*(this: ChannelModel) {

@@ -1,12 +1,8 @@
 import { useCallback } from 'react';
 import styled from 'styled-components';
-import { useDispatch } from '../../store';
-
-import { resend } from '../../services/messages';
 
 import { ProfilePic } from '../atoms/ProfilePic';
 import { LinkPreviewList } from '../atoms/LinkPreview';
-import { ReadReceipt } from '../molecules/ReadReceipt';
 import { MessageBodyRenderer } from '../molecules/MessageBody';
 import { Files } from '../molecules/Files';
 import { Reactions } from '../molecules/Reactions';
@@ -21,9 +17,7 @@ import {
   cn, ClassNames, formatTime
 } from '../../utils';
 
-import { ViewMessage } from '../../types';
 import { useMessageListArgs } from '../contexts/useMessageListArgs';
-//import { useNavigate } from 'react-router-dom';
 
 import { observer } from 'mobx-react-lite';
 import { useApp } from '../contexts/appState';

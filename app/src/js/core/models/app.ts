@@ -6,7 +6,6 @@ import { client } from "../client";
 import { initNotifications } from "../notifications";
 import { EmojisModel } from "./emojis";
 import { ReadReceiptsModel } from "./readReceipt";
-import { FilesModel } from "./files";
 
 export class AppModel {
   profile: UserModel | null;
@@ -18,7 +17,7 @@ export class AppModel {
   status: 'connected' | 'disconnected' = 'disconnected';
   initFailed: boolean = false;
   loading: boolean = false;
-  files: FilesModel;
+  message: string | null = null;
   _init: Promise<void> | null = null;
 
   constructor() {
@@ -27,8 +26,20 @@ export class AppModel {
       this.users = new UsersModel(this);
       this.emojis = new EmojisModel(this);
       this.readReceipts = new ReadReceiptsModel(this);
-      this.files = new FilesModel(this);
       this.profile = null;
+      client.on2('con:close', () => this.setMessage('connecting...'));
+      client.on2('con:open', () => Promise.all([this.setMessage(null), this.init()]));
+  }
+
+  async dispose() {
+    await Promise.all([
+      this.channels.dispose(),
+      this.users.dispose(),
+      this.emojis.dispose(),
+      this.readReceipts.dispose(),
+      this.profile?.dispose(),
+    ]);
+    this.profile = null;
   }
 
   get userId() {
@@ -38,8 +49,20 @@ export class AppModel {
     return client.api.userId;
   }
 
+  setMessage = (message: string | null) => {
+    this.message = message;
+  }
+
   getChannel(channelId: string) {
     return this.channels.get(channelId);
+  }
+
+  getThread(channelId: string, parentId?: string | null) {
+    const channel = this.getChannel(channelId)
+    if(!channel) {
+      throw new Error(`Channel with id ${channelId} not found`)
+    }
+    return channel.getThread(parentId, { parentId })
   }
 
   getMessages(channelId: string, parentId?: string | null) {
@@ -53,7 +76,7 @@ export class AppModel {
   getPins(channelId: string) {
     const channel = this.getChannel(channelId)
     if(!channel) {
-      throw new Error(`Channel with id ${channelId} not found`)
+      return null;
     }
     return channel.getPins()
   }
@@ -61,7 +84,7 @@ export class AppModel {
   getSearch(channelId: string, search: string) {
     const channel = this.getChannel(channelId)
     if(!channel) {
-      throw new Error(`Channel with id ${channelId} not found`)
+      return null;
     }
     return channel.getSearch(search)
   }

@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import "../setup";
 import { client } from "../core";
-import StoreProvider from "../store/components/provider";
 import { useLoggedUserId } from "./contexts/useLoggedUserId";
 import { Router } from "./Router";
 import { TooltipProvider } from "./contexts/tooltip";
@@ -16,13 +15,11 @@ const Secured = observer(() => {
   }, [user]);
 
   return (
-    <StoreProvider>
-      <AppProvider value={app}>
-        <TooltipProvider>
-          <Router />
-        </TooltipProvider>
-      </AppProvider>
-    </StoreProvider>
+    <AppProvider value={app}>
+      <TooltipProvider>
+        <Router />
+      </TooltipProvider>
+    </AppProvider>
   );
 });
 

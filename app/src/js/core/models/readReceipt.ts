@@ -2,6 +2,7 @@ import type { AppModel } from "./app"
 import { makeAutoObservable, observable, computed, action, flow, autorun } from "mobx"
 import { Eid, ReadReceipt, User } from "../../types"
 import { client } from "../client"
+import { isSameThread } from "../tools/sameThread";
 
 export class ReadReceiptModel {
     id: Eid;
@@ -26,6 +27,17 @@ export class ReadReceiptModel {
       
       this.root = root;
     }
+
+    async dispose() {
+      this.id = '';
+      this.channelId = '';
+      this.parentId = '';
+      this.userId = '';
+      this.count = 0;
+      this.lastRead = new Date();
+      this.lastMessageId = '';
+    }
+
     patch = (value: ReadReceipt) => {
       this.count = value.count;
       this.lastRead = new Date(value.lastRead);
@@ -33,15 +45,92 @@ export class ReadReceiptModel {
     }
 }
 
+export class ThreadReadReceiptsModel {
+  list: ReadReceiptModel[];
+  channelId: Eid;
+  parentId?: Eid;
+
+  root: AppModel;
+  _dispose: () => void;
+
+  constructor(opts, root: AppModel) {
+    makeAutoObservable(this, {root: false, _dispose: false});
+    this.channelId = opts.channelId;
+    this.parentId = opts.parentId;
+    this.root = root;
+    this.list = [];
+    this._dispose = client.on2('readReceipt', this.upsert);
+  }
+
+  async dispose() {
+    this._dispose();
+    await Promise.all(this.list.map(rr => rr.dispose()));
+    this.list = [];
+  }
+
+  update = async (id: Eid) => {
+    return await client.api.updateReadReceipt(id);
+  }
+
+  upsert = (r: ReadReceipt) => {
+    if(isSameThread(r, this)) {
+      const existing = this.list.find(rr => rr.userId === r.userId);
+      if(existing) {
+        existing.patch(r);
+        return existing;
+      }
+      const created = new ReadReceiptModel(r, this.root);
+      console.log(this)
+      return created;
+    }
+    return null;
+  }
+
+  load = flow(function*(this: ThreadReadReceiptsModel) {
+    const receipts = yield client.api.getChannelReadReceipts(this.channelId);
+    this.list= receipts.filter((r) => (
+      (!this.parentId && !r.parentId) || r.parentId === this.parentId
+    )).map((r: ReadReceipt) => {
+      return this.upsert(r);
+    });
+  });
+
+  getAll = () => {
+    return this.list;
+  }
+
+}
+
+
 export class ReadReceiptsModel {
   list: ReadReceiptModel[];
 
   root: AppModel;
+  _dispose: () => void;
 
   constructor(root: AppModel) {
-    makeAutoObservable(this, {root: false});
+    makeAutoObservable(this, {root: false, _dispose: false});
     this.root = root;
     this.list = [];
+    this._dispose = client.on2('readReceipt', this.upsert);
+  }
+
+  async dispose() {
+    this._dispose();
+    await Promise.all(this.list.map(rr => rr.dispose()));
+    this.list = [];
+  }
+
+  upsert = (r: ReadReceipt) => {
+    if(r.userId !== this.root.userId) return;
+    const existing = this.list.find(rr => rr.id === r.id);
+    if(existing) {
+      existing.patch(r);
+      return existing;
+    }
+    const created = new ReadReceiptModel(r, this.root);
+    this.list.push(created);
+    return created;
   }
 
   load = flow(function*(this: ReadReceiptsModel) {
@@ -54,12 +143,17 @@ export class ReadReceiptsModel {
       }
     });
   })
+
+  getForChannel= (channelId?: Eid): ReadReceiptModel | null => {
+    if(!channelId) return null;
+    return this.list.find((r) => r.channelId === channelId && r.parentId === null) ?? null;
+  }
   
   getMap = (parentId?: Eid) => {
     return this.list.filter((r) => !parentId || r.parentId === parentId)
       .reduce((acc, p) => ({
         ...acc,
-        [p.channelId]: p.count,
+        [p.channelId]: p,
       }), {});
   }
 }

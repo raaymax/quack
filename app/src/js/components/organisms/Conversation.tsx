@@ -1,10 +1,6 @@
 import { useEffect, useCallback } from 'react';
 import styled from 'styled-components';
-import {
-  useDispatch, useSelector, useProgress, useMethods,
-} from '../../store';
 import { MessageList } from './MessageListScroller';
-import { uploadMany } from '../../services/file';
 import { Input } from './Input';
 import { HoverProvider } from '../contexts/hover';
 import { LoadingIndicator } from '../molecules/LoadingIndicator';
@@ -12,6 +8,7 @@ import { useMessageListArgs } from '../contexts/useMessageListArgs';
 import { ClassNames, cn } from '../../utils';
 import { observer } from 'mobx-react-lite';
 import { useApp } from '../contexts/appState';
+import { client } from '../../core';
 
 export const Container = styled.div`
   width: 100%;
@@ -28,21 +25,17 @@ export const Container = styled.div`
 
 export const Conversation = observer(({channelId, parentId, className}: {channelId: string, parentId?: string, className?: ClassNames}) => {
   const [args, setArgs] = useMessageListArgs();
-  const dispatch = useDispatch();
-  const methods = useMethods();
-  const progress = useProgress({ channelId: channelId, parentId: parentId });
   const app = useApp();
-  const messagesModel = app.getMessages(channelId, parentId);
-  const list = messagesModel.getAll();
+  const threadModel = app.getThread(channelId, parentId);
+  if (!threadModel) return null;
+  const latest = threadModel.messages.latest;
 
-  //const list: MessageType[] = messages.map((m: MessageType) => ({ ...m, progress: progress[m.id ?? ''] }));
   const drop = useCallback(async (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
     const { files } = e.dataTransfer;
-
-    dispatch(uploadMany({ streamId: args.id, files }));
-  }, [dispatch, channelId, parentId]);
+    app.getThread(channelId, parentId).input.files.uploadMany(files);
+  }, [channelId, parentId]);
 
   const dragOverHandler = useCallback((ev: React.DragEvent) => {
     ev.preventDefault();
@@ -50,9 +43,8 @@ export const Conversation = observer(({channelId, parentId, className}: {channel
   }, []);
 
   const bumpProgress = useCallback(() => {
-    const latest = list.find(({ ephemeral }) => !ephemeral);
-    if (latest?.id) dispatch(methods.progress.update(latest.id));
-  }, [methods, list, dispatch]);
+    if (latest?.id) client.api.updateReadReceipt(latest.id);
+  }, [latest]);
 
   useEffect(() => {
     app.getMessages(channelId, parentId).load();
@@ -69,18 +61,16 @@ export const Conversation = observer(({channelId, parentId, className}: {channel
     <Container className={cn(className)} onDrop={drop} onDragOver={dragOverHandler}>
       <HoverProvider>
         <MessageList
-          model={messagesModel}
+          model={threadModel}
           className="message-list-container"
           onDateChange={(date) => setArgs({ ...args, date })}
           onScrollTop={async () => {
-            console.log('loadPrev');
-            await messagesModel?.loadPrev();
+            await threadModel.messages?.loadPrev();
             setArgs({ ...args, type: 'archive', selected: undefined });
             bumpProgress();
           }}
           onScrollBottom={async () => {
-            console.log('loadNext');
-            const count = await messagesModel?.loadNext();
+            const count = await threadModel.messages?.loadNext();
             if (count === 1) {
               setArgs({ ...args, type: 'live', selected: undefined });
             }
@@ -88,7 +78,7 @@ export const Conversation = observer(({channelId, parentId, className}: {channel
           }}
         />
         <LoadingIndicator />
-        <Input className="input-container" channelId={channelId} parentId={parentId}/>
+        <Input className="input-container" model={threadModel.input}/>
       </HoverProvider>
     </Container>
   );

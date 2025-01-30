@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import '../../styles.ts';
 import { LoggedUser } from '../../js/components/atoms/LoggedUser.tsx';
 import { UserProvider } from '../../js/components/contexts/user.tsx';
-import { store, actions } from '../../js/store/store.ts';
+import { User, app } from '../../js/core';
 
 
 const meta: Meta<typeof LoggedUser> = {
@@ -16,7 +16,7 @@ const meta: Meta<typeof LoggedUser> = {
     ),
   ],
   loaders: [async () => {
-    store.dispatch(actions.users.add({ id: '1', name: 'John Doe' }));
+    app.users.add({ id: '1', name: 'John Doe' } as User);
   }],
 };
  

@@ -30,17 +30,23 @@ export class ProfileModel {
       this.hidden = value.hidden;
 
       this.root = root;
-      this.loadChannel();
+    }
+
+    async dispose() {
+      this.id = '';
+      this.alias = null;
+      this.email = '';
+      this.name = '';
+      this.avatarFileId = '';
+      this.status = undefined;
+      this.lastSeen = undefined;
+      this.publicKey = undefined as any;
+      this.privateKey = undefined as any;
+      this.hidden = undefined;
+      this.channelId = null;
     }
 
     get channel() {
       return this.root.channels.get(this.channelId || '');
     }
-
-    patch = (value: User) => {
-      this.name = value.name
-    }
-
-    load= flow(function*(this: UserModel) {
-    })
 }

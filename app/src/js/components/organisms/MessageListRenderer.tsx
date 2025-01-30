@@ -5,13 +5,13 @@ import * as types from '../../types';
 import { useNavigate } from 'react-router-dom';
 
 import { observer } from 'mobx-react-lite';
-import type { MessagesModel } from '../../core/models/messages';
 import type { MessageModel } from '../../core/models/message';
 import { DateSeparator } from '../atoms/DateSeparator';
 import { ReadReceipt } from '../molecules/ReadReceipt';
+import { ThreadModel } from '../../core/models/thread';
 
 export type MessageListRendererProps = {
-  model: MessagesModel;
+  model: ThreadModel;
   context?: unknown;
   onMessageClicked?: (msg: MessageModel) => void;
 };
@@ -21,7 +21,7 @@ export const BaseRenderer = observer(({
 }: MessageListRendererProps) => {
     const navigate = useNavigate();
   return (<>
-    {[...model.list].reverse().map((msg: MessageModel) => {
+    {[...model?.messages?.getAll() ?? []].reverse().map((msg: MessageModel) => {
       return <Message
             key={`${msg.id}-${msg.clientId}`}
             model={msg}
@@ -43,10 +43,9 @@ export const MessageListRenderer = observer(({
 }: MessageListRendererProps) => {
     const navigate = useNavigate();
   let prev: MessageModel;
-  const readReceipts = model.getReadReceipts();
-  console.log('rendering conversation', model.list.length);
+  const readReceipts = model.readReceipts.getAll();
   return (<>
-    {[...model.list].reverse().map((msg) => {
+    {[...model?.messages?.getAll() ?? []].reverse().map((msg) => {
       let sameUser = false;
       let sameDate = false;
       if (!msg.ephemeral) {

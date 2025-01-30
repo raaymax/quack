@@ -107,6 +107,11 @@ export type MessageData = {
     fileName: string;
     contentType: string;
   }>;
+  info?: {
+    type: "error" | "info";
+    msg: string;
+    action?: string;
+  };
 };
 
 export type EncryptedMessage = BaseMessage & EncryptedData & { secured: true };

@@ -1,7 +1,8 @@
 // deno-lint-ignore-file no-window
 import { SSESource } from "@planigale/sse";
-import { ApiErrorResponse, Channel, Message, ReadReceipt, User, UserConfig, Emoji, CreateChannelRequest } from "./types.ts";
+import { ApiErrorResponse, Channel, Message, ReadReceipt, User, UserConfig, Emoji, CreateChannelRequest, FileUpload } from "./types.ts";
 import AuthAPI from "./auth.ts";
+import { FilesAPI } from "./files.ts";
 
 export * from "./types.ts";
 
@@ -63,6 +64,7 @@ class API extends EventTarget {
   publicKey: JsonWebKey | null = null;
 
   auth: AuthAPI;
+  files: FilesAPI;
 
   fetch: typeof fetch;
 
@@ -78,6 +80,15 @@ class API extends EventTarget {
   get token() {
     return this._token;
   }
+
+  getUrl = (fileId: string) => `/api/files/${fileId}`;
+  getThumbnail = (id: string, size?: {w?: number, h?: number}) => {
+    const params = new URLSearchParams();
+    if(size?.w) params.set('w', size.w.toString());
+    if(size?.h) params.set('h', size.h.toString());
+    return `${this.getUrl(id)}?${params.toString()}`;
+  }
+  getDownloadUrl = (id: string) => `${this.getUrl(id)}?download=true`;
 
   constructor(url: string, opts: { fetch: typeof fetch; sse?: boolean }) {
     super();
@@ -95,6 +106,7 @@ class API extends EventTarget {
     this.token = localStorage.token;
     this.fetch = opts.fetch;
     this.auth = new AuthAPI(this);
+    this.files = new FilesAPI(this);
     this.sseEnabled = opts.sse ?? true;
   }
 
@@ -307,12 +319,32 @@ class API extends EventTarget {
       ...Object.fromEntries(
         Object.entries(query).filter(([_, v]) => typeof v !== "undefined"),
       ),
-      parentId: query.parentId ?? null,
     } as any);
     return await this.getResource(
       `/api/channels/${channelId}/messages?${params.toString()}`,
     );
   };
+
+  notifyTyping = async (channelId: string, parentId?: string) => {
+    console.log("notifyTyping", channelId, parentId);
+    return await this.callApi(`/api/channels/${channelId}/typing`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ parentId }),
+    });
+  }
+
+  updateReadReceipt = async (messageId: string) => {
+    return await this.callApi("/api/read-receipts", {
+      method: "POST",
+      body: JSON.stringify({ messageId }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  }
 
   createChannel = async ({name, users, channelType}: CreateChannelRequest) => {
     return await this.callApi("/api/channels", {
@@ -399,11 +431,13 @@ class API extends EventTarget {
   }
 
   async sendMessage(msg: Partial<Message>): Promise<any> {
+    const data = {...msg};
+    if (msg.parentId === null) delete data.parentId;
     const res = await this.fetchWithCredentials(
-      `/api/channels/${msg.channelId}/messages`,
+      `/api/channels/${data.channelId}/messages`,
       {
         method: "POST",
-        body: JSON.stringify(msg),
+        body: JSON.stringify(data),
       },
     );
     if (res.status !== 200) {
@@ -412,7 +446,10 @@ class API extends EventTarget {
     return await res.json();
   }
 
+
   on = this.addEventListener.bind(this);
+
+  off = this.removeEventListener.bind(this);
 
   emit = this.dispatchEvent.bind(this);
 

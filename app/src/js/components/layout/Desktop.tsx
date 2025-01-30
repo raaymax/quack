@@ -15,6 +15,7 @@ import { SearchBox } from '../atoms/SearchBox';
 import { CollapsableColumns } from '../atoms/CollapsableColumns';
 import { DiscussionHeader } from '../molecules/DiscussionHeader';
 import { observer } from 'mobx-react-lite';
+import { useApp } from '../contexts/appState';
 
 const WORKSPACES_WIDTH = 80;
 const RESIZER_WIDTH = 8;
@@ -175,7 +176,10 @@ type SideConversationProps = {
 };
 
 export const SideConversation = observer(({ channelId, parentId}: SideConversationProps) => {
-  const message = useMessage(parentId);
+  const app = useApp();
+  const threadModel = app.getThread(channelId, parentId);
+  if(!parentId) return null;
+  const message = threadModel.messages.get(parentId);
   const navigate = useNavigate();
   return (
     <MessageListArgsProvider streamId="side">
@@ -212,7 +216,6 @@ export const MainConversation = observer(({ channelId, children}: MainConversati
   const [stream] = useMessageListArgs();
   const navigate = useNavigate();
   const onSearch = useCallback((search: string) => {
-    console.log('searching', search);
     navigate("/"+ channelId + "/search", {state: {search}});
   } , [channelId, navigate]);
   const searchTerm = location.state?.search;

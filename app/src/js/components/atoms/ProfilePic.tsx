@@ -1,8 +1,8 @@
 import { ClassNames, cn } from '../../utils';
-import { getUrl } from '../../services/file';
 import styled from 'styled-components';
 import { observer } from 'mobx-react-lite';
 import { useApp } from '../contexts/appState';
+import { client } from '../../core';
 
 const Pic = styled.div`
   position: relative;
@@ -108,7 +108,7 @@ export const ProfilePic = observer(({ type = 'regular', showStatus = false, user
     <Pic className={cn('avatar', type, {'with-status': showStatus}, className)}>
       <div className="image">
         { user?.avatarFileId
-          ? <img src={getUrl(user?.avatarFileId)} alt='avatar' />
+          ? <img src={client.api.getUrl(user?.avatarFileId)} alt='avatar' />
           : <img src="/avatar.png" alt='avatar' /> }
       </div>
       {showStatus && <div className={cn('status-ball', status)} />}

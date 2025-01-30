@@ -9,6 +9,7 @@ export default (core: Core) =>
       const res = new Res();
       const target = res.sendEvents();
       target.sendMessage({ data: JSON.stringify({ status: "connected" }) });
+
       const off = core.bus.on(req.state.user.id, (msg) => {
         target.sendMessage({ data: JSON.stringify(msg) });
       });

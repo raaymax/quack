@@ -90,7 +90,7 @@ export type UserConfig = {
 
 export type User = {
   id: Eid;
-  alias: string | null;
+  alias?: string | null;
   email: string;
   name: string;
   avatarFileId: string;
@@ -133,6 +133,16 @@ export type CreateChannelRequest = {
   channelType?: ChannelType;
   users?: string[];
 };
+
+export type FileUpload = {
+  id?: string;
+  clientId: string;
+  stream: ReadableStream;
+  onProgress?: (progress: number) => void;
+  contentType: string;
+  fileSize: number;
+  fileName: string;
+}
 
 
 export type Result<T = any, E = any> =

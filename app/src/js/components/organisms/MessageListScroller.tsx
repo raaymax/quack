@@ -9,6 +9,7 @@ import { ClassNames, cn } from '../../utils';
 import { observer } from 'mobx-react-lite';
 import { MessagesModel } from '../../core/models/messages';
 import { autorun } from 'mobx';
+import { ThreadModel } from '../../core/models/thread';
 
 const ListContainer = styled.div`
   display: flex;
@@ -26,7 +27,7 @@ const ListContainer = styled.div`
 const getMax = (list: MessageType[]) => list.reduce((acc, item) => Math.max(acc, new Date(item.createdAt).getTime()), new Date('1970-01-01').getTime());
 
 type MessageListProps = MessageListRendererProps & {
-  model: MessagesModel;
+  model: ThreadModel;
   renderer?: React.ComponentType<MessageListRendererProps>;
   onScrollTop?: () => void;
   onScrollBottom?: () => void;
@@ -48,7 +49,7 @@ export const MessageList = observer((props: MessageListProps) => {
   const [list, setList] = useState<MessageType[]>([]);
   useEffect(() => {
     autorun(() => {
-      setList(model.getAll());
+      setList(model.messages.getAll());
     })
   }, [model]);
 

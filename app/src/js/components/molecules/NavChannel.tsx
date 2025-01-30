@@ -8,6 +8,7 @@ import { User } from '../../types';
 import { observer } from 'mobx-react-lite';
 import { useApp } from '../contexts/appState';
 import type { ChannelModel } from '../../core/models/channel';
+import { ReadReceiptModel } from '../../core/models/readReceipt';
 
 const TagContainer = styled.div`
   font-size: 16px;
@@ -49,7 +50,7 @@ const Container = styled.div`
 type InlineChannelProps = {
   id: string;
   children: React.ReactNode;
-  badge?: number;
+  badge?: ReadReceiptModel;
   className?: ClassNames;
   onClick?: () => void;
   icon?: string;
@@ -61,14 +62,14 @@ export const InlineChannel = observer(({
 }: InlineChannelProps) => (
   <Container className={cn('channel', 'inline-channel', className)} data-id={id} onClick={onClick}>
     <TextWithIcon icon={icon}>{children}</TextWithIcon>
-    {(badge && badge > 0) ? <Badge>{badge}</Badge> : null}
+    {(badge && badge.count > 0) ? <Badge>{badge.count}</Badge> : null}
     {secured ? <Tag tooltip={["Messages in this channel are encrypted", "using your password", "Files encription not yet implemented"]}>E2EE</Tag> : null}
   </Container>
 ));
 
 type DirectChannelProps = {
   channel: ChannelModel;
-  badge?: number;
+  badge?: ReadReceiptModel;
   onClick?: () => void;
   className?: ClassNames;
 };
@@ -101,7 +102,7 @@ type ChannelProps = {
   channelId: string;
   onClick?: () => void;
   icon?: string;
-  badge?: number;
+  badge?: ReadReceiptModel;
   className?: ClassNames;
 };
 

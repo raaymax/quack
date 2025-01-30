@@ -12,18 +12,27 @@ export class ChannelsModel {
       makeAutoObservable(this, {root: false});
       this.channels = {};
       this.root = root;
+      client.on('channel', (channel: Channel) => this.add(channel));
+      client.on('channel:remove', this.onRemove);
+    }
+
+    async dispose() {
+      await Promise.all(Object.values(this.channels).map(channel => channel.dispose()));
+      this.channels = {};
+    }
+
+    add(channel: Channel) {
+      if(!this.channels[channel.id]) {
+        this.channels[channel.id] = new ChannelModel(channel, this.root);
+      }else{
+        this.channels[channel.id].patch(channel);
+      }
     }
 
     load = flow(function*(this: ChannelsModel) {
       const channels = yield client.api.getChannels();
-      channels.forEach((channel: Channel) => {
-        if(!this.channels[channel.id]) {
-          this.channels[channel.id] = new ChannelModel(channel, this.root);
-        }else{
-          this.channels[channel.id].patch(channel);
-        }
-      });
-    })
+      channels.forEach((channel: Channel) => this.add(channel));
+    });
 
     find = flow(function*(this: ChannelsModel, id: string) {
       const channel = yield client.api.getChannelById(id);
@@ -36,18 +45,26 @@ export class ChannelsModel {
 
     getDirect(userId: string): ChannelModel | null {
       const direct = Object.values(this.channels).find(channel => (
-        channel.channelType === 'DIRECT' && channel.users.includes(userId)
+        channel.channelType === 'DIRECT' && channel.users.includes(userId) && channel.users.length === (userId === this.root.userId ? 1 : 2)
       ))
       if(!direct) this.findDirect(userId);
       return direct ?? null;
     };
 
+    getAll(channelType: ChannelType[]) {
+      return Object.values(this.channels)
+        .filter((channel: ChannelModel) => (
+          channelType.length === 0 || channelType.includes(channel.channelType)
+        ));
+    }
+
     findDirect = flow(function*(this: ChannelsModel, userId: string) {
       const channel = yield client.api.getDirectChannel(userId);
       if(channel) {
         this.channels[channel.id] = new ChannelModel(channel, this.root);
+        return this.channels?.[channel.id];
       }
-      return this.getDirect(userId);
+      return null
     })
 
     create = flow(function*(this: ChannelsModel, channel: CreateChannelRequest) {
@@ -61,10 +78,7 @@ export class ChannelsModel {
       return yield client.api.putDirectChannel(userId);
     })
 
-    getAll(channelType: ChannelType[]) {
-      return Object.values(this.channels)
-        .filter((channel: ChannelModel) => (
-          channelType.length === 0 || channelType.includes(channel.channelType)
-        ));
+    onRemove = (id: string) => {
+      delete this.channels[id];
     }
 }

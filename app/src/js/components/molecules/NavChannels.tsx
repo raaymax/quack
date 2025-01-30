@@ -55,7 +55,7 @@ export const NavChannels = observer(({ icon }: NavChannelsProps) => {
   const app = useApp();
   let navigate = (_path: string) => {};
   try { navigate = useNavigate(); }catch {/* ignore */}
-  const badges = app.readReceipts.getMap();
+  const badges = app.readReceipts;
   const {channelId: id} = useParams();
   const { hideSidebar } = useSidebar();
   const channels = app.channels.getAll(['PUBLIC', 'PRIVATE']);
@@ -73,7 +73,7 @@ export const NavChannels = observer(({ icon }: NavChannelsProps) => {
           className={{ active: id === c.id }}
           key={c.id}
           icon={icon ?? 'hash'}
-          badge={badges[c.id]}
+          badge={badges.getForChannel(c.id)}
           onClick={() => {
             if ( isMobile() ) {
               hideSidebar();
