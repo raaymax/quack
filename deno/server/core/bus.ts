@@ -15,7 +15,13 @@ class Emitter {
   };
 
   emit = (ev: string, ...args: any[]) => {
-    (this.listeners[ev] ?? []).forEach((cb) => cb(...serialize(args)));
+    (this.listeners[ev] ?? []).forEach((cb) =>{
+      try{
+        cb(...serialize(args))
+      } catch(e){
+        console.error(e)
+      }
+    });
   };
 
   eventNames = () => Object.keys(this.listeners);
