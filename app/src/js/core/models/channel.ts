@@ -78,11 +78,11 @@ export class ChannelModel {
     }
 
     getPins = () => {
-      return this.getThread('pins', {pinned: true}).messages
+      return this.getThread('pins', {pinned: true})
     }
 
     getSearch = (search: string) => {
-      return this.getThread('search', {search}).messages
+      return this.getThread('search', {search})
     }
 
     load = flow(function*(this: ChannelModel) {

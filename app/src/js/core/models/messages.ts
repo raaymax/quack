@@ -3,10 +3,7 @@ import { BaseMessage, EncryptedData, EncryptedMessage, FullMessage, Message, Mes
 import { makeAutoObservable, observable, computed, action, flow, autorun, runInAction } from "mobx"
 import { merge, mergeFn } from "../tools/merger";
 import type { AppModel } from "./app";
-import * as enc from '@quack/encryption';
-import { ReadReceiptModel } from "./readReceipt";
 import { MessageModel } from "./message";
-import { FilesModel } from "./files";
 import { isSameThread } from "../tools/sameThread";
 import { MessageEncryption } from "../tools/messageEncryption";
 
@@ -22,13 +19,11 @@ type MessageModelOptions = {
 export class MessagesModel {
   channelId: string = '';
   parentId?: string | null;
-  list: MessageModel[] = [];
-  ghosts: MessageModel[] = [];
-
-  files: FilesModel;
-
   pinned?: boolean;
   search?: string;
+
+  list: MessageModel[] = [];
+  ghosts: MessageModel[] = [];
 
   _cleanups: (() => void)[] = [];
   root: AppModel;
@@ -41,7 +36,6 @@ export class MessagesModel {
       this.list = [];
       this.pinned = pinned;
       this.search = search;
-      this.files = new FilesModel(this.root);
       this._cleanups.push(client.on2('message', this.onMessage));
       this._cleanups.push(client.on2('message:remove', this.onRemove));
   }
@@ -56,7 +50,6 @@ export class MessagesModel {
     await Promise.all(this.list.map(m => m.dispose()));
     await Promise.all(this.ghosts.map(m => m.dispose()));
     this.list = [];
-    await this.files.dispose();
   }
 
   onMessage = async (msg: Message) => {
@@ -194,5 +187,16 @@ export class MessagesModel {
     yield client.api.removeMessage(id);
     this.list = this.list.filter(m => m.id !== id);
   })
+  
+  toJSON() {
+    return {
+      channelId: this.channelId,
+      parentId: this.parentId,
+      pinned: this.pinned,
+      search: this.search,
+
+      messages: this.list.map(m => m.toJSON()),
+    }
+  }
 }
 

@@ -187,4 +187,11 @@ export class MessageModel implements ViewMessage {
     closeEditing = () => {
       this.editing = false;
     }
+
+    toJSON() {
+      return {
+        flat: this.flat,
+        userId: this.userId,
+      }
+    }
 }
