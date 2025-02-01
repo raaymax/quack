@@ -1,14 +1,16 @@
 import { observer } from 'mobx-react-lite';
-import { useApp } from '../contexts/appState';
+import { TypingModel } from '../../core/models/typing';
+import { InfoModel } from '../../core/models/info';
 
-export const StatusLine = observer(({channelId, parentId}: {channelId: string, parentId?: string | null}) => {
-  const app = useApp();
-  const typingModel = app.getThread(channelId, parentId).typing;
-  
-  if(app.message) {
-      console.log('app.message', app.message);
-      return <div className='info'>{app.message}</div>
+type StatusLineProps = {
+  typing: TypingModel;
+  info: InfoModel;
+}
+
+export const StatusLine = observer(({typing, info}: StatusLineProps) => {
+  if(info.type !== 'none') {
+      return <div className='info'>{info.getStatusLine()}</div>
   }
 
-  return <div className='info'>{typingModel.getStatusLine()}</div>
+  return <div className='info'>{typing.getStatusLine()}</div>
 });

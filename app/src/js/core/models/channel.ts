@@ -1,4 +1,5 @@
-import { makeAutoObservable, observable, computed, action, flow, autorun } from "mobx"
+/* global JsonWebKey */
+import { makeAutoObservable, flow } from "mobx"
 import { Channel } from "../../types"
 import type { AppModel } from "./app";
 import * as enc from '@quack/encryption';
@@ -53,7 +54,7 @@ export class ChannelModel {
       return this.channelType === 'PRIVATE';
     }
 
-    getThread = (key?: string | null, opts: {parentId?: string | null, pinned?: boolean, search?: string} = {}) => {
+    getThreadAndLoad = (key?: string | null, opts: {parentId?: string | null, pinned?: boolean, search?: string} = {}) => {
       const parentKey = key || 'null';
       if (key === 'search') {
         if (opts.search != this.threads[parentKey]?.search) {
@@ -69,6 +70,17 @@ export class ChannelModel {
       this.threads[parentKey] = new ThreadModel({channelId: this.id, ...opts}, this.root)
       this.threads[parentKey].load()
 
+      return this.threads[parentKey]
+
+    }
+
+    getThread = (key?: string | null, opts: {parentId?: string | null, pinned?: boolean, search?: string, init?: boolean} = {}) => {
+      const parentKey = key || 'null';
+      if (!this.threads[parentKey] || (key === 'search' && opts.search != this.threads[parentKey]?.search)) {
+        this.threads[parentKey] = new ThreadModel({channelId: this.id, ...opts}, this.root)
+      }
+
+      if(opts.init ?? true) this.threads[parentKey].init();
       return this.threads[parentKey]
     }
 

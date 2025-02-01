@@ -129,10 +129,11 @@ const MessageContainer = styled.div`
 
 const Info = observer(({messageModel}: {messageModel: MessageModel}) => {
   const { clientId, info } = messageModel;
+  const app = useApp();
 
   const onAction = useCallback(() => {
     if (info?.action === 'resend') {
-      console.warn('resend not implemented', messageModel);
+      app.getThread(messageModel.channelId, messageModel.parentId).resendMessage(messageModel);
     }
   }, [clientId, info]);
 

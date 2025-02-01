@@ -16,7 +16,7 @@ const meta: Meta<typeof LoggedUser> = {
     ),
   ],
   loaders: [async () => {
-    app.users.add({ id: '1', name: 'John Doe' } as User);
+    app.users.upsert({ id: '1', name: 'John Doe' } as User);
   }],
 };
  

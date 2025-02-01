@@ -1,4 +1,4 @@
-import { makeAutoObservable, observable, computed, action, flow } from "mobx"
+import { makeAutoObservable, flow } from "mobx"
 import type { Emoji } from "@quack/api"
 import { client } from "../client"
 import type { AppModel } from "./app";
@@ -46,7 +46,7 @@ export class EmojisModel {
         })
         this.root = root;
         this.emojis = {};
-        client.on('emoji', (emoji: Emoji) => this.add(emoji));
+        client.on('emoji', (emoji: Emoji) => this.upsert(emoji));
     }
 
     async dispose() {
@@ -54,7 +54,7 @@ export class EmojisModel {
       this.emojis = {};
     }
 
-    add(emoji: Emoji) {
+    upsert(emoji: Emoji) {
       if(!this.emojis[emoji.shortname]) {
         this.emojis[emoji.shortname] = new EmojiModel(emoji, this.root);
       }else{
@@ -65,7 +65,7 @@ export class EmojisModel {
     load = flow(function*(this: EmojisModel) {
       const emojis = yield client.api.getEmojis();
       const {default: baseEmojis} = yield import('../../../assets/emoji_list.json');
-      [...baseEmojis, ...emojis].forEach((emoji: Emoji) => this.add(emoji));
+      [...baseEmojis, ...emojis].forEach((emoji: Emoji) => this.upsert(emoji));
     })
 
     get(shortname: string) {

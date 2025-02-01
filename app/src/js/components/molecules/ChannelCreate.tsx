@@ -1,6 +1,5 @@
 import { useState, useCallback } from 'react';
 import styled from 'styled-components';
-import { useMethods, useDispatch } from '../../store';
 import { observer } from 'mobx-react-lite';
 import { useApp } from '../contexts/appState';
 

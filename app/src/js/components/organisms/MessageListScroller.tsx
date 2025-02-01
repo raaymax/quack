@@ -7,7 +7,6 @@ import { Message as MessageType } from '../../types';
 import { useMessageListArgs } from '../contexts/useMessageListArgs';
 import { ClassNames, cn } from '../../utils';
 import { observer } from 'mobx-react-lite';
-import { MessagesModel } from '../../core/models/messages';
 import { autorun } from 'mobx';
 import { ThreadModel } from '../../core/models/thread';
 

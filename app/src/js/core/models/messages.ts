@@ -1,6 +1,6 @@
 import { client } from "../client";
-import { BaseMessage, EncryptedData, EncryptedMessage, FullMessage, Message, MessageData, Notif, ReadReceipt, ViewMessage } from "../../types";
-import { makeAutoObservable, observable, computed, action, flow, autorun, runInAction } from "mobx"
+import { FullMessage, Message } from "../../types";
+import { makeAutoObservable, flow, runInAction } from "mobx"
 import { merge, mergeFn } from "../tools/merger";
 import type { AppModel } from "./app";
 import { MessageModel } from "./message";
@@ -38,7 +38,18 @@ export class MessagesModel {
       this.search = search;
       this._cleanups.push(client.on2('message', this.onMessage));
       this._cleanups.push(client.on2('message:remove', this.onRemove));
+      this._cleanups.push(this.subscribeUnfreeze());
   }
+
+  subscribeUnfreeze = () => {
+    window.addEventListener('resume', this.loadNext);
+    window.addEventListener('focus', this.loadNext);
+    return () => {
+      window.removeEventListener('resume', this.loadNext);
+      window.removeEventListener('focus', this.loadNext);
+    }
+  }
+
 
   async dispose() {
     this.channelId = '';
@@ -132,7 +143,7 @@ export class MessagesModel {
     });
     yield this.root.setLoading(false);
     this.list = messages.map((m: FullMessage) => new MessageModel(m, this.root))
-      .sort((a, b) => new Date(a.createdAt) < new Date(b.createdAt) ? 1 : -1);
+      .sort((a: MessageModel, b: MessageModel) => new Date(a.createdAt) < new Date(b.createdAt) ? 1 : -1);
     return this.list;
   })
 

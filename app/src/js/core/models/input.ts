@@ -1,4 +1,4 @@
-import { makeAutoObservable, observable, computed, action, flow } from "mobx"
+import { makeAutoObservable, flow } from "mobx"
 import type { AppModel } from "./app";
 import { FilesModel } from "./files";
 import { ThreadModel } from "./thread";

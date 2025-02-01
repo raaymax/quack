@@ -8,5 +8,3 @@ client.on2('auth:logout', async () => {
   window.location.reload();
 });
 
-
-window.app = app;

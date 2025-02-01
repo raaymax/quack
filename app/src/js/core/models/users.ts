@@ -1,4 +1,4 @@
-import { makeAutoObservable, observable, computed, action, flow } from "mobx"
+import { makeAutoObservable, flow } from "mobx"
 import { User } from "../../types"
 import { client } from "../client"
 import { UserModel } from "./user";
@@ -15,7 +15,7 @@ export class UsersModel {
         this.root = root;
         this.users = {};
 
-        client.on('user', (user: User) => this.add(user));
+        client.on('user', (user: User) => this.upsert(user));
     }
 
     async dispose() {
@@ -23,7 +23,7 @@ export class UsersModel {
       this.users = {};
     }
 
-    add(user: User) {
+    upsert(user: User) {
       if(!this.users[user.id]) {
         this.users[user.id] = new UserModel(user, this.root);
       }else{
@@ -33,7 +33,7 @@ export class UsersModel {
 
     load = flow(function*(this: UsersModel) {
       const users = yield client.api.getUsers();
-      users.forEach((user: User) => this.add(user));
+      users.forEach((user: User) => this.upsert(user));
     })
 
     get(id: string): UserModel | null{

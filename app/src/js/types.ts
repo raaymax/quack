@@ -7,7 +7,7 @@ export type ViewMessage = FullMessage & {
     type: 'error' | 'info',
     msg: string,
     action?: string,
-  }
+  } | null
   attachments?: {
     url: string,
   }[]

@@ -65,7 +65,7 @@ const Img = ({raw, fileName, id, url}: ImgProps) => {
   } else if (raw) {
     return <img className='raw-image' src={client.api.getUrl(id ?? '')} alt={fileName} />;
   } else {
-    return <img src={cliemt.api.getThumbnail(id ?? '', {h: 240})} alt={fileName} />;
+    return <img src={client.api.getThumbnail(id ?? '', {h: 240})} alt={fileName} />;
   }
 }
 

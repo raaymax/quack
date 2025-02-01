@@ -71,7 +71,7 @@ export type Channel = {
 export type ReadReceipt = {
   id: Eid;
   channelId: Eid;
-  parentId: Eid;
+  parentId?: Eid | null;
   userId: Eid;
   count: number;
   lastRead: Date;
@@ -122,11 +122,11 @@ export type UserSessionSecrets = {
 
 export type Emoji = {
   empty?: boolean;
-  unicode?: string,
-  fileId?: string,
-  shortname: string
-  category?: string,
-}
+  unicode?: string;
+  fileId?: string;
+  shortname: string;
+  category?: string;
+};
 
 export type CreateChannelRequest = {
   name: string;
@@ -142,8 +142,7 @@ export type FileUpload = {
   contentType: string;
   fileSize: number;
   fileName: string;
-}
-
+};
 
 export type Result<T = any, E = any> =
   | (T & { status: "ok" })

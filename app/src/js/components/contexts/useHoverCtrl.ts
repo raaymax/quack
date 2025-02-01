@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import { useHovered } from './useHovered';
+import { isMobile } from '../../utils';
 
 export const useHoverCtrl = (id?: string) => {
   const [hovered, setHovered] = useHovered();
@@ -9,8 +10,7 @@ export const useHoverCtrl = (id?: string) => {
   }, [setHovered, id]);
 
   const toggleHovered = useCallback(() => {
-    // FIXME: useIsMobile() hook maybe?
-    if (!navigator.userAgentData?.mobile) return;
+    if (!isMobile()) return;
     if (hovered !== id) {
       setHovered(id ?? null);
     } else {

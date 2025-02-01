@@ -111,7 +111,7 @@ export type MessageData = {
     type: "error" | "info";
     msg: string;
     action?: string;
-  };
+  } | null;
 };
 
 export type EncryptedMessage = BaseMessage & EncryptedData & { secured: true };

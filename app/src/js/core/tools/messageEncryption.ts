@@ -1,3 +1,4 @@
+/* global JsonWebKey */
 import * as enc from '@quack/encryption';
 import { BaseMessage, FullMessage, Message, MessageData } from "../client";
 import { EncryptedData, EncryptedMessage, ViewMessage } from '../../types';

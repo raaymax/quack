@@ -1,6 +1,15 @@
 // deno-lint-ignore-file no-window
 import { SSESource } from "@planigale/sse";
-import { ApiErrorResponse, Channel, Message, ReadReceipt, User, UserConfig, Emoji, CreateChannelRequest, FileUpload } from "./types.ts";
+import {
+  ApiErrorResponse,
+  Channel,
+  CreateChannelRequest,
+  Emoji,
+  Message,
+  ReadReceipt,
+  User,
+  UserConfig,
+} from "./types.ts";
 import AuthAPI from "./auth.ts";
 import { FilesAPI } from "./files.ts";
 
@@ -82,12 +91,12 @@ class API extends EventTarget {
   }
 
   getUrl = (fileId: string) => `/api/files/${fileId}`;
-  getThumbnail = (id: string, size?: {w?: number, h?: number}) => {
+  getThumbnail = (id: string, size?: { w?: number; h?: number }) => {
     const params = new URLSearchParams();
-    if(size?.w) params.set('w', size.w.toString());
-    if(size?.h) params.set('h', size.h.toString());
+    if (size?.w) params.set("w", size.w.toString());
+    if (size?.h) params.set("h", size.h.toString());
     return `${this.getUrl(id)}?${params.toString()}`;
-  }
+  };
   getDownloadUrl = (id: string) => `${this.getUrl(id)}?download=true`;
 
   constructor(url: string, opts: { fetch: typeof fetch; sse?: boolean }) {
@@ -289,7 +298,9 @@ class API extends EventTarget {
     await this.getResource<User[]>(`/api/users`) ?? []
   );
 
-  getChannelReadReceipts = async (channelId: string): Promise<ReadReceipt[]> => (
+  getChannelReadReceipts = async (
+    channelId: string,
+  ): Promise<ReadReceipt[]> => (
     await this.getResource<ReadReceipt[]>(
       `/api/channels/${channelId}/read-receipts`,
     ) ?? []
@@ -334,7 +345,7 @@ class API extends EventTarget {
       },
       body: JSON.stringify({ parentId }),
     });
-  }
+  };
 
   updateReadReceipt = async (messageId: string) => {
     return await this.callApi("/api/read-receipts", {
@@ -344,9 +355,11 @@ class API extends EventTarget {
         "Content-Type": "application/json",
       },
     });
-  }
+  };
 
-  createChannel = async ({name, users, channelType}: CreateChannelRequest) => {
+  createChannel = async (
+    { name, users, channelType }: CreateChannelRequest,
+  ) => {
     return await this.callApi("/api/channels", {
       method: "POST",
       body: JSON.stringify({ name, users, channelType }),
@@ -354,7 +367,7 @@ class API extends EventTarget {
         "Content-Type": "application/json",
       },
     });
-  }
+  };
 
   async putDirectChannel(userId: string): Promise<Channel> {
     const res = await this.fetchWithCredentials(
@@ -384,13 +397,16 @@ class API extends EventTarget {
   }
 
   async addReaction(msgId: string, reaction: string): Promise<void> {
-    const res = await this.fetchWithCredentials(`/api/messages/${msgId}/react`, {
-      method: "PUT",
-      body: JSON.stringify({ reaction }),
-      headers: {
-        "Content-Type": "application/json",
+    const res = await this.fetchWithCredentials(
+      `/api/messages/${msgId}/react`,
+      {
+        method: "PUT",
+        body: JSON.stringify({ reaction }),
+        headers: {
+          "Content-Type": "application/json",
+        },
       },
-    });
+    );
     await res.body?.cancel();
   }
 
@@ -431,7 +447,7 @@ class API extends EventTarget {
   }
 
   async sendMessage(msg: Partial<Message>): Promise<any> {
-    const data = {...msg};
+    const data = { ...msg };
     if (msg.parentId === null) delete data.parentId;
     const res = await this.fetchWithCredentials(
       `/api/channels/${data.channelId}/messages`,
@@ -445,7 +461,6 @@ class API extends EventTarget {
     }
     return await res.json();
   }
-
 
   on = this.addEventListener.bind(this);
 

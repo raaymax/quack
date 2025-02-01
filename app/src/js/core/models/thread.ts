@@ -1,9 +1,9 @@
-import { makeAutoObservable, observable, computed, action, flow } from "mobx"
+import { makeAutoObservable, flow } from "mobx"
 import type { AppModel } from "./app";
 import { MessagesModel } from "./messages";
 import { client } from "../client";
 import { MessageEncryption } from "../tools/messageEncryption";
-import { ViewMessage } from "../../types";
+import { Eid, ViewMessage } from "../../types";
 import { MessageModel } from "./message";
 import { TypingModel } from "./typing";
 import { ThreadReadReceiptsModel } from "./readReceipt";
@@ -11,16 +11,17 @@ import { InputModel } from "./input";
 import { generateHexId } from "../tools/generateHexId";
 
 type ThreadModelOptions = {
-  channelId: string;
-  parentId?: string | null;
+  channelId: Eid;
+  parentId?: Eid | null;
   pinned?: boolean;
   search?: string;
 }
 
 
 export class ThreadModel {
-    channelId: string;
-    parentId?: string | null;
+    initialized: boolean = false;
+    channelId: Eid;
+    parentId?: Eid | null;
     messages: MessagesModel;
 
     input: InputModel;
@@ -63,8 +64,13 @@ export class ThreadModel {
       return this.messages.pinned;
     }
 
+    init = () => {
+      if(this.initialized) return;
+      this.load();
+    }
 
-    sendMessage = flow(function*(this: ThreadModel, msg: ViewMessage) {
+
+    sendMessage = async (msg: ViewMessage) => {
       msg.clientId = generateHexId();
       msg.userId = this.root.userId;
       msg.channelId = this.channelId;
@@ -72,6 +78,15 @@ export class ThreadModel {
       msg.createdAt = new Date().toISOString();
       const ghost = new MessageModel(msg, this.root);
       this.messages.addGhost(ghost);
+      return await this.postMessage(ghost);
+    };
+
+    resendMessage = async (msg: MessageModel) => {
+      msg.patch({info: null});
+      return await this.postMessage(msg);
+    };
+
+    postMessage = flow(function*(this: ThreadModel, msg: MessageModel) {
       const channel = this.root.channels.get(this.channelId);
       if(!channel) {
         throw new Error(`Channel with id ${this.channelId} not found`);
@@ -84,15 +99,16 @@ export class ThreadModel {
         return m;
       }catch(e){
         console.error(e);
-        this.messages.getGhost(msg.clientId)?.patch({
+        msg.patch({
           info: {
-            type: 'error', msg: 'Sending failed - click to retry', action: 'retry'
+            type: 'error', msg: 'Sending failed - click to retry', action: 'resend'
           },
         });
       }
     });
 
     load = flow(function*(this: ThreadModel) {
+      this.initialized = true;
       yield this.messages.load();
       yield this.readReceipts.load();
     })

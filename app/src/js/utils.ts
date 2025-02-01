@@ -1,5 +1,3 @@
-import { client } from "./core";
-
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 export type ClassNames = string | undefined | string[] | Record<string, boolean>;
@@ -19,6 +17,7 @@ export const same = (o1: any, o2: any, fields: string[]): boolean => {
 
 export const isMobile = () => {
   if (localStorage.getItem('isMobile') === 'true') return true;
+  // @ts-ignore
   return Boolean(navigator?.userAgentData?.mobile);
 }
 
@@ -138,7 +137,7 @@ export const buildEmojiNode = (
     }
     if (result.fileId) {
       const img = document.createElement('img');
-      img.src = client.api.getUrl(result.fileId);
+      img.src = getUrl(result.fileId);
       img.alt = result.shortname;
       return img;
     }

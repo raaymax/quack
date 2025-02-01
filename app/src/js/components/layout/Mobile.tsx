@@ -7,13 +7,13 @@ import { useEffect } from 'react';
 import { Workspaces } from '../organisms/Workspaces';
 import { Sidebar } from '../organisms/Sidebar';
 import { Conversation } from '../organisms/Conversation';
-import { useMessage } from '../../store';
 import { Channel } from '../molecules/NavChannel';
 import { Toolbar } from '../atoms/Toolbar';
 import { ButtonWithIcon } from '../molecules/ButtonWithIcon';
 import { useMessageListArgs } from '../contexts/useMessageListArgs';
 import { MessageListArgsProvider } from '../contexts/messageListArgs';
 import { observer } from 'mobx-react-lite';
+import { useApp } from '../contexts/appState';
 
 const WORKSPACES_WIDTH = 80;
 
@@ -248,7 +248,10 @@ type SideConversationProps = {
 };
 
 export const SideConversation = observer(({ channelId, parentId}: SideConversationProps) => {
-  const message = useMessage(parentId);
+  const app = useApp();
+  const threadModel = app.getThread(channelId, parentId);
+  if(!parentId) return null;
+  const message = threadModel.messages.get(parentId);
   const navigate = useNavigate();
   const { toggleSidebar } = useSidebar();
   return (

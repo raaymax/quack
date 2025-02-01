@@ -1,4 +1,4 @@
-import { makeAutoObservable, observable, computed, action, flow, autorun } from "mobx"
+import { makeAutoObservable, flow } from "mobx"
 import { ChannelsModel } from "./channels"
 import { UsersModel } from "./users";
 import { UserModel } from "./user";
@@ -6,6 +6,7 @@ import { client } from "../client";
 import { initNotifications } from "../notifications";
 import { EmojisModel } from "./emojis";
 import { ReadReceiptsModel } from "./readReceipt";
+import { InfoModel } from "./info";
 
 export class AppModel {
   profile: UserModel | null;
@@ -17,7 +18,7 @@ export class AppModel {
   status: 'connected' | 'disconnected' = 'disconnected';
   initFailed: boolean = false;
   loading: boolean = false;
-  message: string | null = null;
+  info: InfoModel;
   _init: Promise<void> | null = null;
 
   constructor() {
@@ -26,9 +27,10 @@ export class AppModel {
       this.users = new UsersModel(this);
       this.emojis = new EmojisModel(this);
       this.readReceipts = new ReadReceiptsModel(this);
+      this.info = new InfoModel({}, this);
       this.profile = null;
-      client.on2('con:close', () => this.setMessage('connecting...'));
-      client.on2('con:open', () => Promise.all([this.setMessage(null), this.init()]));
+      client.on2('con:close', () => this.info.setMessage('connecting...'));
+      client.on2('con:open', () => Promise.all([this.info.setMessage(null), this.init()]));
   }
 
   async dispose() {
@@ -49,20 +51,16 @@ export class AppModel {
     return client.api.userId;
   }
 
-  setMessage = (message: string | null) => {
-    this.message = message;
-  }
-
   getChannel(channelId: string) {
     return this.channels.get(channelId);
   }
 
-  getThread(channelId: string, parentId?: string | null) {
+  getThread(channelId: string, parentId?: string | null, opts: {init?: boolean} = {}) {
     const channel = this.getChannel(channelId)
     if(!channel) {
       throw new Error(`Channel with id ${channelId} not found`)
     }
-    return channel.getThread(parentId, { parentId })
+    return channel.getThread(parentId, { parentId, ...opts })
   }
 
   getMessages(channelId: string, parentId?: string | null) {

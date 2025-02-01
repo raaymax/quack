@@ -55,9 +55,44 @@ export class MessageModel implements ViewMessage {
       type: 'error' | 'info',
       msg: string,
       action?: string,
-    };
+    } | null;
     editing: boolean = false;
-    root: AppModel;
+    root?: AppModel;
+
+    static from = (value: Partial<FullMessage>, root: AppModel) => {
+      return new MessageModel({
+        secured: false,
+        id: value.id ?? '',
+        channelId: value.channelId ?? '',
+        userId: value.userId ?? '',
+        parentId: value.parentId ?? null,
+        pinned: value.pinned ?? false,
+        clientId: value.clientId ?? '',
+        appId: value.appId ?? '',
+        ephemeral: value.ephemeral ?? false,
+        reactions: value.reactions ?? [],
+        updatedAt: value.updatedAt ?? '',
+        createdAt: value.createdAt ?? '',
+        flat: value.flat ?? '',
+        message: value.message ?? [],
+        annotations: value.annotations ?? [],
+        emojiOnly: value.emojiOnly ?? false,
+        thread: value.thread ?? [],
+        links: value.links ?? [],
+        mentions: value.mentions ?? [],
+        linkPreviews: value.linkPreviews ?? [],
+        parsingErrors: value.parsingErrors ?? [],
+        attachments: value.attachments?.map((attachment) => {
+          return {
+            id: attachment.id,
+            fileName: attachment.fileName,
+            contentType: attachment.contentType,
+            url: client.api.getUrl(attachment.id),
+          }
+        }),
+        info: value.info ?? null,
+      }, root);
+    }
 
     constructor(value: FullMessage, root: AppModel) {
       makeAutoObservable(this, {root: false});
@@ -120,20 +155,23 @@ export class MessageModel implements ViewMessage {
       this.editing = false;
     }
 
-    static updateableFields = [
-      'id', 'pinned', 'reactions', 'updatedAt', 'message', 'flat',
-      'annotations', 'emojiOnly', 'thread', 'links',
-      'mentions', 'linkPreviews', 'parsingErrors',
-      'info', 'editing'
-    ];
+    patch = (value: Partial<ViewMessage>) => {
+      if(value.id !== undefined) this.id = value.id;
+      if(value.pinned !== undefined) this.pinned = value.pinned;
+      if(value.reactions !== undefined) this.reactions = value.reactions;
+      if(value.updatedAt !== undefined) this.updatedAt = value.updatedAt;
+      if(value.message !== undefined) this.message = value.message;
+      if(value.flat !== undefined) this.flat = value.flat;
+      if(value.annotations !== undefined) this.annotations = value.annotations;
+      if(value.emojiOnly !== undefined) this.emojiOnly = value.emojiOnly;
+      if(value.thread !== undefined) this.thread = value.thread;
+      if(value.links !== undefined) this.links = value.links;
+      if(value.mentions !== undefined) this.mentions = value.mentions;
+      if(value.linkPreviews !== undefined) this.linkPreviews = value.linkPreviews;
+      if(value.parsingErrors !== undefined) this.parsingErrors = value.parsingErrors;
+      if(value.info !== undefined) this.info = value.info;
+      if(value.editing !== undefined) this.editing = value.editing;
 
-    patch = (value: Partial<FullMessage>) => {
-
-      MessageModel.updateableFields.forEach((field) => {
-        if(value[field as keyof typeof value] !== undefined) {
-          this[field as any] = value[field as keyof typeof value];
-        }
-      });
       if (value.attachments) {
         this.attachments = value.attachments?.map((attachment) => {
           return {
@@ -148,19 +186,24 @@ export class MessageModel implements ViewMessage {
     }
 
     get user() {
+      if(!this.root) throw new Error('Root not set');
       return this.root.users.get(this.userId);
     }
 
     get isMine() {
+      if(!this.root) throw new Error('Root not set');
       return this.userId === this.root.userId;
     }
 
     async remove() {
+      if(!this.root) throw new Error('Root not set');
       await this.root.getMessages(this.channelId, this.parentId).remove(this.id);
     }
 
     addReaction = flow(function*(this: MessageModel, reaction: string) {
-      const idx = this.reactions.findIndex((r) => r.userId === this.root.userId && r.reaction === reaction);
+      if(!this.root) throw new Error('Root not set');
+      const userId = this.root.userId;
+      const idx = this.reactions.findIndex((r) => r.userId === userId && r.reaction === reaction);
       if(idx !== -1) {
         this.reactions.splice(idx, 1);
         this.reactions = [...this.reactions];

@@ -20,6 +20,7 @@ import { EmojiSearch } from './EmojiSearch';
 import { observer } from 'mobx-react-lite';
 import { InputModel } from '../../core/models/input';
 import { client } from '../../core';
+import { useApp } from '../contexts/appState';
 
 export const InputContainer = styled.div`
   position: relative;
@@ -135,6 +136,7 @@ type InputFormProps = {
 }
 
 export const InputForm = observer(({ className, model }: InputFormProps) => {
+  const app = useApp();
   const [showEmojis, setShowEmojis] = useState(false);
   const {
     input, onPaste, onInput, onKeyDown, onFileChange, fileInput,
@@ -190,7 +192,7 @@ export const InputForm = observer(({ className, model }: InputFormProps) => {
         </Toolbar>
       </div>
 
-      <StatusLine channelId={model.channelId} parentId={model.parentId} />
+      <StatusLine info={app.info} typing={model.thread.typing} />
       <ChannelSelector />
       <UserSelector />
       <EmojiSelector />

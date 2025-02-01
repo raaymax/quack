@@ -1,6 +1,5 @@
 import { play } from './services/sound';
 import { client } from './core';
-import { store, actions, methods } from './store';
 
 let sound = false;
 

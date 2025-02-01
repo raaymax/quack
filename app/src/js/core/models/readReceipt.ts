@@ -1,13 +1,13 @@
 import type { AppModel } from "./app"
-import { makeAutoObservable, observable, computed, action, flow, autorun } from "mobx"
-import { Eid, ReadReceipt, User } from "../../types"
+import { makeAutoObservable, flow } from "mobx"
+import { Eid, ReadReceipt } from "../../types"
 import { client } from "../client"
 import { isSameThread } from "../tools/sameThread";
 
 export class ReadReceiptModel {
     id: Eid;
     channelId: Eid;
-    parentId: Eid;
+    parentId: Eid | null;
     userId: Eid;
     count: number;
     lastRead: Date;
@@ -19,7 +19,7 @@ export class ReadReceiptModel {
       makeAutoObservable(this, {root: false});
       this.id = value.id;
       this.channelId = value.channelId;
-      this.parentId = value.parentId;
+      this.parentId = value.parentId ?? null;
       this.userId = value.userId;
       this.count = value.count;
       this.lastRead = new Date(value.lastRead);
@@ -48,12 +48,12 @@ export class ReadReceiptModel {
 export class ThreadReadReceiptsModel {
   list: ReadReceiptModel[];
   channelId: Eid;
-  parentId?: Eid;
+  parentId?: Eid | null;
 
   root: AppModel;
   _dispose: () => void;
 
-  constructor(opts, root: AppModel) {
+  constructor(opts: { channelId: string; parentId?: string | null; pinned?: boolean; search?: string; }, root: AppModel) {
     makeAutoObservable(this, {root: false, _dispose: false});
     this.channelId = opts.channelId;
     this.parentId = opts.parentId;
@@ -88,7 +88,7 @@ export class ThreadReadReceiptsModel {
 
   load = flow(function*(this: ThreadReadReceiptsModel) {
     const receipts = yield client.api.getChannelReadReceipts(this.channelId);
-    this.list= receipts.filter((r) => (
+    this.list= receipts.filter((r: ReadReceipt) => (
       (!this.parentId && !r.parentId) || r.parentId === this.parentId
     )).map((r: ReadReceipt) => {
       return this.upsert(r);
@@ -106,17 +106,30 @@ export class ReadReceiptsModel {
   list: ReadReceiptModel[];
 
   root: AppModel;
-  _dispose: () => void;
+  _dispose: (() => void)[];
 
   constructor(root: AppModel) {
     makeAutoObservable(this, {root: false, _dispose: false});
     this.root = root;
     this.list = [];
-    this._dispose = client.on2('readReceipt', this.upsert);
+
+    this._dispose = [
+      client.on2('readReceipt', this.upsert),
+      this.onResume(),
+    ];
+  }
+
+  onResume = () => {
+    window.addEventListener('resume', this.load);
+    window.addEventListener('focus', this.load);
+    return () => {
+      window.removeEventListener('resume', this.load);
+      window.removeEventListener('focus', this.load);
+    }
   }
 
   async dispose() {
-    this._dispose();
+    this._dispose.forEach(d => d());
     await Promise.all(this.list.map(rr => rr.dispose()));
     this.list = [];
   }
@@ -135,13 +148,7 @@ export class ReadReceiptsModel {
 
   load = flow(function*(this: ReadReceiptsModel) {
     const receipts = yield client.api.getOwnReadReceipts();
-    receipts.forEach((receipt: ReadReceipt) => {
-      if(!this.list.find((r) => r.id === receipt.id)) {
-        this.list.push(new ReadReceiptModel(receipt, this.root));
-      }else{
-        this.list.find((r) => r.id === receipt.id)?.patch(receipt);
-      }
-    });
+    receipts.forEach((receipt: ReadReceipt) => this.upsert(receipt));
   })
 
   getForChannel= (channelId?: Eid): ReadReceiptModel | null => {

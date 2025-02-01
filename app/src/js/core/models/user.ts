@@ -1,7 +1,7 @@
+/* global JsonWebKey */
 import type { AppModel } from "./app"
-import { makeAutoObservable, observable, computed, action, flow, autorun } from "mobx"
+import { makeAutoObservable, flow } from "mobx"
 import { Eid, User } from "../../types"
-import { client } from "../client";
 
 export class UserModel {
     id: Eid;
@@ -16,12 +16,12 @@ export class UserModel {
     hidden?: boolean;
 
     channelId: string | null = null;
-    root: AppModel;
+    root?: AppModel;
 
-    constructor(value: User, root: AppModel) {
+    constructor(value: User, root?: AppModel) {
       makeAutoObservable(this, {root: false});
       this.id = value.id;
-      this.alias = value.alias;
+      this.alias = value.alias ?? null;
       this.email = value.email;
       this.name = value.name;
       this.avatarFileId = value.avatarFileId;
@@ -50,6 +50,7 @@ export class UserModel {
     }
 
     get channel() {
+      if(!this.root) throw new Error('Root not set');
       return this.root.channels.get(this.channelId || '');
     }
 
@@ -58,6 +59,7 @@ export class UserModel {
     }
 
     loadChannel = flow(function*(this: UserModel) {
+      if(!this.root) throw new Error('Root not set');
       if(this.channelId) return this.channelId;
       const direct = yield this.root.channels.findDirect(this.id);
       if(direct){

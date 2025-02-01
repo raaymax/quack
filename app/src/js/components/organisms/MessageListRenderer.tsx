@@ -1,6 +1,6 @@
 import React from 'react';
 import { Message } from './Message';
-import { cn, formatDate } from '../../utils';
+import { formatDate } from '../../utils';
 import { useNavigate } from 'react-router-dom';
 
 import { observer } from 'mobx-react-lite';

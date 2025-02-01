@@ -50,7 +50,7 @@ const Container = styled.div`
 type InlineChannelProps = {
   id: string;
   children: React.ReactNode;
-  badge?: ReadReceiptModel;
+  badge?: ReadReceiptModel | null;
   className?: ClassNames;
   onClick?: () => void;
   icon?: string;
@@ -69,7 +69,7 @@ export const InlineChannel = observer(({
 
 type DirectChannelProps = {
   channel: ChannelModel;
-  badge?: ReadReceiptModel;
+  badge?: ReadReceiptModel | null;
   onClick?: () => void;
   className?: ClassNames;
 };
@@ -102,7 +102,7 @@ type ChannelProps = {
   channelId: string;
   onClick?: () => void;
   icon?: string;
-  badge?: ReadReceiptModel;
+  badge?: ReadReceiptModel | null;
   className?: ClassNames;
 };
 

@@ -14,7 +14,7 @@ import { observer } from "mobx-react-lite";
 import { useApp } from "../contexts/appState";
 import { BaseRenderer } from "./MessageListRenderer";
 import { MessageModel } from "../../core/models/message";
-import { MessagesModel } from "../../core/models/messages";
+import { ThreadModel } from "../../core/models/thread";
 
 const StyledHeader = styled.div`
   display: flex;
@@ -88,7 +88,7 @@ export const Header = observer(() => {
   );
 });
 
-export const SearchResults = observer(({model}: {model: MessagesModel | null}) =>{
+export const SearchResults = observer(({model}: {model: ThreadModel | null}) =>{
   const navigate = useNavigate();
   const gotoMessage = useCallback(
     (msg: MessageModel) => {

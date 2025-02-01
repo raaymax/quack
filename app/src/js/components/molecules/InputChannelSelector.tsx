@@ -28,7 +28,7 @@ export const ChannelSelector = observer(() => {
     const opts = chan.map((channel) => ({
       name: channel.name,
       id: channel.id,
-      icon: channel.private ? 'fa-solid fa-lock' : 'fa-solid fa-hashtag',
+      icon: channel.isPrivate ? 'fa-solid fa-lock' : 'fa-solid fa-hashtag',
     }));
     return opts;
   }, [fuse, channels, currentText]);

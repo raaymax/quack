@@ -1,4 +1,4 @@
-import { makeAutoObservable, observable, computed, action, flow } from "mobx"
+import { makeAutoObservable, flow } from "mobx"
 import { Channel, ChannelType, CreateChannelRequest } from "../../types"
 import { client } from "../client"
 import { ChannelModel } from "./channel"
@@ -12,7 +12,7 @@ export class ChannelsModel {
       makeAutoObservable(this, {root: false});
       this.channels = {};
       this.root = root;
-      client.on('channel', (channel: Channel) => this.add(channel));
+      client.on('channel', (channel: Channel) => this.upsert(channel));
       client.on('channel:remove', this.onRemove);
     }
 
@@ -21,7 +21,7 @@ export class ChannelsModel {
       this.channels = {};
     }
 
-    add(channel: Channel) {
+    upsert(channel: Channel) {
       if(!this.channels[channel.id]) {
         this.channels[channel.id] = new ChannelModel(channel, this.root);
       }else{
@@ -31,7 +31,7 @@ export class ChannelsModel {
 
     load = flow(function*(this: ChannelsModel) {
       const channels = yield client.api.getChannels();
-      channels.forEach((channel: Channel) => this.add(channel));
+      channels.forEach((channel: Channel) => this.upsert(channel));
     });
 
     find = flow(function*(this: ChannelsModel, id: string) {

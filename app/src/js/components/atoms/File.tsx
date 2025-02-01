@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import { getDownloadUrl } from '../../services/file';
 import { observer } from 'mobx-react-lite';
 import { client } from '../../core';
 
