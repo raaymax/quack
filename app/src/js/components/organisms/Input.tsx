@@ -27,7 +27,7 @@ export const InputContainer = styled.div`
   max-height: 50%;
   max-width: 100%;
   font-size: 16px;
-  margin: 0px 16px 16px 16px;
+  margin: 0px 16px 32px 16px;
   display: flex;
   padding: 0;
   flex-direction: column;
@@ -36,7 +36,7 @@ export const InputContainer = styled.div`
   & > .input-box {
     border: 1px solid ${(props) => props.theme.Strokes};
     background-color: ${(props) => props.theme.Input.Background};
-    padding: 16px;
+    padding: 8px 16px;
     height: 100%;
     border-radius: 8px;
     overflow-y: auto;
@@ -44,7 +44,7 @@ export const InputContainer = styled.div`
     .cta {
       color: ${(props) => props.theme.Labels};
       position: absolute;
-      top: 20px;
+      top: 12px;
       left: 18px;
       font-size: 16px;
       font-style: normal;
@@ -56,7 +56,7 @@ export const InputContainer = styled.div`
     .controls {
       position: absolute;
       right: 16px;
-      top: 16px;
+      top: 8px;
       width: auto;
       height: 32px;
       button {
