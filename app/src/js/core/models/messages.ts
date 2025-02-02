@@ -36,17 +36,17 @@ export class MessagesModel {
       this.list = [];
       this.pinned = pinned;
       this.search = search;
-      this._cleanups.push(client.on2('message', this.onMessage));
-      this._cleanups.push(client.on2('message:remove', this.onRemove));
+      this._cleanups.push(client.on2('message', (msg) => this.onMessage(msg)));
+      this._cleanups.push(client.on2('message:remove', (msg) => this.onRemove(msg)));
       this._cleanups.push(this.subscribeUnfreeze());
   }
 
   subscribeUnfreeze = () => {
-    window.addEventListener('resume', this.loadNext);
-    window.addEventListener('focus', this.loadNext);
+    window.addEventListener('resume', () => this.loadNext());
+    window.addEventListener('focus', () => this.loadNext());
     return () => {
-      window.removeEventListener('resume', this.loadNext);
-      window.removeEventListener('focus', this.loadNext);
+      window.removeEventListener('resume', () => this.loadNext());
+      window.removeEventListener('focus', () => this.loadNext());
     }
   }
 

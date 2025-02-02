@@ -120,11 +120,11 @@ export class ReadReceiptsModel {
   }
 
   onResume = () => {
-    window.addEventListener('resume', this.load);
-    window.addEventListener('focus', this.load);
+    window.addEventListener('resume', () => this.load());
+    window.addEventListener('focus', () => this.load());
     return () => {
-      window.removeEventListener('resume', this.load);
-      window.removeEventListener('focus', this.load);
+      window.removeEventListener('resume', () => this.load());
+      window.removeEventListener('focus', () => this.load());
     }
   }
 
