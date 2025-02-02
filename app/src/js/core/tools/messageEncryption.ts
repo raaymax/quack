@@ -1,7 +1,7 @@
 /* global JsonWebKey */
 import * as enc from '@quack/encryption';
 import { BaseMessage, FullMessage, Message, MessageData } from "../client";
-import { EncryptedData, EncryptedMessage, ViewMessage } from '../../types';
+import { EncryptedData, EncryptedMessage } from '../../types';
 
 type Messages = Message | Message[];
 
@@ -32,7 +32,7 @@ export class MessageEncryption {
     }
   }
 
-  static encrypt = async (msg: ViewMessage, encryptionKey: JsonWebKey ): Promise<Partial<Message>> => {
+  static encrypt = async (msg: FullMessage, encryptionKey: JsonWebKey ): Promise<Partial<Message>> => {
     const {clientId, channelId, parentId, ...data} = msg;
     if(!encryptionKey){
       return {

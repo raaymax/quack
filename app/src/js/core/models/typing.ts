@@ -29,7 +29,7 @@ export class TypingModel {
 
     this.root = root;
     this.typings = {};
-    this._dispose = client.on2('typing', this.onTyping);
+    this._dispose = client.on2('typing', (msg) => this.onTyping(msg));
   }
 
   async dispose() {

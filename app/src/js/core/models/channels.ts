@@ -13,7 +13,7 @@ export class ChannelsModel {
       this.channels = {};
       this.root = root;
       client.on('channel', (channel: Channel) => this.upsert(channel));
-      client.on('channel:remove', this.onRemove);
+      client.on('channel:remove', (msg) => this.onRemove(msg));
     }
 
     async dispose() {

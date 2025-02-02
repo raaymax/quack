@@ -231,10 +231,21 @@ export class MessageModel implements ViewMessage {
       this.editing = false;
     }
 
-    toJSON() {
+    toJSON(): FullMessage {
       return {
-        flat: this.flat,
+        secured: false,
+        id: this.id,
+        channelId: this.channelId,
         userId: this.userId,
+        parentId: this.parentId,
+        clientId: this.clientId,
+        updatedAt: this.updatedAt,
+        createdAt: this.createdAt,
+        pinned: this.pinned,
+        reactions: this.reactions,
+        flat: this.flat,
+        message: this.message,
+        attachments: this.attachments,
       }
     }
 }

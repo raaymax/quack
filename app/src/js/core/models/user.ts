@@ -16,9 +16,9 @@ export class UserModel {
     hidden?: boolean;
 
     channelId: string | null = null;
-    root?: AppModel;
+    root: AppModel;
 
-    constructor(value: User, root?: AppModel) {
+    constructor(value: User, root: AppModel) {
       makeAutoObservable(this, {root: false});
       this.id = value.id;
       this.alias = value.alias ?? null;
@@ -50,7 +50,6 @@ export class UserModel {
     }
 
     get channel() {
-      if(!this.root) throw new Error('Root not set');
       return this.root.channels.get(this.channelId || '');
     }
 
@@ -59,7 +58,6 @@ export class UserModel {
     }
 
     loadChannel = flow(function*(this: UserModel) {
-      if(!this.root) throw new Error('Root not set');
       if(this.channelId) return this.channelId;
       const direct = yield this.root.channels.findDirect(this.id);
       if(direct){
