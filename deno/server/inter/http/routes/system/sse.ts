@@ -8,9 +8,17 @@ export default (core: Core) =>
     handler: (req) => {
       const res = new Res();
       const target = res.sendEvents();
-      target.sendMessage({ data: JSON.stringify({ status: "connected" }) });
+      try {
+        target.sendMessage({ data: JSON.stringify({ status: "connected" }) });
+      } catch (e) {
+        target.close();
+      }
       const off = core.bus.on(req.state.user.id, (msg) => {
-        target.sendMessage({ data: JSON.stringify(msg) });
+        try {
+          target.sendMessage({ data: JSON.stringify(msg) });
+        } catch (e) {
+          target.close();
+        }
       });
       target.addEventListener("close", () => off(), { once: true });
 

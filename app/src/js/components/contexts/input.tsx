@@ -1,13 +1,8 @@
 import React, {
   useRef, useState, useCallback, useEffect, createContext, MutableRefObject,
 } from 'react';
-import {
-  useDispatch, useSelector, useMessage, useMethods, useActions,
-} from '../../store';
-import * as messageService from '../../services/messages';
-import { uploadMany } from '../../services/file';
-import { fromDom } from '../../serializer';
-import { useMessageListArgs } from './useMessageListArgs';
+import { client } from '../../core';
+import { InputModel } from '../../core/models/input';
 
 declare global {
   interface Window {
@@ -16,8 +11,6 @@ declare global {
 }
 
 export type InputContextType = {
-  mode: string;
-  messageId: string | null;
   input: MutableRefObject<HTMLDivElement | null>;
   fileInput: MutableRefObject<HTMLInputElement| null>;
   onPaste: (e: React.ClipboardEvent) => void;
@@ -52,24 +45,14 @@ function findScope(element: HTMLElement | null): { el: HTMLElement, scope: strin
 
 type InputContextProps = {
   children: React.ReactNode;
-  mode?: string;
-  messageId?: string;
-  channelId: string;
-  parentId?: string;
+  model: InputModel;
 };
 
 export const InputProvider = (args: InputContextProps) => {
-  const { children, mode = 'default', messageId = null, channelId, parentId } = args;
-  const dispatch = useDispatch();
-  const methods = useMethods();
-  const actions = useActions();
-  const [stream] = useMessageListArgs();
+  const { children, model } = args;
   const [currentText, setCurrentText] = useState('');
   const [scope, setScope] = useState<string>('');
   const [scopeContainer, setScopeContainer] = useState<HTMLElement>();
-  const files = useSelector((state) => state.files);
-  const filesAreReady = !files || files.every((f) => f.status === 'ok');
-  const message = useMessage(messageId);
 
   const input = useRef<HTMLDivElement | null>(null);
   const fileInput = useRef<HTMLInputElement | null>(null);
@@ -116,7 +99,7 @@ export const InputProvider = (args: InputContextProps) => {
     const cbData = (event.clipboardData || window.clipboardData);
     if (cbData.files?.length > 0) {
       event.preventDefault();
-      dispatch(uploadMany({ streamId: stream.id ?? '', files: cbData.files }));
+      model.files.uploadMany(cbData.files);
     }
 
     const rang = getRange();
@@ -129,15 +112,15 @@ export const InputProvider = (args: InputContextProps) => {
     document.getSelection()?.collapseToEnd();
     event.preventDefault();
     event.stopPropagation();
-  }, [getRange, dispatch, stream]);
+  }, [getRange, model.files]);
+
 
   const onFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     if ((e.target.files?.length ?? 0) > 0) {
-      const targetFiles = e.target.files as FileList;
-      dispatch(uploadMany({ streamId: stream.id ?? '', files: targetFiles }));
+      model.files.uploadMany(e.target.files as FileList);
       e.target.value = '';
     }
-  }, [dispatch, stream]);
+  }, [model.files]);
 
   const onInput = useCallback(() => {
     updateRange();
@@ -156,30 +139,12 @@ export const InputProvider = (args: InputContextProps) => {
   }, [input, range]);
 
   const send = useCallback((e: React.SyntheticEvent) => {
+    e.preventDefault();
     if (!input.current) return;
-    if (!filesAreReady) return;
-    const payload: any = fromDom(input.current);
-    if (mode === 'edit') {
-      payload.type = 'message:update';
-      payload.id = messageId;
-      payload.clientId = message?.clientId;
-    }
-    payload.attachments = [...files.filter((f) => f.streamId === stream.id)];
-    if (payload.flat.length === 0 && payload.attachments.length === 0) return;
-    payload.channelId = args.channelId;
-    payload.parentId = args.parentId;
-
-    dispatch(actions.files.clear(stream.id));
-    dispatch(messageService.send({ stream: {channelId, parentId, ...stream}, payload }));
-
-    if (mode === 'default') {
-      input.current.innerHTML = '';
+    model.send(input.current).then(() => {
       focus(e.nativeEvent);
-    } else {
-      dispatch(actions.messages.editClose(messageId));
-    }
-  }, [actions, input, stream, focus, dispatch,
-    filesAreReady, files, messageId, mode, message]);
+    })
+  }, [input, focus, model]);
 
   const wrapMatching = useCallback((regex: RegExp, wrapperTagName: string) => {
     const selection = window.getSelection();
@@ -251,9 +216,9 @@ export const InputProvider = (args: InputContextProps) => {
     if (e.key === 'Enter' && !e.shiftKey && scope === 'root') {
       return send(e);
     }
-    dispatch(methods.typing.notify({ channelId: args.channelId, parentId: args.parentId }));
+    client.api.notifyTyping(model.channelId, model.parentId || undefined);
     updateRange();
-  }, [dispatch, methods, send, updateRange, scope, args]);
+  }, [send, updateRange, scope, client, model]);
 
   const addFile = useCallback(() => {
     fileInput.current?.click();
@@ -265,8 +230,6 @@ export const InputProvider = (args: InputContextProps) => {
   }, [updateRange]);
 
   const api = {
-    mode,
-    messageId,
     input,
     fileInput,
     onPaste,

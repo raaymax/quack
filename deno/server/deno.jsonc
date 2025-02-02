@@ -26,6 +26,6 @@
   "tasks": {
     "cache": "deno cache --allow-scripts main.ts",
     "dev": "deno run -A --watch main.ts",
-    "start": "deno run --allow-ffi --allow-env --allow-read --allow-net --allow-write --allow-sys --unstable-http --watch main.ts"
+    "start": "deno run --allow-ffi --allow-env --allow-read --allow-net --allow-write --allow-sys --unstable-http main.ts"
   }
 }

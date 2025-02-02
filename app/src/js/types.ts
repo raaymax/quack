@@ -7,7 +7,7 @@ export type ViewMessage = FullMessage & {
     type: 'error' | 'info',
     msg: string,
     action?: string,
-  }
+  } | null
   attachments?: {
     url: string,
   }[]
@@ -52,7 +52,6 @@ export type MessageListArgs = {
   selected?: string,
   date?: string,
 };
-
 
 export type Progress = {
   channelId: string;

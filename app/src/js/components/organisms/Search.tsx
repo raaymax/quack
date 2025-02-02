@@ -1,32 +1,25 @@
 import styled from "styled-components";
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import { HoverProvider } from "../contexts/hover";
-import { useSelector, useDispatch, methods } from "../../store";
-import { formatTime, formatDate, isMobile } from "../../utils";
+import { isMobile } from "../../utils";
 
-import { Message } from "../organisms/Message";
 import { Toolbar } from "../atoms/Toolbar";
 import { ButtonWithIcon } from "../molecules/ButtonWithIcon";
-import { ViewMessage as MessageType } from "../../types";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { MessageListArgsProvider } from "../contexts/messageListArgs";
+import { MessageList } from '../organisms/MessageListScroller';
 import { SearchBox } from "../atoms/SearchBox";
+
+import { observer } from "mobx-react-lite";
+import { useApp } from "../contexts/appState";
+import { BaseRenderer } from "./MessageListRenderer";
+import { MessageModel } from "../../core/models/message";
+import { ThreadModel } from "../../core/models/thread";
 
 const StyledHeader = styled.div`
   display: flex;
   flex-direction: row;
   padding: 16px 16px 16px 16px;
-`;
-
-const SearchSeparator = styled.div`
-  line-height: 30px;
-  height: auto;
-  display: block;
-  flex: 0;
-  position: relative;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  padding-left: 30px;
 `;
 
 const StyledList = styled.div`
@@ -61,7 +54,7 @@ const StyledSearch = styled.div`
   }
 `;
 
-export const Header = () => {
+export const Header = observer(() => {
   const navigate = useNavigate();
   const { channelId } = useParams()!;
   const onSearch = useCallback(
@@ -93,16 +86,12 @@ export const Header = () => {
       )}
     </StyledHeader>
   );
-};
+});
 
-export function SearchResults() {
-  const location = useLocation();
-  const { channelId } = useParams()!;
+export const SearchResults = observer(({model}: {model: ThreadModel | null}) =>{
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const results = useSelector((state) => state.search.results);
   const gotoMessage = useCallback(
-    (msg: MessageType) => {
+    (msg: MessageModel) => {
       navigate(`/${msg.channelId}`, {
         state: {
           type: "archive",
@@ -115,52 +104,36 @@ export function SearchResults() {
     },
     [navigate],
   );
-  useEffect(() => {
-    if (!channelId || !location.state?.search) return;
-    const value = location.state?.search;
-    dispatch(methods.search.find({ channelId, text: value }));
-  }, [channelId, location.state?.search, dispatch]);
+  if (!model) return null;
 
   return (
     <StyledList>
       <div key="bottom" id="scroll-stop" />
-      {results.map((result) => (
-        <div key={`search:${result.searchedAt}`}>
-          <SearchSeparator>
-            <div>
-              {formatTime(result.searchedAt)} - {formatDate(result.searchedAt)}
-            </div>
-            <div>Search results for keyword &quot;{result.text}&quot;:</div>
-          </SearchSeparator>
-
-          {result.data
-            .map((msg: MessageType) => (
-              <Message
-                navigate={navigate}
-                onClick={() => gotoMessage(msg)}
-                data-id={msg.id}
-                client-id={msg.clientId}
-                key={`search:${result.text}:${msg.id || msg.clientId}`}
-                sameUser={false}
-                data={msg}
-              />
-            ))
-            .reverse()}
-        </div>
-      ))}
+        <MessageList
+          renderer={BaseRenderer}
+          model={model}
+          onMessageClicked={(msg: MessageModel) => {
+            gotoMessage(msg);
+          }}
+        />
     </StyledList>
   );
-}
+})
 
-export const Search = () => {
+export const Search = observer(() => {
+  const app = useApp();
+  const location = useLocation();
+  const { channelId } = useParams()!;
+  const messagesModel = app.getSearch(channelId ?? '', location.state?.search);
+  if (!messagesModel) return null;
   return (
     <MessageListArgsProvider streamId="search">
       <StyledSearch>
         <HoverProvider>
           <Header />
-          <SearchResults />
+          <SearchResults model={messagesModel} />
         </HoverProvider>
       </StyledSearch>
     </MessageListArgsProvider>
   );
-};
+});

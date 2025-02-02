@@ -1,12 +1,13 @@
 import {
   useCallback, useEffect, useState, useMemo,
 } from 'react';
-import { useSelector, useEmojiFuse } from '../../store';
 import { TextMenu } from './TextMenu';
 import { useInput } from '../contexts/useInput';
-import { getUrl } from '../../services/file';
 import { buildEmojiNode } from '../../utils';
 import { EmojiDescriptor } from '../../types';
+import { observer } from 'mobx-react-lite';
+import { useApp } from '../contexts/appState';
+import { client } from '../../core';
 
 const SCOPE = 'emoji';
 
@@ -18,13 +19,14 @@ type MenuOption = {
   item?: EmojiDescriptor;
 };
 
-export const EmojiSelector = () => {
+export const EmojiSelector = observer(() => {
   const [selected, setSelected] = useState(0);
+  const app = useApp();
   const {
     input, currentText, scope, insert, scopeContainer, replace,
   } = useInput();
-  const emojis = useSelector((state) => state.emojis.data);
-  const fuse = useEmojiFuse();
+  const emojis = app.emojis.getAll();
+  const fuse = app.emojis.getFuse();
 
   const options = useMemo(() => {
     let em = fuse.search(currentText || '').slice(0, 5).map(({ item }) => item);
@@ -34,7 +36,7 @@ export const EmojiSelector = () => {
       return ({
         empty: false,
         label: item.unicode && String.fromCodePoint(parseInt(item.unicode, 16)),
-        url: item.fileId && getUrl(item.fileId),
+        url: item.fileId && client.api.getUrl(item.fileId),
         name: item.shortname,
         item,
       });
@@ -71,7 +73,7 @@ export const EmojiSelector = () => {
       ? emojis.find((e) => e.shortname === name)
       : options[s ?? selected].item;
     const node = emoji
-      ? buildEmojiNode(emoji, getUrl)
+      ? buildEmojiNode(emoji, client.api.getUrl)
       : document.createTextNode(name);
     const fresh = document.createTextNode('\u00A0');
     const r = document.createRange();
@@ -176,4 +178,4 @@ export const EmojiSelector = () => {
       selected={selected}
       setSelected={setSelected} />
   );
-};
+});

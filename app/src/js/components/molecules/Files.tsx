@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { File } from '../atoms/File';
 import { Image } from '../atoms/Image';
+import { observer } from 'mobx-react-lite';
 
 const IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'];
 const RAW_IMAGE_TYPES = ['image/gif', 'image/webp'];
@@ -29,7 +30,7 @@ type FilesProps = {
   }[];
 };
 
-export const Files = ({ list }: FilesProps) => list.length > 0 
+export const Files = observer(({ list }: FilesProps) => list.length > 0 
   ? (
     <Container className='cmp-files'>
       <div className='file-list'>
@@ -50,4 +51,4 @@ export const Files = ({ list }: FilesProps) => list.length > 0
       </div>
     </Container>
   )
-  : null;
+  : null);

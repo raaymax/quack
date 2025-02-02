@@ -2,14 +2,24 @@ import type { Meta, StoryObj } from '@storybook/react';
  
 import '../../styles.ts';
 import { ButtonWithEmoji } from '../../js/components/molecules/ButtonWithEmoji';
+import { AppModel } from '../../js/core/models/app.ts';
+import { AppProvider } from '../../js/components/contexts/appState.tsx';
 
-import { store, methods} from '../../js/store';
+const app = new AppModel();
+app.emojis.upsert({
+  empty: false,
+  unicode: "😀",
+  shortname: ":smile:",
+  category: "people",
+});
 
 const meta: Meta<typeof ButtonWithEmoji> = {
   component: ButtonWithEmoji,
-  loaders: [async () => {
-    store.dispatch(methods.emojis.load({}));
-  }],
+  decorators: [
+    (Story) => (
+      <AppProvider value={app}><Story /></AppProvider>
+    ),
+  ],
 };
  
 export default meta;

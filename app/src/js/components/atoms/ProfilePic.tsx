@@ -1,7 +1,8 @@
 import { ClassNames, cn } from '../../utils';
-import { useUser } from '../../store';
-import { getUrl } from '../../services/file';
 import styled from 'styled-components';
+import { observer } from 'mobx-react-lite';
+import { useApp } from '../contexts/appState';
+import { client } from '../../core';
 
 const Pic = styled.div`
   position: relative;
@@ -33,6 +34,11 @@ const Pic = styled.div`
     .image {
       border-radius: 8px;
     }
+    .status-ball {
+      bottom: -1px;
+      right: -1px;
+    }
+
   }
   &.status {
     width: 24px;
@@ -40,7 +46,7 @@ const Pic = styled.div`
     .image {
       border-radius: 4px;
     }
-    .status {
+    .status-ball {
       width: 4px;
       height: 4px;
     }
@@ -67,7 +73,7 @@ const Pic = styled.div`
     }
   }
 
-  .status {
+  .status-ball {
     position: absolute;
     bottom: 0;
     right: 0;
@@ -94,19 +100,19 @@ type NotificationProps = {
   showStatus?: boolean;
 }
 
-export const ProfilePic = ({ type = 'regular', showStatus = false, userId, className = [] }: NotificationProps) => {
-  const user = useUser(userId);
+export const ProfilePic = observer(({ type = 'regular', showStatus = false, userId, className = [] }: NotificationProps) => {
+  const user = useApp().users.get(userId);
   const status = user?.status || 'inactive';
 
   return (
     <Pic className={cn('avatar', type, {'with-status': showStatus}, className)}>
       <div className="image">
         { user?.avatarFileId
-          ? <img src={getUrl(user?.avatarFileId)} alt='avatar' />
+          ? <img src={client.api.getUrl(user?.avatarFileId)} alt='avatar' />
           : <img src="/avatar.png" alt='avatar' /> }
       </div>
-      {showStatus && <div className={cn('status', status)} />}
+      {showStatus && <div className={cn('status-ball', status)} />}
     </Pic>
   );
-};
+});
 

@@ -7,6 +7,7 @@ import { ThreadLink } from './ThreadLink';
 import { ActionButton } from '../atoms/ActionButton';
 import * as types from '../../types';
 import { Wrap } from '../atoms/Wrap';
+import { observer } from 'mobx-react-lite';
 
 function is<T extends types.MessageBodyPart>(body: types.MessageBodyPart, key: string): body is T {
   return (body as T)[key as keyof T] !== undefined;
@@ -17,7 +18,7 @@ type MessageBodyRendererProps = {
   opts?: {emojiOnly?: boolean};
 }
 
-export const MessageBodyRenderer = ({
+export const MessageBodyRenderer = observer(({
   body,
   opts,
 }: MessageBodyRendererProps): React.ReactNode => {
@@ -48,4 +49,4 @@ export const MessageBodyRenderer = ({
   if (is<types.MessageBodyWrap>(body, 'wrap')) return <Wrap><MessageBodyRenderer body={body.wrap} opts={opts} /></Wrap>
   if (is<types.MessageBodyColumn>(body, 'column')) return <div style={{width: body._width+ 'px', flex: '0 0 ' + body._width+ 'px'}}><MessageBodyRenderer body={body.column} opts={opts} /></div>
   return <>Unknown part: {JSON.stringify(body)}</>;
-};
+});

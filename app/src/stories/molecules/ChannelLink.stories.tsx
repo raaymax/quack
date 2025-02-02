@@ -2,12 +2,25 @@ import type { Meta, StoryObj } from '@storybook/react';
  
 import '../../styles.ts';
 import { ChannelLink } from '../../js/components/molecules/ChannelLink';
-import { store, actions } from '../../js/store';
+import { AppModel } from '../../js/core/models/app.ts';
+import { AppProvider } from '../../js/components/contexts/appState.tsx';
+
+const app = new AppModel();
 
 const meta: Meta<typeof ChannelLink> = {
   component: ChannelLink,
+  decorators: [
+    (Story) => (
+      <AppProvider value={app}><Story /></AppProvider>
+    ),
+  ],
   loaders: [async () => {
-    store.dispatch(actions.channels.add({ id: 'channelId', name: 'SuperChannel', users: [], channelType: 'PUBLIC' }));
+    app.channels.upsert({
+      id: 'channelId',
+      name: 'SuperChannel',
+      users: [],
+      channelType: 'PUBLIC',
+    });
   }],
 };
  

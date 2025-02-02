@@ -16,6 +16,19 @@ export const Regular: Story = {
     type: 'regular',
   },
 };
+export const Personal: Story = {
+  args: {
+    userId: '1',
+    type: 'personal',
+  },
+};
+export const PersonalStatus: Story = {
+  args: {
+    userId: '1',
+    type: 'personal',
+    showStatus: true,
+  },
+};
 
 export const Status: Story = {
   args: {

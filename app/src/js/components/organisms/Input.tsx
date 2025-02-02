@@ -1,10 +1,8 @@
 import { useCallback, useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { useActions, useDispatch } from '../../store';
 
 import { EmojiDescriptor } from '../../types';
 import { ClassNames, buildEmojiNode, cn, isMobile } from '../../utils';
-import { getUrl } from '../../services/file';
 import { InputProvider } from '../contexts/input';
 import { useInput } from '../contexts/useInput';
 
@@ -19,12 +17,17 @@ import { ButtonWithIcon } from '../molecules/ButtonWithIcon';
 
 import { EmojiSearch } from './EmojiSearch';
 
+import { observer } from 'mobx-react-lite';
+import { InputModel } from '../../core/models/input';
+import { client } from '../../core';
+import { useApp } from '../contexts/appState';
+
 export const InputContainer = styled.div`
   position: relative;
   max-height: 50%;
   max-width: 100%;
   font-size: 16px;
-  margin: 0px 16px 16px 16px;
+  margin: 0px 16px 32px 16px;
   display: flex;
   padding: 0;
   flex-direction: column;
@@ -33,7 +36,7 @@ export const InputContainer = styled.div`
   & > .input-box {
     border: 1px solid ${(props) => props.theme.Strokes};
     background-color: ${(props) => props.theme.Input.Background};
-    padding: 16px;
+    padding: 8px 16px;
     height: 100%;
     border-radius: 8px;
     overflow-y: auto;
@@ -41,7 +44,7 @@ export const InputContainer = styled.div`
     .cta {
       color: ${(props) => props.theme.Labels};
       position: absolute;
-      top: 20px;
+      top: 12px;
       left: 18px;
       font-size: 16px;
       font-style: normal;
@@ -53,7 +56,7 @@ export const InputContainer = styled.div`
     .controls {
       position: absolute;
       right: 16px;
-      top: 16px;
+      top: 8px;
       width: auto;
       height: 32px;
       button {
@@ -129,22 +132,19 @@ export const InputContainer = styled.div`
 
 type InputFormProps = {
   className?: ClassNames,
-  channelId: string,
-  parentId?: string,
+  model: InputModel;
 }
 
-export const InputForm = ({ className, channelId, parentId }: InputFormProps) => {
+export const InputForm = observer(({ className, model }: InputFormProps) => {
+  const app = useApp();
   const [showEmojis, setShowEmojis] = useState(false);
   const {
-    mode, messageId,
     input, onPaste, onInput, onKeyDown, onFileChange, fileInput,
     focus, addFile, insert, send, scope, currentText, wrapMatching,
   } = useInput();
-  const dispatch = useDispatch();
-  const actions = useActions();
 
   const onEmojiInsert = useCallback((emoji: EmojiDescriptor) => {
-    insert(buildEmojiNode(emoji, getUrl));
+    insert(buildEmojiNode(emoji, client.api.getUrl));
     setShowEmojis(!showEmojis);
     focus();
   }, [showEmojis, focus, insert, setShowEmojis]);
@@ -166,7 +166,7 @@ export const InputForm = ({ className, channelId, parentId }: InputFormProps) =>
   }, [input, ctrl]);
 
   return (
-    <InputContainer className={cn(className, mode)}>
+    <InputContainer className={cn(className)}>
       <div className="input-box">
         <div className="scroller">
           <div
@@ -181,26 +181,18 @@ export const InputForm = ({ className, channelId, parentId }: InputFormProps) =>
           {!input.current?.innerHTML && <div className="cta">
             Write here..
           </div>}
-          <Attachments className="input-attachments" />
+          <Attachments model={model.files} className="input-attachments" />
         </div>
         <Toolbar className='controls' size={32}>
           <ButtonWithIcon icon="emojis" onClick={() => setShowEmojis(!showEmojis)} />
           <ButtonWithIcon icon="plus" onClick={addFile} />
-          {mode === 'edit' 
-            ? <>
-              <ButtonWithIcon icon="xmark" onClick={() => dispatch(actions.messages.editClose(messageId))} />
-              <ButtonWithIcon icon="check" onClick={send} />
-            </>
-            : (
-              isMobile() 
-                ? <ButtonWithIcon icon="send" onClick={send} />
-                : null
-            )
-          }
+          {isMobile() 
+            ? <ButtonWithIcon icon="send" onClick={send} />
+            : null}
         </Toolbar>
       </div>
 
-      <StatusLine channelId={channelId} parentId={parentId} />
+      <StatusLine info={app.info} typing={model.thread.typing} />
       <ChannelSelector />
       <UserSelector />
       <EmojiSelector />
@@ -216,18 +208,16 @@ export const InputForm = ({ className, channelId, parentId }: InputFormProps) =>
       />
     </InputContainer>
   );
-};
+});
 
 type InputProps = {
-  mode?: string;
   messageId?: string;
   className?: ClassNames,
-  channelId: string;
-  parentId?: string;
+  model: InputModel;
 };
 
-export const Input = ({ className, ...args }: InputProps) => (
+export const Input = observer(({ className, ...args }: InputProps) => (
   <InputProvider {...args} >
     <InputForm className={className} {...args}/>
   </InputProvider>
-);
+));

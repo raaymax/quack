@@ -17,6 +17,7 @@ export const same = (o1: any, o2: any, fields: string[]): boolean => {
 
 export const isMobile = () => {
   if (localStorage.getItem('isMobile') === 'true') return true;
+  // @ts-ignore
   return Boolean(navigator?.userAgentData?.mobile);
 }
 

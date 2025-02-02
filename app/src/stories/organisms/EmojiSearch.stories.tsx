@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
  
 import '../../styles.ts';
 import { EmojiSearch } from '../../js/components/organisms/EmojiSearch';
-import { store, methods } from '../../js/store';
+import { app } from '../../js/core';
 
  
 const meta: Meta<typeof EmojiSearch> = {
@@ -10,7 +10,7 @@ const meta: Meta<typeof EmojiSearch> = {
   parameters: {
   },
   loaders: [async () => {
-    store.dispatch(methods.emojis.load({}));
+    app.emojis.load()
   }],
 };
  

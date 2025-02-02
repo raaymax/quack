@@ -4,6 +4,7 @@ import { Text } from '../atoms/Text';
 import { useSize } from '../contexts/useSize';
 import { ClassNames } from '../../utils';
 import { Badge } from '../atoms/Badge';
+import { observer } from 'mobx-react-lite';
 
 const StyledButtonWithIcon = styled(ButtonWithIcon)`
   text-align: left;
@@ -31,7 +32,7 @@ type NavButtonProps = {
   children: React.ReactNode;
 }
 
-export const NavButton = ({
+export const NavButton = observer(({
   className, size, icon, badge, onClick, children,
 }: NavButtonProps) => {
   const $size = useSize(size) ?? 50;
@@ -41,4 +42,4 @@ export const NavButton = ({
       {(badge && badge > 0) ? <Badge>{badge}</Badge> : null}
     </StyledButtonWithIcon>
   );
-};
+});

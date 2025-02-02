@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { useCallback } from 'react';
 import { SizeProvider } from '../contexts/size';
 import { cn, ClassNames } from '../../utils';
+import { observer } from 'mobx-react-lite';
 
 export const Container = styled.div<{$size?: number}>`
   display: flex;
@@ -51,7 +52,7 @@ interface ToolbarProps {
   children: React.ReactNode;
 }
 
-export const Toolbar = ({ children, size, className }: ToolbarProps) => {
+export const Toolbar = observer(({ children, size, className }: ToolbarProps) => {
   const stop = useCallback((e: React.SyntheticEvent) => {
     e.stopPropagation();
     e.preventDefault();
@@ -63,4 +64,4 @@ export const Toolbar = ({ children, size, className }: ToolbarProps) => {
       </SizeProvider>
     </Container>
   );
-};
+});
