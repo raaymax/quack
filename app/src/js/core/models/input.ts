@@ -44,6 +44,7 @@ export class InputModel {
 
   send = flow(function*(this: InputModel, html: HTMLElement) {
     const payload: any = fromDom(html);
+    html.innerHTML = '';
     payload.attachments = this.files.toJSON();
     if (payload.flat.length === 0 && payload.attachments.length === 0) return;
     yield this.thread.sendMessage(payload);
