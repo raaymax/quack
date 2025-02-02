@@ -80,7 +80,6 @@ export class ThreadReadReceiptsModel {
         return existing;
       }
       const created = new ReadReceiptModel(r, this.root);
-      console.log(this)
       return created;
     }
     return null;
