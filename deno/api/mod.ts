@@ -3,6 +3,7 @@ import { SSESource } from "@planigale/sse";
 import {
   ApiErrorResponse,
   Channel,
+  Command,
   CreateChannelRequest,
   Emoji,
   Message,
@@ -451,6 +452,21 @@ class API extends EventTarget {
     if (msg.parentId === null) delete data.parentId;
     const res = await this.fetchWithCredentials(
       `/api/channels/${data.channelId}/messages`,
+      {
+        method: "POST",
+        body: JSON.stringify(data),
+      },
+    );
+    if (res.status !== 200) {
+      throw await res.json();
+    }
+    return await res.json();
+  }
+
+  async sendCommand(cmd: Partial<Command>): Promise<any> {
+    const data = { ...cmd };
+    const res = await this.fetchWithCredentials(
+      "/api/commands/execute",
       {
         method: "POST",
         body: JSON.stringify(data),

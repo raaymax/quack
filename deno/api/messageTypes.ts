@@ -117,3 +117,18 @@ export type MessageData = {
 export type EncryptedMessage = BaseMessage & EncryptedData & { secured: true };
 export type FullMessage = BaseMessage & MessageData & { secured: false };
 export type Message = FullMessage | EncryptedMessage;
+
+export type Command = {
+  name: string;
+  text: string;
+  attachments?: Array<{
+    id: string;
+    fileName: string;
+    contentType: string;
+  }>;
+  context: {
+    channelId: string;
+    parentId?: string;
+    appVersion?: string;
+  };
+};
