@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { useSize } from '../contexts/useSize';
 import { cn, ClassNames } from '../../utils';
+import { observer } from 'mobx-react-lite';
 
 type TextProps = {
   className?: ClassNames;
@@ -16,7 +17,7 @@ const StyledText = styled.span`
   display: inline;
 `;
 
-export const Text = ({ size, className, children }: TextProps) => {
+export const Text = observer(({ size, className, children }: TextProps) => {
   const $size = useSize(size);
   return (
     <StyledText className={cn('text', className)} style={$size ? {
@@ -27,4 +28,4 @@ export const Text = ({ size, className, children }: TextProps) => {
       {children}
     </StyledText>
   );
-};
+});

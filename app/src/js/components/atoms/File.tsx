@@ -1,5 +1,6 @@
 import styled from 'styled-components';
-import { getDownloadUrl } from '../../services/file';
+import { observer } from 'mobx-react-lite';
+import { client } from '../../core';
 
 const FileContainer = styled.div`
   cursor: pointer;
@@ -43,7 +44,7 @@ const FileContainer = styled.div`
 `;
 
 const download = async (fileId: string) => {
-  window.open(getDownloadUrl(fileId));
+  window.open(client.api.getDownloadUrl(fileId));
 };
 
 type FileProps = {
@@ -55,9 +56,9 @@ type FileProps = {
   };
 };
 
-export const File = ({ data: { fileName, contentType, id } }: FileProps) => (
+export const File = observer(({ data: { fileName, contentType, id } }: FileProps) => (
   <FileContainer data-id={id} onClick={() => id && download(id)}>
     <div className='type'><i className='fa-solid fa-file' /></div>
     <div className='name'>{fileName} [{contentType}]</div>
   </FileContainer>
-);
+));

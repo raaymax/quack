@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { Icon } from './Icon';
 import { useThemeControl } from '../contexts/useThemeControl';
+import { observer } from 'mobx-react-lite';
 
 const Container = styled.div`
   padding: 12px;
@@ -61,7 +62,7 @@ type ThemeButtonProps = {
   active: string
 };
 
-export const ThemeButton = ({themes, active, onClick}: ThemeButtonProps) => {
+export const ThemeButton = observer(({themes, active, onClick}: ThemeButtonProps) => {
   const current = themes[active];
   return (
     <Container onClick={onClick}>
@@ -79,7 +80,7 @@ export const ThemeButton = ({themes, active, onClick}: ThemeButtonProps) => {
 
     </Container>
   );
-}
+})
 
 export const ThemeButtonS = () => {
   const themeControl = useThemeControl();

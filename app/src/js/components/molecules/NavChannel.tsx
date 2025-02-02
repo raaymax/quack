@@ -1,11 +1,14 @@
 import { useEffect } from 'react';
 import styled from 'styled-components';
-import { useDispatch, useMethods, useSelector } from '../../store';
 import { Badge } from '../atoms/Badge';
 import { TextWithIcon } from './TextWithIcon';
 import { cn, ClassNames } from '../../utils';
 import { Tooltip } from '../atoms/Tooltip';
 import { User } from '../../types';
+import { observer } from 'mobx-react-lite';
+import { useApp } from '../contexts/appState';
+import type { ChannelModel } from '../../core/models/channel';
+import { ReadReceiptModel } from '../../core/models/readReceipt';
 
 const TagContainer = styled.div`
   font-size: 16px;
@@ -18,9 +21,9 @@ const TagContainer = styled.div`
   margin-left: 12px;
 `;
 
-const Tag = ({ children, tooltip }: { children: React.ReactNode, tooltip: string | string[] }) => (
+const Tag = observer(({ children, tooltip }: { children: React.ReactNode, tooltip: string | string[] }) => (
   <TagContainer><Tooltip text={tooltip}>{children}</Tooltip></TagContainer>
-);
+));
 
 const Container = styled.div`
   display: flex;
@@ -47,55 +50,36 @@ const Container = styled.div`
 type InlineChannelProps = {
   id: string;
   children: React.ReactNode;
-  badge?: number;
+  badge?: ReadReceiptModel | null;
   className?: ClassNames;
   onClick?: () => void;
   icon?: string;
   secured?: boolean;
 };
 
-export const InlineChannel = ({
+export const InlineChannel = observer(({
   id, children, badge, className, onClick, icon = 'fa-solid fa-hashtag', secured
 }: InlineChannelProps) => (
   <Container className={cn('channel', 'inline-channel', className)} data-id={id} onClick={onClick}>
     <TextWithIcon icon={icon}>{children}</TextWithIcon>
-    {(badge && badge > 0) ? <Badge>{badge}</Badge> : null}
+    {(badge && badge.count > 0) ? <Badge>{badge.count}</Badge> : null}
     {secured ? <Tag tooltip={["Messages in this channel are encrypted", "using your password", "Files encription not yet implemented"]}>E2EE</Tag> : null}
   </Container>
-);
+));
 
 type DirectChannelProps = {
-  channel: {
-    id: string;
-    name: string;
-    channelType: 'DIRECT' | 'PRIVATE' | 'PUBLIC';
-    users: string[];
-  };
-  badge?: number;
+  channel: ChannelModel;
+  badge?: ReadReceiptModel | null;
   onClick?: () => void;
   className?: ClassNames;
 };
 
-const DirectChannel = ({
+const DirectChannel = observer(({
   channel, badge, onClick, className,
 }: DirectChannelProps) => {
-  const me = useSelector((state) => state.me);
-  let other = channel.users.find((u) => u !== me);
-  if (!other) [other] = channel.users;
-  const user: User = useSelector((state) => state.users[other ?? '']);
-  const secured = channel.channelType === 'DIRECT';
-  if (!user) {
-    return (
-      <InlineChannel
-        className={className}
-        id={channel.id}
-        onClick={onClick}
-        badge={badge}
-        secured={secured}>
-        {channel.name}
-      </InlineChannel>
-    );
-  }
+  const user: User | null = channel.otherUser || channel.user;
+  const secured = channel.isDirect;
+  if (!user) return null; 
   const active = user.lastSeen && new Date(user.lastSeen).getTime() > Date.now() - 1000 * 60 * 5;
   return (
     <InlineChannel
@@ -112,31 +96,29 @@ const DirectChannel = ({
       {user.name}
     </InlineChannel>
    );
-};
+});
 
 type ChannelProps = {
   channelId: string;
   onClick?: () => void;
   icon?: string;
-  badge?: number;
+  badge?: ReadReceiptModel | null;
   className?: ClassNames;
 };
 
-export const Channel = ({
+export const Channel = observer(({
   channelId: id, onClick, icon, badge, className,
 }: ChannelProps) => {
-  const dispatch = useDispatch();
-  const methods = useMethods();
-  const channel = useSelector((state) => state.channels[id]);
+  const app = useApp();
+  const channel = app.channels.get(id)
   useEffect(() => {
     if (!channel) {
-      dispatch(methods.channels.find(id));
+      app.channels.find(id);
     }
-  }, [id, channel, methods, dispatch]);
-  const { name, private: priv, direct } = channel || {};
+  }, [id, channel]);
   let ico = icon;
-  if (priv) ico = 'fa-solid fa-lock';
-  if (direct) return (<DirectChannel className={className} channel={channel || {}} onClick={onClick} badge={badge} />);
+  if (channel?.isPrivate) ico = 'fa-solid fa-lock';
+  if (channel?.isDirect) return (<DirectChannel className={className} channel={channel} onClick={onClick} badge={badge} />);
   return (
     <InlineChannel
       className={className}
@@ -145,9 +127,9 @@ export const Channel = ({
       icon={ico}
       badge={badge}
     >
-      {name}
+      {channel?.name ?? id}
     </InlineChannel>
   );
-};
+});
 
 export const NavChannel = Channel;

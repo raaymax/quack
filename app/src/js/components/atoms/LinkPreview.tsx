@@ -1,4 +1,6 @@
 import styled from 'styled-components';
+import { observer } from 'mobx-react-lite';
+
 
 const Container = styled.div`
   display: flex;
@@ -60,7 +62,7 @@ type LinkPreviewProps = {
   link: Link;
 };
 
-export const LinkPreview = ({ link }: LinkPreviewProps) => (
+export const LinkPreview = observer(({ link }: LinkPreviewProps) => (
   <Link className='link-preview' onClick={() => window.open(link.url, '_blank')?.focus()}
     $image={link.images[0]}>
     {link.images?.length && <div className='image' />}
@@ -69,13 +71,13 @@ export const LinkPreview = ({ link }: LinkPreviewProps) => (
       <p>{link.description}</p>
     </div>
   </Link>
-);
+));
 
 type LinkPreviewListProps = {
   links: Link[];
 };
 
-export const LinkPreviewList = ({ links = [] }: LinkPreviewListProps) => links.length > 0
+export const LinkPreviewList = observer(({ links = [] }: LinkPreviewListProps) => links.length > 0
   ? (
     <Container className="cmp-link-preview-list">
       {links.map((link, key) => (
@@ -83,4 +85,4 @@ export const LinkPreviewList = ({ links = [] }: LinkPreviewListProps) => links.l
       ))}
     </Container>
   )
-  : null;
+  : null);

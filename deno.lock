@@ -11,16 +11,20 @@
     "jsr:@planigale/body-parser@*": "0.2.1",
     "jsr:@planigale/body-parser@0.2.1": "0.2.1",
     "jsr:@planigale/planigale@*": "0.6.9",
+    "jsr:@planigale/planigale@0.6.10": "0.6.10",
     "jsr:@planigale/planigale@0.6.9": "0.6.9",
     "jsr:@planigale/planigale@~0.6.3": "0.6.9",
-    "jsr:@planigale/planigale@~0.6.4": "0.6.9",
-    "jsr:@planigale/planigale@~0.6.5": "0.6.9",
-    "jsr:@planigale/planigale@~0.6.8": "0.6.9",
+    "jsr:@planigale/planigale@~0.6.4": "0.6.10",
+    "jsr:@planigale/planigale@~0.6.5": "0.6.10",
+    "jsr:@planigale/planigale@~0.6.8": "0.6.10",
     "jsr:@planigale/querystring@0.1": "0.1.0",
     "jsr:@planigale/schema@*": "0.1.4",
+    "jsr:@planigale/schema@0.1.4": "0.1.4",
     "jsr:@planigale/sse@*": "0.2.4",
+    "jsr:@planigale/sse@0.2.5": "0.2.5",
     "jsr:@planigale/sse@~0.2.2": "0.2.4",
-    "jsr:@planigale/sse@~0.2.4": "0.2.4",
+    "jsr:@planigale/sse@~0.2.4": "0.2.5",
+    "jsr:@planigale/sse@~0.2.5": "0.2.5",
     "jsr:@planigale/testing@*": "0.3.5",
     "jsr:@planigale/testing@0.3.5": "0.3.5",
     "jsr:@std/assert@0.221": "0.221.0",
@@ -221,6 +225,16 @@
         "jsr:@std/path@1.0.1"
       ]
     },
+    "@planigale/planigale@0.6.10": {
+      "integrity": "10ce298b6545fae51f0c33215ff14272f6183647519678e55dfce5c7efff9c8b",
+      "dependencies": [
+        "jsr:@planigale/querystring",
+        "jsr:@planigale/sse@~0.2.5",
+        "jsr:@std/http@~0.224.5",
+        "jsr:@std/media-types@1.0.2",
+        "jsr:@std/path@1.0.1"
+      ]
+    },
     "@planigale/querystring@0.1.0": {
       "integrity": "1fa1c9a6f81a5501e61501d8a4c6e75690ec45aa4a39b940c45ed051089c769c"
     },
@@ -233,6 +247,12 @@
     },
     "@planigale/sse@0.2.4": {
       "integrity": "9be347ae06c5a3c9bbe5d3097aa5ef1d0040c19fdff23675a8f600179ffe4351",
+      "dependencies": [
+        "jsr:@std/streams"
+      ]
+    },
+    "@planigale/sse@0.2.5": {
+      "integrity": "ff0b54d16c869845bd53a566a5518c068aa706328683559b31efc74b039d8667",
       "dependencies": [
         "jsr:@std/streams"
       ]
@@ -6287,9 +6307,9 @@
   "workspace": {
     "dependencies": [
       "jsr:@planigale/body-parser@0.2.1",
-      "jsr:@planigale/planigale@0.6.9",
-      "jsr:@planigale/schema@*",
-      "jsr:@planigale/sse@*",
+      "jsr:@planigale/planigale@0.6.10",
+      "jsr:@planigale/schema@0.1.4",
+      "jsr:@planigale/sse@0.2.5",
       "jsr:@planigale/testing@0.3.5",
       "jsr:@std/assert@1.0.10",
       "jsr:@std/encoding@1.0.6",
@@ -6352,7 +6372,7 @@
             "npm:@types/workbox-sw@4.3.7",
             "npm:@vitejs/plugin-basic-ssl@1.2.0",
             "npm:@vitejs/plugin-react@^4.2.1",
-            "npm:chromatic@11.18.1",
+            "npm:chromatic@11.22.2",
             "npm:eslint-plugin-react-hooks@^4.6.0",
             "npm:eslint-plugin-react-refresh@~0.4.5",
             "npm:eslint-plugin-react@7.37.1",
@@ -6360,6 +6380,8 @@
             "npm:eslint@^8.55.0",
             "npm:filesize@10.1.6",
             "npm:fuse.js@7.0.0",
+            "npm:mobx-react-lite@4.1.0",
+            "npm:mobx@6.13.5",
             "npm:react-dom@18.2.0",
             "npm:react-redux@9.1.0",
             "npm:react-router-dom@6.26.2",

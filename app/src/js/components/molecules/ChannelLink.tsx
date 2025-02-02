@@ -1,9 +1,8 @@
 import { useEffect } from 'react';
 import styled from 'styled-components';
-import {
-  useActions, useDispatch, useMethods, useSelector,
-} from '../../store';
 import { Icon } from '../atoms/Icon';
+import { observer } from 'mobx-react-lite';
+import { useApp } from '../contexts/appState';
 
 const StyledChannelLink = styled.a`
   span {
@@ -15,22 +14,18 @@ type ChannelInlineProps = {
   channelId: string;
 };
 
-export const ChannelLink = ({ channelId: id }: ChannelInlineProps) => {
-  const dispatch = useDispatch();
-  const methods = useMethods();
-  const actions = useActions();
-  const channel = useSelector((state) => state.channels[id]);
+export const ChannelLink = observer(({ channelId: id }: ChannelInlineProps) => {
+  const app = useApp();
+  const channel = app.channels.get(id)
   useEffect(() => {
     if (!channel) {
-      dispatch(methods.channels.find(id));
+      app.channels.find(id);
     }
-  }, [id, channel, methods, dispatch]);
+  }, [id, channel]);
   return (
-    <StyledChannelLink className='channel' data-id={id} href={`#${channel?.id || id}`} onClick={() => {
-      dispatch(actions.view.set(null));
-    }} >
-      { channel?.private ? <Icon icon='lock' /> : <Icon icon="hash" /> }
+    <StyledChannelLink className='channel' data-id={id} href={`#${channel?.id || id}`} >
+      { channel?.isPrivate ? <Icon icon='lock' /> : <Icon icon="hash" /> }
       <span className='name'>{channel?.name || channel?.id || id}</span>
     </StyledChannelLink>
   );
-};
+});

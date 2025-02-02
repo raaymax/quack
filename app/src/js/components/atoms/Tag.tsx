@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { ClassNames, cn } from '../../utils';
+import { observer } from 'mobx-react-lite';
 
 const StyledTag = styled.div`
   display: inline-block;
@@ -20,8 +21,8 @@ type TagProps = {
   className?: ClassNames;
 };
 
-export const Tag = ({ className, onClick, children }: TagProps) => (
+export const Tag = observer(({ className, onClick, children }: TagProps) => (
   <StyledTag className={cn('tag', className)} onClick={onClick}>
     {children}
   </StyledTag>
-);
+));

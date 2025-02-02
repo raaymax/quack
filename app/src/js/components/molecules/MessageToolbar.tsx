@@ -1,16 +1,12 @@
 import { useState, useCallback, useEffect } from 'react';
 import styled from 'styled-components';
-import {
-  useActions, useDispatch, useMethods, useSelector,
-} from '../../store';
-import { removeMessage } from '../../services/messages';
 import { useHovered } from '../contexts/useHovered';
-import { useMessageUser } from '../contexts/useMessageUser';
-import { useMessageData } from '../contexts/useMessageData';
 import { Toolbar } from '../atoms/Toolbar';
 import { ButtonWithEmoji } from './ButtonWithEmoji';
 import { ButtonWithIcon } from './ButtonWithIcon';
 import { useParams } from 'react-router-dom';
+import { observer } from 'mobx-react-lite';
+import { MessageModel } from '../../core/models/message';
 
 export const Container = styled.div`
   position: absolute;
@@ -51,42 +47,39 @@ export const Container = styled.div`
   }
 `;
 
-export const MessageToolbar = ({navigate}: {navigate: (path: string) => void}) => {
-  const message = useMessageData();
-  const user = useMessageUser();
-  const { id, pinned, channelId } = message;
+type MessageToolbarProps = {
+  navigate: (path: string) => void;
+  messageModel: MessageModel;
+};
+
+export const MessageToolbar = observer(({navigate, messageModel}: MessageToolbarProps) => {
   const [view, setView] = useState<string | null>(null);
-  const dispatch = useDispatch();
-  const methods = useMethods();
-  const actions = useActions();
   const {parentId} = useParams();
   const onDelete = useCallback(() => {
-    if (id) dispatch(removeMessage({ id }));
-  }, [dispatch, id]);
-
-  const meId = useSelector((state) => state.me);
-  const isMe = user?.id === meId;
+    if (messageModel) messageModel.remove();
+  }, [messageModel]);
+  const { isMine } = messageModel;
   const [hovered] = useHovered();
 
   useEffect(() => setView(null), [hovered]);
 
-  if (hovered !== id) return null;
+  if (hovered !== messageModel.id) return null;
 
   const reaction = (emoji: string) => (
     <ButtonWithEmoji
       key={emoji}
       emoji={emoji}
-      onClick={() => dispatch(methods.messages.addReaction({ id, text: emoji }))} />
+      onClick={() => messageModel.addReaction(emoji)} />
   );
   const deleteButton = () => <ButtonWithIcon key='del' icon="delete" onClick={() => setView('delete')} />;
   const confirmDelete = () => <ButtonWithIcon key='confirm_del' icon="check:danger" onClick={onDelete} />;
   const cancelButton = () => <ButtonWithIcon key='cancel' icon="circle-xmark" onClick={() => setView(null)} />;
-  const editButton = () => <ButtonWithIcon disabled={true} tooltip="Not yet available" key='edit' icon="edit" onClick={() => dispatch(actions.messages.toggleEdit(id))} />
+  const editButton = () => <ButtonWithIcon disabled={true} tooltip="Not yet available" key='edit' icon="edit" onClick={() => null} />
   const openReactions = () => <ButtonWithIcon key='reactions' icon="icons" onClick={() => setView('reactions')} />;
-  const pinButton = () => <ButtonWithIcon key='pin' icon="thumbtack" onClick={() => dispatch(methods.pins.pin({ id, channelId }))} />;
-  const unpinButton = () => <ButtonWithIcon key='unpin' icon="thumbtack" onClick={() => dispatch(methods.pins.unpin({ id, channelId }))} />;
+  const pinButton = () => <ButtonWithIcon key='pin' icon="thumbtack" onClick={() => messageModel.pin()} />;
+  const unpinButton = () => <ButtonWithIcon key='unpin' icon="thumbtack" onClick={() => messageModel.unpin()} />;
   const replyButton = () => <ButtonWithIcon key='reply' icon="reply" onClick={() => {
-    navigate(`/${channelId}/t/${id}`);
+    navigate(`/${messageModel.channelId}/t/${messageModel.id}`);
   }} />;
 
   return (
@@ -107,13 +100,13 @@ export const MessageToolbar = ({navigate}: {navigate: (path: string) => void}) =
         ]}
         {view === null && [
           openReactions(),
-          isMe && editButton(),
-          isMe && deleteButton(),
-          pinned ? unpinButton() : pinButton(),
+          isMine && editButton(),
+          isMine && deleteButton(),
+          messageModel.pinned ? unpinButton() : pinButton(),
           !parentId && replyButton(),
         ]}
 
       </Toolbar>
     </Container>
   );
-};
+});

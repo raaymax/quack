@@ -1,17 +1,14 @@
 import styled from 'styled-components';
-import {
-  useBadges,
-  useSelector,
-  useUsers,
-} from '../../store';
 import { NavButton } from './NavButton';
 import { ClassNames, cn, isMobile } from '../../utils';
 import { client } from '../../core';
 import { User } from '../../types';
-import { useDirectChannel } from '../contexts/useDirectChannel';
 import { ProfilePic } from '../atoms/ProfilePic';
 import { useSidebar } from '../contexts/useSidebar';
 import { useNavigate, useParams } from 'react-router-dom';
+import { observer } from 'mobx-react-lite';
+import { useApp } from '../contexts/appState';
+import { ReadReceiptModel, ReadReceiptsModel } from '../../core/models/readReceipt';
 
 const UserListContainer = styled.div`
 
@@ -68,17 +65,17 @@ type NavUserButtonProps = {
     lastSeen?: string;
   };
   size?: number;
-  badge: number;
+  badge: ReadReceiptModel | null;
   className?: ClassNames;
   onClick: () => void;
 };
 
-export const NavUserButton = ({
+export const NavUserButton = observer(({
   user, size, badge, className, onClick,
 }: NavUserButtonProps) => {
   if (user.system) {
     return (
-      <NavButton className={cn('user', className)} size={size} data-id={user.id} onClick={onClick} badge={badge}>
+      <NavButton className={cn('user', className)} size={size} data-id={user.id} onClick={onClick} badge={badge?.count ?? 0}>
         <ProfilePic type='status' userId={user.id} showStatus={false} className="pic-inline" />
         <span className='name'>
         {user.name}
@@ -94,16 +91,17 @@ export const NavUserButton = ({
       recent: Boolean(active),
       system: user.system ?? false,
     }, className)}
-    data-id={user.id} onClick={onClick} badge={badge}>
+    data-id={user.id} onClick={onClick} badge={badge?.count ?? 0}>
       <ProfilePic type='status' userId={user.id} showStatus={true} className="pic-inline" />
       <span className='name'>
       {user.name}
       </span>
     </NavButton>);
-};
+});
 
-const NavUserContainer = ({user, badges}: {user: User, badges: Record<string, number>}) => {
-  const channel = useDirectChannel(user.id);
+const NavUserContainer = observer(({user, badges}: {user: User, badges: ReadReceiptsModel}) => {
+  const app = useApp();
+  const channel = app.channels.getDirect(user.id)
   let navigate = (_path: string) => {};
   try { navigate = useNavigate(); }catch {/*ignore*/}
   const {channelId: id} = useParams();
@@ -112,7 +110,7 @@ const NavUserContainer = ({user, badges}: {user: User, badges: Record<string, nu
     size={30}
     user={user}
     className={{ active: id === channel?.id }}
-    badge={channel ? badges[channel.id] : 0}
+    badge={badges.getForChannel(channel?.id)}
     onClick={async () => {
       const channel = await client.api.putDirectChannel(user.id);
       if ( isMobile() ) {
@@ -121,24 +119,24 @@ const NavUserContainer = ({user, badges}: {user: User, badges: Record<string, nu
       navigate(`/${channel.id}`);
     }}
   />
-}
+})
 
-export const NavUsers = () => {
-  const users = useUsers();
-  const userId = useSelector((state) => state.me);
-  const badges = useBadges(userId);
+export const NavUsers = observer(() => {
+  const app = useApp();
+  const users = app.users.getAll();
+
   return (
     <UserListContainer>
       <div className='header'>
         <span className='title'>users</span>
       </div>
-      { users && users.filter(u => !u.hidden).map((user) => (
+      { users && users.map((user) => (
         <NavUserContainer
           key={user.id}
           user={user}
-          badges={badges}
+          badges={app.readReceipts}
           />
       ))}
     </UserListContainer>
   );
-};
+});

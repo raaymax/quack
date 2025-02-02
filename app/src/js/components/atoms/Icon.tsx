@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { useSize } from '../contexts/useSize';
 import { cn, ClassNames } from '../../utils';
-
+import { observer } from 'mobx-react-lite';
 
 const StyledIcon = styled.i`
   margin: auto;
@@ -54,7 +54,7 @@ type IconProps = {
   size?: number;
 }
 
-export const Icon = ({ size, className, icon = 'star' }: IconProps) => {
+export const Icon = observer(({ size, className, icon = 'star' }: IconProps) => {
   const $size = useSize(size);
   return (
     <StyledIcon className={cn('icon', getIcon(icon), className)} style={$size ? {
@@ -64,4 +64,4 @@ export const Icon = ({ size, className, icon = 'star' }: IconProps) => {
       fontSize: `${$size}px`,
     } : undefined} />
   );
-};
+});

@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { cn, ClassNames } from '../../utils';
 import { Icon } from './Icon';
 import { useState, useEffect } from 'react';
+import { observer } from 'mobx-react-lite';
 
 const Container = styled.div`
   position: relative;
@@ -43,7 +44,7 @@ type SearchBoxProps = {
   placeholder?: string;
 }
 
-export const SearchBox = ({
+export const SearchBox = observer(({
   placeholder = 'Search here...', className, onSearch, onChange, value: v, defaultValue
 }: SearchBoxProps) => {
   const [value, setValue] = useState(defaultValue ?? '');
@@ -66,4 +67,4 @@ export const SearchBox = ({
     <Icon size={16} icon="search" />
   </Container>
   );
-};
+});

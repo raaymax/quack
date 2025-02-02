@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 import { cn } from "../../utils";
 import styled from "styled-components";
+import { observer } from "mobx-react-lite";
 
 const Container = styled.div`
   position: relative;
@@ -16,7 +17,7 @@ const Container = styled.div`
   }
 `;
 
-export const Resizer = ({value, onChange}: {value: number, onChange: (v: number ) => void}) => {
+export const Resizer = observer(({value, onChange}: {value: number, onChange: (v: number ) => void}) => {
   const [prevPos, setPrevPos] = useState<number | null>(null);
   const [dragging, setDragging] = useState<boolean>(false);
   const startDrag = useCallback((e: React.DragEvent) => {
@@ -44,4 +45,4 @@ export const Resizer = ({value, onChange}: {value: number, onChange: (v: number 
       <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAwAB/ckM3ZIAAAAASUVORK5CYII=" id="void"/>
     </Container>
   )
-}
+});

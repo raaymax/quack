@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import styled from 'styled-components';
-import { useMethods, useDispatch } from '../../store';
+import { observer } from 'mobx-react-lite';
+import { useApp } from '../contexts/appState';
 
 const NewChannelContainer = styled.div`
   width: 100%;
@@ -46,16 +47,15 @@ const NewChannelContainer = styled.div`
 `;
 
 // FIXME: extract inputs into atoms? use atom button
-export const ChannelCreate = () => {
+export const ChannelCreate = observer(() => {
   const [name, setName] = useState('');
-  const dispatch = useDispatch();
-  const methods = useMethods();
+  const app = useApp();
   const submit = useCallback((e: React.ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    dispatch(methods.channels.create({ name }));
+    app.channels.create({ name });
     setName('');
-  }, [methods, name, setName]);
+  }, [app, name, setName]);
   return (
     <NewChannelContainer>
       <form action="#" onSubmit={submit}>
@@ -66,4 +66,4 @@ export const ChannelCreate = () => {
       </form>
     </NewChannelContainer>
   );
-};
+});

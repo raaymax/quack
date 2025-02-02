@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { Button } from '../atoms/Button';
 import { useRouteError } from 'react-router-dom';
 import { ApiError } from '../../core';
-import { PageNotFoundError } from '../errors';
+import { InitFailedError, PageNotFoundError } from '../errors';
 
 const Container = styled.div`
   color: ${({ theme }) => theme.Text};
@@ -113,6 +113,12 @@ export const ErrorPage = ({title, debug, buttons=['back'], description}: ErrorPa
 
 export const ErrorPageS = () => {
   let error = useRouteError();
+  if (error instanceof InitFailedError) {
+    return <ErrorPage 
+      title="Failed to initialize"
+      description="We couldn't load the app, please try again."
+      buttons={['retry']} />;
+  }
   if (error instanceof PageNotFoundError) {
     return <ErrorPage 
       title="404"

@@ -1,10 +1,8 @@
-import { useMemo } from 'react';
 import { filesize } from 'filesize';
 import styled from 'styled-components';
-import { useDispatch, useSelector } from '../../store';
-import { abort } from '../../services/file';
-import { useMessageListArgs } from '../contexts/useMessageListArgs';
 import { ClassNames, cn } from '../../utils';
+import { observer } from 'mobx-react-lite';
+import { FileModel, FilesModel } from '../../core/models/files';
 
 const Container = styled.div`
   .attachment-list {
@@ -113,61 +111,47 @@ const Container = styled.div`
 `;
 
 type AttachmentProps = {
-  data: {
-    fileName: string;
-    contentType: string;
-    fileSize: number;
-    progress: number;
-    status: string;
-  };
+  model: FileModel;
   onDelete: () => void;
 };
 
-export const Attachment = ({
-  data: {
-    fileName, contentType, progress, status, fileSize,
-  },
+export const Attachment = observer(({
+  model,
   onDelete,
 }: AttachmentProps) => (
   <div className='attachment'>
     <div className='attachment-box'>
       <div className='type'><img src="/attachment.svg" /> </div>
       <div className='text'>
-        <div className='name'>{fileName}</div>
-        <div className='description'>{contentType} {filesize(fileSize)}</div>
+        <div className='name'>{model.fileName}</div>
+        <div className='description'>{model.contentType} {filesize(model.fileSize)}</div>
       </div>
-      <div className={status === 'ok' ? 'progress done' : 'progress'} style={{ width: `${progress}%` }} />
+      <div className={model.status === 'ok' ? 'progress done' : 'progress'} style={{ width: `${model.progress}%` }} />
     </div>
     <div className='remove' onClick={onDelete}><i className='fa-solid fa-xmark' /></div>
   </div>
-);
+));
 
-export const Attachments = ({className}: {className?:ClassNames}) => {
-  const [args] = useMessageListArgs();
-  const files = useSelector((state) => state.files);
-  const list = useMemo(() => files.filter((file) => file.streamId === args.id), [files, args.id]);
-  const dispatch = useDispatch();
-
-  //const totalSize = list.reduce((acc, file) => acc + file.fileSize, 1);
-  //const progress = list.reduce((acc, file) => acc + file.progress * file.fileSize, 1) / totalSize;
-  const hasFiles = list.length > 0;
+export const Attachments = observer(({className, model}: {className?:ClassNames, model: FilesModel}) => {
+  console.log('Attachments', model);
+  const files = model.getAll();
+  const hasFiles = files.length > 0;
 
   return (
     <Container className={cn(className)}>
       {hasFiles && 
         <div className='attachment-list'>
-          {list.map((file) => (
+          {files.map((file) => (
             <Attachment
               key={file.clientId}
-              data={{ ...file }}
+              model={file}
               onDelete={() => {
-                dispatch(abort(file.clientId));
+                model.abort(file.clientId);
               }}
             />
           ))}
         </div>
       }
-      {/*<div className={status === 'ok' ? 'progress done' : 'progress'} style={{ width: `${progress}%` }} />*/}
     </Container>
   );
-};
+});
