@@ -58,7 +58,7 @@
     "eslint-plugin-react-refresh": "^0.4.5",
     "eslint-plugin-storybook": "0.11.1",
     "storybook": "8.4.7",
-    "vite": "^5.0.12",
+    "vite": "^5.4.12",
     "vite-plugin-http2-proxy": "0.4.3",
     "vite-plugin-pwa": "0.17.4"
   }
