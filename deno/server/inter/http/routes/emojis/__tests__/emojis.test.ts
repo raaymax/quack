@@ -34,6 +34,9 @@ Deno.test("Adding emojis and listing them", async () => {
     try {
       await Chat.init(repo, agent)
         .login("member")
+        .createChannel({
+          name: "test-emoji-creation",
+        })
         .connectSSE()
         .executeCommand("/emoji :smile:", [{
           id: fileId,

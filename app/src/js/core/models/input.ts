@@ -3,6 +3,7 @@ import type { AppModel } from "./app";
 import { FilesModel } from "./files";
 import { ThreadModel } from "./thread";
 import { fromDom } from "../../serializer";
+import { client } from "../client";
 
 
 type InputModelOptions = {
@@ -47,7 +48,20 @@ export class InputModel {
     html.innerHTML = '';
     payload.attachments = this.files.toJSON();
     if (payload.flat.length === 0 && payload.attachments.length === 0) return;
-    yield this.thread.sendMessage(payload);
+    const m = payload.flat.match('/([^ ]+)( (.*))?')
+    if(m) {
+      yield client.api.sendCommand({
+        name: m[1],
+        text: m[3] ?? '',
+        attachments: payload.attachments,
+        context: {
+          channelId: this.channelId,
+          parentId: this.parentId || undefined,
+        }
+      })
+    }else{
+      yield this.thread.sendMessage(payload);
+    }
     this.files.clear();
   });
 }

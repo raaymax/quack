@@ -539,24 +539,22 @@ export class Chat {
     test?: (...args: any) => any,
   ) {
     this.steps.push(async () => {
+      if (!this.channelId) {
+        throw new Error("Channel ID is not set");
+      }
       const [name, ...args] = command.split(" ");
       const text = args.join(" ");
-      const res = await this.agent.request()
-        .post("/api/commands/execute")
-        .json({
-          name,
-          text,
-          attachments,
-          context: {
-            channelId: this.channelId,
-            appVersion: this.appVersion,
-          },
-        })
-        .header("Authorization", `Bearer ${this.token}`)
-        .expect(200);
-      const json = res.status === 204 ? {} : await res.json();
+      const json = await this.api.sendCommand({
+        name,
+        text,
+        attachments,
+        context: {
+          channelId: this.channelId,
+          appVersion: this.appVersion,
+        },
+      });
       await test?.({
-        status: res.status,
+        status: "ok",
         json,
         channelId: this.channelId,
         events: this.eventSource,
