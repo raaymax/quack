@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 import { useCallback, useEffect } from 'react';
-import { useDispatch, useMethods, useSelector } from '../../store';
 import { HoverProvider } from '../contexts/hover';
 import { MessageList } from '../organisms/MessageListScroller';
 import { Message as MessageType } from '../../types';
@@ -9,6 +8,9 @@ import { ButtonWithIcon } from '../molecules/ButtonWithIcon';
 import { MessageListArgsProvider } from '../contexts/messageListArgs';
 import { Toolbar } from '../atoms/Toolbar';
 import { BaseRenderer } from './MessageListRenderer';
+import { observer } from 'mobx-react-lite';
+import { useApp } from '../contexts/appState';
+import { MessageModel } from '../../core/models/message';
 
 const StyledPins = styled.div`
   height: 100%;
@@ -35,7 +37,7 @@ const StyledHeader = styled.div`
   padding: 16px 16px 16px 16px;
 `;
 
-export const Header = () => {
+export const Header = observer(() => {
   const navigate = useNavigate();
   return (
     <StyledHeader>
@@ -47,21 +49,20 @@ export const Header = () => {
       </Toolbar>
     </StyledHeader>
   );
-};
+});
 
-export const PinsInner = () => {
+export const PinsInner = observer(() => {
+  const app = useApp();
   const { channelId } = useParams()!;
-  const dispatch = useDispatch();
   const navigation = useNavigation();
-  const methods = useMethods();
   const navigate = useNavigate();
   useEffect(() => {
     if (!channelId) {
       return navigate('/');
     }
-    dispatch(methods.pins.load(channelId));
   }, [navigation])
-  const messages = useSelector((state) => channelId ? state.pins[channelId] : []);
+  const messagesModel = app.getPins(channelId ?? '');
+  if(!messagesModel) return null;
   const gotoMessage = useCallback((msg: MessageType) => {
     navigate(`/${msg.channelId}${(msg.parentId ? '/t/'+msg.parentId : '')}`, {
       state: {
@@ -77,20 +78,20 @@ export const PinsInner = () => {
         <Header />
         <MessageList
           renderer={BaseRenderer}
-          list={messages || []}
-          onMessageClicked={(msg: MessageType) => {
+          model={messagesModel}
+          onMessageClicked={(msg: MessageModel) => {
             gotoMessage(msg);
           }}
         />
       </HoverProvider>
     </StyledPins>
   );
-};
+});
 
-export const Pins = () => {
+export const Pins = observer(() => {
   return (
     <MessageListArgsProvider streamId="pins">
       <PinsInner />
     </MessageListArgsProvider>
   );
-}
+})

@@ -2,6 +2,7 @@ import { useCallback } from "react";
 import { useMessageData } from "../contexts/useMessageData";
 import { client } from "../../core";
 import { useParams } from "react-router-dom";
+import { observer } from "mobx-react-lite";
 
 
 type ActionButtonProps = {
@@ -11,7 +12,7 @@ type ActionButtonProps = {
   payload: any;
 };
 
-export const ActionButton = ({children, action, payload}: ActionButtonProps)=> {
+export const ActionButton = observer(({children, action, payload}: ActionButtonProps)=> {
   const {channelId, parentId} = useParams();
   const m = useMessageData();
 
@@ -29,4 +30,4 @@ export const ActionButton = ({children, action, payload}: ActionButtonProps)=> {
   return (
     <button onClick={onClick}>{children}</button>
   );
-}
+})

@@ -1,10 +1,11 @@
 import styled from 'styled-components';
-import { useEmoji } from '../../store';
-import { getUrl } from '../../services/file';
 import { Tooltip } from '../atoms/Tooltip';
 import { useSize } from '../contexts/useSize';
 import { ClassNames, cn } from '../../utils';
 import { useState } from 'react';
+import { observer } from 'mobx-react-lite';
+import { useApp } from '../contexts/appState';
+import { client } from '../../core';
 
 const StyledEmoji = styled.span<{$size?: number}>`
   padding: 0;
@@ -34,7 +35,7 @@ interface EmojiBaseProps {
   size?: number;
 }
 
-export const EmojiBase = ({ className, shortname, emoji, size}: EmojiBaseProps) => {
+export const EmojiBase = observer(({ className, shortname, emoji, size}: EmojiBaseProps) => {
   const $size = useSize(size);
   const [error, setError] = useState(false);
   const onError = () => {
@@ -46,10 +47,10 @@ export const EmojiBase = ({ className, shortname, emoji, size}: EmojiBaseProps) 
     <StyledEmoji className={cn(className, "emoji")} $size={$size} data-emoji={shortname}>
       {emoji.unicode || error
         ? String.fromCodePoint(parseInt(emoji.unicode || '26a0', 16))
-        : <img src={getUrl(emoji.fileId ?? '')} onError={onError} alt={shortname} />}
+        : <img src={client.api.getUrl(emoji.fileId ?? '')} onError={onError} alt={shortname} />}
     </StyledEmoji>
   );
-};
+});
 
 interface EmojiProps {
   className?: ClassNames;
@@ -57,11 +58,11 @@ interface EmojiProps {
   size?: number;
 }
 
-export const Emoji = ({ className, shortname, size}: EmojiProps) => {
-  const emoji = useEmoji(shortname);
+export const Emoji = observer(({ className, shortname, size}: EmojiProps) => {
+  const emoji = useApp().emojis.get(shortname);
   return (
     <Tooltip className={className} text={shortname}>
       <EmojiBase className={className} shortname={shortname} emoji={emoji} size={size} />
     </Tooltip>
   );
-};
+});

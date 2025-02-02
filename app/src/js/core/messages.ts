@@ -120,7 +120,8 @@ type MessageQuery = {
   after?: string,
   limit?: number,
   channelId: string,
-  parentId?: string,
+  parentId?: string | null,
+  search?: string,
   preprocess?: (m: Message[]) => Promise<Message[]>
 }
 
@@ -136,8 +137,10 @@ export class MessageService{
     this.client = client;
   }
 
-  cache({channelId, parentId = ''}: {channelId: string, parentId?: string}) {
-    const key = `${channelId}-${parentId}`;
+  cache({channelId, parentId = '', pinned, search}: MessageQuery) {
+    let key = `${channelId}-${parentId}`;
+    if(pinned) key += '-pinned';
+    if(search) key += `-search:${search}`;
     if(!this._cache[key]){
       this._cache[key] = new MessagesCache({
         combine: this.dataContainer,
@@ -172,6 +175,7 @@ export class MessageService{
         pinned: query.pinned,
         channelId: channelId,
         parentId: parentId,
+        q: query.search,
         before,
         after,
         limit,

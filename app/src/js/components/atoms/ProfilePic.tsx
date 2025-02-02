@@ -1,7 +1,8 @@
 import { ClassNames, cn } from '../../utils';
-import { useUser } from '../../store';
-import { getUrl } from '../../services/file';
 import styled from 'styled-components';
+import { observer } from 'mobx-react-lite';
+import { useApp } from '../contexts/appState';
+import { client } from '../../core';
 
 const Pic = styled.div`
   position: relative;
@@ -99,19 +100,19 @@ type NotificationProps = {
   showStatus?: boolean;
 }
 
-export const ProfilePic = ({ type = 'regular', showStatus = false, userId, className = [] }: NotificationProps) => {
-  const user = useUser(userId);
+export const ProfilePic = observer(({ type = 'regular', showStatus = false, userId, className = [] }: NotificationProps) => {
+  const user = useApp().users.get(userId);
   const status = user?.status || 'inactive';
 
   return (
     <Pic className={cn('avatar', type, {'with-status': showStatus}, className)}>
       <div className="image">
         { user?.avatarFileId
-          ? <img src={getUrl(user?.avatarFileId)} alt='avatar' />
+          ? <img src={client.api.getUrl(user?.avatarFileId)} alt='avatar' />
           : <img src="/avatar.png" alt='avatar' /> }
       </div>
       {showStatus && <div className={cn('status-ball', status)} />}
     </Pic>
   );
-};
+});
 

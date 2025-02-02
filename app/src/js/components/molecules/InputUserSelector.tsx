@@ -4,16 +4,18 @@ import {
 import Fuse from 'fuse.js';
 import { TextMenu } from './TextMenu';
 import { useInput } from '../contexts/useInput';
-import { useUsers } from '../../store';
+import { observer } from 'mobx-react-lite';
+import { useApp } from '../contexts/appState';
 
 const SCOPE = 'user';
 
-export const UserSelector = () => {
+export const UserSelector = observer(() => {
   const [selected, setSelected] = useState(0);
+  const app = useApp();
   const {
     input, currentText, scope, insert, scopeContainer,
   } = useInput();
-  const users = useUsers();
+  const users = app.users.getAll();
   const fuse = useMemo(() => new Fuse(users, {
     keys: ['name'],
     findAllMatches: true,
@@ -108,4 +110,4 @@ export const UserSelector = () => {
       selected={selected}
       setSelected={setSelected} />
   );
-};
+});

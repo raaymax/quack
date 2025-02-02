@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ClassNames, cn } from "../../utils";
 import styled from "styled-components";
+import { observer } from "mobx-react-lite";
 
 const Container = styled.div`
   display: flex;
@@ -13,7 +14,7 @@ type CollapsableColumnsProps = {
   minSize: number;
   columns: [React.ReactNode, React.ReactNode?];
 };
-export const CollapsableColumns = ({ className, columns, minSize }: CollapsableColumnsProps) => {
+export const CollapsableColumns = observer(({ className, columns, minSize }: CollapsableColumnsProps) => {
   const container = useRef<HTMLDivElement>(null);
   const [oneColumn, setOneColumn] = useState(false);
 
@@ -38,4 +39,4 @@ export const CollapsableColumns = ({ className, columns, minSize }: CollapsableC
       {Column2}
     </Container>
   );
-}
+});

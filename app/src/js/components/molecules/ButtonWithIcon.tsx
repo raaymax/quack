@@ -2,6 +2,7 @@ import { Button } from '../atoms/Button';
 import { Icon, IconNames } from '../atoms/Icon';
 import { useSize } from '../contexts/useSize';
 import { ClassNames } from '../../utils';
+import { observer } from 'mobx-react-lite';
 
 interface ButtonWithIconProps {
   onClick?: (e: React.MouseEvent) => void;
@@ -14,7 +15,7 @@ interface ButtonWithIconProps {
   className?: ClassNames;
 }
 
-export const ButtonWithIcon = ({
+export const ButtonWithIcon = observer(({
   onClick, size, icon, iconSize, children, className, disabled, tooltip,
 }: ButtonWithIconProps) => {
   const $size = useSize(size);
@@ -27,4 +28,4 @@ export const ButtonWithIcon = ({
       {children}
     </Button>
   );
-};
+});

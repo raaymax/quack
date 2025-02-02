@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { useSize } from '../contexts/useSize';
 import { cn, ClassNames } from '../../utils';
 import { Tooltip } from './Tooltip';
-
+import { observer } from 'mobx-react-lite';
 
 const Container = styled.button`
   font-style: normal;
@@ -61,7 +61,7 @@ interface IconButtonProps {
   tooltip?: string | string[];
 }
 
-export const Button = ({
+export const Button = observer(({
   onClick, size, children, className, type = 'other', tooltip, disabled = false
 }: IconButtonProps) => {
   const $size = useSize(size);
@@ -85,4 +85,4 @@ export const Button = ({
       {children}
     </Container>
   );
-};
+});

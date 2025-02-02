@@ -1,6 +1,7 @@
 import { SizeProvider } from "../contexts/size";
 import { LogoPic } from "../atoms/Logo";
 import styled from "styled-components";
+import { observer } from "mobx-react-lite";
 
 const Container = styled.div`
   flex: 0 0 64px;
@@ -20,7 +21,7 @@ const Container = styled.div`
   }
 `;
 
-export const Workspaces = () => {
+export const Workspaces = observer(() => {
   //const userId = useSelector((state) => state?.me);
   return (
     <Container className="workspaces">
@@ -32,4 +33,4 @@ export const Workspaces = () => {
       </SizeProvider>
     </Container>
   );
-}
+});

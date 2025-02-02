@@ -1,5 +1,4 @@
 import { assertEquals } from "@std/assert";
-import { Agent } from "@planigale/testing";
 import { Chat } from "../../__tests__/chat.ts";
 import { createApp } from "../../__tests__/app.ts";
 
@@ -58,7 +57,7 @@ Deno.test("/api/channels/:channelId/read-receipts - SSE", async () =>
         .updateReadReceipts(({ state }) => state.messageId);
 
       await admin.nextEvent((event: any) => {
-        assertEquals(event.type, "badge");
+        assertEquals(event.type, "readReceipt");
         assertEquals(event.lastMessageId, member.state.messageId);
         assertEquals(event.userId, member.userId);
       });

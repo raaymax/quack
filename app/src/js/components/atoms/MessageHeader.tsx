@@ -2,6 +2,8 @@ import styled from 'styled-components';
 import {
   formatTime, formatDateDetailed, isToday
 } from '../../utils';
+import { observer } from 'mobx-react-lite';
+import type { UserModel } from '../../core/models/user';
 
 const Container = styled.div`
   .author {
@@ -23,13 +25,11 @@ const Container = styled.div`
 `;
 
 type MessageHeaderProps = {
-  user: {
-    name: string;
-  } | null,
+  user: UserModel | null,
   createdAt: string;
 };
 
-export const MessageHeader = ({ user, createdAt }: MessageHeaderProps) => {
+export const MessageHeader = observer(({ user, createdAt }: MessageHeaderProps) => {
   return (
     <Container className='header'>
       <span className='author'>{user?.name || 'Unknown'}</span>
@@ -37,4 +37,4 @@ export const MessageHeader = ({ user, createdAt }: MessageHeaderProps) => {
       {!isToday(createdAt) && <span className='spacy time'>{formatDateDetailed(createdAt)}</span>}
     </Container>
   );
-}
+});

@@ -4,16 +4,18 @@ import {
 import Fuse from 'fuse.js';
 import { TextMenu } from './TextMenu';
 import { useInput } from '../contexts/useInput';
-import { useChannels } from '../../store';
+import { observer } from 'mobx-react-lite';
+import { useApp } from '../contexts/appState';
 
 const SCOPE = 'channel';
 
-export const ChannelSelector = () => {
+export const ChannelSelector = observer(() => {
   const [selected, setSelected] = useState(0);
+  const app = useApp();
   const {
     input, currentText, scope, insert, scopeContainer,
   } = useInput();
-  const channels = useChannels();
+  const channels = app.channels.getAll(['PUBLIC', 'PRIVATE']);
   const fuse = useMemo(() => new Fuse(channels, {
     keys: ['name'],
     findAllMatches: true,
@@ -26,7 +28,7 @@ export const ChannelSelector = () => {
     const opts = chan.map((channel) => ({
       name: channel.name,
       id: channel.id,
-      icon: channel.private ? 'fa-solid fa-lock' : 'fa-solid fa-hashtag',
+      icon: channel.isPrivate ? 'fa-solid fa-lock' : 'fa-solid fa-hashtag',
     }));
     return opts;
   }, [fuse, channels, currentText]);
@@ -103,4 +105,4 @@ export const ChannelSelector = () => {
   return (
     <TextMenu open={true} options={options} onSelect={onSelect} selected={selected} setSelected={setSelected} />
   );
-};
+});

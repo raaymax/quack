@@ -29,7 +29,7 @@ export default createCommand({
   const other = await repo.badge.getAll({ channelId, parentId });
   other.filter((badge: Badge) => badge.userId !== userId).forEach(
     (badge: Badge) => {
-      bus.direct(badge.userId, { type: "badge", ...badge });
+      bus.direct(badge.userId, { type: "readReceipt", ...badge });
     },
   );
   const lastRead = message.createdAt;
@@ -51,5 +51,5 @@ export default createCommand({
     await repo.badge.update({ id: progress.id }, data);
   }
   const badge = await repo.badge.get({ channelId, parentId, userId });
-  bus.group(channel.users, { type: "badge", ...badge });
+  bus.group(channel.users, { type: "readReceipt", ...badge });
 });

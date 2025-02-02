@@ -4,6 +4,7 @@ import { ClassNames, cn } from "../../utils";
 import styled from "styled-components";
 import { ThemeButtonS } from "../atoms/ThemeButton";
 import { LoggedUser } from "../atoms/LoggedUser";
+import { observer } from "mobx-react-lite";
 
 
 const Container = styled.div`
@@ -62,7 +63,7 @@ const Container = styled.div`
   }
 
 `;
-export const Sidebar = ({style, className}: {style?: {[key: string]: string}, className?: ClassNames}) => {
+export const Sidebar = observer(({style, className}: {style?: {[key: string]: string}, className?: ClassNames}) => {
   return (
     <Container className={cn('side-menu', className)} style={style}>
       <div className='side-menu-header'>
@@ -78,4 +79,4 @@ export const Sidebar = ({style, className}: {style?: {[key: string]: string}, cl
       </div>
     </Container>
   );
-};
+});

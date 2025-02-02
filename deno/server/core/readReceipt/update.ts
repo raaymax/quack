@@ -49,6 +49,6 @@ export default createCommand({
   }
 
   const myProgress = await repo.badge.get({ channelId, parentId, userId });
-  bus.group(channel.users, { type: "badge", ...myProgress });
+  bus.group(channel.users, { type: "readReceipt", ...myProgress });
   return myProgress?.id;
 });

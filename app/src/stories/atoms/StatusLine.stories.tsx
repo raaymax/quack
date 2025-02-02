@@ -2,23 +2,25 @@ import type { Meta, StoryObj } from '@storybook/react';
  
 import '../../styles.ts';
 import { StatusLine } from '../../js/components/atoms/StatusLine';
-import { store, actions } from '../../js/store';
+import { AppModel } from 'app/src/js/core/models/app.ts';
 
 const meta: Meta<typeof StatusLine> = {
   component: StatusLine,
   loaders: [async () => {
-    console.log('loading');
-    store.dispatch(actions.users.add({ id: '1', name: 'Alice' }));
-    store.dispatch(actions.typing.add({ channelId: 'main', userId: '1' }));
-
   }],
 };
+
+
+const app = new AppModel();
+app.channels.upsert({id: '123', channelType: 'PUBLIC',  name: 'test', users: ['123']});
+
  
 export default meta;
 type Story = StoryObj<typeof StatusLine>;
  
 export const Primary: Story = {
   args: {
-    channelId: 'main',
+    typing: app.getThread('123', null, {init: false}).typing,
+    info: app.info
   },
 };

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import { useInput } from '../contexts/useInput';
+import { observer } from 'mobx-react-lite';
 
 export const Menu = styled.div<{top:number, left: number, height: number}>`
   position: absolute;
@@ -75,7 +76,7 @@ type TextMenuProps = {
   setSelected: (idx: number) => void;
 };
 
-export const TextMenu = ({
+export const TextMenu = observer(({
   className, options, open = false, onSelect, selected = 0, setSelected,
 }: TextMenuProps) => {
   const [coords, setCoords] = useState([0, 0]);
@@ -141,4 +142,4 @@ export const TextMenu = ({
       </ul>
     </Menu>
   );
-};
+});

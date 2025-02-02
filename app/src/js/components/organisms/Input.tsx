@@ -1,10 +1,8 @@
 import { useCallback, useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { useActions, useDispatch } from '../../store';
 
 import { EmojiDescriptor } from '../../types';
 import { ClassNames, buildEmojiNode, cn, isMobile } from '../../utils';
-import { getUrl } from '../../services/file';
 import { InputProvider } from '../contexts/input';
 import { useInput } from '../contexts/useInput';
 
@@ -18,6 +16,11 @@ import { UserSelector } from '../molecules/InputUserSelector';
 import { ButtonWithIcon } from '../molecules/ButtonWithIcon';
 
 import { EmojiSearch } from './EmojiSearch';
+
+import { observer } from 'mobx-react-lite';
+import { InputModel } from '../../core/models/input';
+import { client } from '../../core';
+import { useApp } from '../contexts/appState';
 
 export const InputContainer = styled.div`
   position: relative;
@@ -129,22 +132,19 @@ export const InputContainer = styled.div`
 
 type InputFormProps = {
   className?: ClassNames,
-  channelId: string,
-  parentId?: string,
+  model: InputModel;
 }
 
-export const InputForm = ({ className, channelId, parentId }: InputFormProps) => {
+export const InputForm = observer(({ className, model }: InputFormProps) => {
+  const app = useApp();
   const [showEmojis, setShowEmojis] = useState(false);
   const {
-    mode, messageId,
     input, onPaste, onInput, onKeyDown, onFileChange, fileInput,
     focus, addFile, insert, send, scope, currentText, wrapMatching,
   } = useInput();
-  const dispatch = useDispatch();
-  const actions = useActions();
 
   const onEmojiInsert = useCallback((emoji: EmojiDescriptor) => {
-    insert(buildEmojiNode(emoji, getUrl));
+    insert(buildEmojiNode(emoji, client.api.getUrl));
     setShowEmojis(!showEmojis);
     focus();
   }, [showEmojis, focus, insert, setShowEmojis]);
@@ -166,7 +166,7 @@ export const InputForm = ({ className, channelId, parentId }: InputFormProps) =>
   }, [input, ctrl]);
 
   return (
-    <InputContainer className={cn(className, mode)}>
+    <InputContainer className={cn(className)}>
       <div className="input-box">
         <div className="scroller">
           <div
@@ -181,26 +181,18 @@ export const InputForm = ({ className, channelId, parentId }: InputFormProps) =>
           {!input.current?.innerHTML && <div className="cta">
             Write here..
           </div>}
-          <Attachments className="input-attachments" />
+          <Attachments model={model.files} className="input-attachments" />
         </div>
         <Toolbar className='controls' size={32}>
           <ButtonWithIcon icon="emojis" onClick={() => setShowEmojis(!showEmojis)} />
           <ButtonWithIcon icon="plus" onClick={addFile} />
-          {mode === 'edit' 
-            ? <>
-              <ButtonWithIcon icon="xmark" onClick={() => dispatch(actions.messages.editClose(messageId))} />
-              <ButtonWithIcon icon="check" onClick={send} />
-            </>
-            : (
-              isMobile() 
-                ? <ButtonWithIcon icon="send" onClick={send} />
-                : null
-            )
-          }
+          {isMobile() 
+            ? <ButtonWithIcon icon="send" onClick={send} />
+            : null}
         </Toolbar>
       </div>
 
-      <StatusLine channelId={channelId} parentId={parentId} />
+      <StatusLine info={app.info} typing={model.thread.typing} />
       <ChannelSelector />
       <UserSelector />
       <EmojiSelector />
@@ -216,18 +208,16 @@ export const InputForm = ({ className, channelId, parentId }: InputFormProps) =>
       />
     </InputContainer>
   );
-};
+});
 
 type InputProps = {
-  mode?: string;
   messageId?: string;
   className?: ClassNames,
-  channelId: string;
-  parentId?: string;
+  model: InputModel;
 };
 
-export const Input = ({ className, ...args }: InputProps) => (
+export const Input = observer(({ className, ...args }: InputProps) => (
   <InputProvider {...args} >
     <InputForm className={className} {...args}/>
   </InputProvider>
-);
+));

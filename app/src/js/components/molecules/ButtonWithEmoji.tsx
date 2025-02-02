@@ -1,6 +1,7 @@
 import { Button } from '../atoms/Button';
 import { Emoji } from './Emoji';
 import { useSize } from '../contexts/useSize';
+import { observer } from 'mobx-react-lite';
 
 interface ButtonWithEmojiProps {
   onClick: () => void;
@@ -9,7 +10,7 @@ interface ButtonWithEmojiProps {
   children?: React.ReactNode;
 }
 
-export const ButtonWithEmoji = ({
+export const ButtonWithEmoji = observer(({
   onClick, size, emoji, children,
 }: ButtonWithEmojiProps) => {
   const $size = useSize(size);
@@ -19,4 +20,4 @@ export const ButtonWithEmoji = ({
       {children}
     </Button>
   );
-};
+});
