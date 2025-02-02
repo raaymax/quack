@@ -15,11 +15,11 @@ class Emitter {
   };
 
   emit = (ev: string, ...args: any[]) => {
-    (this.listeners[ev] ?? []).forEach((cb) =>{
-      try{
-        cb(...serialize(args))
-      } catch(e){
-        console.error(e)
+    (this.listeners[ev] ?? []).forEach((cb) => {
+      try {
+        cb(...serialize(args));
+      } catch (e) {
+        console.error(e);
       }
     });
   };

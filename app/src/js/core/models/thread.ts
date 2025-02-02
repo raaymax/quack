@@ -93,7 +93,7 @@ export class ThreadModel {
       }
       try {
         const encryptionKey = yield channel.getEncryptionKey();
-        const encryptedMessage = yield MessageEncryption.encrypt(msg, encryptionKey);
+        const encryptedMessage = yield MessageEncryption.encrypt(msg.toJSON(), encryptionKey);
         const m = yield client.api.sendMessage(encryptedMessage);
         yield this.readReceipts.update(m.id);
         return m;
