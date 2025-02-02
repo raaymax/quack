@@ -5,7 +5,7 @@ const keyLength = 256;
 
 type EncryptedData = { encrypted: string; _iv: string };
 
-export function toBase64(buffer: ArrayBuffer) {
+export function toBase64(buffer: ArrayBuffer | Uint8Array) {
   let binary = "";
   const bytes = new Uint8Array(buffer);
   const len = bytes.byteLength;

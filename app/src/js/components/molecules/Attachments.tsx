@@ -133,7 +133,6 @@ export const Attachment = observer(({
 ));
 
 export const Attachments = observer(({className, model}: {className?:ClassNames, model: FilesModel}) => {
-  console.log('Attachments', model);
   const files = model.getAll();
   const hasFiles = files.length > 0;
 

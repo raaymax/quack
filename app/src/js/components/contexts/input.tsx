@@ -139,9 +139,9 @@ export const InputProvider = (args: InputContextProps) => {
   }, [input, range]);
 
   const send = useCallback((e: React.SyntheticEvent) => {
+    e.preventDefault();
     if (!input.current) return;
     model.send(input.current).then(() => {
-      if(input.current) input.current.innerHTML = '';
       focus(e.nativeEvent);
     })
   }, [input, focus, model]);
