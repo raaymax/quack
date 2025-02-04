@@ -29,6 +29,6 @@
       "@quack/tools": ["./deno/tools/mod.ts"]
     }
   },
-  "include": ["src", "vite.config.ts", ".storybook", "../deno/encryption", "../deno/api", "../deno/tools"],
+  "include": ["src", "vite.config.ts", ".storybook", "../deno/encryption", "../deno/api/", "../deno/tools/mod.ts"],
   "exclude": ["../**/*_test.ts"]
 }
