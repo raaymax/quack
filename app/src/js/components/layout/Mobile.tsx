@@ -1,6 +1,6 @@
 
 import styled, { useTheme } from 'styled-components';
-import { cn, isMobile ,same } from '../../utils';
+import { cn, isMobile } from '../../utils';
 import { useSidebar } from '../contexts/useSidebar';
 import { useParams , useLocation, useNavigate} from 'react-router-dom';
 import { useEffect } from 'react';
@@ -10,7 +10,6 @@ import { Conversation } from '../organisms/Conversation';
 import { Channel } from '../molecules/NavChannel';
 import { Toolbar } from '../atoms/Toolbar';
 import { ButtonWithIcon } from '../molecules/ButtonWithIcon';
-import { useMessageListArgs } from '../contexts/useMessageListArgs';
 import { MessageListArgsProvider } from '../contexts/messageListArgs';
 import { observer } from 'mobx-react-lite';
 import { useApp } from '../contexts/appState';
@@ -226,22 +225,6 @@ export const Container = styled.div`
   }
 `;
 
-export const UpdateArgs = observer(() => {
-  const location = useLocation();
-  const {channelId } = useParams();
-  const [args, setArgs] = useMessageListArgs();
-  useEffect(() => {
-    const state = location.state || {};
-    state.type = state.type ?? 'live';
-    if(!same(args, state, ['type', 'selected', 'date'])) {
-      setArgs(state);
-    }
-  }, [location.state, channelId]);
-
-  return null
-})
-
-
 type SideConversationProps = {
   channelId: string;
   parentId?: string;
@@ -286,20 +269,20 @@ type MainConversationProps = {
   children?: React.ReactNode;
 };
 export const MainConversation = observer(({ channelId, children}: MainConversationProps) => {
+  const app = useApp();
   const location = useLocation();
-  const [stream] = useMessageListArgs();
   const navigate = useNavigate();
+  const threadModel = app.getThread(channelId);
   const { toggleSidebar } = useSidebar();
 
   return (
     <MessageListArgsProvider streamId='main' value={location.state}>
-      <UpdateArgs />
       <div className={cn('main-conversation-container', 'conversation-container')}>
         <div className='header'>
           <Toolbar className="toolbar" size={32}>
             <ButtonWithIcon icon="bars" onClick={toggleSidebar} iconSize={24} />
             <Channel channelId={channelId} />
-            {stream.type === 'archive' && (
+            {threadModel.messages.mode === 'archive' && (
               <ButtonWithIcon icon='down' onClick = {() => {
                 navigate(".", { relative: "path", state: {
                   type: 'live',

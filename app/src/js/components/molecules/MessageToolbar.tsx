@@ -71,14 +71,14 @@ export const MessageToolbar = observer(({navigate, messageModel}: MessageToolbar
       emoji={emoji}
       onClick={() => messageModel.addReaction(emoji)} />
   );
-  const deleteButton = () => <ButtonWithIcon key='del' icon="delete" onClick={() => setView('delete')} />;
-  const confirmDelete = () => <ButtonWithIcon key='confirm_del' icon="check:danger" onClick={onDelete} />;
-  const cancelButton = () => <ButtonWithIcon key='cancel' icon="circle-xmark" onClick={() => setView(null)} />;
+  const deleteButton = () => <ButtonWithIcon key='del' icon="delete" tooltip="Delete message" onClick={() => setView('delete')} />;
+  const confirmDelete = () => <ButtonWithIcon key='confirm_del' tooltip="Confirm deletion" icon="check:danger" onClick={onDelete} />;
+  const cancelButton = () => <ButtonWithIcon key='cancel' tooltip="Cancel" icon="circle-xmark" onClick={() => setView(null)} />;
   const editButton = () => <ButtonWithIcon disabled={true} tooltip="Not yet available" key='edit' icon="edit" onClick={() => null} />
-  const openReactions = () => <ButtonWithIcon key='reactions' icon="icons" onClick={() => setView('reactions')} />;
-  const pinButton = () => <ButtonWithIcon key='pin' icon="thumbtack" onClick={() => messageModel.pin()} />;
-  const unpinButton = () => <ButtonWithIcon key='unpin' icon="thumbtack" onClick={() => messageModel.unpin()} />;
-  const replyButton = () => <ButtonWithIcon key='reply' icon="reply" onClick={() => {
+  const openReactions = () => <ButtonWithIcon key='reactions' tooltip="Reactions" icon="icons" onClick={() => setView('reactions')} />;
+  const pinButton = () => <ButtonWithIcon key='pin' tooltip={["Pin message", "to this channel"]} icon="thumbtack" onClick={() => messageModel.pin()} />;
+  const unpinButton = () => <ButtonWithIcon key='unpin' tooltip={["Unpin message", "from this channel"]}icon="thumbtack" onClick={() => messageModel.unpin()} />;
+  const replyButton = () => <ButtonWithIcon key='reply' tooltip={["Reply in thread"]} icon="reply" onClick={() => {
     navigate(`/${messageModel.channelId}/t/${messageModel.id}`);
   }} />;
 

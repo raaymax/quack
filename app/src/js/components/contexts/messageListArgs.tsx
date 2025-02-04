@@ -1,9 +1,7 @@
-import { createContext, useState } from 'react';
+import { createContext } from 'react';
 import { MessageListArgs } from '../../types';
 
-type SetMessageListArgs = (stream: MessageListArgs) => void;
-
-export const MessageListArgsContext = createContext<[MessageListArgs, SetMessageListArgs]>([{type: 'live', id: 'main'}, () => ({})]);
+export const MessageListArgsContext = createContext<string>('main');
 
 type MessageListArgsParams = {
   children: React.ReactNode;
@@ -11,12 +9,9 @@ type MessageListArgsParams = {
   streamId: string;
 };
 
-export const MessageListArgsProvider = ({ streamId, children, value = {}}: MessageListArgsParams) => {
-  const [state, setState] = useState<MessageListArgs>({type: 'live', ...value, id: streamId});
+export const MessageListArgsProvider = ({ streamId, children}: MessageListArgsParams) => {
   return (
-    <MessageListArgsContext.Provider value={[state, (a: Partial<MessageListArgs>) => {
-      setState({type: 'live', selected: state.selected, ...a, id: streamId})
-    }]}>
+    <MessageListArgsContext.Provider value={streamId}>
       {children}
     </MessageListArgsContext.Provider>
   );

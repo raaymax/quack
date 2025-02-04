@@ -1,66 +1,19 @@
 /* global JsonWebKey */
 import { Message } from "../types";
 import type { Client } from "./client";
+import { Range } from "@quack/tools";
 
-class MRange {
-  _from: number | null;
-  _to: number | null;
-  set from(v: number) {
-    this._from = v;
-  }
-  set to(v: number) {
-    this._to = v;
-  }
-  get from() {
-    return this._from ?? 0;
-  }
-  get to() {
-    return this._to ?? 64090483200000;
-  }
-
-  constructor(r: {from: number | null, to: number | null}) {
-    this._from = r.from;
-    this._to = r.to;
-    if(this.from > this.to) {
-      throw new Error('Invalid range');
-    }
-  }
-
-  isOverlapping(r2: MRange) {
-    const r1 = this;
-
-    return !(r1.from >= r2.to || r1.to <= r2.from)
-  }
-}
-
-class QRange extends MRange {
-  containsEntirely(r: MRange) {
-    return (!this._from && this._to && r.from <= this.to && r.to >= this.to)
-      || (this._from && !this._to && r.from <= this.from && r.to >= this.from)
-      || (this._from && this._to && r.from <= this.from && r.to >= this.to);
-  }
-
-  toString() {
-    return `from: ${new Date(this.from).toISOString()},\nto  : ${new Date(this.to).toISOString()}`;
-  }
-}
-
-
-class MsgsRes<T> extends MRange {
+class MsgsRes<T> extends Range {
   data: T;
   fetched = new Date();
 
   constructor(res: any) {
-    super(res);
+    super(res.from, res.to);
     this.data= res.data;
   } 
 
   static sort(repo: MsgsRes<any>[]) {
     return [...repo].sort((a, b) => a.from - b.from);
-  }
-
-  toString() {
-    return `data\nfrom: ${new Date(this.from).toISOString()},\nto  : ${new Date(this.to).toISOString()}`;
   }
 }
 
@@ -91,20 +44,23 @@ class MessagesCache<T> {
     });
   }
 
-  get(r: QRange) {
-    const relevant: MsgsRes<T>[] = MsgsRes.sort(this.repo).filter((r2) => r.isOverlapping(r2)).reduce<any>((acc: MsgsRes<T>[], item: MsgsRes<T>) => {
+  get(r: Range) {
+    const relevant: MsgsRes<T>[] = MsgsRes.sort(this.repo).filter((r2) => r.overlaps(r2)).reduce<any>((acc: MsgsRes<T>[], item: MsgsRes<T>) => {
       if(!acc[acc.length-1]) {
         return [item];
       }
       const rest = acc.length > 1 ? acc.slice(0, acc.length-1) : [];
       const last = acc[acc.length-1];
 
-      if(item.isOverlapping(last)) {
+      if(item.overlaps(last)) {
         return [...rest, this.combine(last, item)]
       }
       acc.push(item);
       return acc;
     }, [])
+
+    console.log('range:', r);
+    console.log('relevant:', relevant);
 
     const cache = relevant.find((rel: MsgsRes<T>) => r.containsEntirely(rel))
     if(cache) {
@@ -159,14 +115,12 @@ export class MessageService{
     return Math.min(...dates);
   }
 
-
-
   async _fetch(query: MessageQuery): Promise<Message[]> {
       const {channelId, parentId, before, after, limit, preprocess} = query
-      const to = before ? new Date(before).getTime() : null;
-      const from = after ? new Date(after).getTime() : null;
+      const to = before ? new Date(before).getTime() : Infinity;
+      const from = after ? new Date(after).getTime() : -Infinity;
       if ( to || from ) {
-        const cache = this.cache(query).get(new QRange({ from, to }));
+        const cache = this.cache(query).get(new Range(from, to));
         if(cache) {
           return cache.map(item => ({...item})); //remove clonning
         }
@@ -180,7 +134,8 @@ export class MessageService{
         after,
         limit,
       })
-
+      console.log('data:', data);
+      
       const preprocessedData = preprocess ? await preprocess(data) : data;
 
 

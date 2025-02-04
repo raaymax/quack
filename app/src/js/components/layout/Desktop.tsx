@@ -1,5 +1,5 @@
 import styled, { useTheme } from 'styled-components';
-import { cn , same } from '../../utils';
+import { cn } from '../../utils';
 import { Resizer } from '../atoms/Resizer';
 import { useParams , useLocation, useNavigate } from 'react-router-dom';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -8,7 +8,6 @@ import { Sidebar } from '../organisms/Sidebar';
 import { Conversation } from '../organisms/Conversation';
 import { Toolbar } from '../atoms/Toolbar';
 import { ButtonWithIcon } from '../molecules/ButtonWithIcon';
-import { useMessageListArgs } from '../contexts/useMessageListArgs';
 import { MessageListArgsProvider } from '../contexts/messageListArgs';
 import { SearchBox } from '../atoms/SearchBox';
 import { CollapsableColumns } from '../atoms/CollapsableColumns';
@@ -153,22 +152,6 @@ export const Container = styled.div`
   }
 `;
 
-export const UpdateArgs = observer(() => {
-  const location = useLocation();
-  const {channelId } = useParams();
-  const [args, setArgs] = useMessageListArgs();
-  useEffect(() => {
-    const state = location.state || {};
-    state.type = state.type ?? 'live';
-    if(!same(args, state, ['type', 'selected', 'date'])) {
-      setArgs(state);
-    }
-  }, [location.state, channelId]);
-
-  return null
-})
-
-
 type SideConversationProps = {
   channelId: string;
   parentId?: string;
@@ -180,6 +163,11 @@ export const SideConversation = observer(({ channelId, parentId}: SideConversati
   if(!parentId) return null;
   const message = threadModel.messages.get(parentId);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    threadModel.init();
+  }, [channelId, parentId])
+
   return (
     <MessageListArgsProvider streamId="side">
       <div className={cn('side-conversation-container', 'conversation-container')}>
@@ -211,32 +199,30 @@ type MainConversationProps = {
   children?: React.ReactNode;
 };
 export const MainConversation = observer(({ channelId, children}: MainConversationProps) => {
+  const app = useApp();
   const location = useLocation();
-  const [stream] = useMessageListArgs();
   const navigate = useNavigate();
   const onSearch = useCallback((search: string) => {
     navigate("/"+ channelId + "/search", {state: {search}});
   } , [channelId, navigate]);
   const searchTerm = location.state?.search;
+  const threadModel = app.getThread(channelId);
+
+  useEffect(() => {
+    threadModel.init();
+  }, [channelId])
 
   return (
     <MessageListArgsProvider streamId='main' value={location.state}>
-      <UpdateArgs />
       <div className={cn('main-conversation-container', 'conversation-container')}>
         <div className='header'>
           <Toolbar className="toolbar" size={32}>
             <DiscussionHeader channelId={channelId} />
             <SearchBox onSearch={onSearch} defaultValue={searchTerm} />
-            {stream.type === 'archive' && (
-              <ButtonWithIcon icon='down' onClick = {() => {
-                navigate(".", { relative: "path", state: {
-                  type: 'live',
-                  selected: null,
-                  date: null,
-                } });
-              }} iconSize={24} />
+            {threadModel.messages.mode === 'archive' && (
+              <ButtonWithIcon icon='down' tooltip="Back to the end" onClick = {() => threadModel.messages.reload()} iconSize={24} />
             )}
-            <ButtonWithIcon icon="thumbtack" onClick={() => {
+            <ButtonWithIcon icon="thumbtack" tooltip="Pinned messages" onClick={() => {
               navigate("/"+ channelId + "/pins")
             }}  iconSize={16}/>
           </Toolbar>

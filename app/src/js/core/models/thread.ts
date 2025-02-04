@@ -76,7 +76,7 @@ export class ThreadModel {
       msg.channelId = this.channelId;
       msg.parentId = this.parentId ?? null;
       msg.createdAt = new Date().toISOString();
-      const ghost = new MessageModel(msg, this.root);
+      const ghost = new MessageModel(msg, this.messages);
       this.messages.addGhost(ghost);
       return await this.postMessage(ghost);
     };

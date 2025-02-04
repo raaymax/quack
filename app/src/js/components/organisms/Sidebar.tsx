@@ -24,6 +24,7 @@ const Container = styled.div`
   .slider {
     flex: 1 calc(100% - 50px);
     overflow-y: auto;
+    scrollbar-width: none;
   }
   .bottom {
     flex: 0 50px;

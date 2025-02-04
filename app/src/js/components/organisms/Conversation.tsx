@@ -4,7 +4,6 @@ import { MessageList } from './MessageListScroller';
 import { Input } from './Input';
 import { HoverProvider } from '../contexts/hover';
 import { LoadingIndicator } from '../molecules/LoadingIndicator';
-import { useMessageListArgs } from '../contexts/useMessageListArgs';
 import { ClassNames, cn } from '../../utils';
 import { observer } from 'mobx-react-lite';
 import { useApp } from '../contexts/appState';
@@ -24,7 +23,6 @@ export const Container = styled.div`
 `;
 
 export const Conversation = observer(({channelId, parentId, className}: {channelId: string, parentId?: string, className?: ClassNames}) => {
-  const [args, setArgs] = useMessageListArgs();
   const app = useApp();
   const threadModel = app.getThread(channelId, parentId);
   if (!threadModel) return null;
@@ -63,16 +61,17 @@ export const Conversation = observer(({channelId, parentId, className}: {channel
         <MessageList
           model={threadModel}
           className="message-list-container"
-          onDateChange={(date) => setArgs({ ...args, date })}
+          onDateChange={(date) => threadModel.messages.setDate(date)}
           onScrollTop={async () => {
             await threadModel.messages?.loadPrev();
-            setArgs({ ...args, type: 'archive', selected: undefined });
+            threadModel.messages.setMode('archive');
             bumpProgress();
           }}
           onScrollBottom={async () => {
             const count = await threadModel.messages?.loadNext();
+            console.log({count});
             if (count === 1) {
-              setArgs({ ...args, type: 'live', selected: undefined });
+              threadModel.messages.setMode('live');
             }
             bumpProgress();
           }}

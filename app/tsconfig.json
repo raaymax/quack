@@ -25,9 +25,10 @@
     "rootDir": "..",
     "paths": {
       "@quack/encryption": ["./deno/encryption/mod.ts"],
-      "@quack/api": ["./deno/api/mod.ts"]
+      "@quack/api": ["./deno/api/mod.ts"],
+      "@quack/tools": ["./deno/tools/mod.ts"]
     }
   },
-  "include": ["src", "vite.config.ts", ".storybook", "../deno/encryption", "../deno/api/"],
+  "include": ["src", "vite.config.ts", ".storybook", "../deno/encryption", "../deno/api", "../deno/tools"],
   "exclude": ["../**/*_test.ts"]
 }
