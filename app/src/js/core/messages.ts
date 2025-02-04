@@ -59,9 +59,6 @@ class MessagesCache<T> {
       return acc;
     }, [])
 
-    console.log('range:', r);
-    console.log('relevant:', relevant);
-
     const cache = relevant.find((rel: MsgsRes<T>) => r.containsEntirely(rel))
     if(cache) {
       return cache.data;
@@ -134,7 +131,6 @@ export class MessageService{
         after,
         limit,
       })
-      console.log('data:', data);
       
       const preprocessedData = preprocess ? await preprocess(data) : data;
 

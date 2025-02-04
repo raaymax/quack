@@ -170,8 +170,12 @@ export class MessagesModel {
       preprocess: this.decrypt,
     });
     yield this.root.setLoading(false);
-    this.list = messages.map((m: FullMessage) => new MessageModel(m, this))
-      .sort((a: MessageModel, b: MessageModel) => new Date(a.createdAt) < new Date(b.createdAt) ? 1 : -1);
+    this.list = merge<MessageModel>(
+      ({id}) => id,
+      this.list,
+      messages.map((m: FullMessage) => new MessageModel(m, this))
+    ).sort((a, b) => new Date(a.createdAt) < new Date(b.createdAt) ? 1 : -1)
+
     return this.list;
   })
 
@@ -192,11 +196,12 @@ export class MessagesModel {
       this.list,
       messages.map((m: FullMessage) => new MessageModel(m, this))
     ).sort((a, b) => new Date(a.createdAt) < new Date(b.createdAt) ? 1 : -1)
+
     setTimeout(action(() => {
       this.list = this.list.slice(Math.max(0, this.list.length - 100));
     }), 100);
 
-    return messages;
+    return messages.length;
   })
 
   loadNext = flow(function*(this: MessagesModel) {
@@ -216,6 +221,7 @@ export class MessagesModel {
       this.list,
       messages.map((m: FullMessage) => new MessageModel(m, this))
     ).sort((a, b) => new Date(a.createdAt) < new Date(b.createdAt) ? 1 : -1)
+
     setTimeout(action(() => {
       this.list = this.list.slice(0, 100);
     }), 100);
