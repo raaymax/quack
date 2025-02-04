@@ -69,7 +69,6 @@ export const Conversation = observer(({channelId, parentId, className}: {channel
           }}
           onScrollBottom={async () => {
             const count = await threadModel.messages?.loadNext();
-            console.log({count});
             if (count === 1) {
               threadModel.messages.setMode('live');
             }

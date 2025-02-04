@@ -31,9 +31,9 @@
     "styled-components": "6.1.1",
     "typescript": "5.7.3",
     "workbox-navigation-preload": "7.3.0",
-    "workbox-precaching": "7.0.0",
-    "workbox-routing": "7.0.0",
-    "workbox-strategies": "7.0.0"
+    "workbox-precaching": "7.3.0",
+    "workbox-routing": "7.3.0",
+    "workbox-strategies": "7.3.0"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "3.2.3",
