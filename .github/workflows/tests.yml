@@ -33,7 +33,6 @@ jobs:
     - uses: denoland/setup-deno@v2
       with:
         deno-version: '2.x'
-    - run: npm i
     - run: deno install --allow-scripts
     - run: deno task migrate:tests
     - run: deno task check
