@@ -51,7 +51,7 @@
     "@types/serviceworker": "0.0.85",
     "@types/workbox-sw": "4.3.7",
     "@vitejs/plugin-basic-ssl": "1.2.0",
-    "@vitejs/plugin-react": "^4.2.1",
+    "@vitejs/plugin-react": "^4.3.4",
     "chromatic": "11.22.2",
     "eslint": "^8.55.0",
     "eslint-plugin-react-hooks": "^4.6.0",
@@ -60,6 +60,6 @@
     "storybook": "8.4.7",
     "vite": "6.0.11",
     "vite-plugin-http2-proxy": "0.5.0",
-    "vite-plugin-pwa": "0.17.4"
+    "vite-plugin-pwa": "0.21.1"
   }
 }
