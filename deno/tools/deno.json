@@ -1,0 +1,5 @@
+{
+  "name": "@quack/tools",
+  "version": "1.0.0",
+  "exports": "./mod.ts"
+}
