@@ -48,7 +48,7 @@ export class InputModel {
     html.innerHTML = '';
     payload.attachments = this.files.toJSON();
     if (payload.flat.length === 0 && payload.attachments.length === 0) return;
-    const m = payload.flat.match('/([^ ]+)( (.*))?')
+    const m = payload.flat.match('^/([^ ]+)( (.*))?')
     if(m) {
       yield client.api.sendCommand({
         name: m[1],
