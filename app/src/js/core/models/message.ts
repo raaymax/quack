@@ -1,7 +1,7 @@
-import type { AppModel } from "./app"
 import { flow, makeAutoObservable } from "mobx"
 import { DateTime, Eid, FullMessage, MessageBody, ViewMessage, ViewProgress } from "../../types"
 import { client } from "../client";
+import type { MessagesModel } from "./messages";
 
 export class MessageModel implements ViewMessage {
     secured: false = false;
@@ -57,9 +57,9 @@ export class MessageModel implements ViewMessage {
       action?: string,
     } | null;
     editing: boolean = false;
-    root?: AppModel;
+    parent: MessagesModel;
 
-    static from = (value: Partial<FullMessage>, root: AppModel) => {
+    static from = (value: Partial<FullMessage>, parent: MessagesModel) => {
       return new MessageModel({
         secured: false,
         id: value.id ?? '',
@@ -91,11 +91,11 @@ export class MessageModel implements ViewMessage {
           }
         }),
         info: value.info ?? null,
-      }, root);
+      }, parent);
     }
 
-    constructor(value: FullMessage, root: AppModel) {
-      makeAutoObservable(this, {root: false});
+    constructor(value: FullMessage, parent: MessagesModel) {
+      makeAutoObservable(this, {parent: false});
       this.id = value.id;
       this.channelId = value.channelId;
       this.userId = value.userId;
@@ -125,7 +125,11 @@ export class MessageModel implements ViewMessage {
         }
       });
 
-      this.root = root;
+      this.parent = parent;
+    }
+
+    get root() {
+      return this.parent.root;
     }
 
     async dispose() {

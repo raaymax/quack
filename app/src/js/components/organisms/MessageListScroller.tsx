@@ -4,7 +4,6 @@ import {
 import styled from 'styled-components';
 import { MessageListRenderer, MessageListRendererProps } from './MessageListRenderer';
 import { Message as MessageType } from '../../types';
-import { useMessageListArgs } from '../contexts/useMessageListArgs';
 import { ClassNames, cn } from '../../utils';
 import { observer } from 'mobx-react-lite';
 import { autorun } from 'mobx';
@@ -17,6 +16,7 @@ const ListContainer = styled.div`
   overflow-y: scroll;
   overflow-x: hidden;
   overscroll-behavior: contain;
+  scrollbar-width: none;
 
   .space {
     height: 50px;
@@ -30,7 +30,7 @@ type MessageListProps = MessageListRendererProps & {
   renderer?: React.ComponentType<MessageListRendererProps>;
   onScrollTop?: () => void;
   onScrollBottom?: () => void;
-  onDateChange?: (date: string) => void;
+  onDateChange?: (date: Date) => void;
   date?: Date;
   className?: ClassNames;
 };
@@ -43,8 +43,7 @@ export const MessageList = observer((props: MessageListProps) => {
   const element = useRef<HTMLDivElement>(null);
   const [oldList, setOldList] = useState<MessageType[]>([]);
   const [current, setCurrent] = useState<[Date | undefined, DOMRect | undefined]>([date, undefined]);
-  const [selected, setSelected] = useState<string | undefined>();
-  const [stream] = useMessageListArgs()
+  const [selected, setSelected] = useState<string | null>();
   const [list, setList] = useState<MessageType[]>([]);
   useEffect(() => {
     autorun(() => {
@@ -66,7 +65,7 @@ export const MessageList = observer((props: MessageListProps) => {
       if (setCurrent) {
         setCurrent([new Date(dataDate ?? ''), r.getBoundingClientRect()]);
       }
-      if (onDateChange) onDateChange(dataDate ?? '');
+      if (onDateChange && dataDate) onDateChange(new Date(dataDate));
     }
   }, [setCurrent, onDateChange]);
 
@@ -85,7 +84,7 @@ export const MessageList = observer((props: MessageListProps) => {
     if (new Date(max).toISOString() !== new Date(oldMax).toISOString()) {
       const rect = getRect();
       if (!rect) return;
-      if (stream.type === 'live') {
+      if (model.messages.mode === 'live') {
         element.current.scrollTop = 0;
       } else if (rect && current && current[1]?.y) {
         element.current.scrollTop += (rect.y - current[1].y);
@@ -93,14 +92,14 @@ export const MessageList = observer((props: MessageListProps) => {
       setCurrent([current[0], rect]);
     }
     setOldList(list);
-  }, [list, stream, oldList, setOldList, current, setCurrent]);
+  }, [list, model.messages.mode, oldList, setOldList, current, setCurrent]);
 
   // scroll selected item into view
   useEffect(() => {
     if (!element.current) return;
-    if (stream.selected === selected) return;
+    if (model.messages.selected === selected) return;
     const found = [...element.current.children]
-      ?.find((child) => child.getAttribute('data-id') === stream.selected);
+      ?.find((child) => child.getAttribute('data-id') === model.messages.selected);
 
     if (found) {
       setTimeout(() => {
@@ -109,9 +108,9 @@ export const MessageList = observer((props: MessageListProps) => {
       setTimeout(() => {
         found.scrollIntoView({ block: 'center', behavior: 'smooth' });
       }, 500);
-      setSelected(stream.selected);
+      setSelected(model.messages.selected);
     }
-  }, [stream, selected, setSelected]);
+  }, [model.messages.selected, selected, setSelected]);
 
   const scroll = useCallback((e: React.SyntheticEvent) => {
     detectDate(e);

@@ -9,13 +9,20 @@ import { app } from '../../js/core';
 
 const meta: Meta<typeof ActionButton> = {
   component: ActionButton,
+  loaders: [async () => {
+    app.channels.upsert({
+      id: 'test',
+      name: 'test',
+      channelType: 'PUBLIC',
+      users: [],
+    });
+  }],
   render: ({children, action, payload, style}) => {
     const message = MessageModel.from({
       userId: 'me',
       flat: 'Hello, world!',
       message: {text: 'Hello, world!'},
-    }, app);
-
+    }, app.getMessages('test'));
     return <MessageProvider value={message}>
       <ActionButton action={action} payload={payload} style={style}>
         {children}

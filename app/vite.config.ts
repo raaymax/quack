@@ -1,5 +1,3 @@
- 
-import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
  
@@ -7,6 +5,7 @@ import basicSsl from '@vitejs/plugin-basic-ssl';
 import proxy from 'vite-plugin-http2-proxy';
 import path from 'node:path';
 import process from 'node:process';
+import { defineConfig } from 'vite';
 
 const __dirname = new URL('.', import.meta.url).pathname;
 const sslPath = path.join(__dirname, '../ssl/');
@@ -31,6 +30,7 @@ export default defineConfig({
     alias: {
       "@quack/encryption": path.resolve(__dirname, "../deno/encryption/mod.ts"),
       "@quack/api": path.resolve(__dirname, "../deno/api/mod.ts"),
+      "@quack/tools": path.resolve(__dirname, "../deno/tools/mod.ts"),
     },
   },
   plugins: [
@@ -90,4 +90,4 @@ export default defineConfig({
       },
     }),
   ],
-});
+})

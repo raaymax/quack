@@ -1,6 +1,6 @@
 import { client } from "../client";
-import { FullMessage, Message } from "../../types";
-import { makeAutoObservable, flow, runInAction } from "mobx"
+import { Eid, FullMessage, Message } from "../../types";
+import { makeAutoObservable, flow, runInAction, action } from "mobx"
 import { merge, mergeFn } from "../tools/merger";
 import type { AppModel } from "./app";
 import { MessageModel } from "./message";
@@ -10,17 +10,23 @@ import { MessageEncryption } from "../tools/messageEncryption";
 type Messages = Message | Message[];
 
 type MessageModelOptions = {
-  channelId: string;
-  parentId?: string | null;
+  channelId: Eid;
+  parentId?: Eid | null;
   pinned?: boolean;
   search?: string;
+
+  selected?: Eid;
 }
 
 export class MessagesModel {
-  channelId: string = '';
-  parentId?: string | null;
+  channelId: Eid = '';
+  parentId?: Eid | null;
   pinned?: boolean;
   search?: string;
+
+  mode: 'live' | 'archive' | 'spotlight';
+  date: Date;
+  selected: Eid | null = null
 
   list: MessageModel[] = [];
   ghosts: MessageModel[] = [];
@@ -28,7 +34,7 @@ export class MessagesModel {
   _cleanups: (() => void)[] = [];
   root: AppModel;
 
-  constructor({channelId, parentId, pinned, search}: MessageModelOptions, root: AppModel) {
+  constructor({channelId, parentId, pinned, search, selected}: MessageModelOptions, root: AppModel) {
       makeAutoObservable(this, {root: false, decrypt: false, _cleanups: false});
       this.root = root;
       this.channelId = channelId;
@@ -36,6 +42,10 @@ export class MessagesModel {
       this.list = [];
       this.pinned = pinned;
       this.search = search;
+      this.date = new Date();
+      this.selected = selected ?? null;
+      this.mode = selected ? 'spotlight' : 'live';
+
       this._cleanups.push(client.on2('message', (msg) => this.onMessage(msg)));
       this._cleanups.push(client.on2('message:remove', (msg) => this.onRemove(msg)));
       this._cleanups.push(this.subscribeUnfreeze());
@@ -72,10 +82,22 @@ export class MessagesModel {
           (a: MessageModel, b: MessageModel) => a.patch(b),
           ({id}) => id,
           this.list,
-          m.map((m: FullMessage) => new MessageModel(m, this.root)),
+          m.map((m: FullMessage) => new MessageModel(m, this)),
         ).sort((a, b) => new Date(a.createdAt) < new Date(b.createdAt) ? 1 : -1);
       })
     }
+  }
+
+  setMode = (mode: 'live' | 'archive' | 'spotlight') => {
+    this.mode = mode;
+  }
+
+  setDate = (date: Date) => {
+    this.date = date;
+  }
+
+  setSetected = (id: Eid | null) => {
+    this.selected = id;
   }
 
   addGhost = (msg: MessageModel) => {
@@ -131,6 +153,12 @@ export class MessagesModel {
     }, null);
   }
 
+  reload = flow(function*(this: MessagesModel) {
+    this.mode = 'live';
+    this.list = [];
+    yield this.load();
+  })
+
   load = flow(function*(this: MessagesModel) {
     yield this.root.setLoading(true);
     const messages = yield client.messages.fetch({
@@ -142,8 +170,12 @@ export class MessagesModel {
       preprocess: this.decrypt,
     });
     yield this.root.setLoading(false);
-    this.list = messages.map((m: FullMessage) => new MessageModel(m, this.root))
-      .sort((a: MessageModel, b: MessageModel) => new Date(a.createdAt) < new Date(b.createdAt) ? 1 : -1);
+    this.list = merge<MessageModel>(
+      ({id}) => id,
+      this.list,
+      messages.map((m: FullMessage) => new MessageModel(m, this))
+    ).sort((a, b) => new Date(a.createdAt) < new Date(b.createdAt) ? 1 : -1)
+
     return this.list;
   })
 
@@ -162,9 +194,14 @@ export class MessagesModel {
     this.list = merge<MessageModel>(
       ({id}) => id,
       this.list,
-      messages.map((m: FullMessage) => new MessageModel(m, this.root))
+      messages.map((m: FullMessage) => new MessageModel(m, this))
     ).sort((a, b) => new Date(a.createdAt) < new Date(b.createdAt) ? 1 : -1)
-    return messages;
+
+    setTimeout(action(() => {
+      this.list = this.list.slice(Math.max(0, this.list.length - 100));
+    }), 100);
+
+    return messages.length;
   })
 
   loadNext = flow(function*(this: MessagesModel) {
@@ -182,9 +219,13 @@ export class MessagesModel {
     this.list = merge<MessageModel>(
       ({id}) => id,
       this.list,
-      messages.map((m: FullMessage) => new MessageModel(m, this.root))
+      messages.map((m: FullMessage) => new MessageModel(m, this))
     ).sort((a, b) => new Date(a.createdAt) < new Date(b.createdAt) ? 1 : -1)
-    return messages;
+
+    setTimeout(action(() => {
+      this.list = this.list.slice(0, 100);
+    }), 100);
+    return messages.length;
   })
 
   getAll(): MessageModel[] {

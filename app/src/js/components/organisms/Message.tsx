@@ -166,7 +166,7 @@ const MessageBase = observer(({ model, onClick, sameUser, navigate = () => {}, .
     ephemeral,
   } = model;
   const { onEnter, toggleHovered, onLeave } = useHoverCtrl(model.id);
-  const [{ selected, id: streamName }] = useMessageListArgs();
+  const streamName = useMessageListArgs();
   const user = useApp().users.get(userId);
 
   return (
@@ -180,7 +180,7 @@ const MessageBase = observer(({ model, onClick, sameUser, navigate = () => {}, .
         ephemeral: Boolean(ephemeral),
         pinned,
         short: Boolean(sameUser),
-        selected: Boolean(id) && selected === id,
+        selected: Boolean(id) && model.parent.selected === id,
       }, props.className)}
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}

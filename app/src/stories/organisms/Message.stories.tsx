@@ -4,14 +4,21 @@ import '../../styles.ts';
 import { Message } from '../../js/components/organisms/Message';
 import { HoverProvider } from '../../js/components/contexts/hover.tsx';
 import { app } from '../../js/core';
-import { MessageModel } from 'app/src/js/core/models/message.ts';
+import { MessageModel } from '../../js/core/models/message.ts';
 
 const LOREM = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris sollicitudin scelerisque nisl quis condimentum. Aliquam eget lacus eros. Vestibulum ac posuere massa, eget euismod enim. Nulla interdum magna tortor. Vestibulum sagittis, ex in maximus maximus, neque purus tempor magna, sit amet molestie sapien est id augue. Nulla imperdiet leo nec nisl commodo, nec fringilla leo vehicula. Suspendisse nibh orci, convallis at dictum ut, volutpat non orci. Nulla scelerisque sapien eget purus ullamcorper, eu pellentesque odio tincidunt. Vivamus quis maximus sapien, vitae placerat urna. Vestibulum finibus facilisis aliquam. Aliquam iaculis augue vel metus varius cursus.";
  
 const meta: Meta<typeof Message> = {
   component: Message,
-  parameters: {
-  },
+  parameters: {},
+  loaders: [async () => {
+    app.channels.upsert({
+      id: 'test',
+      name: 'main',
+      channelType: 'PUBLIC',
+      users: [],
+    });
+  }],
   decorators: [
     (Story) => (
       <HoverProvider><Story /></HoverProvider>
@@ -60,7 +67,7 @@ export const Primary: Story = {
   args: {
     model: MessageModel.from({
       ...BaseMessage,
-    }, app),
+    }, app.getMessages('test')),
   },
 };
 
@@ -68,7 +75,7 @@ export const LongText: Story = {
   args: {
     model: MessageModel.from({
       ...LongTextMessage,
-    }, app),
+    }, app.getMessages('test')),
   },
 };
 
@@ -86,7 +93,7 @@ export const WithThread: Story = {
         userId: '321',
         }
       ],
-    }, app)
+    }, app.getMessages('test'))
   },
 };
 export const WithReaction: Story = {
@@ -108,7 +115,7 @@ export const WithReaction: Story = {
         }
 
       ]
-    }, app)
+    }, app.getMessages('test'))
   },
 };
 
@@ -117,7 +124,7 @@ export const Ephemeral: Story = {
     model: MessageModel.from({
       ...BaseMessage,
       ephemeral: true,
-    }, app)
+    }, app.getMessages('test'))
   },
 };
 
@@ -125,7 +132,7 @@ export const Continuation: Story = {
   args: {
     model: MessageModel.from({
       ...BaseMessage,
-    }, app),
+    }, app.getMessages('test')),
     mode: 'default',
     sameUser: true,
   },
@@ -140,7 +147,7 @@ export const EmojiOnly: Story = {
         emoji: ":thumbsup:",
       },
       emojiOnly: true,
-    }, app),
+    }, app.getMessages('test')),
     mode: 'default',
   },
 };
@@ -161,7 +168,7 @@ export const WithImages: Story = {
           contentType: 'image/jpeg',
         }
       ]
-    }, app),
+    }, app.getMessages('test')),
     mode: 'default',
   },
 };
@@ -175,7 +182,7 @@ export const WithError: Story = {
         msg: 'Sending message failed',
         action: 'retry',
       }
-    }, app),
+    }, app.getMessages('test')),
     mode: 'default',
   },
 };
@@ -212,7 +219,7 @@ export const WithLinkPreview: Story = {
           contentType: 'text/html',
         }
       ]
-    }, app),
+    }, app.getMessages('test')),
     mode: 'default',
   },
 };
@@ -242,7 +249,7 @@ export const WithLinkAnnotations: Story = {
           _width: 200}
         ]}
       ],
-    }, app),
+    }, app.getMessages('test')),
     mode: 'default',
   },
 };

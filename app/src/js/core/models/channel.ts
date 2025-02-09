@@ -80,7 +80,7 @@ export class ChannelModel {
         this.threads[parentKey] = new ThreadModel({channelId: this.id, ...opts}, this.root)
       }
 
-      if(opts.init ?? true) this.threads[parentKey].init();
+      // if(opts.init ?? true) this.threads[parentKey].init();
       return this.threads[parentKey]
     }
 

@@ -28,8 +28,6 @@ jobs:
 
     - run: deno install --allow-scripts
 
-    - run: npm i
-
     - name: setup Android signing
       run: |
         cd src-tauri/gen/android
