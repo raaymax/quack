@@ -55,7 +55,7 @@
     "chromatic": "11.22.2",
     "eslint": "^8.55.0",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-react-refresh": "^0.4.5",
+    "eslint-plugin-react-refresh": "^0.4.19",
     "eslint-plugin-storybook": "0.11.1",
     "storybook": "8.4.7",
     "vite": "6.0.11",
