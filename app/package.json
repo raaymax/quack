@@ -52,7 +52,7 @@
     "@types/workbox-sw": "4.3.7",
     "@vitejs/plugin-basic-ssl": "1.2.0",
     "@vitejs/plugin-react": "^4.3.4",
-    "chromatic": "11.22.2",
+    "chromatic": "11.25.2",
     "eslint": "^8.55.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
