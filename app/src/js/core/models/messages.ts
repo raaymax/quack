@@ -52,11 +52,12 @@ export class MessagesModel {
   }
 
   subscribeUnfreeze = () => {
-    window.addEventListener('resume', () => this.loadNext());
-    window.addEventListener('focus', () => this.loadNext());
+    const unfreeze = () => this.refresh();
+    window.addEventListener('resume', unfreeze);
+    window.addEventListener('focus', unfreeze);
     return () => {
-      window.removeEventListener('resume', () => this.loadNext());
-      window.removeEventListener('focus', () => this.loadNext());
+      window.removeEventListener('resume', unfreeze);
+      window.removeEventListener('focus', unfreeze);
     }
   }
 
@@ -178,6 +179,29 @@ export class MessagesModel {
 
     return this.list;
   })
+  
+  refresh = flow(function*(this: MessagesModel) {
+    if (this.mode !== 'live') {
+      return;
+    }
+    yield this.root.setLoading(true);
+    const messages = yield client.messages.fetch({
+      channelId: this.channelId,
+      parentId: this.parentId,
+      pinned: this.pinned,
+      search: this.search,
+      limit: 50,
+      preprocess: this.decrypt,
+    });
+    yield this.root.setLoading(false);
+    this.list = merge<MessageModel>(
+      ({id}) => id,
+      [],
+      messages.map((m: FullMessage) => new MessageModel(m, this))
+    ).sort((a, b) => new Date(a.createdAt) < new Date(b.createdAt) ? 1 : -1)
+
+    return messages.length;
+  })
 
   loadPrev = flow(function*(this: MessagesModel) {
     yield this.root.setLoading(true);
@@ -203,6 +227,7 @@ export class MessagesModel {
 
     return messages.length;
   })
+
 
   loadNext = flow(function*(this: MessagesModel) {
     yield this.root.setLoading(true);
