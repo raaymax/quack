@@ -13,7 +13,7 @@
     "tauri": "tauri"
   },
   "imports": {
-    "@planigale/sse": "npm:@jsr/planigale__sse@0.2.4",
+    "@jsr/planigale__sse": "npm:@jsr/planigale__sse@0.2.4",
     "@tauri-apps/api": "npm:@tauri-apps/api@^2",
     "@tauri-apps/plugin-http": "npm:@tauri-apps/plugin-http@^2",
     "@tauri-apps/plugin-log": "npm:@tauri-apps/plugin-log@^2.0.1",

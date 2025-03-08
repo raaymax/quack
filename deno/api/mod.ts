@@ -1,5 +1,5 @@
 // deno-lint-ignore-file no-window
-import { SSESource } from "@planigale/sse";
+import { SSESource } from "@jsr/planigale__sse";
 import {
   ApiErrorResponse,
   Channel,
