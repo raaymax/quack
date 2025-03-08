@@ -1,110 +1,110 @@
-import { createContext, useCallback, useEffect, useState } from 'react';
-import { ThemeProvider } from 'styled-components';
-import { IconNames } from '../atoms/Icon';
+import { createContext, useCallback, useEffect, useState } from "react";
+import { ThemeProvider } from "styled-components";
+import { IconNames } from "../atoms/Icon";
 
 export type Theme = {
-    name: string, 
-    icon: IconNames, 
-    logo: string,
-    loginIlustration: string,
-    registerIlustration: string,
+  name: string;
+  icon: IconNames;
+  logo: string;
+  loginIlustration: string;
+  registerIlustration: string;
 
-    borderColor: string,
-    backgroundColor: string,
-    highlightedBackgroundColor: string,
-    inputBackgroundColor: string,
-    dateBarBackgroundColor: string,
-    fontColor: string,
-    frontHoverColor: string,
-    userActive: string,
-    userConnected: string,
-    userSystem: string,
-    userDisconnected: string,
-    actionButtonBackgroundColor: string,
-    actionButtonHoverBackgroundColor: string,
-    actionButtonActiveBackgroundColor: string,
-    actionButtonFontColor: string,
-    buttonHoverBackground: string,
-    buttonActiveBackground: string,
-    borderColorHover: string,
-    searchBoxBackgroundColor: string,
-    labelColor: string,
-    linkColor: string,
-    mentionsColor: string,
-    Text: string,
-    Labels: string,
-    SecondaryButton: {
-      Hover: string,
-      Default: string,
-      Background: string,
-    },
-    Navbar: {
-      Background: string,
-      Icons: string,
-      Hover: string,
-    },
-    Input: {
-      Background: string,
-    },
-    Strokes: string,
-    Chatbox: {
-      Background: string,
-      Message: {
-        Hover: string,
-        ProgressDone: string,
-        ReactionButton: string,
-        InputActive: string,
-      },
-      Div: string,
-    },
-    PrimaryButton: {
-      Background: string,
-      Text: string,
-    },
-    ToggleButtons: {
-      Default: string,
-      Hover: string,
-    },
-    Channel: {
-      Active: string,
-      Hover: string,
-      Inactive: string,
-      Background: string,
-    },
-    User: {
-      Active: string,
-      Inactive: string,
-      AFK: string,
-    },
-    Channels: {
-      HoverText: string,
-    },
-    Icons: {
-      Static: string,
-      Hover: string,
-    },
-    ActiveOverlay: string,
+  borderColor: string;
+  backgroundColor: string;
+  highlightedBackgroundColor: string;
+  inputBackgroundColor: string;
+  dateBarBackgroundColor: string;
+  fontColor: string;
+  frontHoverColor: string;
+  userActive: string;
+  userConnected: string;
+  userSystem: string;
+  userDisconnected: string;
+  actionButtonBackgroundColor: string;
+  actionButtonHoverBackgroundColor: string;
+  actionButtonActiveBackgroundColor: string;
+  actionButtonFontColor: string;
+  buttonHoverBackground: string;
+  buttonActiveBackground: string;
+  borderColorHover: string;
+  searchBoxBackgroundColor: string;
+  labelColor: string;
+  linkColor: string;
+  mentionsColor: string;
+  Text: string;
+  Labels: string;
+  SecondaryButton: {
+    Hover: string;
+    Default: string;
+    Background: string;
+  };
+  Navbar: {
+    Background: string;
+    Icons: string;
+    Hover: string;
+  };
+  Input: {
+    Background: string;
+  };
+  Strokes: string;
+  Chatbox: {
+    Background: string;
+    Message: {
+      Hover: string;
+      ProgressDone: string;
+      ReactionButton: string;
+      InputActive: string;
+    };
+    Div: string;
+  };
+  PrimaryButton: {
+    Background: string;
+    Text: string;
+  };
+  ToggleButtons: {
+    Default: string;
+    Hover: string;
+  };
+  Channel: {
+    Active: string;
+    Hover: string;
+    Inactive: string;
+    Background: string;
+  };
+  User: {
+    Active: string;
+    Inactive: string;
+    AFK: string;
+  };
+  Channels: {
+    HoverText: string;
+  };
+  Icons: {
+    Static: string;
+    Hover: string;
+  };
+  ActiveOverlay: string;
 };
 
-declare module 'styled-components' {
+declare module "styled-components" {
   export interface DefaultTheme extends Theme {}
 }
 
 export type Themes = {
-  [id: string]: Theme
+  [id: string]: Theme;
 };
 
 export type ThemeControl = {
-  theme: string, 
-  themes: Themes,
-  themeNames: string[],
-  setTheme: (v: string) => void
+  theme: string;
+  themes: Themes;
+  themeNames: string[];
+  setTheme: (v: string) => void;
 };
 
 const themes: Themes = {
   light: {
-    loginIlustration: '/login_ilustration_light.svg',
-    registerIlustration: '/register_light.svg',
+    loginIlustration: "/login_ilustration_light.svg",
+    registerIlustration: "/register_light.svg",
     name: "Light",
     icon: "sun",
     logo: "/avatar.svg",
@@ -187,8 +187,8 @@ const themes: Themes = {
   test: {
     name: "Test",
     icon: "vail",
-    loginIlustration: '/login_ilustration_dark.svg',
-    registerIlustration: '/register_dark.svg',
+    loginIlustration: "/login_ilustration_dark.svg",
+    registerIlustration: "/register_dark.svg",
     logo: "/avatar.svg",
     borderColor: "#565856",
     backgroundColor: "#1a1d21",
@@ -270,8 +270,8 @@ const themes: Themes = {
     name: "Dark",
     icon: "moon",
     logo: "/avatar.svg",
-    loginIlustration: '/login_ilustration_dark.svg',
-    registerIlustration: '/register_dark.svg',
+    loginIlustration: "/login_ilustration_dark.svg",
+    registerIlustration: "/register_dark.svg",
     borderColor: "#565856",
     backgroundColor: "#1a1d21",
     highlightedBackgroundColor: "#2a2d31",
@@ -352,8 +352,8 @@ const themes: Themes = {
     name: "Dark Orange Test",
     icon: "carrot",
     logo: "/avatar.svg",
-    loginIlustration: '/login_ilustration_dark.svg',
-    registerIlustration: '/register_dark.svg',
+    loginIlustration: "/login_ilustration_dark.svg",
+    registerIlustration: "/register_dark.svg",
     borderColor: "#565856",
     backgroundColor: "#1a1d21",
     highlightedBackgroundColor: "#2a2d31",
@@ -433,10 +433,10 @@ const themes: Themes = {
 };
 
 export const ThemeSelectorContext = createContext<ThemeControl>({
-  theme: 'dark',
-  themeNames: ['dark'],
+  theme: "dark",
+  themeNames: ["dark"],
   themes: themes,
-  setTheme: () => {}
+  setTheme: () => {},
 });
 
 type ThemeSelectorContextProps = {
@@ -445,13 +445,15 @@ type ThemeSelectorContextProps = {
   value?: string;
 };
 
-export const ThemeSelectorProvider = ({ children, defaultTheme = 'dark', value }: ThemeSelectorContextProps) => {
-  const savedTheme = localStorage.getItem('theme');
+export const ThemeSelectorProvider = (
+  { children, defaultTheme = "dark", value }: ThemeSelectorContextProps,
+) => {
+  const savedTheme = localStorage.getItem("theme");
   const [theme, setTheme] = useState(savedTheme || defaultTheme);
   const setThemeAndSave = useCallback((theme: string) => {
     setTheme(theme);
-    localStorage.setItem('theme', theme);
-  }, [setTheme])
+    localStorage.setItem("theme", theme);
+  }, [setTheme]);
 
   useEffect(() => {
     if (value) {
@@ -459,14 +461,24 @@ export const ThemeSelectorProvider = ({ children, defaultTheme = 'dark', value }
     }
   }, [value, setThemeAndSave]);
 
-  document.body.setAttribute('style', `--background-color: ${themes[theme].Chatbox.Background};`);
+  document.body.setAttribute(
+    "style",
+    `--background-color: ${themes[theme].Chatbox.Background};`,
+  );
 
   const currentTheme = themes[theme] ?? themes[defaultTheme];
   return (
-    <ThemeSelectorContext.Provider value={{theme, setTheme: setThemeAndSave, themes: themes, themeNames: Object.keys(themes)}}>
+    <ThemeSelectorContext.Provider
+      value={{
+        theme,
+        setTheme: setThemeAndSave,
+        themes: themes,
+        themeNames: Object.keys(themes),
+      }}
+    >
       <ThemeProvider theme={currentTheme}>
         {children}
       </ThemeProvider>
     </ThemeSelectorContext.Provider>
   );
-}
+};

@@ -1,9 +1,9 @@
-import styled from 'styled-components';
-import { ProfilePic } from './ProfilePic';
-import { ButtonWithIcon } from '../molecules/ButtonWithIcon';
-import { client } from '../../core';
-import { observer } from 'mobx-react-lite';
-import { useApp } from '../contexts/appState';
+import styled from "styled-components";
+import { ProfilePic } from "./ProfilePic";
+import { ButtonWithIcon } from "../molecules/ButtonWithIcon";
+import { client } from "../../core";
+import { observer } from "mobx-react-lite";
+import { useApp } from "../contexts/appState";
 
 const Container = styled.div`
   display: flex;
@@ -61,10 +61,15 @@ export const LoggedUser = observer(() => {
         <div className="status">Online</div>
       </div>
       <div className="user-actions">
-        <ButtonWithIcon className="logout-button" icon="logout" size={32} onClick={async () => {
-          await client.api.auth.logout();
-          document.location.reload();
-        }}/>
+        <ButtonWithIcon
+          className="logout-button"
+          icon="logout"
+          size={32}
+          onClick={async () => {
+            await client.api.auth.logout();
+            document.location.reload();
+          }}
+        />
       </div>
     </Container>
   );

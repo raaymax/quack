@@ -1,16 +1,16 @@
-import styled from 'styled-components';
-import { useCallback, useEffect } from 'react';
-import { HoverProvider } from '../contexts/hover';
-import { MessageList } from '../organisms/MessageListScroller';
-import { Message as MessageType } from '../../types';
-import { useNavigate, useNavigation, useParams } from 'react-router-dom';
-import { ButtonWithIcon } from '../molecules/ButtonWithIcon';
-import { MessageListArgsProvider } from '../contexts/messageListArgs';
-import { Toolbar } from '../atoms/Toolbar';
-import { BaseRenderer } from './MessageListRenderer';
-import { observer } from 'mobx-react-lite';
-import { useApp } from '../contexts/appState';
-import { MessageModel } from '../../core/models/message';
+import styled from "styled-components";
+import { useCallback, useEffect } from "react";
+import { HoverProvider } from "../contexts/hover";
+import { MessageList } from "../organisms/MessageListScroller";
+import { Message as MessageType } from "../../types";
+import { useNavigate, useNavigation, useParams } from "react-router-dom";
+import { ButtonWithIcon } from "../molecules/ButtonWithIcon";
+import { MessageListArgsProvider } from "../contexts/messageListArgs";
+import { Toolbar } from "../atoms/Toolbar";
+import { BaseRenderer } from "./MessageListRenderer";
+import { observer } from "mobx-react-lite";
+import { useApp } from "../contexts/appState";
+import { MessageModel } from "../../core/models/message";
 
 const StyledPins = styled.div`
   height: 100%;
@@ -43,9 +43,12 @@ export const Header = observer(() => {
     <StyledHeader>
       <Toolbar size={28}>
         <h2>
-        Pinned messages
+          Pinned messages
         </h2>
-        <ButtonWithIcon icon='xmark' onClick={() => navigate('..', {relative: 'path'})} />
+        <ButtonWithIcon
+          icon="xmark"
+          onClick={() => navigate("..", { relative: "path" })}
+        />
       </Toolbar>
     </StyledHeader>
   );
@@ -58,22 +61,22 @@ export const PinsInner = observer(() => {
   const navigate = useNavigate();
   useEffect(() => {
     if (!channelId) {
-      return navigate('/');
+      return navigate("/");
     }
-  }, [navigation])
-  const messagesModel = app.getPins(channelId ?? '');
-  if(!messagesModel) return null;
+  }, [navigation]);
+  const messagesModel = app.getPins(channelId ?? "");
+  if (!messagesModel) return null;
   const gotoMessage = useCallback((msg: MessageType) => {
-    navigate(`/${msg.channelId}${(msg.parentId ? '/t/'+msg.parentId : '')}`, {
+    navigate(`/${msg.channelId}${(msg.parentId ? "/t/" + msg.parentId : "")}`, {
       state: {
-        type: 'archive',
+        type: "archive",
         selected: msg.id,
         date: msg.createdAt,
-      }
+      },
     });
   }, [navigate]);
   return (
-    <StyledPins className='pins'>
+    <StyledPins className="pins">
       <HoverProvider>
         <Header />
         <MessageList
@@ -94,4 +97,4 @@ export const Pins = observer(() => {
       <PinsInner />
     </MessageListArgsProvider>
   );
-})
+});

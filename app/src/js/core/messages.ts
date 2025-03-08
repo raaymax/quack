@@ -9,32 +9,30 @@ class MsgsRes<T> extends Range {
 
   constructor(res: any) {
     super(res.from, res.to);
-    this.data= res.data;
-  } 
+    this.data = res.data;
+  }
 
   static sort(repo: MsgsRes<any>[]) {
     return [...repo].sort((a, b) => a.from - b.from);
   }
 }
 
-
 class MessagesCache<T> {
-  repo: MsgsRes<T>[] = []
+  repo: MsgsRes<T>[] = [];
   combineData: (r1: T, r2: T) => T;
 
   constructor({ combine }: { combine: (r1: T, r2: T) => T }) {
     this.combineData = combine;
-    document.addEventListener('freeze', () => {
+    document.addEventListener("freeze", () => {
       this.repo.length = 0;
     });
   }
-
 
   update(entry: MsgsRes<T>) {
     this.repo.push(entry);
   }
 
-  combine(r1: MsgsRes<T>, r2: MsgsRes<T>){
+  combine(r1: MsgsRes<T>, r2: MsgsRes<T>) {
     return new MsgsRes({
       ...r2,
       ...r1,
@@ -45,22 +43,24 @@ class MessagesCache<T> {
   }
 
   get(r: Range) {
-    const relevant: MsgsRes<T>[] = MsgsRes.sort(this.repo).filter((r2) => r.overlaps(r2)).reduce<any>((acc: MsgsRes<T>[], item: MsgsRes<T>) => {
-      if(!acc[acc.length-1]) {
+    const relevant: MsgsRes<T>[] = MsgsRes.sort(this.repo).filter((r2) =>
+      r.overlaps(r2)
+    ).reduce<any>((acc: MsgsRes<T>[], item: MsgsRes<T>) => {
+      if (!acc[acc.length - 1]) {
         return [item];
       }
-      const rest = acc.length > 1 ? acc.slice(0, acc.length-1) : [];
-      const last = acc[acc.length-1];
+      const rest = acc.length > 1 ? acc.slice(0, acc.length - 1) : [];
+      const last = acc[acc.length - 1];
 
-      if(item.overlaps(last)) {
-        return [...rest, this.combine(last, item)]
+      if (item.overlaps(last)) {
+        return [...rest, this.combine(last, item)];
       }
       acc.push(item);
       return acc;
-    }, [])
+    }, []);
 
-    const cache = relevant.find((rel: MsgsRes<T>) => r.containsEntirely(rel))
-    if(cache) {
+    const cache = relevant.find((rel: MsgsRes<T>) => r.containsEntirely(rel));
+    if (cache) {
       return cache.data;
     }
     return null;
@@ -68,33 +68,37 @@ class MessagesCache<T> {
 }
 
 type MessageQuery = {
-  pinned?: boolean,
-  before?: string,
-  after?: string,
-  limit?: number,
-  channelId: string,
-  parentId?: string | null,
-  search?: string,
-  preprocess?: (m: Message[]) => Promise<Message[]>
-}
+  pinned?: boolean;
+  before?: string;
+  after?: string;
+  limit?: number;
+  channelId: string;
+  parentId?: string | null;
+  search?: string;
+  preprocess?: (m: Message[]) => Promise<Message[]>;
+};
 
-export class MessageService{
-  _cache: {[key: string]: MessagesCache<Message[]>};
-  pending: {[key: string]: Promise<Message[]>} = {};
+export class MessageService {
+  _cache: { [key: string]: MessagesCache<Message[]> };
+  pending: { [key: string]: Promise<Message[]> } = {};
   dataContainer: (r1: Message[], r2: Message[]) => Message[];
   client: Client;
 
-  constructor(client: Client, combine?: (r1: Message[], r2: Message[]) => Message[]) {
-    this._cache = {} 
-    this.dataContainer = combine ?? ((r1: Message[], r2: Message[]) => [...r1, ...r2]);
+  constructor(
+    client: Client,
+    combine?: (r1: Message[], r2: Message[]) => Message[],
+  ) {
+    this._cache = {};
+    this.dataContainer = combine ??
+      ((r1: Message[], r2: Message[]) => [...r1, ...r2]);
     this.client = client;
   }
 
-  cache({channelId, parentId = '', pinned, search}: MessageQuery) {
+  cache({ channelId, parentId = "", pinned, search }: MessageQuery) {
     let key = `${channelId}-${parentId}`;
-    if(pinned) key += '-pinned';
-    if(search) key += `-search:${search}`;
-    if(!this._cache[key]){
+    if (pinned) key += "-pinned";
+    if (search) key += `-search:${search}`;
+    if (!this._cache[key]) {
       this._cache[key] = new MessagesCache({
         combine: this.dataContainer,
       });
@@ -113,43 +117,44 @@ export class MessageService{
   }
 
   async _fetch(query: MessageQuery): Promise<Message[]> {
-      const {channelId, parentId, before, after, limit, preprocess} = query
-      const to = before ? new Date(before).getTime() : Infinity;
-      const from = after ? new Date(after).getTime() : -Infinity;
-      if ( to || from ) {
-        const cache = this.cache(query).get(new Range(from, to));
-        if(cache) {
-          return cache.map(item => ({...item})); //remove clonning
-        }
+    const { channelId, parentId, before, after, limit, preprocess } = query;
+    const to = before ? new Date(before).getTime() : Infinity;
+    const from = after ? new Date(after).getTime() : -Infinity;
+    if (to || from) {
+      const cache = this.cache(query).get(new Range(from, to));
+      if (cache) {
+        return cache.map((item) => ({ ...item })); //remove clonning
       }
-      const data = await this.client.api.getMessages({
-        pinned: query.pinned,
-        channelId: channelId,
-        parentId: parentId,
-        q: query.search,
-        before,
-        after,
-        limit,
-      })
-      
-      const preprocessedData = preprocess ? await preprocess(data) : data;
+    }
+    const data = await this.client.api.getMessages({
+      pinned: query.pinned,
+      channelId: channelId,
+      parentId: parentId,
+      q: query.search,
+      before,
+      after,
+      limit,
+    });
 
+    const preprocessedData = preprocess ? await preprocess(data) : data;
 
-      if (data?.length > 0) {
-        this.cache(query).update(new MsgsRes({
+    if (data?.length > 0) {
+      this.cache(query).update(
+        new MsgsRes({
           from: after ? from : this.getMinDate(data),
           to: before ? to : this.getMaxDate(data),
           data: preprocessedData,
-        }));
-      }
+        }),
+      );
+    }
 
-      return preprocessedData;
+    return preprocessedData;
   }
 
   async fetch(query: MessageQuery): Promise<Message[]> {
     const key = JSON.stringify(query);
-    const promise = this.pending[key]
-    if(promise) {
+    const promise = this.pending[key];
+    if (promise) {
       return await promise;
     }
     this.pending[key] = new Promise<Message[]>((resolve) => {
@@ -163,4 +168,3 @@ export class MessageService{
     return await this.pending[key];
   }
 }
-

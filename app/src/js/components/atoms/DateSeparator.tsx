@@ -1,6 +1,6 @@
-import styled from 'styled-components';
-import { formatDateDetailed } from '../../utils';
-import { observer } from 'mobx-react-lite';
+import styled from "styled-components";
+import { formatDateDetailed } from "../../utils";
+import { observer } from "mobx-react-lite";
 
 const StyledDateSeparator = styled.div`
   text-align: center;
@@ -16,27 +16,27 @@ const StyledDateSeparator = styled.div`
   .line {
     flex: 1 auto;
     height: 1px;
-    background-color: ${props => props.theme.Strokes};
+    background-color: ${(props) => props.theme.Strokes};
   }
   .label {
     flex: 0 auto;
     padding: 0 8px;
     font-size: 12px;
     line-height: 12px;
-    color: ${props => props.theme.Labels};
+    color: ${(props) => props.theme.Labels};
   }
 `;
 
 type DateSeparatorProps = {
   date: string | undefined;
-}
+};
 
 export const DateSeparator = observer(({ date }: DateSeparatorProps) => (
   <StyledDateSeparator>
-    <div className='line'></div>
-    <div className='label'>
+    <div className="line"></div>
+    <div className="label">
       {formatDateDetailed(date)}
     </div>
-    <div className='line'></div>
+    <div className="line"></div>
   </StyledDateSeparator>
 ));

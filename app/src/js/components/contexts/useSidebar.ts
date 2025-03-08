@@ -1,7 +1,7 @@
-import { useContext } from 'react';
-import { SidebarContext, SidebarContextType } from './sidebar';
+import { useContext } from "react";
+import { SidebarContext, SidebarContextType } from "./sidebar";
 
-export const useSidebar= (): SidebarContextType  => {
+export const useSidebar = (): SidebarContextType => {
   const sidebarControl = useContext(SidebarContext);
   if (!sidebarControl) {
     return {
@@ -12,4 +12,4 @@ export const useSidebar= (): SidebarContextType  => {
     };
   }
   return sidebarControl;
-}
+};

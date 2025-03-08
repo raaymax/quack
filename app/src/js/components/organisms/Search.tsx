@@ -7,7 +7,7 @@ import { Toolbar } from "../atoms/Toolbar";
 import { ButtonWithIcon } from "../molecules/ButtonWithIcon";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { MessageListArgsProvider } from "../contexts/messageListArgs";
-import { MessageList } from '../organisms/MessageListScroller';
+import { MessageList } from "../organisms/MessageListScroller";
 import { SearchBox } from "../atoms/SearchBox";
 
 import { observer } from "mobx-react-lite";
@@ -67,48 +67,51 @@ export const Header = observer(() => {
 
   return (
     <StyledHeader>
-      {isMobile() ? (
-        <Toolbar className="toolbar" size={28}>
-          <SearchBox className="mobile-search" onSearch={onSearch} />
-          <ButtonWithIcon
-            icon="xmark"
-            onClick={() => navigate("..", { relative: "path" })}
-          />
-        </Toolbar>
-      ) : (
-        <Toolbar className="toolbar" size={28}>
-          <h2>Search results</h2>
-          <ButtonWithIcon
-            icon="xmark"
-            onClick={() => navigate("..", { relative: "path" })}
-          />
-        </Toolbar>
-      )}
+      {isMobile()
+        ? (
+          <Toolbar className="toolbar" size={28}>
+            <SearchBox className="mobile-search" onSearch={onSearch} />
+            <ButtonWithIcon
+              icon="xmark"
+              onClick={() => navigate("..", { relative: "path" })}
+            />
+          </Toolbar>
+        )
+        : (
+          <Toolbar className="toolbar" size={28}>
+            <h2>Search results</h2>
+            <ButtonWithIcon
+              icon="xmark"
+              onClick={() => navigate("..", { relative: "path" })}
+            />
+          </Toolbar>
+        )}
     </StyledHeader>
   );
 });
 
-export const SearchResults = observer(({model}: {model: ThreadModel | null}) =>{
-  const navigate = useNavigate();
-  const gotoMessage = useCallback(
-    (msg: MessageModel) => {
-      navigate(`/${msg.channelId}`, {
-        state: {
-          type: "archive",
-          channelId: msg.channelId,
-          parentId: msg.parentId,
-          selected: msg.id,
-          date: msg.createdAt,
-        },
-      });
-    },
-    [navigate],
-  );
-  if (!model) return null;
+export const SearchResults = observer(
+  ({ model }: { model: ThreadModel | null }) => {
+    const navigate = useNavigate();
+    const gotoMessage = useCallback(
+      (msg: MessageModel) => {
+        navigate(`/${msg.channelId}`, {
+          state: {
+            type: "archive",
+            channelId: msg.channelId,
+            parentId: msg.parentId,
+            selected: msg.id,
+            date: msg.createdAt,
+          },
+        });
+      },
+      [navigate],
+    );
+    if (!model) return null;
 
-  return (
-    <StyledList>
-      <div key="bottom" id="scroll-stop" />
+    return (
+      <StyledList>
+        <div key="bottom" id="scroll-stop" />
         <MessageList
           renderer={BaseRenderer}
           model={model}
@@ -116,15 +119,16 @@ export const SearchResults = observer(({model}: {model: ThreadModel | null}) =>{
             gotoMessage(msg);
           }}
         />
-    </StyledList>
-  );
-})
+      </StyledList>
+    );
+  },
+);
 
 export const Search = observer(() => {
   const app = useApp();
   const location = useLocation();
   const { channelId } = useParams()!;
-  const messagesModel = app.getSearch(channelId ?? '', location.state?.search);
+  const messagesModel = app.getSearch(channelId ?? "", location.state?.search);
   if (!messagesModel) return null;
   return (
     <MessageListArgsProvider streamId="search">

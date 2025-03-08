@@ -1,48 +1,60 @@
-import { Main } from './layout/Main';
-import { Discussion } from './layout/Discussion';
-import { Search } from './organisms/Search';
-import { Pins } from './organisms/Pins';
-import { redirect,
+import { Main } from "./layout/Main";
+import { Discussion } from "./layout/Discussion";
+import { Search } from "./organisms/Search";
+import { Pins } from "./organisms/Pins";
+import {
   createHashRouter,
   Outlet,
+  redirect,
   RouterProvider,
-} from 'react-router-dom';
-import { client } from '../core'
-import { ErrorPageS } from './pages/ErrorPage';
+} from "react-router-dom";
+import { client } from "../core";
+import { ErrorPageS } from "./pages/ErrorPage";
 
-import { InitFailedError, PageNotFoundError } from './errors';
-import { app } from '../core';
-
+import { InitFailedError, PageNotFoundError } from "./errors";
+import { app } from "../core";
 
 const router = createHashRouter([
-  { 
-    element: <Main><Outlet /></Main>,
+  {
+    element: (
+      <Main>
+        <Outlet />
+      </Main>
+    ),
     children: [
       {
         path: "/:channelId",
         loader: async ({ params }) => {
           await app.init();
-          if(app.initFailed) throw new InitFailedError();
-          const {channelId} = params;
-          if(!channelId) throw new PageNotFoundError();
+          if (app.initFailed) throw new InitFailedError();
+          const { channelId } = params;
+          if (!channelId) throw new PageNotFoundError();
           const channel = await client.api.getChannelById(channelId);
-          if(!channel) throw new PageNotFoundError();
+          if (!channel) throw new PageNotFoundError();
           return null;
         },
         element: <Discussion />,
-        errorElement: <ErrorPageS/>,
+        errorElement: <ErrorPageS />,
       },
       {
         path: "/:channelId/search",
-        element: <Discussion><Search /></Discussion>,
+        element: (
+          <Discussion>
+            <Search />
+          </Discussion>
+        ),
       },
       {
         path: "/:channelId/pins",
-        element: <Discussion><Pins /></Discussion>,
+        element: (
+          <Discussion>
+            <Pins />
+          </Discussion>
+        ),
       },
       {
         path: "/:channelId/t/:parentId",
-        element: <Discussion/>,
+        element: <Discussion />,
       },
     ],
     errorElement: <ErrorPageS />,
@@ -50,17 +62,13 @@ const router = createHashRouter([
   {
     path: "/*",
     loader: async () => {
-      const {mainChannelId} = await client.api.getUserConfig() || {};
+      const { mainChannelId } = await client.api.getUserConfig() || {};
       return redirect(`/${mainChannelId}`);
     },
     errorElement: <ErrorPageS />,
   },
 ]);
 
-
-export const Router= () => {
-  return (
-    <RouterProvider router={router} />
-  );
+export const Router = () => {
+  return <RouterProvider router={router} />;
 };
-

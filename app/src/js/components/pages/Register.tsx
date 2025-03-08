@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useState } from 'react';
-import { client } from '../../core';
-import RegistrationPage from './RegistrationPage';
-import { ErrorPage } from './ErrorPage';
+import { useCallback, useEffect, useState } from "react";
+import { client } from "../../core";
+import RegistrationPage from "./RegistrationPage";
+import { ErrorPage } from "./ErrorPage";
 
 export const Register = () => {
   const url = new URL(window.location.toString());
@@ -56,12 +56,12 @@ export const Register = () => {
         if (err instanceof Error) {
           console.log(err);
           setMsg(err.message);
-        }else{
+        } else {
           if ((err as any)?.errorCode === "USER_ALREADY_EXISTS") {
             setMsg((err as any).message);
           } else {
             console.log(err);
-            setMsg('Unknown error');
+            setMsg("Unknown error");
           }
         }
       }
@@ -70,10 +70,18 @@ export const Register = () => {
   );
 
   if (error) {
-
-    return <ErrorPage title="404" description={["Link you are trying to open is invalid","It could expire or was copied incorectly"]} buttons={['home']} />;
+    return (
+      <ErrorPage
+        title="404"
+        description={[
+          "Link you are trying to open is invalid",
+          "It could expire or was copied incorectly",
+        ]}
+        buttons={["home"]}
+      />
+    );
   }
-  return (<RegistrationPage onSubmit={submit} error={msg} />);
+  return <RegistrationPage onSubmit={submit} error={msg} />;
 };
 
 export default Register;

@@ -1,7 +1,5 @@
-import {
-  createContext, useContext,
-} from 'react';
-import {AppModel} from '../../core/models/app';
+import { createContext, useContext } from "react";
+import { AppModel } from "../../core/models/app";
 
 export const AppContext = createContext<AppModel | null>(null);
 
@@ -21,7 +19,7 @@ export const AppProvider = ({ children, value }: HoverContextProps) => {
 export const useApp = () => {
   const context = useContext(AppContext);
   if (!context) {
-    throw new Error('useApp must be used within a AppProvider');
+    throw new Error("useApp must be used within a AppProvider");
   }
   return context;
-}
+};

@@ -1,8 +1,8 @@
-import type { Meta, StoryObj } from '@storybook/react';
- 
-import '../../styles.ts';
-import { StatusLine } from '../../js/components/atoms/StatusLine';
-import { AppModel } from 'app/src/js/core/models/app.ts';
+import type { Meta, StoryObj } from "@storybook/react";
+
+import "../../styles.ts";
+import { StatusLine } from "../../js/components/atoms/StatusLine";
+import { AppModel } from "app/src/js/core/models/app.ts";
 
 const meta: Meta<typeof StatusLine> = {
   component: StatusLine,
@@ -10,17 +10,20 @@ const meta: Meta<typeof StatusLine> = {
   }],
 };
 
-
 const app = new AppModel();
-app.channels.upsert({id: '123', channelType: 'PUBLIC',  name: 'test', users: ['123']});
+app.channels.upsert({
+  id: "123",
+  channelType: "PUBLIC",
+  name: "test",
+  users: ["123"],
+});
 
- 
 export default meta;
 type Story = StoryObj<typeof StatusLine>;
- 
+
 export const Primary: Story = {
   args: {
-    typing: app.getThread('123', null, {init: false}).typing,
-    info: app.info
+    typing: app.getThread("123", null, { init: false }).typing,
+    info: app.info,
   },
 };

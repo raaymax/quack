@@ -1,6 +1,6 @@
-import styled from 'styled-components';
-import { observer } from 'mobx-react-lite';
-import { client } from '../../core';
+import styled from "styled-components";
+import { observer } from "mobx-react-lite";
+import { client } from "../../core";
 
 const FileContainer = styled.div`
   cursor: pointer;
@@ -56,9 +56,13 @@ type FileProps = {
   };
 };
 
-export const File = observer(({ data: { fileName, contentType, id } }: FileProps) => (
+export const File = observer((
+  { data: { fileName, contentType, id } }: FileProps,
+) => (
   <FileContainer data-id={id} onClick={() => id && download(id)}>
-    <div className='type'><i className='fa-solid fa-file' /></div>
-    <div className='name'>{fileName} [{contentType}]</div>
+    <div className="type">
+      <i className="fa-solid fa-file" />
+    </div>
+    <div className="name">{fileName} [{contentType}]</div>
   </FileContainer>
 ));

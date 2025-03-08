@@ -1,13 +1,13 @@
-import styled from 'styled-components';
-import { useSize } from '../contexts/useSize';
-import { cn, ClassNames } from '../../utils';
-import { observer } from 'mobx-react-lite';
+import styled from "styled-components";
+import { useSize } from "../contexts/useSize";
+import { ClassNames, cn } from "../../utils";
+import { observer } from "mobx-react-lite";
 
 type TextProps = {
   className?: ClassNames;
   size?: number;
   children: React.ReactNode;
-}
+};
 
 const StyledText = styled.span`
   margin: auto;
@@ -20,11 +20,16 @@ const StyledText = styled.span`
 export const Text = observer(({ size, className, children }: TextProps) => {
   const $size = useSize(size);
   return (
-    <StyledText className={cn('text', className)} style={$size ? {
-      height: `${$size}px`,
-      lineHeight: `${$size}px`,
-      fontSize: `${$size}px`,
-    } : undefined} >
+    <StyledText
+      className={cn("text", className)}
+      style={$size
+        ? {
+          height: `${$size}px`,
+          lineHeight: `${$size}px`,
+          fontSize: `${$size}px`,
+        }
+        : undefined}
+    >
       {children}
     </StyledText>
   );

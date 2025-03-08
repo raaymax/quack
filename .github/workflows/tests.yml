@@ -29,7 +29,6 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: 22.x
-        cache: 'npm'
     - uses: denoland/setup-deno@v2
       with:
         deno-version: '2.x'

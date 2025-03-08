@@ -1,11 +1,11 @@
-import styled from 'styled-components';
-import { ClassNames, cn } from '../../utils';
-import { observer } from 'mobx-react-lite';
+import styled from "styled-components";
+import { ClassNames, cn } from "../../utils";
+import { observer } from "mobx-react-lite";
 
 const StyledTag = styled.div`
   display: inline-block;
-  color: ${({theme}) => theme.Text};
-  background-color: ${({theme}) => theme.Chatbox.Message.ReactionButton};
+  color: ${({ theme }) => theme.Text};
+  background-color: ${({ theme }) => theme.Chatbox.Message.ReactionButton};
   border-radius: 4px;
   padding: 0px 4px;
   margin-right: 4px;
@@ -22,7 +22,7 @@ type TagProps = {
 };
 
 export const Tag = observer(({ className, onClick, children }: TagProps) => (
-  <StyledTag className={cn('tag', className)} onClick={onClick}>
+  <StyledTag className={cn("tag", className)} onClick={onClick}>
     {children}
   </StyledTag>
 ));

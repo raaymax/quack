@@ -1,10 +1,9 @@
-import type { Meta, StoryObj } from '@storybook/react';
- 
-import '../../styles.ts';
-import { LoggedUser } from '../../js/components/atoms/LoggedUser.tsx';
-import { UserProvider } from '../../js/components/contexts/user.tsx';
-import { User, app } from '../../js/core';
+import type { Meta, StoryObj } from "@storybook/react";
 
+import "../../styles.ts";
+import { LoggedUser } from "../../js/components/atoms/LoggedUser.tsx";
+import { UserProvider } from "../../js/components/contexts/user.tsx";
+import { app, User } from "../../js/core";
 
 const meta: Meta<typeof LoggedUser> = {
   component: LoggedUser,
@@ -16,14 +15,13 @@ const meta: Meta<typeof LoggedUser> = {
     ),
   ],
   loaders: [async () => {
-    app.users.upsert({ id: '1', name: 'John Doe' } as User);
+    app.users.upsert({ id: "1", name: "John Doe" } as User);
   }],
 };
- 
+
 export default meta;
 type Story = StoryObj<typeof LoggedUser>;
- 
+
 export const Primary: Story = {
-  args: {
-  },
+  args: {},
 };

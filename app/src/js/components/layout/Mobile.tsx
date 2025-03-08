@@ -1,18 +1,17 @@
-
-import styled, { useTheme } from 'styled-components';
-import { cn, isMobile } from '../../utils';
-import { useSidebar } from '../contexts/useSidebar';
-import { useParams , useLocation, useNavigate} from 'react-router-dom';
-import { useEffect } from 'react';
-import { Workspaces } from '../organisms/Workspaces';
-import { Sidebar } from '../organisms/Sidebar';
-import { Conversation } from '../organisms/Conversation';
-import { Channel } from '../molecules/NavChannel';
-import { Toolbar } from '../atoms/Toolbar';
-import { ButtonWithIcon } from '../molecules/ButtonWithIcon';
-import { MessageListArgsProvider } from '../contexts/messageListArgs';
-import { observer } from 'mobx-react-lite';
-import { useApp } from '../contexts/appState';
+import styled, { useTheme } from "styled-components";
+import { cn, isMobile } from "../../utils";
+import { useSidebar } from "../contexts/useSidebar";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useEffect } from "react";
+import { Workspaces } from "../organisms/Workspaces";
+import { Sidebar } from "../organisms/Sidebar";
+import { Conversation } from "../organisms/Conversation";
+import { Channel } from "../molecules/NavChannel";
+import { Toolbar } from "../atoms/Toolbar";
+import { ButtonWithIcon } from "../molecules/ButtonWithIcon";
+import { MessageListArgsProvider } from "../contexts/messageListArgs";
+import { observer } from "mobx-react-lite";
+import { useApp } from "../contexts/appState";
 
 const WORKSPACES_WIDTH = 80;
 
@@ -230,123 +229,186 @@ type SideConversationProps = {
   parentId?: string;
 };
 
-export const SideConversation = observer(({ channelId, parentId}: SideConversationProps) => {
-  const app = useApp();
-  const threadModel = app.getThread(channelId, parentId);
-  if(!parentId) return null;
-  const message = threadModel.messages.get(parentId);
-  const navigate = useNavigate();
-  const { toggleSidebar } = useSidebar();
-  return (
-    <MessageListArgsProvider streamId="side">
-      <div className={cn('side-conversation-container', 'conversation-container')}>
-        <div className='header'>
-
-          <Toolbar className="toolbar" size={32}>
-            <ButtonWithIcon icon="bars" onClick={toggleSidebar} iconSize={24} />
-            thread
-            <Channel channelId={channelId} />
-            <ButtonWithIcon icon='back' onClick={() => {
-              navigate(`/${channelId}`, {state: {
-                type: 'archive', selected: message?.id, date: message?.createdAt,
-              }});
-            }} iconSize={24} />
-            <ButtonWithIcon icon='xmark' onClick={() => {
-              navigate(`/${channelId}`);
-            }} iconSize={24} />
-          </Toolbar>
+export const SideConversation = observer(
+  ({ channelId, parentId }: SideConversationProps) => {
+    const app = useApp();
+    const threadModel = app.getThread(channelId, parentId);
+    if (!parentId) return null;
+    const message = threadModel.messages.get(parentId);
+    const navigate = useNavigate();
+    const { toggleSidebar } = useSidebar();
+    return (
+      <MessageListArgsProvider streamId="side">
+        <div
+          className={cn(
+            "side-conversation-container",
+            "conversation-container",
+          )}
+        >
+          <div className="header">
+            <Toolbar className="toolbar" size={32}>
+              <ButtonWithIcon
+                icon="bars"
+                onClick={toggleSidebar}
+                iconSize={24}
+              />
+              thread
+              <Channel channelId={channelId} />
+              <ButtonWithIcon
+                icon="back"
+                onClick={() => {
+                  navigate(`/${channelId}`, {
+                    state: {
+                      type: "archive",
+                      selected: message?.id,
+                      date: message?.createdAt,
+                    },
+                  });
+                }}
+                iconSize={24}
+              />
+              <ButtonWithIcon
+                icon="xmark"
+                onClick={() => {
+                  navigate(`/${channelId}`);
+                }}
+                iconSize={24}
+              />
+            </Toolbar>
+          </div>
+          <div className="conversation">
+            <Conversation channelId={channelId} parentId={parentId} />
+          </div>
         </div>
-        <div className='conversation'>
-          <Conversation channelId={channelId} parentId={parentId} />
-        </div>
-      </div>
-    </MessageListArgsProvider>
-  );
-})
+      </MessageListArgsProvider>
+    );
+  },
+);
 
 type MainConversationProps = {
   channelId: string;
   children?: React.ReactNode;
 };
-export const MainConversation = observer(({ channelId, children}: MainConversationProps) => {
-  const app = useApp();
-  const location = useLocation();
-  const navigate = useNavigate();
-  const threadModel = app.getThread(channelId);
-  const { toggleSidebar } = useSidebar();
+export const MainConversation = observer(
+  ({ channelId, children }: MainConversationProps) => {
+    const app = useApp();
+    const location = useLocation();
+    const navigate = useNavigate();
+    const threadModel = app.getThread(channelId);
+    const { toggleSidebar } = useSidebar();
 
-  return (
-    <MessageListArgsProvider streamId='main' value={location.state}>
-      <div className={cn('main-conversation-container', 'conversation-container')}>
-        <div className='header'>
-          <Toolbar className="toolbar" size={32}>
-            <ButtonWithIcon icon="bars" onClick={toggleSidebar} iconSize={24} />
-            <Channel channelId={channelId} />
-            {threadModel.messages.mode === 'archive' && (
-              <ButtonWithIcon icon='down' onClick = {() => {
-                navigate(".", { relative: "path", state: {
-                  type: 'live',
-                  selected: null,
-                  date: null,
-                } });
-              }} iconSize={24} />
+    return (
+      <MessageListArgsProvider streamId="main" value={location.state}>
+        <div
+          className={cn(
+            "main-conversation-container",
+            "conversation-container",
+          )}
+        >
+          <div className="header">
+            <Toolbar className="toolbar" size={32}>
+              <ButtonWithIcon
+                icon="bars"
+                onClick={toggleSidebar}
+                iconSize={24}
+              />
+              <Channel channelId={channelId} />
+              {threadModel.messages.mode === "archive" && (
+                <ButtonWithIcon
+                  icon="down"
+                  onClick={() => {
+                    navigate(".", {
+                      relative: "path",
+                      state: {
+                        type: "live",
+                        selected: null,
+                        date: null,
+                      },
+                    });
+                  }}
+                  iconSize={24}
+                />
+              )}
+              <ButtonWithIcon
+                icon="thumbtack"
+                onClick={() => {
+                  navigate("/" + channelId + "/pins");
+                }}
+                iconSize={24}
+              />
+              <ButtonWithIcon
+                icon="search"
+                onClick={() => navigate("/" + channelId + "/search")}
+                iconSize={24}
+              />
+              {/*<ButtonWithIcon icon="refresh" onClick={() => dispatch(init({}))} iconSize={24} />*/}
+            </Toolbar>
+          </div>
+          <div className="conversation">
+            {(!children || !isMobile()) && (
+              <Conversation channelId={channelId} />
             )}
-            <ButtonWithIcon icon="thumbtack" onClick={() => {
-              navigate("/"+ channelId + "/pins")
-            }}  iconSize={24}/>
-            <ButtonWithIcon icon="search" onClick={() => navigate("/"+ channelId + "/search")}  iconSize={24}/>
-            {/*<ButtonWithIcon icon="refresh" onClick={() => dispatch(init({}))} iconSize={24} />*/}
-          </Toolbar>
+            {children && <div className="context-bar">{children}</div>}
+          </div>
         </div>
-        <div className='conversation'>
-          {(!children || !isMobile()) && <Conversation channelId={channelId} />}
-          {children && <div className='context-bar'>{children}</div>}
-        </div>
-      </div>
-    </MessageListArgsProvider>
-  );
-})
+      </MessageListArgsProvider>
+    );
+  },
+);
 
 type DiscussionProps = {
   className?: string;
   children?: React.ReactNode;
 };
-export const Discussion = observer(({ className, children }: DiscussionProps) => {
-  const {channelId='', parentId} = useParams();
-  return (
-    <div className={cn('discussion', className)}>
-      {(!isMobile() || !parentId) && <MainConversation channelId={channelId}>{children}</MainConversation>}
-      {parentId && <SideConversation channelId={channelId} parentId={parentId} />}
-    </div>
-  );
-})
-
-export const Mobile = observer(({children}: {children: React.ReactNode}) => {
-  const { sidebar } = useSidebar();
-  const { parentId } = useParams();
-  const theme = useTheme();
-  useEffect(() => {
-    console.log('change');
-    document.querySelector('meta[name="theme-color"]')
-      ?.setAttribute('content', sidebar ? theme.Navbar.Background : theme.Chatbox.Background);
-  }, [sidebar, theme]);
-  return (
-    <Container className={cn({
-      'side-stream': Boolean(parentId),
-      'sidebar-open': sidebar,
-      'sidebar-closed': !sidebar
-    })}>
-      {sidebar && (
-        <div className='overlay'>
-          <Workspaces />
-          <Sidebar />
-        </div>
-      )}
-      <div className={cn('main-view')}>
-        {children}
+export const Discussion = observer(
+  ({ className, children }: DiscussionProps) => {
+    const { channelId = "", parentId } = useParams();
+    return (
+      <div className={cn("discussion", className)}>
+        {(!isMobile() || !parentId) && (
+          <MainConversation channelId={channelId}>{children}</MainConversation>
+        )}
+        {parentId && (
+          <SideConversation channelId={channelId} parentId={parentId} />
+        )}
       </div>
-    </Container>
-  );
-});
+    );
+  },
+);
+
+export const Mobile = observer(
+  ({ children }: { children: React.ReactNode }) => {
+    const { sidebar } = useSidebar();
+    const { parentId } = useParams();
+    const theme = useTheme();
+    useEffect(() => {
+      console.log("change");
+      document.querySelector('meta[name="theme-color"]')
+        ?.setAttribute(
+          "content",
+          sidebar ? theme.Navbar.Background : theme.Chatbox.Background,
+        );
+    }, [sidebar, theme]);
+    return (
+      <Container
+        className={cn({
+          "side-stream": Boolean(parentId),
+          "sidebar-open": sidebar,
+          "sidebar-closed": !sidebar,
+        })}
+      >
+        {sidebar && (
+          <div className="overlay">
+            <Workspaces />
+            <Sidebar />
+          </div>
+        )}
+        <div className={cn("main-view")}>
+          {children}
+        </div>
+      </Container>
+    );
+  },
+);
 
 export default Mobile;

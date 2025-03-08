@@ -9,7 +9,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: row;
 
-  color: ${props=> props.theme.Text};
+  color: ${(props) => props.theme.Text};
   .avatar {
     width: 32px;
     flex: 0 0 32px;
@@ -55,28 +55,58 @@ const TagContainer = styled.div`
   }
 `;
 
-const Tag = observer(({ children, tooltip }: { children: React.ReactNode, tooltip: string | string[] }) => (
-  <TagContainer><Tooltip text={tooltip}>{children}</Tooltip></TagContainer>
+const Tag = observer((
+  { children, tooltip }: {
+    children: React.ReactNode;
+    tooltip: string | string[];
+  },
+) => (
+  <TagContainer>
+    <Tooltip text={tooltip}>{children}</Tooltip>
+  </TagContainer>
 ));
 
-export const DiscussionHeader = observer(({ channelId }: { channelId: string}) => {
-  const app = useApp();
-  const channel = app.channels.get(channelId);
-  if (!channel) return null;
-  const user = channel.otherUser || channel.user;
-  if (!user) return null;
-  const isEncrypted = channel.isDirect;
-  return (
-    <Container className="discussion-header">
-      {channel.isDirect 
-        ? <div className="avatar">
-          <ProfilePic showStatus={true} userId={user.id} type="personal" />
+export const DiscussionHeader = observer(
+  ({ channelId }: { channelId: string }) => {
+    const app = useApp();
+    const channel = app.channels.get(channelId);
+    if (!channel) return null;
+    const user = channel.otherUser || channel.user;
+    if (!user) return null;
+    const isEncrypted = channel.isDirect;
+    return (
+      <Container className="discussion-header">
+        {channel.isDirect
+          ? (
+            <div className="avatar">
+              <ProfilePic showStatus userId={user.id} type="personal" />
+            </div>
+          )
+          : (
+            <div className="channel-icon">
+              <Icon
+                icon={channel.channelType === "PUBLIC" ? "hash" : "lock"}
+                size={24}
+              />
+            </div>
+          )}
+        <div className="name">
+          {channel.isDirect ? user.name : channel.name}
         </div>
-        : <div className="channel-icon">
-          <Icon icon={channel.channelType === 'PUBLIC' ? "hash" : "lock"} size={24}/>
-        </div>}
-      <div className="name">{channel.isDirect ? user.name :  channel.name}</div>
-      {isEncrypted ? <Tag tooltip={["Messages in this channel are encrypted", "using your password", "Files encription not yet implemented"]}>E2EE</Tag> : null}
-    </Container>
-  );
-})
+        {isEncrypted
+          ? (
+            <Tag
+              tooltip={[
+                "Messages in this channel are encrypted",
+                "using your password",
+                "Files encription not yet implemented",
+              ]}
+            >
+              E2EE
+            </Tag>
+          )
+          : null}
+      </Container>
+    );
+  },
+);

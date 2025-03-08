@@ -38,11 +38,11 @@ const config = [
         ".storybook/**/*",
       ],
       languageOptions: {
-          ecmaVersion: 2022,
-          sourceType: "module",
-          globals: {
-              ...globals.serviceworker,
-          }
+        ecmaVersion: 2022,
+        sourceType: "module",
+        globals: {
+          ...globals.serviceworker,
+        },
       },
       rules: {
         "no-restricted-globals": ["off"],
@@ -65,13 +65,13 @@ const config = [
         ".storybook/**/*",
       ],
       languageOptions: {
-          ecmaVersion: 2022,
-          sourceType: "module",
-          globals: {
-            ...globals.chai,
-            ...globals.mocha,
-            ...globals.browser,
-          }
+        ecmaVersion: 2022,
+        sourceType: "module",
+        globals: {
+          ...globals.chai,
+          ...globals.mocha,
+          ...globals.browser,
+        },
       },
       rules: {
         "import/extensions": ["off"],
@@ -86,14 +86,14 @@ const config = [
     importPlugin.flatConfigs.recommended,
     {
       languageOptions: {
-          ecmaVersion: 2022,
-          sourceType: "module",
-          globals: {
-              ...globals.browser,
-              React: "readonly",
-              API_URL: "readonly",
-              APP_VERSION: "readonly",
-          }
+        ecmaVersion: 2022,
+        sourceType: "module",
+        globals: {
+          ...globals.browser,
+          React: "readonly",
+          API_URL: "readonly",
+          APP_VERSION: "readonly",
+        },
       },
       files: [
         "**/*.{ts,tsx}",
