@@ -1,8 +1,8 @@
-import styled from 'styled-components';
-import { cn, ClassNames } from '../../utils';
-import { Icon } from './Icon';
-import { useState, useEffect } from 'react';
-import { observer } from 'mobx-react-lite';
+import styled from "styled-components";
+import { ClassNames, cn } from "../../utils";
+import { Icon } from "./Icon";
+import { useEffect, useState } from "react";
+import { observer } from "mobx-react-lite";
 
 const Container = styled.div`
   position: relative;
@@ -42,29 +42,36 @@ type SearchBoxProps = {
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   className?: ClassNames;
   placeholder?: string;
-}
+};
 
 export const SearchBox = observer(({
-  placeholder = 'Search here...', className, onSearch, onChange, value: v, defaultValue
+  placeholder = "Search here...",
+  className,
+  onSearch,
+  onChange,
+  value: v,
+  defaultValue,
 }: SearchBoxProps) => {
-  const [value, setValue] = useState(defaultValue ?? '');
+  const [value, setValue] = useState(defaultValue ?? "");
 
   useEffect(() => {
-    setValue(v ?? '');
+    setValue(v ?? "");
   }, [v]);
 
-  return (<Container className={cn(className)}>
-    <SearchBoxInput
-      type="text"
-      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-        onChange?.(e);
-        setValue(e.target.value);
-      }}
-      onKeyDown={(e) => e.key === 'Enter' && value.trim() && onSearch?.(value)}
-      value={value}
-      placeholder={placeholder}
-    />
-    <Icon size={16} icon="search" />
-  </Container>
+  return (
+    <Container className={cn(className)}>
+      <SearchBoxInput
+        type="text"
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+          onChange?.(e);
+          setValue(e.target.value);
+        }}
+        onKeyDown={(e) =>
+          e.key === "Enter" && value.trim() && onSearch?.(value)}
+        value={value}
+        placeholder={placeholder}
+      />
+      <Icon size={16} icon="search" />
+    </Container>
   );
 });

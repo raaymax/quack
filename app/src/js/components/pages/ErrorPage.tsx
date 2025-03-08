@@ -1,8 +1,8 @@
-import styled from 'styled-components';
-import { Button } from '../atoms/Button';
-import { useRouteError } from 'react-router-dom';
-import { ApiError } from '../../core';
-import { InitFailedError, PageNotFoundError } from '../errors';
+import styled from "styled-components";
+import { Button } from "../atoms/Button";
+import { useRouteError } from "react-router-dom";
+import { ApiError } from "../../core";
+import { InitFailedError, PageNotFoundError } from "../errors";
 
 const Container = styled.div`
   color: ${({ theme }) => theme.Text};
@@ -69,85 +69,133 @@ const Container = styled.div`
 type ErrorPageProps = {
   title?: string;
   debug?: any;
-  buttons?: ('retry' | 'back' | 'home')[];
+  buttons?: ("retry" | "back" | "home")[];
   description?: string | string[];
-}
+};
 
-export const ErrorPage = ({title, debug, buttons=['back'], description}: ErrorPageProps) => {
+export const ErrorPage = (
+  { title, debug, buttons = ["back"], description }: ErrorPageProps,
+) => {
   return (
     <Container>
       <div className="image">
-        <img src="/error.svg" alt='' />
+        <img src="/error.svg" alt="" />
       </div>
 
       <div className="spacer" />
 
       <div className="title">
-        {title ?? 'Oops!'}
+        {title ?? "Oops!"}
       </div>
-  
+
       {description
-        ? (<div className="message">{[description].flat().map((l, idx) => (<p key={idx}>{l}</p>))}</div>)
-        : (<div className="message">
-          That means something went wrong,<br />
-          would you like to take a step back?
-        </div>)}
+        ? (
+          <div className="message">
+            {[description].flat().map((l, idx) => <p key={idx}>{l}</p>)}
+          </div>
+        )
+        : (
+          <div className="message">
+            That means something went wrong,<br />
+            would you like to take a step back?
+          </div>
+        )}
 
       <div className="action">
-        {buttons?.includes('retry') 
-          && <Button className="retry-button" onClick={() => document.location.reload()}>Try again</Button>}
-        {buttons?.includes('back') 
-          && <Button className="back-button" type="primary" onClick={() => window.history.back()}>Take me back</Button>}
-        {buttons?.includes('home') 
-          && <Button className="back-button" type="primary" onClick={() => document.location = '/'}>Take me home</Button>}
+        {buttons?.includes("retry") &&
+          (
+            <Button
+              className="retry-button"
+              onClick={() => document.location.reload()}
+            >
+              Try again
+            </Button>
+          )}
+        {buttons?.includes("back") &&
+          (
+            <Button
+              className="back-button"
+              type="primary"
+              onClick={() => window.history.back()}
+            >
+              Take me back
+            </Button>
+          )}
+        {buttons?.includes("home") &&
+          (
+            <Button
+              className="back-button"
+              type="primary"
+              onClick={() => document.location = "/"}
+            >
+              Take me home
+            </Button>
+          )}
       </div>
       <div className="spacer" />
-      {debug && <div className="debug-info">
-        <pre>
+      {debug && (
+        <div className="debug-info">
+          <pre>
           {JSON.stringify(debug, null, 2)}
-        </pre>
-      </div>}
+          </pre>
+        </div>
+      )}
     </Container>
   );
-}
+};
 
 export const ErrorPageS = () => {
-  let error = useRouteError();
+  const error = useRouteError();
   if (error instanceof InitFailedError) {
-    return <ErrorPage 
-      title="Failed to initialize"
-      description="We couldn't load the app, please try again."
-      buttons={['retry']} />;
+    return (
+      <ErrorPage
+        title="Failed to initialize"
+        description="We couldn't load the app, please try again."
+        buttons={["retry"]}
+      />
+    );
   }
   if (error instanceof PageNotFoundError) {
-    return <ErrorPage 
-      title="404"
-      buttons={['back']} />;
+    return (
+      <ErrorPage
+        title="404"
+        buttons={["back"]}
+      />
+    );
   }
-    
+
   if (error instanceof ApiError) {
-    if(error.status === 404) {
-      return <ErrorPage 
-        title="404" 
-        buttons={['retry']} />;
+    if (error.status === 404) {
+      return (
+        <ErrorPage
+          title="404"
+          buttons={["retry"]}
+        />
+      );
     }
-    return <ErrorPage 
-      title={error.status.toString()}
-      debug={{
-        message: error.message,
-        url: error.url,
-        stack: error.stack,
-        payload: error.payload
-      }} 
-      buttons={['retry', 'back']} />;
+    return (
+      <ErrorPage
+        title={error.status.toString()}
+        debug={{
+          message: error.message,
+          url: error.url,
+          stack: error.stack,
+          payload: error.payload,
+        }}
+        buttons={["retry", "back"]}
+      />
+    );
   }
   if (error instanceof Error) {
-    return <ErrorPage 
-      debug={{
-        message: error.message,
-        stack: error.stack
-      }} 
-      buttons={['back']} />;
+    return (
+      <ErrorPage
+        debug={{
+          message: error.message,
+          stack: error.stack,
+        }}
+        buttons={["back"]}
+      />
+    );
   }
-  return <ErrorPage buttons={['back']}/>;
-}
+  return <ErrorPage buttons={["back"]} />;
+};

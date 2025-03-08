@@ -1,26 +1,26 @@
-import { useCallback, useState, useEffect } from 'react';
-import styled from 'styled-components';
+import { useCallback, useEffect, useState } from "react";
+import styled from "styled-components";
 
-import { EmojiDescriptor } from '../../types';
-import { ClassNames, buildEmojiNode, cn, isMobile } from '../../utils';
-import { InputProvider } from '../contexts/input';
-import { useInput } from '../contexts/useInput';
+import { EmojiDescriptor } from "../../types";
+import { buildEmojiNode, ClassNames, cn, isMobile } from "../../utils";
+import { InputProvider } from "../contexts/input";
+import { useInput } from "../contexts/useInput";
 
-import { StatusLine } from '../atoms/StatusLine';
-import { Toolbar } from '../atoms/Toolbar';
+import { StatusLine } from "../atoms/StatusLine";
+import { Toolbar } from "../atoms/Toolbar";
 
-import { Attachments } from '../molecules/Attachments';
-import { EmojiSelector } from '../molecules/InputEmojiSelector';
-import { ChannelSelector } from '../molecules/InputChannelSelector';
-import { UserSelector } from '../molecules/InputUserSelector';
-import { ButtonWithIcon } from '../molecules/ButtonWithIcon';
+import { Attachments } from "../molecules/Attachments";
+import { EmojiSelector } from "../molecules/InputEmojiSelector";
+import { ChannelSelector } from "../molecules/InputChannelSelector";
+import { UserSelector } from "../molecules/InputUserSelector";
+import { ButtonWithIcon } from "../molecules/ButtonWithIcon";
 
-import { EmojiSearch } from './EmojiSearch';
+import { EmojiSearch } from "./EmojiSearch";
 
-import { observer } from 'mobx-react-lite';
-import { InputModel } from '../../core/models/input';
-import { client } from '../../core';
-import { useApp } from '../contexts/appState';
+import { observer } from "mobx-react-lite";
+import { InputModel } from "../../core/models/input";
+import { client } from "../../core";
+import { useApp } from "../contexts/appState";
 
 export const InputContainer = styled.div`
   position: relative;
@@ -131,16 +131,27 @@ export const InputContainer = styled.div`
 `;
 
 type InputFormProps = {
-  className?: ClassNames,
+  className?: ClassNames;
   model: InputModel;
-}
+};
 
 export const InputForm = observer(({ className, model }: InputFormProps) => {
   const app = useApp();
   const [showEmojis, setShowEmojis] = useState(false);
   const {
-    input, onPaste, onInput, onKeyDown, onFileChange, fileInput,
-    focus, addFile, insert, send, scope, currentText, wrapMatching,
+    input,
+    onPaste,
+    onInput,
+    onKeyDown,
+    onFileChange,
+    fileInput,
+    focus,
+    addFile,
+    insert,
+    send,
+    scope,
+    currentText,
+    wrapMatching,
   } = useInput();
 
   const onEmojiInsert = useCallback((emoji: EmojiDescriptor) => {
@@ -150,8 +161,8 @@ export const InputForm = observer(({ className, model }: InputFormProps) => {
   }, [showEmojis, focus, insert, setShowEmojis]);
 
   const ctrl = useCallback((e: KeyboardEvent) => {
-    if (scope === 'root' && currentText.match(/`[^`]+$/) && e.key === '`') {
-      wrapMatching(/`([^`]+)$/, 'code');
+    if (scope === "root" && currentText.match(/`[^`]+$/) && e.key === "`") {
+      wrapMatching(/`([^`]+)$/, "code");
       e.preventDefault();
     }
   }, [currentText, scope, wrapMatching]);
@@ -159,9 +170,9 @@ export const InputForm = observer(({ className, model }: InputFormProps) => {
   useEffect(() => {
     const { current } = input;
     if (!current) return;
-    current.addEventListener('keydown', ctrl);
+    current.addEventListener("keydown", ctrl);
     return () => {
-      current.removeEventListener('keydown', ctrl);
+      current.removeEventListener("keydown", ctrl);
     };
   }, [input, ctrl]);
 
@@ -170,25 +181,29 @@ export const InputForm = observer(({ className, model }: InputFormProps) => {
       <div className="input-box">
         <div className="scroller">
           <div
-            data-scope='root'
-            className='input'
+            data-scope="root"
+            className="input"
             ref={input}
-            contentEditable='true'
+            contentEditable="true"
             onPaste={onPaste}
             onInput={onInput}
             onKeyDown={(e) => onKeyDown(e)}
-          ></div>
-          {!input.current?.innerHTML && <div className="cta">
-            Write here..
-          </div>}
+          >
+          </div>
+          {!input.current?.innerHTML && (
+            <div className="cta">
+              Write here..
+            </div>
+          )}
           <Attachments model={model.files} className="input-attachments" />
         </div>
-        <Toolbar className='controls' size={32}>
-          <ButtonWithIcon icon="emojis" onClick={() => setShowEmojis(!showEmojis)} />
+        <Toolbar className="controls" size={32}>
+          <ButtonWithIcon
+            icon="emojis"
+            onClick={() => setShowEmojis(!showEmojis)}
+          />
           <ButtonWithIcon icon="plus" onClick={addFile} />
-          {isMobile() 
-            ? <ButtonWithIcon icon="send" onClick={send} />
-            : null}
+          {isMobile() ? <ButtonWithIcon icon="send" onClick={send} /> : null}
         </Toolbar>
       </div>
 
@@ -203,7 +218,12 @@ export const InputForm = observer(({ className, model }: InputFormProps) => {
         type="file"
         multiple
         style={{
-          height: 0, opacity: 0, width: 0, position: 'absolute', bottom: 0, left: 0,
+          height: 0,
+          opacity: 0,
+          width: 0,
+          position: "absolute",
+          bottom: 0,
+          left: 0,
         }}
       />
     </InputContainer>
@@ -212,12 +232,12 @@ export const InputForm = observer(({ className, model }: InputFormProps) => {
 
 type InputProps = {
   messageId?: string;
-  className?: ClassNames,
+  className?: ClassNames;
   model: InputModel;
 };
 
 export const Input = observer(({ className, ...args }: InputProps) => (
-  <InputProvider {...args} >
-    <InputForm className={className} {...args}/>
+  <InputProvider {...args}>
+    <InputForm className={className} {...args} />
   </InputProvider>
 ));

@@ -1,6 +1,6 @@
 [
   {
-    "name":  "pleading_face",
+    "name": "pleading_face",
     "unicode": "1f97a",
     "shortname": ":pleading_face:",
     "code_decimal": "&#129306;",
@@ -335,7 +335,7 @@
     "category": "p",
     "emoji_order": "39"
   },
-  { 
+  {
     "name": "drooling_face",
     "unicode": "1f924",
     "shortname": ":drooling_face:",
@@ -551,7 +551,7 @@
     "category": "p",
     "emoji_order": "67"
   },
-  { 
+  {
     "name": "face_with_cowboy_hat",
     "unicode": "1f920",
     "shortname": ":cowboy:",
@@ -919,7 +919,7 @@
     "category": "p",
     "emoji_order": "447"
   },
-  { 
+  {
     "name": "mrs_claus",
     "unicode": "1f936",
     "shortname": ":mrs_claus:",
@@ -1135,7 +1135,7 @@
     "category": "p",
     "emoji_order": "767"
   },
-  { 
+  {
     "name": "fencer",
     "unicode": "1f93a",
     "shortname": ":fencer:",
@@ -1247,7 +1247,7 @@
     "category": "t",
     "emoji_order": "927"
   },
-  { 
+  {
     "name": "cartwheel",
     "unicode": "1f938",
     "shortname": ":cartwheel:",
@@ -1744,7 +1744,7 @@
     "category": "s",
     "emoji_order": "1295"
   },
-  { 
+  {
     "name": "black_heart",
     "unicode": "1f5a4",
     "shortname": ":black_heart:",
@@ -4080,7 +4080,7 @@
     "category": "t",
     "emoji_order": "1587"
   },
-  { 
+  {
     "name": "city_dusk",
     "unicode": "1f306",
     "shortname": ":city_dusk:",
@@ -5008,7 +5008,7 @@
     "category": "n",
     "emoji_order": "1713"
   },
-  { 
+  {
     "name": "waxing_gibbous_moon",
     "unicode": "1f314",
     "shortname": ":waxing_gibbous_moon:",
@@ -7096,7 +7096,7 @@
     "category": "o",
     "emoji_order": "1974"
   },
-  { 
+  {
     "name": "shopping_cart",
     "unicode": "1f6d2",
     "shortname": ":shopping_cart:",
@@ -9617,8 +9617,6 @@
     "emoji_order": "2295"
   },
 
-
-
   {
     "name": "flag-im",
     "unicode": "1f1ee-1f1f2",
@@ -10339,8 +10337,6 @@
     "category": "f",
     "emoji_order": "2385"
   },
-
-
 
   {
     "name": "flag-sb",

@@ -1,5 +1,5 @@
 import { createRoot } from "react-dom/client";
-import { Suspense, lazy } from "react";
+import { lazy, Suspense } from "react";
 import { Register } from "./pages/Register";
 import { PasswordReset } from "./pages/PasswordReset";
 import { Login } from "./pages/Login";

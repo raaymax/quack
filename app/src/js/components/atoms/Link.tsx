@@ -1,5 +1,5 @@
-import styled from 'styled-components';
-import { observer } from 'mobx-react-lite';
+import styled from "styled-components";
+import { observer } from "mobx-react-lite";
 
 const StyledLink = styled.a`
   overflow-wrap: break-word;

@@ -1,14 +1,14 @@
-import styled, { useTheme } from 'styled-components';
-import { Loader } from '../atoms/Loader';
-import { useEffect, useState } from 'react';
+import styled, { useTheme } from "styled-components";
+import { Loader } from "../atoms/Loader";
+import { useEffect, useState } from "react";
 
 const Container = styled.div`
   display: flex;
   flex-direction: row;
   height: 100%;
   width: 100%;
-  background-color: ${({theme}) => theme.Chatbox.Background};
-  color: ${({theme}) => theme.Text};
+  background-color: ${({ theme }) => theme.Chatbox.Background};
+  color: ${({ theme }) => theme.Text};
 
   .image-container {
     flex: 1;
@@ -47,7 +47,7 @@ const Container = styled.div`
   }
 
   h1 {
-    color: ${({theme}) => theme.Text};
+    color: ${({ theme }) => theme.Text};
     font-size: 40px;
     font-style: normal;
     font-weight: 600;
@@ -58,7 +58,7 @@ const Container = styled.div`
   }
 
   p {
-    color: ${({theme}) => theme.Labels};
+    color: ${({ theme }) => theme.Labels};
     font-size: 16px;
     font-style: normal;
     font-weight: 400;
@@ -66,7 +66,7 @@ const Container = styled.div`
   }
 
   label {
-    color: ${({theme}) => theme.Text};
+    color: ${({ theme }) => theme.Text};
     font-size: 16px;
     font-style: normal;
     font-weight: 400;
@@ -76,14 +76,14 @@ const Container = styled.div`
   }
   input {
     border-radius: 8px;
-    color: ${({theme}) => theme.Text};
-    border: 1px solid ${({theme}) => theme.Strokes};
-    background: ${({theme}) => theme.Input.Background};
+    color: ${({ theme }) => theme.Text};
+    border: 1px solid ${({ theme }) => theme.Strokes};
+    background: ${({ theme }) => theme.Input.Background};
     height: 48px;
     padding: 8px 16px;
   }
   input::placeholder {
-    color: ${({theme}) => theme.Labels};
+    color: ${({ theme }) => theme.Labels};
   }
 
   .submit {
@@ -92,7 +92,7 @@ const Container = styled.div`
   }
 
   .err {
-    color:  ${({theme}) => theme.User.Inactive};
+    color:  ${({ theme }) => theme.User.Inactive};
     padding: 0 16px;
     font-size: 12px;
     font-style: normal;
@@ -134,56 +134,79 @@ const Container = styled.div`
   }
 
   .loader {
-    color: ${({theme}) => theme.Text};
+    color: ${({ theme }) => theme.Text};
     position: absolute;
     top: 20px;
     left: 50%;
     .loading-indicator {
-      color: ${({theme}) => theme.Text};
+      color: ${({ theme }) => theme.Text};
     }
   }
 
-`
+`;
 
 type LoginProps = {
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   error?: React.ReactNode | string | null;
   disabled?: boolean;
-}
+};
 
-export const LoginPage = ({ onSubmit, error = null, disabled = false }: LoginProps) => {
+export const LoginPage = (
+  { onSubmit, error = null, disabled = false }: LoginProps,
+) => {
   const theme = useTheme();
-  const [localMsg] = useState(localStorage.getItem('loginMessage'));
+  const [localMsg] = useState(localStorage.getItem("loginMessage"));
   useEffect(() => {
-    localStorage.removeItem('loginMessage');
+    localStorage.removeItem("loginMessage");
   });
 
   return (
     <Container>
-      <div className='image-container'>
-        <div className='image'>
-          <img src={theme.loginIlustration} alt='logo' />
+      <div className="image-container">
+        <div className="image">
+          <img src={theme.loginIlustration} alt="logo" />
         </div>
       </div>
-      <div className='form-container'>
-        <div className='form'>
+      <div className="form-container">
+        <div className="form">
           <h1>Welcome!</h1>
-          <p>{localMsg ?? 'Log-in to your quack account'}</p>
+          <p>{localMsg ?? "Log-in to your quack account"}</p>
           <form onSubmit={onSubmit}>
-            <div className='form-group'>
+            <div className="form-group">
               <label htmlFor="email">E-mail</label>
-              <input id="email" type='text' name='email' placeholder='user@example.com' disabled={disabled} />
+              <input
+                id="email"
+                type="text"
+                name="email"
+                placeholder="user@example.com"
+                disabled={disabled}
+              />
             </div>
-            <div className='form-group'>
+            <div className="form-group">
               <label htmlFor="password">Password</label>
-              <input id="password" type='password' name='password' placeholder='password' disabled={disabled} />
+              <input
+                id="password"
+                type="password"
+                name="password"
+                placeholder="password"
+                disabled={disabled}
+              />
             </div>
-            <div className='form-group'>
-              <input className="submit" type='submit' value='LOG-IN' disabled={disabled} />
-              {disabled && <div className='loader'><Loader /></div>}
+            <div className="form-group">
+              <input
+                className="submit"
+                type="submit"
+                value="LOG-IN"
+                disabled={disabled}
+              />
+              {disabled && (
+                <div className="loader">
+                  <Loader />
+                </div>
+              )}
             </div>
           </form>
-          <div className='err'>
+          <div className="err">
             {error}
           </div>
         </div>

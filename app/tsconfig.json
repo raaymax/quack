@@ -2,7 +2,14 @@
   "compilerOptions": {
     "target": "ES2020",
     "useDefineForClassFields": true,
-    "lib": ["ESNext", "ES2020", "DOM", "DOM.Iterable",	"es2017", "esnext.asynciterable"],
+    "lib": [
+      "ESNext",
+      "ES2020",
+      "DOM",
+      "DOM.Iterable",
+      "es2017",
+      "esnext.asynciterable"
+    ],
     "module": "ESNext",
     "skipLibCheck": true,
 
@@ -29,6 +36,13 @@
       "@quack/tools": ["./deno/tools/mod.ts"]
     }
   },
-  "include": ["src", "vite.config.ts", ".storybook", "../deno/encryption", "../deno/api/", "../deno/tools/mod.ts"],
+  "include": [
+    "src",
+    "vite.config.ts",
+    ".storybook",
+    "../deno/encryption",
+    "../deno/api/",
+    "../deno/tools/mod.ts"
+  ],
   "exclude": ["../**/*_test.ts"]
 }

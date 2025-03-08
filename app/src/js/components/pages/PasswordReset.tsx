@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useState } from 'react';
-import { client } from '../../core';
-import PasswordResetPage from './PasswordResetPage';
-import { ErrorPage } from './ErrorPage';
+import { useCallback, useEffect, useState } from "react";
+import { client } from "../../core";
+import PasswordResetPage from "./PasswordResetPage";
+import { ErrorPage } from "./ErrorPage";
 
 export const PasswordReset = () => {
   const url = new URL(window.location.toString());
@@ -15,7 +15,7 @@ export const PasswordReset = () => {
     if (!token) return setError("Invalid invitation link");
     client.api.auth
       .checkPasswordResetToken({ token })
-      .then((data: { valid: boolean, email: string }) => {
+      .then((data: { valid: boolean; email: string }) => {
         if (!data.valid) {
           setError("Invalid invitation link");
         } else {
@@ -33,7 +33,7 @@ export const PasswordReset = () => {
       e.preventDefault();
       const { password, oldPassword } = e.target as typeof e.target & {
         password: { value: string };
-        oldPassword: { value: string};
+        oldPassword: { value: string };
       };
 
       if (!token || !email) return;
@@ -45,14 +45,14 @@ export const PasswordReset = () => {
           oldPassword: oldPassword.value,
         });
 
-        if(result.status === 'ok') {
+        if (result.status === "ok") {
           localStorage.setItem("token", "");
           localStorage.setItem(
             "loginMessage",
             "PasswordReset successful. You can login now.",
           );
           window.location.href = "/";
-        }else {
+        } else {
           console.error(result);
           setMsg(result.message);
         }
@@ -60,9 +60,9 @@ export const PasswordReset = () => {
         if (err instanceof Error) {
           console.error(err);
           setMsg(err.message);
-        }else{
+        } else {
           console.error(err);
-          setMsg('Unknown error');
+          setMsg("Unknown error");
         }
       }
     },
@@ -70,16 +70,18 @@ export const PasswordReset = () => {
   );
 
   if (error) {
-    return <ErrorPage 
-      title="404" 
-      description={[
-        "Link you are trying to open is invalid",
-        "It could expire or was copied incorectly"
-      ]}
-      buttons={['home']}
-    />;
+    return (
+      <ErrorPage
+        title="404"
+        description={[
+          "Link you are trying to open is invalid",
+          "It could expire or was copied incorectly",
+        ]}
+        buttons={["home"]}
+      />
+    );
   }
-  return (<PasswordResetPage onSubmit={submit} error={msg} />);
+  return <PasswordResetPage onSubmit={submit} error={msg} />;
 };
 
 export default PasswordReset;

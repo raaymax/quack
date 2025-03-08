@@ -1,4 +1,4 @@
-import { client } from './client';
+import { client } from "./client";
 
 declare global {
   interface Window {
@@ -9,7 +9,7 @@ declare global {
 const registry: Record<string, Array<any>> = {};
 const plugins = {
   register: (slot: string, data: any) => {
-    if (typeof data === 'function') {
+    if (typeof data === "function") {
       data = data(client);
     }
     registry[slot] = registry[slot] || [];

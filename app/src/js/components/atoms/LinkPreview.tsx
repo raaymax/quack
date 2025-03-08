@@ -1,6 +1,5 @@
-import styled from 'styled-components';
-import { observer } from 'mobx-react-lite';
-
+import styled from "styled-components";
+import { observer } from "mobx-react-lite";
 
 const Container = styled.div`
   display: flex;
@@ -9,7 +8,7 @@ const Container = styled.div`
   flex-wrap: wrap;
 `;
 
-const Link = styled.div<{$image: string}>`
+const Link = styled.div<{ $image: string }>`
   flex: 0 0 300px;
   display: block;
   max-width: 300px;
@@ -63,10 +62,13 @@ type LinkPreviewProps = {
 };
 
 export const LinkPreview = observer(({ link }: LinkPreviewProps) => (
-  <Link className='link-preview' onClick={() => window.open(link.url, '_blank')?.focus()}
-    $image={link.images[0]}>
-    {link.images?.length && <div className='image' />}
-    <div className='text'>
+  <Link
+    className="link-preview"
+    onClick={() => window.open(link.url, "_blank")?.focus()}
+    $image={link.images[0]}
+  >
+    {link.images?.length && <div className="image" />}
+    <div className="text">
       <h3>{link.siteName} - {link.title}</h3>
       <p>{link.description}</p>
     </div>
@@ -77,12 +79,14 @@ type LinkPreviewListProps = {
   links: Link[];
 };
 
-export const LinkPreviewList = observer(({ links = [] }: LinkPreviewListProps) => links.length > 0
-  ? (
-    <Container className="cmp-link-preview-list">
-      {links.map((link, key) => (
-        <LinkPreview link={link} key={key} />
-      ))}
-    </Container>
-  )
-  : null);
+export const LinkPreviewList = observer((
+  { links = [] }: LinkPreviewListProps,
+) =>
+  links.length > 0
+    ? (
+      <Container className="cmp-link-preview-list">
+        {links.map((link, key) => <LinkPreview link={link} key={key} />)}
+      </Container>
+    )
+    : null
+);

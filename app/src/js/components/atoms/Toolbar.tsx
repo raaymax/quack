@@ -1,10 +1,10 @@
-import styled from 'styled-components';
-import { useCallback } from 'react';
-import { SizeProvider } from '../contexts/size';
-import { cn, ClassNames } from '../../utils';
-import { observer } from 'mobx-react-lite';
+import styled from "styled-components";
+import { useCallback } from "react";
+import { SizeProvider } from "../contexts/size";
+import { ClassNames, cn } from "../../utils";
+import { observer } from "mobx-react-lite";
 
-export const Container = styled.div<{$size?: number}>`
+export const Container = styled.div<{ $size?: number }>`
   display: flex;
   flex-direction: row;
   width: 100%;
@@ -33,12 +33,12 @@ export const Container = styled.div<{$size?: number}>`
   button {
     color: inherit;
     .icon {
-      color: ${({theme}) => theme.SecondaryButton.Default};
+      color: ${({ theme }) => theme.SecondaryButton.Default};
     }
     &:hover {
       background-color: transparent;
       .icon {
-        color: ${({theme}) => theme.SecondaryButton.Hover};
+        color: ${({ theme }) => theme.SecondaryButton.Hover};
 
       }
     }
@@ -52,16 +52,22 @@ interface ToolbarProps {
   children: React.ReactNode;
 }
 
-export const Toolbar = observer(({ children, size, className }: ToolbarProps) => {
-  const stop = useCallback((e: React.SyntheticEvent) => {
-    e.stopPropagation();
-    e.preventDefault();
-  }, []);
-  return (
-    <Container className={cn('toolbar', className)} $size={size} onClick={stop}>
-      <SizeProvider value={size}>
-        {children}
-      </SizeProvider>
-    </Container>
-  );
-});
+export const Toolbar = observer(
+  ({ children, size, className }: ToolbarProps) => {
+    const stop = useCallback((e: React.SyntheticEvent) => {
+      e.stopPropagation();
+      e.preventDefault();
+    }, []);
+    return (
+      <Container
+        className={cn("toolbar", className)}
+        $size={size}
+        onClick={stop}
+      >
+        <SizeProvider value={size}>
+          {children}
+        </SizeProvider>
+      </Container>
+    );
+  },
+);

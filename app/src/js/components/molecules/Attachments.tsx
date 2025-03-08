@@ -1,8 +1,8 @@
-import { filesize } from 'filesize';
-import styled from 'styled-components';
-import { ClassNames, cn } from '../../utils';
-import { observer } from 'mobx-react-lite';
-import { FileModel, FilesModel } from '../../core/models/files';
+import { filesize } from "filesize";
+import styled from "styled-components";
+import { ClassNames, cn } from "../../utils";
+import { observer } from "mobx-react-lite";
+import { FileModel, FilesModel } from "../../core/models/files";
 
 const Container = styled.div`
   .attachment-list {
@@ -27,7 +27,7 @@ const Container = styled.div`
       width: 100%;
       height: 100%;
       padding: 8px;
-      border: 1px solid ${props => props.theme.Strokes};
+      border: 1px solid ${(props) => props.theme.Strokes};
       overflow: hidden;
       border-radius: 8px;
       flex-direction: row;
@@ -63,7 +63,7 @@ const Container = styled.div`
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        color: ${props => props.theme.Strokes};
+        color: ${(props) => props.theme.Strokes};
       }
     }
   
@@ -75,7 +75,7 @@ const Container = styled.div`
       width: 24px;
       height: 24px;
       border-radius: 50%;
-      background-color: ${props => props.theme.Strokes};
+      background-color: ${(props) => props.theme.Strokes};
       color: white;
       line-height: 24px;
       cursor: pointer;
@@ -119,38 +119,50 @@ export const Attachment = observer(({
   model,
   onDelete,
 }: AttachmentProps) => (
-  <div className='attachment'>
-    <div className='attachment-box'>
-      <div className='type'><img src="/attachment.svg" /> </div>
-      <div className='text'>
-        <div className='name'>{model.fileName}</div>
-        <div className='description'>{model.contentType} {filesize(model.fileSize)}</div>
+  <div className="attachment">
+    <div className="attachment-box">
+      <div className="type">
+        <img src="/attachment.svg" />
       </div>
-      <div className={model.status === 'ok' ? 'progress done' : 'progress'} style={{ width: `${model.progress}%` }} />
+      <div className="text">
+        <div className="name">{model.fileName}</div>
+        <div className="description">
+          {model.contentType} {filesize(model.fileSize)}
+        </div>
+      </div>
+      <div
+        className={model.status === "ok" ? "progress done" : "progress"}
+        style={{ width: `${model.progress}%` }}
+      />
     </div>
-    <div className='remove' onClick={onDelete}><i className='fa-solid fa-xmark' /></div>
+    <div className="remove" onClick={onDelete}>
+      <i className="fa-solid fa-xmark" />
+    </div>
   </div>
 ));
 
-export const Attachments = observer(({className, model}: {className?:ClassNames, model: FilesModel}) => {
-  const files = model.getAll();
-  const hasFiles = files.length > 0;
+export const Attachments = observer(
+  ({ className, model }: { className?: ClassNames; model: FilesModel }) => {
+    const files = model.getAll();
+    const hasFiles = files.length > 0;
 
-  return (
-    <Container className={cn(className)}>
-      {hasFiles && 
-        <div className='attachment-list'>
-          {files.map((file) => (
-            <Attachment
-              key={file.clientId}
-              model={file}
-              onDelete={() => {
-                model.abort(file.clientId);
-              }}
-            />
-          ))}
-        </div>
-      }
-    </Container>
-  );
-});
+    return (
+      <Container className={cn(className)}>
+        {hasFiles &&
+          (
+            <div className="attachment-list">
+              {files.map((file) => (
+                <Attachment
+                  key={file.clientId}
+                  model={file}
+                  onDelete={() => {
+                    model.abort(file.clientId);
+                  }}
+                />
+              ))}
+            </div>
+          )}
+      </Container>
+    );
+  },
+);

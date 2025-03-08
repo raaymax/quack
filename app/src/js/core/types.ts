@@ -1,7 +1,7 @@
-import { MessageBody, ViewMessage } from '../types';
+import { MessageBody, ViewMessage } from "../types";
 
-export type OutgoingPayload = (
-  OutgoingChannelCreate
+export type OutgoingPayload =
+  | OutgoingChannelCreate
   | OutgoingChannelGet
   | OutgoingChannelGetAll
   | OutgoingCommandExecute
@@ -20,158 +20,157 @@ export type OutgoingPayload = (
   | OutgoingUserConfig
   | OutgoingUserGetAll
   | OutgoingUserPushSubscribe
-  | OutgoingUserTyping
-);
+  | OutgoingUserTyping;
 
 export type OutgoingChannelCreate = {
-  type: 'channel:create',
-  channelType?: 'PUBLIC' | 'PRIVATE' | 'DIRECT',
-  name: string,
-  users?: string[]
+  type: "channel:create";
+  channelType?: "PUBLIC" | "PRIVATE" | "DIRECT";
+  name: string;
+  users?: string[];
 };
 
 export type OutgoingChannelGet = {
-  type: 'channel:get',
-  id: string,
-}
+  type: "channel:get";
+  id: string;
+};
 
 export type OutgoingChannelGetAll = {
-  type: 'channel:getAll',
-}
+  type: "channel:getAll";
+};
 
 export type OutgoingCommandExecute = {
-  type: 'command:execute',
-  name: string,
-  args: string[],
+  type: "command:execute";
+  name: string;
+  args: string[];
   attachments?: Array<{
-    id: string,
-    fileName: string,
-    contentType?: string,
-  }>,
+    id: string;
+    fileName: string;
+    contentType?: string;
+  }>;
   context: {
-    channelId: string,
-    parentId?: string,
-    appVersion?: string,
-  },
-}
+    channelId: string;
+    parentId?: string;
+    appVersion?: string;
+  };
+};
 
 export type OutgoingEmojiGet = {
-  type: 'emoji:get',
-  shortname: string,
-}
+  type: "emoji:get";
+  shortname: string;
+};
 
 export type OutgoingEmojiGetAll = {
-  type: 'emoji:getAll',
-}
+  type: "emoji:getAll";
+};
 export type OutgoingMessageCreate = ViewMessage & {
-  type: 'message:create',
-  message: MessageBody,
-  channelId: string,
-  parentId?: string | null,
-  flat: string,
-  clientId: string,
-  emojiOnly?: boolean,
-  debug?: string,
-  links?: string[],
-  mentions?: string[],
+  type: "message:create";
+  message: MessageBody;
+  channelId: string;
+  parentId?: string | null;
+  flat: string;
+  clientId: string;
+  emojiOnly?: boolean;
+  debug?: string;
+  links?: string[];
+  mentions?: string[];
   attachments?: Array<{
-    id: string,
-    fileName: string,
-    contentType?: string,
-  }>
-}
+    id: string;
+    fileName: string;
+    contentType?: string;
+  }>;
+};
 
 export type OutgoingMessageGetAll = {
-  type: 'message:getAll',
-  channelId: string,
-  parentId?: string,
-  pinned?: string,
-  before?: string,
-  after?: string,
-  limit?: number,
-}
+  type: "message:getAll";
+  channelId: string;
+  parentId?: string;
+  pinned?: string;
+  before?: string;
+  after?: string;
+  limit?: number;
+};
 export type OutgoingMessagePin = {
-  type: 'message:pin',
-  id: string,
-  pinned: boolean,
-}
+  type: "message:pin";
+  id: string;
+  pinned: boolean;
+};
 
 export type OutgoingMessageReact = {
-  type: 'message:react',
-  id: string,
-  reaction: string,
-}
+  type: "message:react";
+  id: string;
+  reaction: string;
+};
 
 export type OutgoingMessageRemove = {
-  type: 'message:remove',
-  id: string,
-}
+  type: "message:remove";
+  id: string;
+};
 
 export type OutgoingMessageSearch = {
-  type: 'message:search',
-  channelId: string,
-  text: string,
-  limit?: number,
-}
+  type: "message:search";
+  channelId: string;
+  text: string;
+  limit?: number;
+};
 
 export type OutgoingMessageUpdate = {
-  type: 'message:update',
-  id: string,
-  message?: string,
-  channelId?: string,
-  flat?: string,
-  clientId?: string,
-  pinned?: boolean,
+  type: "message:update";
+  id: string;
+  message?: string;
+  channelId?: string;
+  flat?: string;
+  clientId?: string;
+  pinned?: boolean;
   attachments?: Array<{
-    id: string,
-    fileName: string,
-    contentType?: string,
-  }>,
-}
+    id: string;
+    fileName: string;
+    contentType?: string;
+  }>;
+};
 
 export type OutgoingReadReceiptGetChannel = {
-  type: 'readReceipt:getChannel',
-  channelId: string,
-  parentId?: string | null,
-}
+  type: "readReceipt:getChannel";
+  channelId: string;
+  parentId?: string | null;
+};
 
 export type OutgoingReadReceiptGetOwn = {
-  type: 'readReceipt:getOwn',
-}
+  type: "readReceipt:getOwn";
+};
 
 export type OutgoingReadReceiptUpdate = {
-  type: 'readReceipt:update',
-  messageId: string,
-}
+  type: "readReceipt:update";
+  messageId: string;
+};
 
 export type OutgoingUserConfig = {
-  type: 'user:config',
-}
+  type: "user:config";
+};
 
 export type OutgoingUserGetAll = {
-  type: 'user:getAll',
-}
+  type: "user:getAll";
+};
 
 export type OutgoingUserPushSubscribe = {
-  type: 'user:push:subscribe',
-  endpoint?: string,
-  expirationTime?: number | null,
+  type: "user:push:subscribe";
+  endpoint?: string;
+  expirationTime?: number | null;
   keys: {
-    auth: string,
-    p256dh: string,
-  }
-}
+    auth: string;
+    p256dh: string;
+  };
+};
 
 export type OutgoingUserTyping = {
-  type: 'user:typing',
-  channelId: string,
-  parentId?: string | null,
-}
+  type: "user:typing";
+  channelId: string;
+  parentId?: string | null;
+};
 
 export type IncommingError = {
-  status: 'error',
-  message?: string,
+  status: "error";
+  message?: string;
   res: {
-    message: string,
-  },
-}
+    message: string;
+  };
+};

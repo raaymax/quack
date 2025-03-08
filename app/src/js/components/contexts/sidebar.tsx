@@ -1,8 +1,5 @@
-import {
-  useState, createContext,
-  useCallback,
-} from 'react';
-import { isMobile } from '../../utils';
+import { createContext, useCallback, useState } from "react";
+import { isMobile } from "../../utils";
 
 export type SidebarContextType = {
   sidebar: boolean;
@@ -23,16 +20,16 @@ type Props = {
 };
 
 function getDefault() {
-  const stored = localStorage.getItem('sidebar');
-  if (stored === '1') return true;
-  if (stored === '0') return false;
+  const stored = localStorage.getItem("sidebar");
+  if (stored === "1") return true;
+  if (stored === "0") return false;
   return !isMobile();
 }
 
-export const SidebarProvider = ({children}: Props) => {
+export const SidebarProvider = ({ children }: Props) => {
   const [sidebar, setSidebar] = useState<boolean>(getDefault());
   const set = useCallback((value: boolean) => {
-    localStorage.setItem('sidebar', value ? '1' : '0');
+    localStorage.setItem("sidebar", value ? "1" : "0");
     if (value !== sidebar) {
       setSidebar(value);
     }
@@ -42,8 +39,8 @@ export const SidebarProvider = ({children}: Props) => {
     sidebar,
     showSidebar: () => set(true),
     hideSidebar: () => set(false),
-    toggleSidebar: () => set(!sidebar)
-  }
+    toggleSidebar: () => set(!sidebar),
+  };
   return (
     <SidebarContext.Provider value={api}>
       {children}
