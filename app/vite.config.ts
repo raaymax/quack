@@ -8,13 +8,13 @@ import { defineConfig } from "vite";
 const __dirname = new URL(".", import.meta.url).pathname;
 const sslPath = path.join(__dirname, "../ssl/");
 
-export default defineConfig({
+export default defineConfig(({command}) => ({
   define: {
     APP_VERSION: JSON.stringify(process.env.APP_VERSION),
     APP_NAME: JSON.stringify(process.env.APP_NAME),
     API_URL: JSON.stringify(""),
   },
-  server: {
+  server: command === "serve" ? {
     https: {
       key: Deno.readTextFileSync(path.join(sslPath,'key.pem')),
       cert: Deno.readTextFileSync(path.join(sslPath, 'cert.pem')),
@@ -34,7 +34,7 @@ export default defineConfig({
         secure: false,
       },
     },
-  },
+  } : {},
   resolve: {
     alias: {
       "@quack/encryption": path.resolve(__dirname, "../deno/encryption/mod.ts"),
@@ -89,4 +89,4 @@ export default defineConfig({
       },
     }),
   ],
-});
+}));
