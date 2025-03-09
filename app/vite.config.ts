@@ -1,8 +1,6 @@
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 
-import basicSsl from "@vitejs/plugin-basic-ssl";
-import proxy from "vite-plugin-http2-proxy";
 import path from "node:path";
 import process from "node:process";
 import { defineConfig } from "vite";
@@ -17,6 +15,10 @@ export default defineConfig({
     API_URL: JSON.stringify(""),
   },
   server: {
+    https: {
+      key: Deno.readTextFileSync(path.join(sslPath,'key.pem')),
+      cert: Deno.readTextFileSync(path.join(sslPath, 'cert.pem')),
+    },
     port: 3000,
     strictPort: true,
     hmr: {
