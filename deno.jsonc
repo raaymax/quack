@@ -11,6 +11,7 @@
     "./app"
   ],
   "imports": {
+    "@jsr/planigale__sse": "npm:@jsr/planigale__sse@0.2.4",
     "@planigale/body-parser": "jsr:@planigale/body-parser@0.2.1",
     "@planigale/planigale": "jsr:@planigale/planigale@0.6.10",
     "@planigale/testing": "jsr:@planigale/testing@0.3.6",

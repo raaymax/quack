@@ -5043,6 +5043,7 @@
       "jsr:@std/encoding@1.0.6",
       "jsr:@std/path@1.0.8",
       "jsr:@std/uuid@1.0.4",
+      "npm:@jsr/planigale__sse@0.2.4",
       "npm:@node-rs/argon2@2.0.2",
       "npm:globals@15.14.0",
       "npm:link-preview-js@3.0.12",
