@@ -57,12 +57,19 @@ export class MessagesModel {
   }
 
   subscribeUnfreeze = () => {
-    const unfreeze = () => this.refresh();
-    addEventListener("resume", unfreeze);
-    addEventListener("focus", unfreeze);
+    const resume = () => {
+      console.log("resume");
+      this.refresh();
+    };
+    const focus = () => {
+      console.log("focus");
+      this.refresh();
+    };
+    addEventListener("resume", resume);
+    addEventListener("focus", focus);
     return () => {
-      removeEventListener("resume", unfreeze);
-      removeEventListener("focus", unfreeze);
+      removeEventListener("resume", resume);
+      removeEventListener("focus", focus);
     };
   };
 
