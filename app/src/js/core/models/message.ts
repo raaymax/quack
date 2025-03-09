@@ -65,6 +65,7 @@ export class MessageModel implements ViewMessage {
   } | null;
   editing: boolean = false;
   parent: MessagesModel;
+  ghost?: boolean; 
 
   static from = (value: Partial<FullMessage>, parent: MessagesModel) => {
     return new MessageModel({

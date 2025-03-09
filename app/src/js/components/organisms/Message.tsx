@@ -33,6 +33,10 @@ const MessageContainer = styled.div`
   vertical-align: middle;
   color: ${(props) => props.theme.Text};
 
+  &.ghost {
+    opacity: 0.5;
+  }
+
   &.short {
     padding-left: 0px;
     padding: 4px 16px 4px 16px;
@@ -176,6 +180,7 @@ const MessageBase = observer(
       linkPreviews,
       annotations,
       ephemeral,
+      ghost,
     } = model;
     const { onEnter, toggleHovered, onLeave } = useHoverCtrl(model.id);
     const streamName = useMessageListArgs();
@@ -193,6 +198,7 @@ const MessageBase = observer(
           pinned,
           short: Boolean(sameUser),
           selected: Boolean(id) && model.parent.selected === id,
+          ghost,
         }, props.className)}
         onMouseEnter={onEnter}
         onMouseLeave={onLeave}
