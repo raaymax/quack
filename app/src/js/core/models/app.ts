@@ -18,6 +18,7 @@ export class AppModel {
   status: "connected" | "disconnected" = "disconnected";
   initFailed: boolean = false;
   loading: boolean = false;
+  loadingTimeout: number = 0;
   info: InfoModel;
   _init: Promise<void> | null = null;
 
@@ -121,6 +122,16 @@ export class AppModel {
   };
 
   setLoading = (loading: boolean) => {
-    this.loading = loading;
+    if(loading) {
+      clearTimeout(this.loadingTimeout);
+      this.loading = true;
+      this.loadingTimeout = setTimeout(() => {
+        this.loading = false;
+      }, 5000);
+      return
+    } else {
+      clearTimeout(this.loadingTimeout);
+      this.loading = false;
+    }
   };
 }
