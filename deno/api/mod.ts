@@ -448,19 +448,24 @@ class API extends EventTarget {
   }
 
   async sendMessage(msg: Partial<Message>): Promise<any> {
-    const data = { ...msg };
-    if (msg.parentId === null) delete data.parentId;
-    const res = await this.fetchWithCredentials(
-      `/api/channels/${data.channelId}/messages`,
-      {
-        method: "POST",
-        body: JSON.stringify(data),
-      },
-    );
-    if (res.status !== 200) {
-      throw await res.json();
-    }
-    return await res.json();
+    return await new Promise((resolve, reject) => {
+      const data = { ...msg };
+      const timeout = setTimeout(() => reject(new Error("Timeout")), 5000);
+      if (msg.parentId === null) delete data.parentId;
+      return this.fetchWithCredentials(
+        `/api/channels/${data.channelId}/messages`,
+        {
+          method: "POST",
+          body: JSON.stringify(data),
+        },
+      ).then(async (res) => {
+        clearTimeout(timeout);
+        if (res.status !== 200) {
+          throw await res.json();
+        }
+        return await res.json();
+      }).then(resolve).catch(reject);
+    });
   }
 
   async sendCommand(cmd: Partial<Command>): Promise<any> {
