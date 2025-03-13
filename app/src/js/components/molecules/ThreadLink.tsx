@@ -1,6 +1,6 @@
-import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
-import { observer } from 'mobx-react-lite';
+import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
+import { observer } from "mobx-react-lite";
 
 const Link = styled.span`
   color: ${(props) => props.theme.linkColor};
@@ -16,11 +16,13 @@ type ThreadLinkProps = {
   text: string;
 };
 
-export const ThreadLink = observer(({ channelId, parentId, text }: ThreadLinkProps) => {
-  const navigate = useNavigate();
-  return (
-    <Link onClick={() => navigate(`/${channelId}/t/${parentId}`)}>
-      {text || 'Thread'}
-    </Link>
-  );
-});
+export const ThreadLink = observer(
+  ({ channelId, parentId, text }: ThreadLinkProps) => {
+    const navigate = useNavigate();
+    return (
+      <Link onClick={() => navigate(`/${channelId}/t/${parentId}`)}>
+        {text || "Thread"}
+      </Link>
+    );
+  },
+);

@@ -1,33 +1,32 @@
-export * from '@quack/api';
-import { FullMessage } from '@quack/api';
+export * from "@quack/api";
+import { FullMessage } from "@quack/api";
 
 export type ViewMessage = FullMessage & {
   progress?: ViewProgress[];
   info?: {
-    type: 'error' | 'info',
-    msg: string,
-    action?: string,
-  } | null
+    type: "error" | "info";
+    msg: string;
+    action?: string;
+  } | null;
   attachments?: {
-    url: string,
-  }[]
+    url: string;
+  }[];
   editing?: boolean;
-}
+};
 
-
-export type EmptyEmoji= {
-  empty: true,
-  shortname: string
-  category?: string,
-}
+export type EmptyEmoji = {
+  empty: true;
+  shortname: string;
+  category?: string;
+};
 
 export type DefinedEmoji = {
-  empty?: false,
-  unicode?: string,
-  fileId?: string,
-  shortname: string
-  category?: string,
-}
+  empty?: false;
+  unicode?: string;
+  fileId?: string;
+  shortname: string;
+  category?: string;
+};
 
 export type EmojiDescriptor = EmptyEmoji | DefinedEmoji;
 
@@ -39,18 +38,18 @@ export type Notif = {
   notif: string;
   createdAt: string;
   ephemeral?: boolean;
-}
+};
 
 export type Stream = {
-  channelId: string,
-  parentId?: string,
+  channelId: string;
+  parentId?: string;
 };
 
 export type MessageListArgs = {
-  id: string,
-  type: 'live' | 'archive',
-  selected?: string,
-  date?: string,
+  id: string;
+  type: "live" | "archive";
+  selected?: string;
+  date?: string;
 };
 
 export type Progress = {
@@ -59,7 +58,7 @@ export type Progress = {
   parentId: string;
   count: number;
   lastMessageId: string;
-}
+};
 
 export type ViewProgress = {
   userId: string;
@@ -67,8 +66,8 @@ export type ViewProgress = {
     id?: string;
     name: string;
     avatarUrl: string;
-  }
-}
+  };
+};
 
 export type Notification = {
   id: string;
@@ -77,9 +76,9 @@ export type Notification = {
   parentId: string;
   createdAt: string;
   messageId: string;
-}
+};
 
 export type UserConfig = {
-  appVersion: string,
-  mainChannelId: string,
-}
+  appVersion: string;
+  mainChannelId: string;
+};

@@ -14,4 +14,3 @@ export const useDirectChannel = (userId: string) => {
   }, [userId]);
   return channel;
 };
-

@@ -1,7 +1,7 @@
 /* global NotificationEvent */
- 
-import { precacheAndRoute } from 'workbox-precaching';
-import * as navigationPreload from 'workbox-navigation-preload';
+
+import { precacheAndRoute } from "workbox-precaching";
+import * as navigationPreload from "workbox-navigation-preload";
 // import { registerRoute } from 'workbox-routing';
 
 declare const self: ServiceWorkerGlobalScope;
@@ -45,20 +45,20 @@ async function getOpenClient(): Promise<Client> {
 
 */
 
-self.addEventListener('push', (event) => {
+self.addEventListener("push", (event) => {
   if (event.data) {
     const data = event.data.json();
-    const title = data.title || 'New Notification';
+    const title = data.title || "New Notification";
     const options = {
-      body: data.body || 'You have a new notification.',
-      icon: data.icon || '/icon.png',
-      badge: data.badge || '/badge.png',
+      body: data.body || "You have a new notification.",
+      icon: data.icon || "/icon.png",
+      badge: data.badge || "/badge.png",
       silent: false,
       vibrate: [100, 50, 100],
-      tag: 'notif',
+      tag: "notif",
       data: {
         ...data,
-        url: data.url || '/',
+        url: data.url || "/",
       },
     };
 
@@ -66,7 +66,7 @@ self.addEventListener('push', (event) => {
   }
 });
 
-self.addEventListener('notificationclick', (event) => {
+self.addEventListener("notificationclick", (event) => {
   event.notification.close();
   event.waitUntil(handleNotificationClick(event));
 });
@@ -87,7 +87,10 @@ async function handleNotificationClick(event: NotificationEvent) {
     client = await client.focus();
   }
   if (!client) return;
-  return client.postMessage({ type: 'notification:click', ...event.notification.data });
+  return client.postMessage({
+    type: "notification:click",
+    ...event.notification.data,
+  });
 }
 
 type NotificationData = {
@@ -108,17 +111,21 @@ type NotificationOptions = {
   data: NotificationData;
 };
 
-async function handleNotification(title: string, options: NotificationOptions, data: NotificationData) {
+async function handleNotification(
+  title: string,
+  options: NotificationOptions,
+  data: NotificationData,
+) {
   await self.registration.showNotification(title, options);
   const clientList = await getClientList();
   for (const client of clientList) {
-    client.postMessage({ type: 'notification', data });
+    client.postMessage({ type: "notification", data });
   }
 }
 
 function getClientList() {
   return self.clients.matchAll({
-    type: 'window',
+    type: "window",
     includeUncontrolled: true,
   });
 }

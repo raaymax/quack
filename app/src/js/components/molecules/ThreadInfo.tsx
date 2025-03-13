@@ -51,25 +51,38 @@ type ThreadInfoProps = {
   };
 };
 
-export const ThreadInfo = observer(({navigate = () => {}, msg}: ThreadInfoProps) => {
-  const {
-    updatedAt, thread, channelId, id,
-  } = msg;
-  if(!thread) return null;
-  return (
-    <Container className="cmp-thread-info" onClick={() => {
-      navigate(`/${channelId}/t/${id}`);
-    }}>
-      {[...new Set(thread.map((t) => t.userId))]
-        .map((userId) => (
-          <ProfilePic className="thread-profile-pic" type="reply" key={userId} userId={userId} />
-        ))}
-      <div className='replies'>
-        {thread.length} {thread.length > 1 ? 'replies' : 'reply'}
-      </div>
-      <div className='date'>
-        {formatTime(updatedAt)} on {formatDateDetailed(updatedAt)}
-      </div>
-    </Container>
-  );
-});
+export const ThreadInfo = observer(
+  ({ navigate = () => {}, msg }: ThreadInfoProps) => {
+    const {
+      updatedAt,
+      thread,
+      channelId,
+      id,
+    } = msg;
+    if (!thread) return null;
+    return (
+      <Container
+        className="cmp-thread-info"
+        onClick={() => {
+          navigate(`/${channelId}/t/${id}`);
+        }}
+      >
+        {[...new Set(thread.map((t) => t.userId))]
+          .map((userId) => (
+            <ProfilePic
+              className="thread-profile-pic"
+              type="reply"
+              key={userId}
+              userId={userId}
+            />
+          ))}
+        <div className="replies">
+          {thread.length} {thread.length > 1 ? "replies" : "reply"}
+        </div>
+        <div className="date">
+          {formatTime(updatedAt)} on {formatDateDetailed(updatedAt)}
+        </div>
+      </Container>
+    );
+  },
+);

@@ -1,7 +1,7 @@
-import { useState, useCallback } from 'react';
-import styled from 'styled-components';
-import { observer } from 'mobx-react-lite';
-import { useApp } from '../contexts/appState';
+import { useCallback, useState } from "react";
+import styled from "styled-components";
+import { observer } from "mobx-react-lite";
+import { useApp } from "../contexts/appState";
 
 const NewChannelContainer = styled.div`
   width: 100%;
@@ -36,11 +36,13 @@ const NewChannelContainer = styled.div`
     width: 40px;
     flex: 0 40px;
     &:hover {
-      background-color: ${(props) => props.theme.actionButtonHoverBackgroundColor};
+      background-color: ${(props) =>
+  props.theme.actionButtonHoverBackgroundColor};
       color: ${(props) => props.theme.actionButtonFontColor};
     }
     &:active {
-      background-color: ${(props) => props.theme.actionButtonActiveBackgroundColor};
+      background-color: ${(props) =>
+  props.theme.actionButtonActiveBackgroundColor};
       color: ${(props) => props.theme.actionButtonFontColor};
     }
   }
@@ -48,19 +50,24 @@ const NewChannelContainer = styled.div`
 
 // FIXME: extract inputs into atoms? use atom button
 export const ChannelCreate = observer(() => {
-  const [name, setName] = useState('');
+  const [name, setName] = useState("");
   const app = useApp();
   const submit = useCallback((e: React.ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
     e.stopPropagation();
     app.channels.create({ name });
-    setName('');
+    setName("");
   }, [app, name, setName]);
   return (
     <NewChannelContainer>
       <form action="#" onSubmit={submit}>
-        <input type='text' placeholder='Channel name' onChange={(e) => setName(e.target.value)} value={name} />
-        <button type='submit'>
+        <input
+          type="text"
+          placeholder="Channel name"
+          onChange={(e) => setName(e.target.value)}
+          value={name}
+        />
+        <button type="submit">
           <i className="fa-solid fa-plus" />
         </button>
       </form>

@@ -1,27 +1,25 @@
-import { useCallback } from 'react';
-import styled from 'styled-components';
+import { useCallback } from "react";
+import styled from "styled-components";
 
-import { ProfilePic } from '../atoms/ProfilePic';
-import { LinkPreviewList } from '../atoms/LinkPreview';
-import { MessageBodyRenderer } from '../molecules/MessageBody';
-import { Files } from '../molecules/Files';
-import { Reactions } from '../molecules/Reactions';
-import { MessageToolbar } from '../molecules/MessageToolbar';
-import { ThreadInfo } from '../molecules/ThreadInfo';
+import { ProfilePic } from "../atoms/ProfilePic";
+import { LinkPreviewList } from "../atoms/LinkPreview";
+import { MessageBodyRenderer } from "../molecules/MessageBody";
+import { Files } from "../molecules/Files";
+import { Reactions } from "../molecules/Reactions";
+import { MessageToolbar } from "../molecules/MessageToolbar";
+import { ThreadInfo } from "../molecules/ThreadInfo";
 
-import { MessageHeader } from '../atoms/MessageHeader';
-import { MessageProvider } from '../contexts/message';
-import { useHoverCtrl } from '../contexts/useHoverCtrl';
+import { MessageHeader } from "../atoms/MessageHeader";
+import { MessageProvider } from "../contexts/message";
+import { useHoverCtrl } from "../contexts/useHoverCtrl";
 
-import {
-  cn, ClassNames, formatTime
-} from '../../utils';
+import { ClassNames, cn, formatTime } from "../../utils";
 
-import { useMessageListArgs } from '../contexts/useMessageListArgs';
+import { useMessageListArgs } from "../contexts/useMessageListArgs";
 
-import { observer } from 'mobx-react-lite';
-import { useApp } from '../contexts/appState';
-import { MessageModel } from '../../core/models/message';
+import { observer } from "mobx-react-lite";
+import { useApp } from "../contexts/appState";
+import { MessageModel } from "../../core/models/message";
 
 const MessageContainer = styled.div`
   position: relative;
@@ -35,6 +33,10 @@ const MessageContainer = styled.div`
   vertical-align: middle;
   color: ${(props) => props.theme.Text};
 
+  &.ghost {
+    opacity: 0.5;
+  }
+
   &.short {
     padding-left: 0px;
     padding: 4px 16px 4px 16px;
@@ -44,11 +46,13 @@ const MessageContainer = styled.div`
     background-color: transparent;
   }
   &.pinned {
-    background-color: rgb(from ${props => props.theme.PrimaryButton.Background} r g b / 10%);
+    background-color: rgb(from ${(props) =>
+  props.theme.PrimaryButton.Background} r g b / 10%);
   }
 
   &.pinned:hover {
-    background-color: rgb(from ${props => props.theme.PrimaryButton.Background} r g b / 15%);
+    background-color: rgb(from ${(props) =>
+  props.theme.PrimaryButton.Background} r g b / 15%);
   }
 
   &.selected {
@@ -127,24 +131,29 @@ const MessageContainer = styled.div`
   }
 `;
 
-const Info = observer(({messageModel}: {messageModel: MessageModel}) => {
+const Info = observer(({ messageModel }: { messageModel: MessageModel }) => {
   const { clientId, info } = messageModel;
   const app = useApp();
 
   const onAction = useCallback(() => {
-    if (info?.action === 'resend') {
-      app.getThread(messageModel.channelId, messageModel.parentId).resendMessage(messageModel);
+    if (info?.action === "resend") {
+      app.getThread(messageModel.channelId, messageModel.parentId)
+        .resendMessage(messageModel);
     }
   }, [clientId, info]);
 
   if (!info) return null;
   return (
-    <div onClick={onAction} className={['info', info.type, ...(info.action ? ['action'] : [])].join(' ')}>
+    <div
+      onClick={onAction}
+      className={["info", info.type, ...(info.action ? ["action"] : [])].join(
+        " ",
+      )}
+    >
       {info.msg}
     </div>
   );
 });
-
 
 type MessageBaseProps = {
   model: MessageModel;
@@ -155,62 +164,76 @@ type MessageBaseProps = {
   [key: string]: unknown;
 };
 
-const MessageBase = observer(({ model, onClick, sameUser, navigate = () => {}, ...props }: MessageBaseProps) => {
-  const {
-    id, message, emojiOnly,
-    createdAt, pinned,
-    editing,
-    userId,
-    linkPreviews,
-    annotations,
-    ephemeral,
-  } = model;
-  const { onEnter, toggleHovered, onLeave } = useHoverCtrl(model.id);
-  const streamName = useMessageListArgs();
-  const user = useApp().users.get(userId);
+const MessageBase = observer(
+  (
+    { model, onClick, sameUser, navigate = () => {}, ...props }:
+      MessageBaseProps,
+  ) => {
+    const {
+      id,
+      message,
+      emojiOnly,
+      createdAt,
+      pinned,
+      editing,
+      userId,
+      linkPreviews,
+      annotations,
+      ephemeral,
+      ghost,
+    } = model;
+    const { onEnter, toggleHovered, onLeave } = useHoverCtrl(model.id);
+    const streamName = useMessageListArgs();
+    const user = useApp().users.get(userId);
 
-  return (
-    <MessageContainer
-      onClick={(e) => {
-        toggleHovered();
-        if (onClick) onClick(e);
-      }}
-      {...props}
-      className={cn('message', {
-        ephemeral: Boolean(ephemeral),
-        pinned,
-        short: Boolean(sameUser),
-        selected: Boolean(id) && model.parent.selected === id,
-      }, props.className)}
-      onMouseEnter={onEnter}
-      onMouseLeave={onLeave}
-    >
-      {!sameUser
-        ? <ProfilePic type='regular' userId={userId} />
-        : <div className='spacy side-time'>{formatTime(createdAt)}</div>
-      }
-      <div className='body'>
-        {!sameUser && <MessageHeader user={user} createdAt={createdAt} />}
-        {editing
-          ? <div> Editing not implemented </div>
-          : <div className={['content'].join(' ')}>
-            <MessageBodyRenderer body={message} opts={{emojiOnly}} />
-          </div>
-        }
+    return (
+      <MessageContainer
+        onClick={(e) => {
+          toggleHovered();
+          if (onClick) onClick(e);
+        }}
+        {...props}
+        className={cn("message", {
+          ephemeral: Boolean(ephemeral),
+          pinned,
+          short: Boolean(sameUser),
+          selected: Boolean(id) && model.parent.selected === id,
+          ghost,
+        }, props.className)}
+        onMouseEnter={onEnter}
+        onMouseLeave={onLeave}
+      >
+        {!sameUser
+          ? <ProfilePic type="regular" userId={userId} />
+          : <div className="spacy side-time">{formatTime(createdAt)}</div>}
+        <div className="body">
+          {!sameUser && <MessageHeader user={user} createdAt={createdAt} />}
+          {editing
+            ? <div>Editing not implemented</div>
+            : (
+              <div className={["content"].join(" ")}>
+                <MessageBodyRenderer body={message} opts={{ emojiOnly }} />
+              </div>
+            )}
 
-        <Files list={model.attachments || []} />
-        {linkPreviews && <LinkPreviewList links={linkPreviews} />}
-        <Info messageModel={model} />
-        <Reactions messageModel={model}/>
-        {streamName != 'side' && <ThreadInfo navigate={navigate} msg={model}/>}
-        <MessageToolbar navigate={navigate} messageModel={model} />
-        {annotations && <div className='generated'>
-          <MessageBodyRenderer body={annotations} />
-        </div>}
-      </div>
-    </MessageContainer>
-  );
-});
+          <Files list={model.attachments || []} />
+          {linkPreviews && <LinkPreviewList links={linkPreviews} />}
+          <Info messageModel={model} />
+          <Reactions messageModel={model} />
+          {streamName != "side" && (
+            <ThreadInfo navigate={navigate} msg={model} />
+          )}
+          <MessageToolbar navigate={navigate} messageModel={model} />
+          {annotations && (
+            <div className="generated">
+              <MessageBodyRenderer body={annotations} />
+            </div>
+          )}
+        </div>
+      </MessageContainer>
+    );
+  },
+);
 
 type MessageProps = MessageBaseProps & {
   model: MessageModel;

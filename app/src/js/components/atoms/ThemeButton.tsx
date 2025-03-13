@@ -1,7 +1,7 @@
-import styled from 'styled-components';
-import { Icon } from './Icon';
-import { useThemeControl } from '../contexts/useThemeControl';
-import { observer } from 'mobx-react-lite';
+import styled from "styled-components";
+import { Icon } from "./Icon";
+import { useThemeControl } from "../contexts/useThemeControl";
+import { observer } from "mobx-react-lite";
 
 const Container = styled.div`
   padding: 12px;
@@ -57,36 +57,47 @@ const Container = styled.div`
 `;
 
 type ThemeButtonProps = {
-  onClick: () => void,
-  themes: {[id: string]: {name: string, icon: string}},
-  active: string
+  onClick: () => void;
+  themes: { [id: string]: { name: string; icon: string } };
+  active: string;
 };
 
-export const ThemeButton = observer(({themes, active, onClick}: ThemeButtonProps) => {
-  const current = themes[active];
-  return (
-    <Container onClick={onClick}>
-      <Icon icon={current?.icon ?? 'icons'} size={32} />
-      <div className="label">
-        <div className="name">{current?.name ?? 'Unknown'}</div>
-        <div className="cta">Click to change</div>
-      </div>
-      <div className="spacer" />
-      <div className="dots">
-        {Object.keys(themes).map((id) => (
-          <div key={id} className={`dot ${id === active ? 'active' : ''}`}></div>
-        ))}
-      </div>
-
-    </Container>
-  );
-})
+export const ThemeButton = observer(
+  ({ themes, active, onClick }: ThemeButtonProps) => {
+    const current = themes[active];
+    return (
+      <Container onClick={onClick}>
+        <Icon icon={current?.icon ?? "icons"} size={32} />
+        <div className="label">
+          <div className="name">{current?.name ?? "Unknown"}</div>
+          <div className="cta">Click to change</div>
+        </div>
+        <div className="spacer" />
+        <div className="dots">
+          {Object.keys(themes).map((id) => (
+            <div key={id} className={`dot ${id === active ? "active" : ""}`}>
+            </div>
+          ))}
+        </div>
+      </Container>
+    );
+  },
+);
 
 export const ThemeButtonS = () => {
   const themeControl = useThemeControl();
   const count = themeControl.themeNames.length;
-  const idx = themeControl.themeNames.findIndex((name) => name === themeControl.theme);
+  const idx = themeControl.themeNames.findIndex((name) =>
+    name === themeControl.theme
+  );
   const nextTheme = themeControl.themeNames[(idx + 1) % count];
-  return <ThemeButton themes={themeControl.themes} active={themeControl.theme} onClick={() => {if(nextTheme) themeControl.setTheme(nextTheme)}} />;
-
-}
+  return (
+    <ThemeButton
+      themes={themeControl.themes}
+      active={themeControl.theme}
+      onClick={() => {
+        if (nextTheme) themeControl.setTheme(nextTheme);
+      }}
+    />
+  );
+};

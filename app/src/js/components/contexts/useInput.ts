@@ -1,10 +1,10 @@
-import { useContext } from 'react';
-import { InputContext, InputContextType } from './input';
+import { useContext } from "react";
+import { InputContext, InputContextType } from "./input";
 
 export const useInput = (): InputContextType => {
   const context = useContext(InputContext);
   if (!context) {
-    throw new Error('useInput must be used within a InputContext');
+    throw new Error("useInput must be used within a InputContext");
   }
   return context;
 };

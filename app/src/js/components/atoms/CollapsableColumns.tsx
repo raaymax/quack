@@ -14,29 +14,34 @@ type CollapsableColumnsProps = {
   minSize: number;
   columns: [React.ReactNode, React.ReactNode?];
 };
-export const CollapsableColumns = observer(({ className, columns, minSize }: CollapsableColumnsProps) => {
-  const container = useRef<HTMLDivElement>(null);
-  const [oneColumn, setOneColumn] = useState(false);
+export const CollapsableColumns = observer(
+  ({ className, columns, minSize }: CollapsableColumnsProps) => {
+    const container = useRef<HTMLDivElement>(null);
+    const [oneColumn, setOneColumn] = useState(false);
 
-  const onResize = useCallback(() => {
-    const width = container.current?.offsetWidth ?? (3*minSize);
-    setOneColumn(width < 2*minSize);
-  }, [setOneColumn]);
+    const onResize = useCallback(() => {
+      const width = container.current?.offsetWidth ?? (3 * minSize);
+      setOneColumn(width < 2 * minSize);
+    }, [setOneColumn]);
 
-  useEffect(() => {
-    onResize();
-    window.addEventListener('resize', onResize);
-    return () => {
-      window.removeEventListener('resize', onResize);
-    };
-  }, [onResize]);
+    useEffect(() => {
+      onResize();
+      globalThis.addEventListener("resize", onResize);
+      return () => {
+        globalThis.removeEventListener("resize", onResize);
+      };
+    }, [onResize]);
 
-  const [Column1, Column2] = columns;
+    const [Column1, Column2] = columns;
 
-  return (
-    <Container className={cn(className, {collapsed: oneColumn})} ref={container}>
-      {(!Column2 || !oneColumn) && Column1}
-      {Column2}
-    </Container>
-  );
-});
+    return (
+      <Container
+        className={cn(className, { collapsed: oneColumn })}
+        ref={container}
+      >
+        {(!Column2 || !oneColumn) && Column1}
+        {Column2}
+      </Container>
+    );
+  },
+);

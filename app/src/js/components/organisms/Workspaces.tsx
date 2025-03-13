@@ -26,7 +26,7 @@ export const Workspaces = observer(() => {
   return (
     <Container className="workspaces">
       <SizeProvider value={64}>
-        <LogoPic onClick={() => {}}/>
+        <LogoPic onClick={() => {}} />
         {/*<ButtonWithIcon icon="bars"/>*/}
         <div className="spacer" />
         {/*{userId && <ProfilePic type='regular' userId={userId}/> }*/}

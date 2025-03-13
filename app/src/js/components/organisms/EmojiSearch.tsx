@@ -1,13 +1,13 @@
-import { useState, useEffect } from 'react';
-import styled from 'styled-components';
-import { SearchBox } from '../atoms/SearchBox';
-import { EmojiDescriptor, type Emoji as EmojiType } from '../../types';
-import { Icon } from '../atoms/Icon';
-import { ClassNames, cn } from '../../utils';
-import { Emoji } from '../molecules/Emoji';
-import { Button } from '../atoms/Button';
-import { observer } from 'mobx-react-lite';
-import { useApp } from '../contexts/appState';
+import { useEffect, useState } from "react";
+import styled from "styled-components";
+import { SearchBox } from "../atoms/SearchBox";
+import { type Emoji as EmojiType, EmojiDescriptor } from "../../types";
+import { Icon } from "../atoms/Icon";
+import { ClassNames, cn } from "../../utils";
+import { Emoji } from "../molecules/Emoji";
+import { Button } from "../atoms/Button";
+import { observer } from "mobx-react-lite";
+import { useApp } from "../contexts/appState";
 
 export const Label = styled.div`
   width: 100%;
@@ -65,7 +65,6 @@ export const EmojiSearchContainer = styled.div`
   }
 `;
 
-
 const EmojiCategory = styled.div`
   display: flex;
   flex-direction: column;
@@ -116,82 +115,96 @@ const EmojiContainer = styled.div`
   }
 `;
 
-
 const CATEGORIES: Record<string, string> = {
-  p: 'People',
-  c: 'Custom',
-  n: 'Nature',
-  d: 'Food',
-  a: 'Activity',
-  t: 'Travel',
-  o: 'Objects',
-  s: 'Symbols',
-  k: 'Flags',
-  f: 'Font',
-  x: 'Other',
+  p: "People",
+  c: "Custom",
+  n: "Nature",
+  d: "Food",
+  a: "Activity",
+  t: "Travel",
+  o: "Objects",
+  s: "Symbols",
+  k: "Flags",
+  f: "Font",
+  x: "Other",
 };
 
 type EmojiSearchProps = {
   onSelect: (e: EmojiDescriptor) => void;
   className?: ClassNames;
-}
+};
 
-export const EmojiSearch = observer(({ className, onSelect }: EmojiSearchProps) => {
-  const [name, setName] = useState('');
-  const [results, setResults] = useState<Record<string, EmojiType[]>>({});
-  const app = useApp();
-  const emojis = app.emojis.getAll();
-  const fuse = app.emojis.getFuse();
+export const EmojiSearch = observer(
+  ({ className, onSelect }: EmojiSearchProps) => {
+    const [name, setName] = useState("");
+    const [results, setResults] = useState<Record<string, EmojiType[]>>({});
+    const app = useApp();
+    const emojis = app.emojis.getAll();
+    const fuse = app.emojis.getFuse();
 
-  useEffect(() => {
-    let all: EmojiType[] = emojis;
-    if (name && fuse) {
-      const ret = fuse.search(name, { limit: 100 });
-      all = ret.map((r) => r.item).filter((e) => !e.empty) as EmojiType[];
-    }
+    useEffect(() => {
+      let all: EmojiType[] = emojis;
+      if (name && fuse) {
+        const ret = fuse.search(name, { limit: 100 });
+        all = ret.map((r) => r.item).filter((e) => !e.empty) as EmojiType[];
+      }
 
-    setResults(
-      (all || [])
-        .reduce<Record<string, EmojiType[]>>((acc, emoji) => {
-          const category = emoji.category || 'x';
-          acc[category] = acc[category] || [];
-          acc[category].push(emoji);
-          return acc;
-        }, {}),
-    );
-  }, [name, fuse]);
+      setResults(
+        (all || [])
+          .reduce<Record<string, EmojiType[]>>((acc, emoji) => {
+            const category = emoji.category || "x";
+            acc[category] = acc[category] || [];
+            acc[category].push(emoji);
+            return acc;
+          }, {}),
+      );
+    }, [name, fuse]);
 
-  return (
-    <EmojiSearchContainer className={cn('cmp-emoji-search', className)}>
-      <div className="emoji-search">
-        <SearchBox className="emoji-search-box" onChange={(e) => setName(e.target.value)} value={name} />
-      </div>
-      <div className="emoji-scroll">
-        <div>
-          {Object.keys(CATEGORIES).filter((c: string) => results[c]).map((category: string) => (
-            <EmojiCategory key={category}>
-              <Label>{CATEGORIES[category]}</Label>
-              <EmojiBlock>
-                {(results[category] || []).map((result) => (
-                  <EmojiContainer key={result.shortname} onClick={(e) => {
+    return (
+      <EmojiSearchContainer className={cn("cmp-emoji-search", className)}>
+        <div className="emoji-search">
+          <SearchBox
+            className="emoji-search-box"
+            onChange={(e) => setName(e.target.value)}
+            value={name}
+          />
+        </div>
+        <div className="emoji-scroll">
+          <div>
+            {Object.keys(CATEGORIES).filter((c: string) => results[c]).map((
+              category: string,
+            ) => (
+              <EmojiCategory key={category}>
+                <Label>{CATEGORIES[category]}</Label>
+                <EmojiBlock>
+                  {(results[category] || []).map((result) => (
+                    <EmojiContainer
+                      key={result.shortname}
+                      onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
                         onSelect(result);
-                  }}>
-                    <Emoji shortname={result.shortname} size={24} />
-                  </EmojiContainer>
-                ))}
-              </EmojiBlock>
-            </EmojiCategory>
-          ))}
+                      }}
+                    >
+                      <Emoji shortname={result.shortname} size={24} />
+                    </EmojiContainer>
+                  ))}
+                </EmojiBlock>
+              </EmojiCategory>
+            ))}
+          </div>
         </div>
-      </div>
-      <div className="add-emoji">
-        <Button type='secondary' onClick={() => {}} tooltip={["Not yet available", "use \\emoji"]}>
-          ADD EMOJI
-          <Icon icon='plus' size={16} />
-        </Button>
-      </div>
-    </EmojiSearchContainer>
-  );
-});
+        <div className="add-emoji">
+          <Button
+            type="secondary"
+            onClick={() => {}}
+            tooltip={["Not yet available", "use \\emoji"]}
+          >
+            ADD EMOJI
+            <Icon icon="plus" size={16} />
+          </Button>
+        </div>
+      </EmojiSearchContainer>
+    );
+  },
+);

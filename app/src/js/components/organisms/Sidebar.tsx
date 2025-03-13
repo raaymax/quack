@@ -6,7 +6,6 @@ import { ThemeButtonS } from "../atoms/ThemeButton";
 import { LoggedUser } from "../atoms/LoggedUser";
 import { observer } from "mobx-react-lite";
 
-
 const Container = styled.div`
   flex: 0 0 356px;
   display: flex;
@@ -64,20 +63,27 @@ const Container = styled.div`
   }
 
 `;
-export const Sidebar = observer(({style, className}: {style?: {[key: string]: string}, className?: ClassNames}) => {
-  return (
-    <Container className={cn('side-menu', className)} style={style}>
-      <div className='side-menu-header'>
-        Workspace
-      </div>
-      <div className='slider'>
-        <NavChannels />
-        <NavUsers />
-      </div>
-      <div className='bottom'>
-        <ThemeButtonS />
-        <LoggedUser />
-      </div>
-    </Container>
-  );
-});
+export const Sidebar = observer(
+  (
+    { style, className }: {
+      style?: { [key: string]: string };
+      className?: ClassNames;
+    },
+  ) => {
+    return (
+      <Container className={cn("side-menu", className)} style={style}>
+        <div className="side-menu-header">
+          Workspace
+        </div>
+        <div className="slider">
+          <NavChannels />
+          <NavUsers />
+        </div>
+        <div className="bottom">
+          <ThemeButtonS />
+          <LoggedUser />
+        </div>
+      </Container>
+    );
+  },
+);

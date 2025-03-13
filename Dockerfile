@@ -1,28 +1,21 @@
-FROM node:22-alpine3.20 as build
+FROM denoland/deno:alpine-2.1.6 AS build
 RUN mkdir -p /app
 WORKDIR /app
-COPY ./package.json ./package.json
-COPY ./package-lock.json ./package-lock.json
-COPY ./app/package.json ./app/package.json
-RUN npm install
 COPY . .
+RUN deno install --allow-scripts
 ENV APP_NAME=quack
 ARG APP_VERSION=3.x.x
 ENV APP_VERSION=$APP_VERSION
-RUN APP_NAME=quack APP_VERSION=$APP_VERSION npm run build
+RUN APP_NAME=quack APP_VERSION=$APP_VERSION deno task build
 
 FROM denoland/deno:alpine-2.1.6
 RUN apk -U upgrade
-run apk add vips-cpp build-base vips vips-dev
+RUN apk add vips-cpp build-base vips vips-dev
 ENV ENVIRONMENT=production
-run mkdir -p /app
+RUN mkdir -p /app
 WORKDIR /app
-COPY ./deno ./deno
-COPY ./migrations ./migrations
-COPY ./deno.* ./
-COPY ./plugins ./plugins
+COPY . .
 COPY --from=build /app/app/dist /app/public
-COPY --from=build /app/node_modules /app/node_modules
 #COPY ./migrate-mongo-config.js ./migrate-mongo-config.js
 #RUN deno cache --allow-scripts npm:migrate-mongo
 RUN deno install --allow-scripts
@@ -35,4 +28,4 @@ ENV APP_VERSION=$APP_VERSION
 RUN echo "APP_VERSION=$APP_VERSION"
 RUN chmod +x ./entrypoint.sh
 EXPOSE 8080
-CMD sh ./entrypoint.sh
+CMD ["sh", "./entrypoint.sh"]

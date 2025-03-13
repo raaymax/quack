@@ -1,10 +1,14 @@
-import type { AppModel } from "./app"
-import { makeAutoObservable, flow } from "mobx"
-import { FileUpload, client } from "../client"
+import type { AppModel } from "./app";
+import { flow, makeAutoObservable } from "mobx";
+import { client, FileUpload } from "../client";
 import { generateHexId } from "../tools/generateHexId";
 
-
-type FileUploadPatch = FileUpload & { id: string, status: string, progress: number, error: string | null };
+type FileUploadPatch = FileUpload & {
+  id: string;
+  status: string;
+  progress: number;
+  error: string | null;
+};
 
 export class FileModel {
   id?: string;
@@ -20,43 +24,43 @@ export class FileModel {
   root: AppModel;
 
   constructor(value: FileUpload, root: AppModel) {
-    makeAutoObservable(this, {root: false});
+    makeAutoObservable(this, { root: false });
     this.clientId = value.clientId;
     this.stream = value.stream;
-    this.status = 'pending';
+    this.status = "pending";
     this.fileSize = value.fileSize;
     this.fileName = value.fileName;
     this.contentType = value.contentType;
     this.progress = 0;
-    
+
     this.root = root;
   }
 
   async dispose() {
     this.id = undefined;
-    this.clientId = '';
+    this.clientId = "";
     this.stream = null as any;
-    this.status = 'pending';
+    this.status = "pending";
     this.fileSize = 0;
-    this.fileName = '';
-    this.contentType = '';
+    this.fileName = "";
+    this.contentType = "";
     this.progress = 0;
     this.error = null;
   }
 
   patch = (value: Partial<FileUploadPatch>) => {
     this.id = value.id;
-    if(value.status) this.status = value.status;
-    if(value.fileSize) this.fileSize = value.fileSize;
-    if(value.fileName) this.fileName = value.fileName;
-    if(value.contentType) this.contentType = value.contentType;
-    if(value.progress) this.progress = value.progress;
-    if(value.error) this.error = value.error;
-  }
+    if (value.status) this.status = value.status;
+    if (value.fileSize) this.fileSize = value.fileSize;
+    if (value.fileName) this.fileName = value.fileName;
+    if (value.contentType) this.contentType = value.contentType;
+    if (value.progress) this.progress = value.progress;
+    if (value.error) this.error = value.error;
+  };
 
   onProgress = (progress: number) => {
     this.progress = progress;
-  }
+  };
 }
 
 export class FilesModel {
@@ -65,14 +69,14 @@ export class FilesModel {
   root: AppModel;
 
   constructor(root: AppModel) {
-    makeAutoObservable(this, {root: false});
+    makeAutoObservable(this, { root: false });
     this.root = root;
     this.list = [];
   }
 
   async dispose() {
     this.list.forEach((f) => this.abort(f.clientId));
-    await Promise.all(this.list.map(file => file.dispose()));
+    await Promise.all(this.list.map((file) => file.dispose()));
     this.list = [];
   }
 
@@ -86,13 +90,13 @@ export class FilesModel {
 
   patch = (file: FileUploadPatch) => {
     const f = this.list.find((f) => f.id === file.id);
-    if(f) f.patch(file);
-  }
+    if (f) f.patch(file);
+  };
 
   isReady() {
-    return this.list.length === 0 || this.list.every((f) => f.status === 'ok');
+    return this.list.length === 0 || this.list.every((f) => f.status === "ok");
   }
-  
+
   clear() {
     this.list = [];
   }
@@ -101,18 +105,18 @@ export class FilesModel {
     client.api.files.abort(clientId);
 
     const idx = this.list.findIndex((f) => f.clientId === clientId);
-    if(idx !== -1) this.list.splice(idx, 1);
-  }
+    if (idx !== -1) this.list.splice(idx, 1);
+  };
 
-  uploadMany = flow(function*(this: FilesModel, files: FileList){
+  uploadMany = flow(function* (this: FilesModel, files: FileList) {
     for (let i = 0; i < files.length; i++) {
       const file = files.item(i);
       if (!file) continue;
       yield this.uplaod(file);
     }
-  })
+  });
 
-  uplaod = flow(function*(this: FilesModel, file: File) {
+  uplaod = flow(function* (this: FilesModel, file: File) {
     const local = new FileModel({
       clientId: generateHexId(),
       stream: file.stream(),
@@ -126,20 +130,20 @@ export class FilesModel {
     try {
       const { status, id: fileId } = yield client.api.files.upload(local);
 
-      if (status === 'ok') {
+      if (status === "ok") {
         local.patch({ status, id: fileId, progress: 100 });
       } else {
-        local.patch({ status, progress: 0, error: 'something went wrong' });
+        local.patch({ status, progress: 0, error: "something went wrong" });
       }
     } catch (err) {
       if (err instanceof Error) {
-        local.patch({ status: 'error', progress: 0, error: err.message });
+        local.patch({ status: "error", progress: 0, error: err.message });
         return;
       }
       console.error(err);
-      local.patch({ status: 'error', progress: 0, error: 'unknown error' });
+      local.patch({ status: "error", progress: 0, error: "unknown error" });
     }
-  })
+  });
   toJSON(): any {
     return this.list.map((f) => ({
       id: f.id,

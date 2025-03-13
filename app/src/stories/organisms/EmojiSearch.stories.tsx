@@ -1,25 +1,21 @@
-import type { Meta, StoryObj } from '@storybook/react';
- 
-import '../../styles.ts';
-import { EmojiSearch } from '../../js/components/organisms/EmojiSearch';
-import { app } from '../../js/core';
+import type { Meta, StoryObj } from "@storybook/react";
 
- 
+import "../../styles.ts";
+import { EmojiSearch } from "../../js/components/organisms/EmojiSearch";
+import { app } from "../../js/core";
+
 const meta: Meta<typeof EmojiSearch> = {
   component: EmojiSearch,
-  parameters: {
-  },
+  parameters: {},
   loaders: [async () => {
-    app.emojis.load()
+    app.emojis.load();
   }],
 };
- 
+
 export default meta;
 type Story = StoryObj<typeof EmojiSearch>;
- 
-export const Primary: Story = {
-  args: {
 
-  },
+export const Primary: Story = {
+  args: {},
   render: (args) => <EmojiSearch {...args} />,
 };

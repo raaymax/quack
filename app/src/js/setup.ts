@@ -1,13 +1,25 @@
-import { play } from './services/sound';
-import { client } from './core';
+import { play } from "./services/sound";
+import { client } from "./core";
 
 let sound = false;
 
 client
   // FIXME: temporal fix for mesages not refreshing after some time
-  .on('message', () => { try { sound && play(); } catch (err) { /* ignore */ }})
-  .on('notification', () => { try { play(); } catch (err) { /* ignore */ } })
-  .on('notification', () => { try { navigator.vibrate([100, 30, 100]); } catch (err) { /* ignore */ } });
+  .on("message", () => {
+    try {
+      sound && play();
+    } catch (err) { /* ignore */ }
+  })
+  .on("notification", () => {
+    try {
+      play();
+    } catch (err) { /* ignore */ }
+  })
+  .on("notification", () => {
+    try {
+      navigator.vibrate([100, 30, 100]);
+    } catch (err) { /* ignore */ }
+  });
 
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) {
@@ -16,4 +28,3 @@ document.addEventListener("visibilitychange", () => {
     sound = false;
   }
 });
-

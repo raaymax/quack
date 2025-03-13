@@ -1,15 +1,15 @@
-import type { Meta, StoryObj } from '@storybook/react';
- 
-import '../../styles.ts';
-import { CollapsableColumns } from '../../js/components/atoms/CollapsableColumns';
+import type { Meta, StoryObj } from "@storybook/react";
+
+import "../../styles.ts";
+import { CollapsableColumns } from "../../js/components/atoms/CollapsableColumns";
 
 const meta: Meta<typeof CollapsableColumns> = {
   component: CollapsableColumns,
 };
- 
+
 export default meta;
 type Story = StoryObj<typeof CollapsableColumns>;
- 
+
 export const Primary: Story = {
   args: {
     minSize: 200,

@@ -1,9 +1,9 @@
-import { useState, useEffect, useCallback } from 'react';
-import styled from 'styled-components';
-import { useInput } from '../contexts/useInput';
-import { observer } from 'mobx-react-lite';
+import { useCallback, useEffect, useState } from "react";
+import styled from "styled-components";
+import { useInput } from "../contexts/useInput";
+import { observer } from "mobx-react-lite";
 
-export const Menu = styled.div<{top:number, left: number, height: number}>`
+export const Menu = styled.div<{ top: number; left: number; height: number }>`
   position: absolute;
   margin-top: ${(props) => -props.height * 30 - 40}px;
   width: 300px;
@@ -77,14 +77,22 @@ type TextMenuProps = {
 };
 
 export const TextMenu = observer(({
-  className, options, open = false, onSelect, selected = 0, setSelected,
+  className,
+  options,
+  open = false,
+  onSelect,
+  selected = 0,
+  setSelected,
 }: TextMenuProps) => {
   const [coords, setCoords] = useState([0, 0]);
   const { input, getRange } = useInput();
 
   const getXPos = useCallback(() => {
     if (!input.current) return 0;
-    const width = parseInt(window.getComputedStyle(input.current).width.replace('px', ''), 10);
+    const width = parseInt(
+      window.getComputedStyle(input.current).width.replace("px", ""),
+      10,
+    );
     if (coords[1] + 300 > width) {
       return width - 300;
     }
@@ -103,12 +111,14 @@ export const TextMenu = observer(({
   }, [input, getRange]);
 
   const ctrl = useCallback((e: KeyboardEvent) => {
-    if (e.key === 'ArrowUp') {
-      setSelected(selected + 1 > options.length - 1 ? options.length - 1 : selected + 1);
+    if (e.key === "ArrowUp") {
+      setSelected(
+        selected + 1 > options.length - 1 ? options.length - 1 : selected + 1,
+      );
       e.preventDefault();
       e.stopPropagation();
     }
-    if (e.key === 'ArrowDown') {
+    if (e.key === "ArrowDown") {
       setSelected(selected - 1 < 0 ? 0 : selected - 1);
       e.preventDefault();
       e.stopPropagation();
@@ -118,24 +128,37 @@ export const TextMenu = observer(({
   useEffect(() => {
     const { current } = input;
     if (!current) return;
-    current.addEventListener('keydown', ctrl);
+    current.addEventListener("keydown", ctrl);
     return () => {
-      current.removeEventListener('keydown', ctrl);
+      current.removeEventListener("keydown", ctrl);
     };
   }, [input, ctrl]);
 
   return open && (
-    <Menu className={className} top={getYPos()} left={getXPos()} height={options.length} >
+    <Menu
+      className={className}
+      top={getYPos()}
+      left={getXPos()}
+      height={options.length}
+    >
       <ul>
         {options.map((e, idx) => (
           <li
             key={idx}
             onClick={(ev) => onSelect(idx, ev)}
-            className={idx === selected ? 'selected' : ''}
+            className={idx === selected ? "selected" : ""}
           >
-            {e.icon && <span><i className={e.icon} /></span>}
-            {e.url && <span><img src={e.url} alt="img" /></span>}
-            {!e.icon && !e.url && <span>{e.label || ''}</span>}
+            {e.icon && (
+              <span>
+                <i className={e.icon} />
+              </span>
+            )}
+            {e.url && (
+              <span>
+                <img src={e.url} alt="img" />
+              </span>
+            )}
+            {!e.icon && !e.url && <span>{e.label || ""}</span>}
             <span>{e.name}</span>
           </li>
         ))}
