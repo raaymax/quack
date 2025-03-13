@@ -295,7 +295,9 @@ export class MessagesModel {
   });
 
   getAll(): MessageModel[] {
-    return [...this.ghosts, ...this.list];
+    return [...this.ghosts, ...this.list].sort((a, b) =>
+      new Date(a.createdAt) < new Date(b.createdAt) ? 1 : -1
+    );
   }
   get(parentId: string) {
     return this.list.find((m) => m.id === parentId) ?? null;
