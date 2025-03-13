@@ -278,7 +278,7 @@ export class MessagesModel {
   });
 
   getAll(): MessageModel[] {
-    return [...this.ghosts.map(m => ({...m, ghost: true})), ...this.list];
+    return [...this.ghosts, ...this.list];
   }
   get(parentId: string) {
     return this.list.find((m) => m.id === parentId) ?? null;
