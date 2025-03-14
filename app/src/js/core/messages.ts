@@ -1,69 +1,27 @@
 /* global JsonWebKey */
-import { Message } from "../types";
-import type { Client } from "./client";
-import { Range } from "@quack/tools";
+import { Message, FullMessage } from "../types.ts";
+import type { Client } from "./client.ts";
+import { CacheEntry, Cache, mergeFn } from "@quack/tools";
 
-class MsgsRes<T> extends Range {
-  data: T;
-  fetched = new Date();
+class MsgsCacheEntry extends CacheEntry<FullMessage[]>{}
 
-  constructor(res: any) {
-    super(res.from, res.to);
-    this.data = res.data;
-  }
+class MessagesCache extends Cache<FullMessage[]> {
+  override merge = (a: CacheEntry<FullMessage[]>, b: CacheEntry<FullMessage[]>): CacheEntry<FullMessage[]> => (
+    new CacheEntry(Math.min(a.from, b.from), Math.max(a.to, b.to), mergeFn(
+      (_: FullMessage, b: FullMessage) => b,
+      (a: FullMessage) => a.id.toString(),
+      a.data,
+      b.data
+    )) as CacheEntry<FullMessage[]>
+  )
 
-  static sort(repo: MsgsRes<any>[]) {
-    return [...repo].sort((a, b) => a.from - b.from);
-  }
-}
 
-class MessagesCache<T> {
-  repo: MsgsRes<T>[] = [];
-  combineData: (r1: T, r2: T) => T;
-
-  constructor({ combine }: { combine: (r1: T, r2: T) => T }) {
-    this.combineData = combine;
-    document.addEventListener("freeze", () => {
-      this.repo.length = 0;
-    });
-  }
-
-  update(entry: MsgsRes<T>) {
+  update(messages: FullMessage[]) {
+    const dates = messages.map((m) => new Date(m.createdAt).getTime());
+    const from = Math.min(...dates);
+    const to = Math.max(...dates);
+    const entry = new MsgsCacheEntry(from, to, messages);
     this.repo.push(entry);
-  }
-
-  combine(r1: MsgsRes<T>, r2: MsgsRes<T>) {
-    return new MsgsRes({
-      ...r2,
-      ...r1,
-      from: Math.min(r1.from, r2.from),
-      to: Math.max(r1.to, r2.to),
-      data: this.combineData(r1.data, r2.data),
-    });
-  }
-
-  get(r: Range) {
-    const relevant: MsgsRes<T>[] = MsgsRes.sort(this.repo).filter((r2) =>
-      r.overlaps(r2)
-    ).reduce<any>((acc: MsgsRes<T>[], item: MsgsRes<T>) => {
-      if (!acc[acc.length - 1]) {
-        return [item];
-      }
-      const rest = acc.length > 1 ? acc.slice(0, acc.length - 1) : [];
-      const last = acc[acc.length - 1];
-
-      if (item.overlaps(last)) {
-        return [...rest, this.combine(last, item)];
-      }
-      acc.push(item);
-      return acc;
-    }, []);
-
-    const cache = relevant.find((rel: MsgsRes<T>) => r.containsEntirely(rel));
-    if (cache) {
-      return cache.data;
-    }
-    return null;
   }
 }
 
@@ -79,7 +37,7 @@ type MessageQuery = {
 };
 
 export class MessageService {
-  _cache: { [key: string]: MessagesCache<Message[]> };
+  _cache: { [key: string]: MessagesCache };
   pending: { [key: string]: Promise<Message[]> } = {};
   dataContainer: (r1: Message[], r2: Message[]) => Message[];
   client: Client;
@@ -99,31 +57,21 @@ export class MessageService {
     if (pinned) key += "-pinned";
     if (search) key += `-search:${search}`;
     if (!this._cache[key]) {
-      this._cache[key] = new MessagesCache({
-        combine: this.dataContainer,
-      });
+      this._cache[key] = new MessagesCache();
     }
     return this._cache[key];
   }
 
-  getMaxDate(data: Message[]) {
-    const dates = data.map((m) => new Date(m.createdAt).getTime());
-    return Math.max(...dates);
-  }
-
-  getMinDate(data: Message[]) {
-    const dates = data.map((m) => new Date(m.createdAt).getTime());
-    return Math.min(...dates);
-  }
-
   async _fetch(query: MessageQuery): Promise<Message[]> {
     const { channelId, parentId, before, after, limit, preprocess } = query;
-    const to = before ? new Date(before).getTime() : Infinity;
-    const from = after ? new Date(after).getTime() : -Infinity;
+    const to = before ? new Date(before).getTime() : undefined;
+    const from = after ? new Date(after).getTime() : undefined;
     if (to || from) {
-      const cache = this.cache(query).get(new Range(from, to));
+      console.log(from, to);
+      const cache = this.cache(query).get({from, to});
       if (cache) {
-        return cache.map((item) => ({ ...item })); //remove clonning
+        console.log('using cache')
+        return cache.data.map((item) => ({ ...item })); //remove clonning
       }
     }
     const data = await this.client.api.getMessages({
@@ -139,13 +87,7 @@ export class MessageService {
     const preprocessedData = preprocess ? await preprocess(data) : data;
 
     if (data?.length > 0) {
-      this.cache(query).update(
-        new MsgsRes({
-          from: after ? from : this.getMinDate(data),
-          to: before ? to : this.getMaxDate(data),
-          data: preprocessedData,
-        }),
-      );
+      this.cache(query).update(preprocessedData);
     }
 
     return preprocessedData;

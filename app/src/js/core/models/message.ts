@@ -67,6 +67,12 @@ export class MessageModel implements ViewMessage {
   parent: MessagesModel;
   ghost?: boolean; 
 
+  static makeGhost(value: Partial<ViewMessage>, parent: MessagesModel) {
+    const ghost = new MessageModel(value, parent);
+    ghost.ghost = true;
+    return ghost;
+  }
+
   static from = (value: Partial<FullMessage>, parent: MessagesModel) => {
     return new MessageModel({
       secured: false,

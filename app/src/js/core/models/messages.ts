@@ -49,9 +49,9 @@ export class MessagesModel {
     this.selected = selected ?? null;
     this.mode = selected ? "spotlight" : "live";
 
-    this._cleanups.push(client.on2("message", (msg) => this.onMessage(msg)));
+    this._cleanups.push(client.on2("message", (msg: Message) => this.onMessage(msg)));
     this._cleanups.push(
-      client.on2("message:remove", (msg) => this.onRemove(msg)),
+      client.on2("message:remove", (msg: Message) => this.onRemove(msg)),
     );
     this._cleanups.push(this.subscribeUnfreeze());
   }
@@ -65,11 +65,17 @@ export class MessagesModel {
       console.log("focus");
       this.refresh();
     };
+    const reconnect = () => {
+      console.log("reconnect");
+      this.refresh();
+    };
     addEventListener("resume", resume);
     addEventListener("focus", focus);
+    client.on("con:open", reconnect);
     return () => {
       removeEventListener("resume", resume);
       removeEventListener("focus", focus);
+      client.off("con:open", reconnect);
     };
   };
 
@@ -90,12 +96,23 @@ export class MessagesModel {
       const m = await this.decrypt(msg);
       runInAction(() => {
         this.ghosts = this.ghosts.filter((g) => g.clientId !== msg.clientId);
+        if( msg.ephemeral ) {
+          this.ghosts = mergeFn<MessageModel>(
+            (a: MessageModel, b: MessageModel) => a.patch(b),
+            ({ id }: Message) => id,
+            this.ghosts,
+            m.map((m: FullMessage) => new MessageModel(m, this)),
+          ).sort((a: MessageModel, b: MessageModel) =>
+            new Date(a.createdAt) < new Date(b.createdAt) ? 1 : -1
+          );
+          return;
+        }
         this.list = mergeFn<MessageModel>(
           (a: MessageModel, b: MessageModel) => a.patch(b),
-          ({ id }) => id,
+          ({ id }: Message) => id,
           this.list,
           m.map((m: FullMessage) => new MessageModel(m, this)),
-        ).sort((a, b) =>
+        ).sort((a: MessageModel, b: MessageModel) =>
           new Date(a.createdAt) < new Date(b.createdAt) ? 1 : -1
         );
       });
@@ -278,7 +295,9 @@ export class MessagesModel {
   });
 
   getAll(): MessageModel[] {
-    return [...this.ghosts.map(m => ({...m, ghost: true})), ...this.list];
+    return [...this.ghosts, ...this.list].sort((a, b) =>
+      new Date(a.createdAt) < new Date(b.createdAt) ? 1 : -1
+    );
   }
   get(parentId: string) {
     return this.list.find((m) => m.id === parentId) ?? null;
