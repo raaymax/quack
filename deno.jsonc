@@ -16,7 +16,7 @@
     "@planigale/planigale": "jsr:@planigale/planigale@0.6.10",
     "@planigale/testing": "jsr:@planigale/testing@0.3.6",
     "@planigale/schema": "jsr:@planigale/schema@0.1.4",
-    "@planigale/sse": "jsr:@planigale/sse@0.2.5",
+    "@planigale/sse": "jsr:@planigale/sse@0.2.6",
     "@std/assert": "jsr:@std/assert@1.0.10",
     "@std/encoding": "jsr:@std/encoding@1.0.6",
     "@std/path": "jsr:@std/path@1.0.8",

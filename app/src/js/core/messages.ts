@@ -99,12 +99,19 @@ export class MessageService {
     if (promise) {
       return await promise;
     }
-    this.pending[key] = new Promise<Message[]>((resolve) => {
+    this.pending[key] = new Promise<Message[]>((resolve, reject) => {
       (async () => {
-        const data = await this._fetch(query);
-        const ret = resolve(data);
-        delete this.pending[key];
-        return ret;
+        try {
+          const data = await this._fetch(query);
+          const ret = resolve(data);
+          delete this.pending[key];
+          return ret;
+        } catch (e) {
+          console.error(e);
+          reject(e);
+        } finally {
+          delete this.pending[key];
+        }
       })();
     });
     return await this.pending[key];
