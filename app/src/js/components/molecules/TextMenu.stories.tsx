@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import "../../styles.ts";
-import { TextMenu } from "../../js/components/molecules/TextMenu";
+import "../../../styles.ts";
+import { TextMenu } from "./TextMenu.tsx";
 
 const meta: Meta<typeof TextMenu> = {
   component: TextMenu,

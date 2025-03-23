@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import "../../styles.ts";
-import { Message } from "../../js/components/organisms/Message";
-import { HoverProvider } from "../../js/components/contexts/hover.tsx";
-import { app } from "../../js/core";
-import { MessageModel } from "../../js/core/models/message.ts";
+import "../../../styles.ts";
+import { Message } from "./Message.tsx";
+import { HoverProvider } from "../contexts/hover.tsx";
+import { app } from "../../core/index.ts";
+import { MessageModel } from "../../core/models/message.ts";
 
 const LOREM =
   "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris sollicitudin scelerisque nisl quis condimentum. Aliquam eget lacus eros. Vestibulum ac posuere massa, eget euismod enim. Nulla interdum magna tortor. Vestibulum sagittis, ex in maximus maximus, neque purus tempor magna, sit amet molestie sapien est id augue. Nulla imperdiet leo nec nisl commodo, nec fringilla leo vehicula. Suspendisse nibh orci, convallis at dictum ut, volutpat non orci. Nulla scelerisque sapien eget purus ullamcorper, eu pellentesque odio tincidunt. Vivamus quis maximus sapien, vitae placerat urna. Vestibulum finibus facilisis aliquam. Aliquam iaculis augue vel metus varius cursus.";

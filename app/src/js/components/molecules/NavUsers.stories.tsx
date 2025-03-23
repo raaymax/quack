@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import "../../styles.ts";
-import { NavUsers } from "../../js/components/molecules/NavUsers";
+import "../../../styles.ts";
+import { NavUsers } from "./NavUsers.tsx";
 
 const meta: Meta<typeof NavUsers> = {
   component: NavUsers,

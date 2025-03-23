@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import "../../styles.ts";
-import { ReadReceiptModel } from "app/src/js/core/models/readReceipt.ts";
-import { app } from "../../js/core";
-import { ReadReceipt } from "app/src/js/components/molecules/ReadReceipt.tsx";
+import "../../../styles.ts";
+import { ReadReceiptModel } from "../../core/models/readReceipt.ts";
+import { app } from "../../core/index.ts";
+import { ReadReceipt } from "./ReadReceipt.tsx";
 
 const meta: Meta<typeof ReadReceipt> = {
   component: ReadReceipt,

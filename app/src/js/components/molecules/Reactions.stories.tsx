@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import "../../styles.ts";
-import { Reactions } from "../../js/components/molecules/Reactions";
-import { MessageModel } from "../../js/core/models/message.ts";
-import { app } from "../../js/core";
+import "../../../styles.ts";
+import { Reactions } from "./Reactions.tsx";
+import { MessageModel } from "../../core/models/message.ts";
+import { app } from "../../core/index.ts";
 
 const meta: Meta<typeof Reactions> = {
   component: Reactions,

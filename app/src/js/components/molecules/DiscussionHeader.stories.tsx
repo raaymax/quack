@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import "../../styles.ts";
-import { DiscussionHeader } from "../../js/components/molecules/DiscussionHeader";
-import { AppModel } from "../../js/core/models/app.ts";
-import { AppProvider } from "../../js/components/contexts/appState.tsx";
+import "../../../styles.ts";
+import { DiscussionHeader } from "./DiscussionHeader.tsx";
+import { AppModel } from "../../core/models/app.ts";
+import { AppProvider } from "../contexts/appState.tsx";
 
 const app = new AppModel();
 import { client } from "app/src/js/core/client.ts";

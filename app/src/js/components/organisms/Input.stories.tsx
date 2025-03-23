@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import "../../styles.ts";
-import { Input } from "../../js/components/organisms/Input";
-import { app } from "../../js/core";
+import "../../../styles.ts";
+import { Input } from "./Input.tsx";
+import { app } from "../../core/index.ts";
 
 const meta: Meta<typeof Input> = {
   component: Input,

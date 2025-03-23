@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import "../../styles.ts";
-import { ThreadLink } from "../../js/components/molecules/ThreadLink";
+import "../../../styles.ts";
+import { ThreadLink } from "./ThreadLink.tsx";
 
 const meta: Meta<typeof ThreadLink> = {
   component: ThreadLink,

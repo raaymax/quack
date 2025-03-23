@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import "../../styles.ts";
-import { ThreadInfo } from "../../js/components/molecules/ThreadInfo";
+import "../../../styles.ts";
+import { ThreadInfo } from "./ThreadInfo.tsx";
 
 const meta: Meta<typeof ThreadInfo> = {
   component: ThreadInfo,

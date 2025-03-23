@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import "../../styles.ts";
-import { ChannelLink } from "../../js/components/molecules/ChannelLink";
-import { AppModel } from "../../js/core/models/app.ts";
-import { AppProvider } from "../../js/components/contexts/appState.tsx";
+import "../../../styles.ts";
+import { ChannelLink } from "./ChannelLink.tsx";
+import { AppModel } from "../../core/models/app.ts";
+import { AppProvider } from "../contexts/appState.tsx";
 
 const app = new AppModel();
 

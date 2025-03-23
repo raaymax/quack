@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import "../../styles.ts";
-import { EmojiSearch } from "../../js/components/organisms/EmojiSearch";
-import { app } from "../../js/core";
+import "../../../styles.ts";
+import { EmojiSearch } from "./EmojiSearch.tsx";
+import { app } from "../../core/index.ts";
 
 const meta: Meta<typeof EmojiSearch> = {
   component: EmojiSearch,

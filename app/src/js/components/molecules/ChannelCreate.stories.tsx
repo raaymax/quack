@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import "../../styles.ts";
-import { ChannelCreate } from "../../js/components/molecules/ChannelCreate";
+import "../../../styles.ts";
+import { ChannelCreate } from "./ChannelCreate.tsx";
 
 const meta: Meta<typeof ChannelCreate> = {
   component: ChannelCreate,

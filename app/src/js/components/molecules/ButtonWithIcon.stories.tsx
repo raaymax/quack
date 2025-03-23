@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import "../../styles.ts";
-import { ButtonWithIcon } from "../../js/components/molecules/ButtonWithIcon";
+import "../../../styles.ts";
+import { ButtonWithIcon } from "./ButtonWithIcon.tsx";
 
 const meta: Meta<typeof ButtonWithIcon> = {
   component: ButtonWithIcon,
