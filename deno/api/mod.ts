@@ -79,6 +79,8 @@ class API extends EventTarget {
   fetch: typeof fetch;
 
   sseEnabled: boolean;
+  
+  reconnectTimeout: number | undefined;
 
   set token(value: any) {
     if (typeof value === "string" && value.trim() !== "") {
@@ -138,12 +140,13 @@ class API extends EventTarget {
   async reconnect(signal?: AbortSignal) {
     try {
       console.debug("events reconnecting SSE");
-      await this.listen();
+      await this.listen(signal);
     } catch (e) {
       console.error("[API_SSE]", e);
     } finally {
       if (signal && !signal.aborted) {
-        setTimeout(() => this.reconnect(signal), 1000);
+        if (this.reconnectTimeout) clearTimeout(this.reconnectTimeout);
+        this.reconnectTimeout = setTimeout(() => this.reconnect(signal), 1000);
       }
     }
   }
@@ -170,6 +173,7 @@ class API extends EventTarget {
       }
       console.debug("event disconnected");
     } finally {
+      console.debug("events finally");
       this.emit(new CustomEvent("con:close", { detail: {} }));
       if (this.source) {
         await this.source.close();
@@ -448,19 +452,43 @@ class API extends EventTarget {
   }
 
   async sendMessage(msg: Partial<Message>): Promise<any> {
-    const data = { ...msg };
-    if (msg.parentId === null) delete data.parentId;
-    const res = await this.fetchWithCredentials(
-      `/api/channels/${data.channelId}/messages`,
-      {
-        method: "POST",
-        body: JSON.stringify(data),
-      },
-    );
-    if (res.status !== 200) {
-      throw await res.json();
-    }
-    return await res.json();
+    return await new Promise((resolve, reject) => {
+      const data = { ...msg };
+      let timeoutId: number | null = setTimeout(() => {
+        timeoutId = null;
+        reject(new Error("Timeout"));
+      }, 5000);
+      
+      if (msg.parentId === null) delete data.parentId;
+      
+      this.fetchWithCredentials(
+        `/api/channels/${data.channelId}/messages`,
+        {
+          method: "POST",
+          body: JSON.stringify(data),
+        },
+      ).then(async (res) => {
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+          timeoutId = null;
+          
+          if (res.status !== 200) {
+            const errorData = await res.json();
+            reject(errorData);
+            return;
+          }
+          
+          const responseData = await res.json();
+          resolve(responseData);
+        }
+      }).catch(error => {
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+          timeoutId = null;
+          reject(error);
+        }
+      });
+    });
   }
 
   async sendCommand(cmd: Partial<Command>): Promise<any> {

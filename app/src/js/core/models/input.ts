@@ -56,6 +56,7 @@ export class InputModel {
         context: {
           channelId: this.channelId,
           parentId: this.parentId || undefined,
+          appVersion: APP_VERSION,
         },
       });
     } else {
