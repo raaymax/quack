@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import "../../styles.ts";
-import { Icon } from "../../js/components/atoms/Icon";
+import "../../../styles.ts";
+import { Icon } from "./Icon.tsx";
 
 const meta: Meta<typeof Icon> = {
   component: Icon,

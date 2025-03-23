@@ -1,9 +1,9 @@
 /* global JsonWebKey */
 import type { Meta, StoryObj } from "@storybook/react";
 
-import "../../styles.ts";
-import { MessageHeader } from "../../js/components/atoms/MessageHeader";
-import { app } from "../../js/core";
+import "../../../styles.ts";
+import { MessageHeader } from "./MessageHeader.tsx";
+import { app } from "../../core/index.ts";
 
 const meta: Meta<typeof MessageHeader> = {
   component: MessageHeader,

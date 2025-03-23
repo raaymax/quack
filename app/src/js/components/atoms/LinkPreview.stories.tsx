@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import "../../styles.ts";
-import { LinkPreview } from "../../js/components/atoms/LinkPreview";
+import "../../../styles.ts";
+import { LinkPreview } from "./LinkPreview.tsx";
 
 const meta: Meta<typeof LinkPreview> = {
   component: LinkPreview,

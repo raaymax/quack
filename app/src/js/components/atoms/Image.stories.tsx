@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import "../../styles.ts";
-import { Image } from "../../js/components/atoms/Image";
+import "../../../styles.ts";
+import { Image } from "./Image.tsx";
 
 const meta: Meta<typeof Image> = {
   component: Image,

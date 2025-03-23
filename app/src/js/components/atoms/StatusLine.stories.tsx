@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import "../../styles.ts";
-import { StatusLine } from "../../js/components/atoms/StatusLine";
-import { AppModel } from "app/src/js/core/models/app.ts";
+import "../../../styles.ts";
+import { StatusLine } from "./StatusLine.tsx";
+import { AppModel } from "../../core/models/app.ts";
 
 const meta: Meta<typeof StatusLine> = {
   component: StatusLine,

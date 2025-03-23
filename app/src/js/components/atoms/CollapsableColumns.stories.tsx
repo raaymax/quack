@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import "../../styles.ts";
-import { CollapsableColumns } from "../../js/components/atoms/CollapsableColumns";
+import "../../../styles.ts";
+import { CollapsableColumns } from "./CollapsableColumns.tsx";
 
 const meta: Meta<typeof CollapsableColumns> = {
   component: CollapsableColumns,

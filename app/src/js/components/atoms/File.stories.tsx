@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import "../../styles.ts";
-import { File } from "../../js/components/atoms/File";
+import "../../../styles.ts";
+import { File } from "./File.tsx";
 
 const meta: Meta<typeof File> = {
   component: File,

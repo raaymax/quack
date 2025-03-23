@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import "../../styles.ts";
-import { Tag } from "../../js/components/atoms/Tag";
+import "../../../styles.ts";
+import { Tag } from "./Tag.tsx";
 
 const meta: Meta<typeof Tag> = {
   component: Tag,

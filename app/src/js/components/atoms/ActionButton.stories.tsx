@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import "../../styles.ts";
-import { ActionButton } from "../../js/components/atoms/ActionButton";
-import { MessageProvider } from "../../js/components/contexts/message.tsx";
-import { MessageModel } from "../../js/core/models/message.ts";
-import { app } from "../../js/core";
+import "../../../styles.ts";
+import { ActionButton } from "./ActionButton.tsx";
+import { MessageProvider } from "../contexts/message.tsx";
+import { MessageModel } from "../../core/models/message.ts";
+import { app } from "../../core/index.ts";
 
 const meta: Meta<typeof ActionButton> = {
   component: ActionButton,

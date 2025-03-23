@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import "../../styles.ts";
-import { LoggedUser } from "../../js/components/atoms/LoggedUser.tsx";
-import { UserProvider } from "../../js/components/contexts/user.tsx";
-import { app, User } from "../../js/core";
+import "../../../styles.ts";
+import { LoggedUser } from "./LoggedUser.tsx";
+import { UserProvider } from "../contexts/user.tsx";
+import { app, User } from "../../core/index.ts";
 
 const meta: Meta<typeof LoggedUser> = {
   component: LoggedUser,

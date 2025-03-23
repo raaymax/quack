@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import "../../styles.ts";
-import { ProfilePic } from "../../js/components/atoms/ProfilePic";
+import "../../../styles.ts";
+import { ProfilePic } from "./ProfilePic.tsx";
 
 const meta: Meta<typeof ProfilePic> = {
   component: ProfilePic,
