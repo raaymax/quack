@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import "../../styles.ts";
-import { ErrorPage } from "../../js/components/pages/ErrorPage";
+import "../../../styles.ts";
+import { ErrorPage } from "./ErrorPage.tsx";
 
 const meta: Meta<typeof ErrorPage> = {
   component: ErrorPage,

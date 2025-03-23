@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import "../../styles.ts";
-import { LoginPage } from "../../js/components/pages/LoginPage";
+import "../../../styles.ts";
+import { LoginPage } from "./LoginPage.tsx";
 
 const meta: Meta<typeof LoginPage> = {
   component: LoginPage,
