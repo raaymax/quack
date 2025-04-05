@@ -57,10 +57,5 @@
     "check": "deno fmt && deno lint && deno task test",
     "android:build": "npm run android:build",
     "desktop:build": "npm run desktop:build"
-  },
-  "compilerOptions": {
-    "jsx": "react",
-    "jsxFactory": "Message.create",
-    "jsxFragmentFactory": "myFragmentFactory"
   }
 }

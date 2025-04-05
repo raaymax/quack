@@ -1,6 +1,8 @@
+import { Eid } from "../../types.ts";
+
 type Thread = {
-  channelId: string;
-  parentId?: string | null;
+  channelId: Eid;
+  parentId?: Eid | null;
 };
 export const isSameThread = (a: Thread, b: Thread): boolean => {
   return a.channelId === b.channelId &&

@@ -1,4 +1,5 @@
 import react from "@vitejs/plugin-react";
+import deno from '@deno/vite-plugin';
 import { VitePWA } from "vite-plugin-pwa";
 
 import path from "node:path";
@@ -13,6 +14,7 @@ export default defineConfig(({command}) => ({
     APP_VERSION: JSON.stringify(process.env.APP_VERSION),
     APP_NAME: JSON.stringify(process.env.APP_NAME),
     API_URL: JSON.stringify(""),
+
   },
   server: command === "serve" ? {
     https: {
@@ -43,6 +45,7 @@ export default defineConfig(({command}) => ({
     },
   },
   plugins: [
+    deno(),
     react(),
     VitePWA({
       injectRegister: "auto",

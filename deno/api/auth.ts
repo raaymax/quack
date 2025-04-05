@@ -68,29 +68,38 @@ class AuthAPI extends EventTarget {
     if (!key) return { status: "error" };
     const ret = await this.api.fetchWithCredentials("/api/auth/session");
     const session = await ret.json();
-    await this.validateSession(session);
+    if(!await this.validateSession(session)){
+        localStorage.removeItem("token");
+        localStorage.removeItem("userId");
+        localStorage.removeItem("key");
+    }
     return session;
   }
 
   async validateSession(session: UserSession): Promise<boolean> {
-    const key = localStorage.getItem("key");
-    if (!key) return false;
-    if (session.status === "ok") {
-      localStorage.setItem("userId", session.userId);
-      this.api.token = session.token;
-      localStorage.setItem("token", session.token);
-      const encryptionKey = enc.joinJSON<JsonWebKey>([key, session.key]);
-      const secrets: UserSessionSecrets = await enc.decrypt(
-        session.secrets,
-        encryptionKey,
-      );
-      if (secrets.sanityCheck !== "valid") return false;
-      this.api.userEncryptionKey = secrets.encryptionKey;
-      this.api.privateKey = secrets.privateKey;
-      this.api.publicKey = session.publicKey;
-      return true;
+    try {
+      const key = localStorage.getItem("key");
+      if (!key) return false;
+      if (session.status === "ok") {
+        localStorage.setItem("userId", session.userId);
+        this.api.token = session.token;
+        localStorage.setItem("token", session.token);
+        const encryptionKey = enc.joinJSON<JsonWebKey>([key, session.key]);
+        const secrets: UserSessionSecrets = await enc.decrypt(
+          session.secrets,
+          encryptionKey,
+        );
+        if (secrets.sanityCheck !== "valid") return false;
+        this.api.userEncryptionKey = secrets.encryptionKey;
+        this.api.privateKey = secrets.privateKey;
+        this.api.publicKey = session.publicKey;
+        return true;
+      }
+      return false;
+    }catch(e) {
+      console.error("Error validating session", e);
+      return false;
     }
-    return false;
   }
 
   async logout() {

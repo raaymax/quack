@@ -57,9 +57,10 @@ export const MessageList = observer((props: MessageListProps) => {
   >([date, undefined]);
   const [selected, setSelected] = useState<string | null>();
   const [list, setList] = useState<MessageType[]>([]);
+
   useEffect(() => {
     autorun(() => {
-      setList(model.messages.getAll());
+      setList(model.messages?.getAll() || []);
     });
   }, [model]);
 

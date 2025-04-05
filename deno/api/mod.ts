@@ -169,7 +169,11 @@ class API extends EventTarget {
         if (event.data === "") continue;
         const data = JSON.parse(event.data);
         console.debug("[SSE]", data);
-        this.dispatchEvent(new CustomEvent(data.type, { detail: data }));
+        try{
+          this.dispatchEvent(new CustomEvent(data.type, { detail: data }));
+        } catch (e) {
+          console.error("events: Error dispatching event", e);
+        }
       }
       console.debug("event disconnected");
     } finally {

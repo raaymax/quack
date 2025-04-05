@@ -1,16 +1,18 @@
 /* global JsonWebKey */
 import { flow, makeAutoObservable } from "mobx";
-import { Channel } from "../../types";
-import type { AppModel } from "./app";
+import { Channel } from "../../types.ts";
+import type { AppModel } from "./app.ts";
 import * as enc from "@quack/encryption";
-import { client } from "../client";
-import { ThreadModel } from "./thread";
+import { client } from "../client.ts";
+import { ThreadModel } from "./thread.ts";
+import { SearchModel } from "./search.ts";
 
 export class ChannelModel {
   id: string;
   name: string;
   users: string[];
   threads: Record<string, ThreadModel>;
+  search: SearchModel;
   channelType: "DIRECT" | "PRIVATE" | "PUBLIC";
   root: AppModel;
 
@@ -23,6 +25,9 @@ export class ChannelModel {
     this.name = value.name;
     this.users = value.users;
     this.channelType = value.channelType;
+    this.search = new SearchModel({
+      channelId: this.id,
+    }, root);
     this.threads = {};
   }
 

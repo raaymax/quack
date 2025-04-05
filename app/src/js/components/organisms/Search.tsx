@@ -1,20 +1,19 @@
 import styled from "styled-components";
-import { useCallback } from "react";
-import { HoverProvider } from "../contexts/hover";
-import { isMobile } from "../../utils";
+import { useCallback, useEffect } from "react";
+import { HoverProvider } from "../contexts/hover.tsx";
+import { isMobile } from "../../utils.ts";
 
-import { Toolbar } from "../atoms/Toolbar";
-import { ButtonWithIcon } from "../molecules/ButtonWithIcon";
+import { Toolbar } from "../atoms/Toolbar.tsx";
+import { ButtonWithIcon } from "../molecules/ButtonWithIcon.tsx";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { MessageListArgsProvider } from "../contexts/messageListArgs";
-import { MessageList } from "../organisms/MessageListScroller";
-import { SearchBox } from "../atoms/SearchBox";
+import { MessageListArgsProvider } from "../contexts/messageListArgs.tsx";
+import { MessageList } from "../organisms/MessageListScroller.tsx";
+import { SearchBox } from "../atoms/SearchBox.tsx";
 
 import { observer } from "mobx-react-lite";
-import { useApp } from "../contexts/appState";
-import { BaseRenderer } from "./MessageListRenderer";
-import { MessageModel } from "../../core/models/message";
-import { ThreadModel } from "../../core/models/thread";
+import { useApp } from "../contexts/appState.tsx";
+import { BaseRenderer } from "./MessageListRenderer.tsx";
+import { MessageModel } from "../../core/models/message.ts";
 
 const StyledHeader = styled.div`
   display: flex;
@@ -55,16 +54,19 @@ const StyledSearch = styled.div`
 `;
 
 export const Header = observer(() => {
-  const navigate = useNavigate();
+  const app = useApp();
   const { channelId } = useParams()!;
   const onSearch = useCallback(
     (search: string) => {
       console.log("searching", search);
-      navigate("/" + channelId + "/search", { state: { search } });
+      app.setSearch(channelId, search);
     },
-    [channelId, navigate],
+    [channelId],
   );
 
+  const onClose = useCallback(() => {
+    app.clearSearch(channelId);
+  }, [channelId]);
   return (
     <StyledHeader>
       {isMobile()
@@ -73,7 +75,7 @@ export const Header = observer(() => {
             <SearchBox className="mobile-search" onSearch={onSearch} />
             <ButtonWithIcon
               icon="xmark"
-              onClick={() => navigate("..", { relative: "path" })}
+              onClick={onClose}
             />
           </Toolbar>
         )
@@ -82,7 +84,7 @@ export const Header = observer(() => {
             <h2>Search results</h2>
             <ButtonWithIcon
               icon="xmark"
-              onClick={() => navigate("..", { relative: "path" })}
+              onClick={onClose}
             />
           </Toolbar>
         )}
@@ -91,7 +93,7 @@ export const Header = observer(() => {
 });
 
 export const SearchResults = observer(
-  ({ model }: { model: ThreadModel | null }) => {
+  ({ model }: { model: SearchModel | null }) => {
     const navigate = useNavigate();
     const gotoMessage = useCallback(
       (msg: MessageModel) => {
@@ -108,7 +110,9 @@ export const SearchResults = observer(
       [navigate],
     );
     if (!model) return null;
-
+    useEffect(() => {
+      model.init();
+    }, [model]);
     return (
       <StyledList>
         <div key="bottom" id="scroll-stop" />
@@ -126,16 +130,15 @@ export const SearchResults = observer(
 
 export const Search = observer(() => {
   const app = useApp();
-  const location = useLocation();
   const { channelId } = useParams()!;
-  const messagesModel = app.getSearch(channelId ?? "", location.state?.search);
-  if (!messagesModel) return null;
+  const searchModel = app.getSearch(channelId);
+  if (!searchModel) return null;
   return (
     <MessageListArgsProvider streamId="search">
       <StyledSearch>
         <HoverProvider>
           <Header />
-          <SearchResults model={messagesModel} />
+          <SearchResults model={searchModel} />
         </HoverProvider>
       </StyledSearch>
     </MessageListArgsProvider>
