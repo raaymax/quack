@@ -37,14 +37,14 @@ export class SearchModel {
         this.open = true;
         this.text = text;
         this.messages = new MessagesModel(
-          { 
+          {
             search: text,
             channelId: this.channelId,
           },
           this.root,
         );
         this.messages.init();
-      })
+      });
     }, 500);
   }
 

@@ -1,20 +1,26 @@
 /* global JsonWebKey */
-import { Message, FullMessage } from "../types.ts";
+import { FullMessage, Message } from "../types.ts";
 import type { Client } from "./client.ts";
-import { CacheEntry, Cache, mergeFn } from "@quack/tools";
+import { Cache, CacheEntry, mergeFn } from "@quack/tools";
 
-class MsgsCacheEntry extends CacheEntry<FullMessage[]>{}
+class MsgsCacheEntry extends CacheEntry<FullMessage[]> {}
 
 class MessagesCache extends Cache<FullMessage[]> {
-  override merge = (a: CacheEntry<FullMessage[]>, b: CacheEntry<FullMessage[]>): CacheEntry<FullMessage[]> => (
-    new CacheEntry(Math.min(a.from, b.from), Math.max(a.to, b.to), mergeFn(
-      (_: FullMessage, b: FullMessage) => b,
-      (a: FullMessage) => a.id.toString(),
-      a.data,
-      b.data
-    )) as CacheEntry<FullMessage[]>
-  )
-
+  override merge = (
+    a: CacheEntry<FullMessage[]>,
+    b: CacheEntry<FullMessage[]>,
+  ): CacheEntry<FullMessage[]> => (
+    new CacheEntry(
+      Math.min(a.from, b.from),
+      Math.max(a.to, b.to),
+      mergeFn(
+        (_: FullMessage, b: FullMessage) => b,
+        (a: FullMessage) => a.id.toString(),
+        a.data,
+        b.data,
+      ),
+    ) as CacheEntry<FullMessage[]>
+  );
 
   update(messages: FullMessage[]) {
     const dates = messages.map((m) => new Date(m.createdAt).getTime());
@@ -68,9 +74,9 @@ export class MessageService {
     const from = after ? new Date(after).getTime() : undefined;
     if (to || from) {
       console.log(from, to);
-      const cache = this.cache(query).get({from, to});
+      const cache = this.cache(query).get({ from, to });
       if (cache) {
-        console.log('using cache')
+        console.log("using cache");
         return cache.data.map((item) => ({ ...item })); //remove clonning
       }
     }

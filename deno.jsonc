@@ -38,7 +38,7 @@
   },
   "lint": {
     "include": ["deno/"],
-    "exclude": ["packages/", "deno/**/__tests__/*", "deno/server/uploads/**"],
+    "exclude": ["packages/", "deno/**/__tests__/*", "deno/server/uploads/**", "**/node_modules/**", "app/.cache"],
     "rules": {
       "tags": ["recommended"],
       "exclude": ["no-unused-vars", "no-explicit-any"]
@@ -57,5 +57,10 @@
     "check": "deno fmt && deno lint && deno task test",
     "android:build": "npm run android:build",
     "desktop:build": "npm run desktop:build"
+  },
+  "compilerOptions": {
+    "jsx": "react",
+    "jsxFactory": "React.createElement",
+    "jsxFragmentFactory": "React.Fragment"
   }
 }

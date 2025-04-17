@@ -275,15 +275,17 @@ export const MainConversation = observer(
                 channelId={channelId}
               />,
               (() => {
-                if(children) return <div key="2" className="context-bar">{children}</div>;
-                if(channelModel.search.open) {
+                if (children) {return (
+                    <div key="2" className="context-bar">{children}</div>
+                  );}
+                if (channelModel.search.open) {
                   return (
                     <div key="2" className="context-bar">
                       <Search />
                     </div>
                   );
                 }
-              })()
+              })(),
             ].filter(Boolean) as [React.ReactNode, React.ReactNode?]}
           />
         </div>

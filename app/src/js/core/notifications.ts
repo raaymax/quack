@@ -1,6 +1,6 @@
-import { client } from "../core";
-import { OutgoingUserPushSubscribe } from "../core/types";
-import type { AppModel } from "../core/models/app";
+import { client } from "../core/index.ts";
+import { OutgoingUserPushSubscribe } from "../core/types.ts";
+import type { AppModel } from "../core/models/app.ts";
 
 export const initNotifications = async (app: AppModel) => {
   if ("serviceWorker" in navigator) {

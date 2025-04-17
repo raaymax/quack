@@ -1,12 +1,11 @@
 import { useEffect } from "react";
-import "../setup";
-import { client } from "../core";
-import { useLoggedUserId } from "./contexts/useLoggedUserId";
-import { Router } from "./Router";
-import { TooltipProvider } from "./contexts/tooltip";
+import "../setup.ts";
+import { client, app } from "../core/index.ts";
+import { useLoggedUserId } from "./contexts/useLoggedUserId.ts";
+import { Router } from "./Router.tsx";
+import { TooltipProvider } from "./contexts/tooltip.tsx";
 import { observer } from "mobx-react-lite";
-import { app } from "../core";
-import { AppProvider } from "./contexts/appState";
+import { AppProvider } from "./contexts/appState.tsx";
 
 const Secured = observer(() => {
   const user = useLoggedUserId();

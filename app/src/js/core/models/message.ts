@@ -6,9 +6,9 @@ import {
   MessageBody,
   ViewMessage,
   ViewProgress,
-} from "../../types";
-import { client } from "../client";
-import type { MessagesModel } from "./messages";
+} from "../../types.ts";
+import { client } from "../client.ts";
+import type { MessagesModel } from "./messages.ts";
 
 export class MessageModel implements ViewMessage {
   secured: false = false;
@@ -65,7 +65,7 @@ export class MessageModel implements ViewMessage {
   } | null;
   editing: boolean = false;
   parent: MessagesModel;
-  ghost?: boolean; 
+  ghost?: boolean;
 
   static makeGhost(value: Partial<ViewMessage>, parent: MessagesModel) {
     const ghost = new MessageModel(value, parent);

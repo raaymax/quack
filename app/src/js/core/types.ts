@@ -1,4 +1,4 @@
-import { MessageBody, ViewMessage } from "../types";
+import { MessageBody, ViewMessage } from "../types.ts";
 
 export type OutgoingPayload =
   | OutgoingChannelCreate

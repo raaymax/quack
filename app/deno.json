@@ -27,7 +27,7 @@
     "react": "npm:react@19.0.0",
     "react-dom": "npm:react-dom@19.0.0",
     "react-router-dom": "npm:react-router-dom@7.4.0",
-    "styled-components": "npm:styled-components@6.1.16",
+    "styled-components": "npm:styled-components@6.1.17",
     "typescript": "npm:typescript@5.8.2",
     "workbox-navigation-preload": "npm:workbox-navigation-preload@7.3.0",
     "workbox-precaching": "npm:workbox-precaching@7.3.0",
@@ -52,6 +52,41 @@
     "@vitejs/plugin-react": "npm:@vitejs/plugin-react@^4.3.4",
     "vite": "npm:vite@6.2.2",
     "vite-plugin-pwa": "npm:vite-plugin-pwa@0.21.2"
+  },
+  "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": [
+      "ESNext",
+      "ES2020",
+      "DOM",
+      "DOM.Iterable",
+      "es2017",
+      "esnext.asynciterable"
+    ],
+    "module": "ESNext",
+    "skipLibCheck": true,
+
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "composite": true,
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": "..",
+    "rootDir": "..",
+    "paths": {
+      "@quack/encryption": ["./deno/encryption/mod.ts"],
+      "@quack/api": ["./deno/api/mod.ts"],
+      "@quack/tools": ["./deno/tools/mod.ts"]
+    }
   },
   "lint": {
     "exclude": [

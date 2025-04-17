@@ -1,7 +1,7 @@
 import styled from "styled-components";
-import { useSize } from "../contexts/useSize";
-import { ClassNames, cn } from "../../utils";
-import { Tooltip } from "./Tooltip";
+import { useSize } from "../contexts/useSize.ts";
+import { ClassNames, cn } from "../../utils.ts";
+import { Tooltip } from "./Tooltip.tsx";
 import { observer } from "mobx-react-lite";
 
 const Container = styled.button`

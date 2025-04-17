@@ -129,7 +129,7 @@ Deno.test("[Range] toString", () => {
 
 const merge = (a: Range, b: Range): Range => (
   new Range(Math.min(a.from, b.from), Math.max(a.to, b.to))
-)
+);
 
 Deno.test("[Range] merge", () => {
   const A = new Range(1, 2);
@@ -148,5 +148,8 @@ Deno.test("[Range] merge", () => {
   const B = new Range(3, 6);
   const C = new Range(5, 10);
   const D = new Range(11, 12);
-  assertEquals(mergeRanges(merge, A, B, C, D).toString(), "[1, 2],[3, 10],[11, 12]");
+  assertEquals(
+    mergeRanges(merge, A, B, C, D).toString(),
+    "[1, 2],[3, 10],[11, 12]",
+  );
 });

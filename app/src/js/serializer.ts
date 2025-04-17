@@ -1,6 +1,6 @@
-import { createCounter } from "./utils";
-import { MessageBody, MessageBodyPart } from "./types";
-import * as types from "./types";
+import { createCounter } from "./utils.ts";
+import { MessageBody, MessageBodyPart } from "./types.ts";
+import * as types from "./types.ts";
 
 type SerializeError = {
   message: string;

@@ -68,10 +68,10 @@ class AuthAPI extends EventTarget {
     if (!key) return { status: "error" };
     const ret = await this.api.fetchWithCredentials("/api/auth/session");
     const session = await ret.json();
-    if(!await this.validateSession(session)){
-        localStorage.removeItem("token");
-        localStorage.removeItem("userId");
-        localStorage.removeItem("key");
+    if (!await this.validateSession(session)) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("userId");
+      localStorage.removeItem("key");
     }
     return session;
   }
@@ -96,7 +96,7 @@ class AuthAPI extends EventTarget {
         return true;
       }
       return false;
-    }catch(e) {
+    } catch (e) {
       console.error("Error validating session", e);
       return false;
     }

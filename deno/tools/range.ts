@@ -38,13 +38,14 @@ export class Range {
   }
 }
 
-
-
 const merge = (a: Range, b: Range): Range => (
   new Range(Math.min(a.from, b.from), Math.max(a.to, b.to))
-)
+);
 
-export const mergeRanges = <T extends Range>(merge:((a: T, b:T) => T), ...a: T[]): T[] => {
+export const mergeRanges = <T extends Range>(
+  merge: (a: T, b: T) => T,
+  ...a: T[]
+): T[] => {
   const sorted = a.sort((a, b) => a.from - b.from);
   return sorted.reduce((acc: T[], range: T) => {
     if (!acc[acc.length - 1]) {
@@ -53,10 +54,10 @@ export const mergeRanges = <T extends Range>(merge:((a: T, b:T) => T), ...a: T[]
     const rest = acc.length > 1 ? acc.slice(0, acc.length - 1) : [];
     const last = acc[acc.length - 1];
 
-    if( last.overlaps(range) ) {
+    if (last.overlaps(range)) {
       return [...rest, merge(last, range)];
     }
 
     return [...acc, range];
   }, []);
-}
+};

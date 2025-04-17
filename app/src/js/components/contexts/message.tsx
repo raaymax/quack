@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import type { MessageModel } from "../../core/models/message";
+import type { MessageModel } from "../../core/models/message.ts";
 
 export const MessageContext = createContext<{ model?: MessageModel }>({});
 

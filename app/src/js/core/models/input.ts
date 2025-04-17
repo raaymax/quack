@@ -1,9 +1,9 @@
 import { flow, makeAutoObservable } from "mobx";
-import type { AppModel } from "./app";
-import { FilesModel } from "./files";
-import { ThreadModel } from "./thread";
-import { fromDom } from "../../serializer";
-import { client } from "../client";
+import type { AppModel } from "./app.ts";
+import { FilesModel } from "./files.ts";
+import { ThreadModel } from "./thread.ts";
+import { fromDom } from "../../serializer.ts";
+import { client } from "../client.ts";
 
 type InputModelOptions = {
   channelId: string;

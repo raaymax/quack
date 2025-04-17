@@ -142,13 +142,13 @@ export class AppModel {
   };
 
   setLoading = (loading: boolean) => {
-    if(loading) {
+    if (loading) {
       clearTimeout(this.loadingTimeout);
       this.loading = true;
       this.loadingTimeout = setTimeout(() => {
         this.loading = false;
       }, 5000);
-      return
+      return;
     } else {
       clearTimeout(this.loadingTimeout);
       this.loading = false;

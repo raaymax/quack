@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import { AppModel } from "../../core/models/app";
+import { AppModel } from "../../core/models/app.ts";
 
 export const AppContext = createContext<AppModel | null>(null);
 

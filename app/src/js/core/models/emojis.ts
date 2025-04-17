@@ -1,7 +1,7 @@
 import { flow, makeAutoObservable } from "mobx";
 import type { Emoji } from "@quack/api";
-import { client } from "../client";
-import type { AppModel } from "./app";
+import { client } from "../client.ts";
+import type { AppModel } from "./app.ts";
 import Fuse from "fuse.js";
 
 export class EmojiModel {

@@ -1,5 +1,5 @@
 import { createContext, useCallback, useState } from "react";
-import { isMobile } from "../../utils";
+import { isMobile } from "../../utils.ts";
 
 export type SidebarContextType = {
   sidebar: boolean;

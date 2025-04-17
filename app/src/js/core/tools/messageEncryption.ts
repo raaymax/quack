@@ -1,7 +1,7 @@
 /* global JsonWebKey */
 import * as enc from "@quack/encryption";
-import { BaseMessage, FullMessage, Message, MessageData } from "../client";
-import { EncryptedData, EncryptedMessage } from "../../types";
+import { BaseMessage, FullMessage, Message, MessageData } from "../client.ts";
+import { EncryptedData, EncryptedMessage } from "../../types.ts";
 
 type Messages = Message | Message[];
 

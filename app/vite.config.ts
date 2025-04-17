@@ -1,5 +1,5 @@
 import react from "@vitejs/plugin-react";
-import deno from '@deno/vite-plugin';
+import deno from "@deno/vite-plugin";
 import { VitePWA } from "vite-plugin-pwa";
 
 import path from "node:path";
@@ -9,34 +9,35 @@ import { defineConfig } from "vite";
 const __dirname = new URL(".", import.meta.url).pathname;
 const sslPath = path.join(__dirname, "../ssl/");
 
-export default defineConfig(({command}) => ({
+export default defineConfig(({ command }) => ({
   define: {
     APP_VERSION: JSON.stringify(process.env.APP_VERSION),
     APP_NAME: JSON.stringify(process.env.APP_NAME),
     API_URL: JSON.stringify(""),
-
   },
-  server: command === "serve" ? {
-    https: {
-      key: Deno.readTextFileSync(path.join(sslPath,'key.pem')),
-      cert: Deno.readTextFileSync(path.join(sslPath, 'cert.pem')),
-    },
-    port: 3000,
-    strictPort: true,
-    hmr: {
-      overlay: false,
-    },
-    watch: {
-      ignored: ["**/src-tauri/**"],
-    },
-    proxy: {
-      "/api": {
-        target: "http://localhost:3001",
-        changeOrigin: true,
-        secure: false,
+  server: command === "serve"
+    ? {
+      https: {
+        key: Deno.readTextFileSync(path.join(sslPath, "key.pem")),
+        cert: Deno.readTextFileSync(path.join(sslPath, "cert.pem")),
       },
-    },
-  } : {},
+      port: 3000,
+      strictPort: true,
+      hmr: {
+        overlay: false,
+      },
+      watch: {
+        ignored: ["**/src-tauri/**"],
+      },
+      proxy: {
+        "/api": {
+          target: "http://localhost:3001",
+          changeOrigin: true,
+          secure: false,
+        },
+      },
+    }
+    : {},
   resolve: {
     alias: {
       "@quack/encryption": path.resolve(__dirname, "../deno/encryption/mod.ts"),

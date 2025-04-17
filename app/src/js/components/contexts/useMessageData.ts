@@ -1,6 +1,6 @@
 import { useContext } from "react";
-import { MessageContext } from "./message";
-import { MessageModel } from "../../core/models/message";
+import { MessageContext } from "./message.tsx";
+import { MessageModel } from "../../core/models/message.ts";
 
 export const useMessageData = (): MessageModel => {
   const context = useContext(MessageContext);

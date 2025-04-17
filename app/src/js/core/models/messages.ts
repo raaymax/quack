@@ -1,6 +1,6 @@
 import { client } from "../client.ts";
 import { Eid, FullMessage, Message } from "../../types.ts";
-import { action, flow, runInAction, makeAutoObservable } from "mobx";
+import { action, flow, makeAutoObservable, runInAction } from "mobx";
 import { merge, mergeFn } from "../tools/merger.ts";
 import type { AppModel } from "./app.ts";
 import { MessageModel } from "./message.ts";
@@ -50,7 +50,9 @@ export class MessagesModel {
     this.selected = selected ?? null;
     this.mode = selected ? "spotlight" : "live";
 
-    this._cleanups.push(client.on2("message", (msg: Message) => this.onMessage(msg)));
+    this._cleanups.push(
+      client.on2("message", (msg: Message) => this.onMessage(msg)),
+    );
     this._cleanups.push(
       client.on2("message:remove", (msg: Message) => this.onRemove(msg.id)),
     );
@@ -102,7 +104,7 @@ export class MessagesModel {
       const m = await this.decrypt(msg);
       runInAction(() => {
         this.ghosts = this.ghosts.filter((g) => g.clientId !== msg.clientId);
-        if( msg.ephemeral ) {
+        if (msg.ephemeral) {
           this.ghosts = mergeFn<MessageModel>(
             (a: MessageModel, b: MessageModel) => a.patch(b),
             ({ id }: Message) => id,

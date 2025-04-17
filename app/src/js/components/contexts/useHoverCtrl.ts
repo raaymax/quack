@@ -1,6 +1,6 @@
 import { useCallback } from "react";
-import { useHovered } from "./useHovered";
-import { isMobile } from "../../utils";
+import { useHovered } from "./useHovered.ts";
+import { isMobile } from "../../utils.ts";
 
 export const useHoverCtrl = (id?: string) => {
   const [hovered, setHovered] = useHovered();
