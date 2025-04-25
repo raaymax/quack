@@ -8,7 +8,7 @@ import {
   redirect,
   RouterProvider,
 } from "react-router-dom";
-import { client, app } from "../core/index.ts";
+import { app, client } from "../core/index.ts";
 import { ErrorPageS } from "./pages/ErrorPage.tsx";
 
 import { InitFailedError, PageNotFoundError } from "./errors.ts";

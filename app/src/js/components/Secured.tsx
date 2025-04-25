@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import "../setup.ts";
-import { client, app } from "../core/index.ts";
+import { app, client } from "../core/index.ts";
 import { useLoggedUserId } from "./contexts/useLoggedUserId.ts";
 import { Router } from "./Router.tsx";
 import { TooltipProvider } from "./contexts/tooltip.tsx";

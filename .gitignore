@@ -12,3 +12,4 @@ uploads
 todo.txt
 tsconfig.tsbuildinfo
 /ssl
+temp/

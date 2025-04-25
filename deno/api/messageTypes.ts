@@ -58,7 +58,7 @@ export type MessageBodyPart =
 
 export type MessageBody = MessageBodyPart[] | MessageBodyPart;
 
-export type DateTime = "Deno" extends keyof typeof globalThis ? Date : string;
+export type DateTime = "client" extends keyof typeof globalThis ? string : Date;
 
 export type BaseMessage = {
   id: Eid;

@@ -33,16 +33,25 @@
       "deno/**"
     ],
     "exclude": [
-      "deno/server/uploads/**"
+      "deno/server/uploads/**",
+      "temp/**"
     ]
   },
   "lint": {
     "include": ["deno/"],
-    "exclude": ["packages/", "deno/**/__tests__/*", "deno/server/uploads/**", "**/node_modules/**", "app/.cache"],
+    "exclude": ["packages/", "deno/**/__tests__/*", "deno/server/uploads/**", "**/node_modules/**", "app/.cache", "temp/**"],
     "rules": {
       "tags": ["recommended"],
       "exclude": ["no-unused-vars", "no-explicit-any"]
     }
+  },
+  "test": {
+    "exclude": [
+      "deno/server/uploads/**",
+      "**/node_modules/**",
+      "app/.cache",
+      "temp/**"
+    ]
   },
   "tasks": {
     "cache": "deno task -c ./deno/server/deno.jsonc cache",
