@@ -1,6 +1,6 @@
 import { useCallback } from "react";
-import { useMessageData } from "../contexts/useMessageData";
-import { client } from "../../core";
+import { useMessageData } from "../contexts/useMessageData.ts";
+import { client } from "../../core/index.ts";
 import { useParams } from "react-router-dom";
 import { observer } from "mobx-react-lite";
 

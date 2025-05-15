@@ -3,7 +3,7 @@
   "version": "1.8.5",
   "exports": "./src/mod.ts",
   "imports": {
-    "@google-cloud/storage": "npm:@google-cloud/storage@7.6.0",
+    "@google-cloud/storage": "npm:@google-cloud/storage@7.16.0",
     "@planigale/body-parser": "jsr:@planigale/body-parser",
     "@planigale/planigale": "jsr:@planigale/planigale",
     "@planigale/schema": "jsr:@planigale/schema",

@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import { MessageListArgs } from "../../types";
+import { MessageListArgs } from "../../types.ts";
 
 export const MessageListArgsContext = createContext<string>("main");
 

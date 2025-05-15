@@ -1,18 +1,17 @@
-import { Main } from "./layout/Main";
-import { Discussion } from "./layout/Discussion";
-import { Search } from "./organisms/Search";
-import { Pins } from "./organisms/Pins";
+import { Main } from "./layout/Main.tsx";
+import { Discussion } from "./layout/Discussion.tsx";
+import { Search } from "./organisms/Search.tsx";
+import { Pins } from "./organisms/Pins.tsx";
 import {
   createHashRouter,
   Outlet,
   redirect,
   RouterProvider,
 } from "react-router-dom";
-import { client } from "../core";
-import { ErrorPageS } from "./pages/ErrorPage";
+import { app, client } from "../core/index.ts";
+import { ErrorPageS } from "./pages/ErrorPage.tsx";
 
-import { InitFailedError, PageNotFoundError } from "./errors";
-import { app } from "../core";
+import { InitFailedError, PageNotFoundError } from "./errors.ts";
 
 const router = createHashRouter([
   {

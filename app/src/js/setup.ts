@@ -1,5 +1,5 @@
-import { play } from "./services/sound";
-import { client } from "./core";
+import { play } from "./services/sound.ts";
+import { client } from "./core/index.ts";
 
 let sound = false;
 

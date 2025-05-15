@@ -44,4 +44,3 @@ export const mergeFn = <T>(
   const map = mergeById(merge, keyFn, ...a);
   return Object.values(map);
 };
-

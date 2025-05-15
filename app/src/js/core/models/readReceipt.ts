@@ -1,8 +1,8 @@
-import type { AppModel } from "./app";
+import type { AppModel } from "./app.ts";
 import { flow, makeAutoObservable } from "mobx";
-import { Eid, ReadReceipt } from "../../types";
-import { client } from "../client";
-import { isSameThread } from "../tools/sameThread";
+import { Eid, ReadReceipt } from "../../types.ts";
+import { client } from "../client.ts";
+import { isSameThread } from "../tools/sameThread.ts";
 
 export class ReadReceiptModel {
   id: Eid;

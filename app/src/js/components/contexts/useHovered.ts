@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { HoverContext } from "./hover";
+import { HoverContext } from "./hover.tsx";
 
 export const useHovered = () => {
   const state = useContext(HoverContext);

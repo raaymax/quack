@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { client } from "../../core";
-import { Channel } from "../../types";
+import { client } from "../../core/index.ts";
+import { Channel } from "../../types.ts";
 
 export const useDirectChannel = (userId: string) => {
   const [channel, setChannel] = useState<Channel | null>(null);

@@ -1,7 +1,7 @@
 import { makeAutoObservable } from "mobx";
-import type { AppModel } from "./app";
-import { client } from "../client";
-import { isSameThread } from "../tools/sameThread";
+import type { AppModel } from "./app.ts";
+import { client } from "../client.ts";
+import { isSameThread } from "../tools/sameThread.ts";
 
 type TypingModelOptions = {
   channelId: string;

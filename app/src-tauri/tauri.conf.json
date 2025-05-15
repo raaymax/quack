@@ -4,8 +4,8 @@
   "version": "0.1.0",
   "identifier": "io.codecat.chat.app",
   "build": {
-    "beforeDevCommand": "npm run build",
-    "beforeBuildCommand": "npm run build",
+    "beforeDevCommand": "deno task build",
+    "beforeBuildCommand": "deno task build",
     "frontendDist": "../dist"
   },
   "app": {

@@ -65,6 +65,9 @@ export const PinsInner = observer(() => {
     }
   }, [navigation]);
   const messagesModel = app.getPins(channelId ?? "");
+  useEffect(() => {
+    messagesModel.init();
+  }, [channelId]);
   if (!messagesModel) return null;
   const gotoMessage = useCallback((msg: MessageType) => {
     navigate(`/${msg.channelId}${(msg.parentId ? "/t/" + msg.parentId : "")}`, {

@@ -1,11 +1,11 @@
-import { client } from "../client";
-import { Eid, FullMessage, Message } from "../../types";
+import { client } from "../client.ts";
+import { Eid, FullMessage, Message } from "../../types.ts";
 import { action, flow, makeAutoObservable, runInAction } from "mobx";
-import { merge, mergeFn } from "../tools/merger";
-import type { AppModel } from "./app";
-import { MessageModel } from "./message";
-import { isSameThread } from "../tools/sameThread";
-import { MessageEncryption } from "../tools/messageEncryption";
+import { merge, mergeFn } from "../tools/merger.ts";
+import type { AppModel } from "./app.ts";
+import { MessageModel } from "./message.ts";
+import { isSameThread } from "../tools/sameThread.ts";
+import { MessageEncryption } from "../tools/messageEncryption.ts";
 
 type Messages = Message | Message[];
 
@@ -19,6 +19,7 @@ type MessageModelOptions = {
 };
 
 export class MessagesModel {
+  initialized: boolean = false;
   channelId: Eid = "";
   parentId?: Eid | null;
   pinned?: boolean;
@@ -49,12 +50,19 @@ export class MessagesModel {
     this.selected = selected ?? null;
     this.mode = selected ? "spotlight" : "live";
 
-    this._cleanups.push(client.on2("message", (msg: Message) => this.onMessage(msg)));
     this._cleanups.push(
-      client.on2("message:remove", (msg: Message) => this.onRemove(msg)),
+      client.on2("message", (msg: Message) => this.onMessage(msg)),
+    );
+    this._cleanups.push(
+      client.on2("message:remove", (msg: Message) => this.onRemove(msg.id)),
     );
     this._cleanups.push(this.subscribeUnfreeze());
   }
+
+  init = () => {
+    if (this.initialized) return;
+    this.load();
+  };
 
   subscribeUnfreeze = () => {
     const resume = () => {
@@ -71,11 +79,11 @@ export class MessagesModel {
     };
     addEventListener("resume", resume);
     addEventListener("focus", focus);
-    client.on("con:open", reconnect);
+    const off = client.on2("con:open", reconnect);
     return () => {
       removeEventListener("resume", resume);
       removeEventListener("focus", focus);
-      client.off("con:open", reconnect);
+      off();
     };
   };
 
@@ -96,7 +104,7 @@ export class MessagesModel {
       const m = await this.decrypt(msg);
       runInAction(() => {
         this.ghosts = this.ghosts.filter((g) => g.clientId !== msg.clientId);
-        if( msg.ephemeral ) {
+        if (msg.ephemeral) {
           this.ghosts = mergeFn<MessageModel>(
             (a: MessageModel, b: MessageModel) => a.patch(b),
             ({ id }: Message) => id,
@@ -244,7 +252,7 @@ export class MessagesModel {
     const messages = yield client.messages.fetch({
       channelId: this.channelId,
       parentId: this.parentId,
-      before: this.oldest?.createdAt,
+      before: this.oldest?.createdAt?.toISOString?.(),
       pinned: this.pinned,
       search: this.search,
       limit: 50,
@@ -272,7 +280,7 @@ export class MessagesModel {
     const messages = yield client.messages.fetch({
       channelId: this.channelId,
       parentId: this.parentId,
-      after: this.latest?.createdAt,
+      after: this.latest?.createdAt?.toISOString?.(),
       pinned: this.pinned,
       search: this.search,
       limit: 50,

@@ -1,6 +1,6 @@
 import styled from "styled-components";
-import { useSize } from "../contexts/useSize";
-import { ClassNames, cn } from "../../utils";
+import { useSize } from "../contexts/useSize.ts";
+import { ClassNames, cn } from "../../utils.ts";
 import { observer } from "mobx-react-lite";
 
 const StyledIcon = styled.i`

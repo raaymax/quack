@@ -1,4 +1,4 @@
-FROM denoland/deno:alpine-2.1.6 AS build
+FROM denoland/deno:alpine-2.2.13 AS build
 RUN mkdir -p /app
 WORKDIR /app
 COPY . .
@@ -8,7 +8,7 @@ ARG APP_VERSION=3.x.x
 ENV APP_VERSION=$APP_VERSION
 RUN APP_NAME=quack APP_VERSION=$APP_VERSION deno task build
 
-FROM denoland/deno:alpine-2.1.6
+FROM denoland/deno:alpine-2.2.13
 RUN apk -U upgrade
 RUN apk add vips-cpp build-base vips vips-dev
 ENV ENVIRONMENT=production
@@ -26,6 +26,7 @@ ENV PORT=8080
 ARG APP_VERSION=3.x.x
 ENV APP_VERSION=$APP_VERSION
 RUN echo "APP_VERSION=$APP_VERSION"
+ENV GOOGLE_SDK_NODE_LOGGING=1
 RUN chmod +x ./entrypoint.sh
 EXPOSE 8080
 CMD ["sh", "./entrypoint.sh"]

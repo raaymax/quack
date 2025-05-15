@@ -1,12 +1,13 @@
 import { flow, makeAutoObservable } from "mobx";
-import { ChannelsModel } from "./channels";
-import { UsersModel } from "./users";
-import { UserModel } from "./user";
-import { client } from "../client";
-import { initNotifications } from "../notifications";
-import { EmojisModel } from "./emojis";
-import { ReadReceiptsModel } from "./readReceipt";
-import { InfoModel } from "./info";
+import { ChannelsModel } from "./channels.ts";
+import { UsersModel } from "./users.ts";
+import { UserModel } from "./user.ts";
+import { client } from "../client.ts";
+import { initNotifications } from "../notifications.ts";
+import { EmojisModel } from "./emojis.ts";
+import { ReadReceiptsModel } from "./readReceipt.ts";
+import { InfoModel } from "./info.ts";
+import { SearchModel } from "./search.ts";
 
 export class AppModel {
   profile: UserModel | null;
@@ -14,12 +15,14 @@ export class AppModel {
   users: UsersModel;
   emojis: EmojisModel;
   readReceipts: ReadReceiptsModel;
+  search: SearchModel;
   mainChannelId: string | null = null;
   status: "connected" | "disconnected" = "disconnected";
   initFailed: boolean = false;
   loading: boolean = false;
   loadingTimeout: number = 0;
   info: InfoModel;
+  searchText: string | null = null;
   _init: Promise<void> | null = null;
 
   constructor() {
@@ -29,6 +32,7 @@ export class AppModel {
     this.emojis = new EmojisModel(this);
     this.readReceipts = new ReadReceiptsModel(this);
     this.info = new InfoModel({}, this);
+    this.search = new SearchModel({}, this);
     this.profile = null;
     client.on2("con:close", () => this.info.setMessage("connecting..."));
     client.on2(
@@ -87,12 +91,28 @@ export class AppModel {
     return channel.getPins();
   }
 
-  getSearch(channelId: string, search: string) {
+  setSearch(channelId: string, search: string) {
     const channel = this.getChannel(channelId);
     if (!channel) {
       return null;
     }
-    return channel.getSearch(search);
+    channel.search.find(search);
+  }
+
+  clearSearch(channelId: string) {
+    const channel = this.getChannel(channelId);
+    if (!channel) {
+      return null;
+    }
+    channel.search.close();
+  }
+
+  getSearch(channelId: string) {
+    const channel = this.getChannel(channelId);
+    if (!channel) {
+      return null;
+    }
+    return channel.search;
   }
 
   loadConfig = flow(function* (this: AppModel) {
@@ -122,13 +142,13 @@ export class AppModel {
   };
 
   setLoading = (loading: boolean) => {
-    if(loading) {
+    if (loading) {
       clearTimeout(this.loadingTimeout);
       this.loading = true;
       this.loadingTimeout = setTimeout(() => {
         this.loading = false;
       }, 5000);
-      return
+      return;
     } else {
       clearTimeout(this.loadingTimeout);
       this.loading = false;

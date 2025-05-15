@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { MessageListArgsContext } from "./messageListArgs";
+import { MessageListArgsContext } from "./messageListArgs.tsx";
 
 export const useMessageListArgs = (): string => {
   const state = useContext(MessageListArgsContext);

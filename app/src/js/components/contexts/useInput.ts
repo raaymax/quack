@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { InputContext, InputContextType } from "./input";
+import { InputContext, InputContextType } from "./input.tsx";
 
 export const useInput = (): InputContextType => {
   const context = useContext(InputContext);

@@ -1,8 +1,8 @@
 import { flow, makeAutoObservable } from "mobx";
-import { Channel, ChannelType, CreateChannelRequest } from "../../types";
-import { client } from "../client";
-import { ChannelModel } from "./channel";
-import type { AppModel } from "./app";
+import { Channel, ChannelType, CreateChannelRequest } from "../../types.ts";
+import { client } from "../client.ts";
+import { ChannelModel } from "./channel.ts";
+import type { AppModel } from "./app.ts";
 
 export class ChannelsModel {
   channels: { [id: string]: ChannelModel };

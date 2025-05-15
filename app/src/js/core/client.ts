@@ -1,10 +1,6 @@
 import Api from "@quack/api";
 import { MessageService } from "./messages.ts";
 
-declare global {
-  const API_URL: string;
-}
-
 export class Client {
   _api: Api | null = null;
   _http: Promise<any> | null = null;

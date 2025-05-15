@@ -8,6 +8,14 @@ const DAYS = [
   "Saturday",
 ];
 
+declare global {
+  interface Navigator {
+    userAgentData: {
+      mobile: boolean;
+    };
+  }
+}
+
 export type ClassNames =
   | string
   | undefined

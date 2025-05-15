@@ -1,7 +1,7 @@
-import type { AppModel } from "./app";
+import type { AppModel } from "./app.ts";
 import { flow, makeAutoObservable } from "mobx";
-import { client, FileUpload } from "../client";
-import { generateHexId } from "../tools/generateHexId";
+import { client, FileUpload } from "../client.ts";
+import { generateHexId } from "../tools/generateHexId.ts";
 
 type FileUploadPatch = FileUpload & {
   id: string;

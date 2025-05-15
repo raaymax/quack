@@ -1,7 +1,7 @@
 /* global JsonWebKey */
-import type { AppModel } from "./app";
+import type { AppModel } from "./app.ts";
 import { flow, makeAutoObservable } from "mobx";
-import { Eid, User } from "../../types";
+import { Eid, User } from "../../types.ts";
 
 export class UserModel {
   id: Eid;

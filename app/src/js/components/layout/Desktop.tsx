@@ -1,19 +1,20 @@
 import styled, { useTheme } from "styled-components";
-import { cn } from "../../utils";
-import { Resizer } from "../atoms/Resizer";
+import { cn } from "../../utils.ts";
+import { Resizer } from "../atoms/Resizer.tsx";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Workspaces } from "../organisms/Workspaces";
-import { Sidebar } from "../organisms/Sidebar";
-import { Conversation } from "../organisms/Conversation";
-import { Toolbar } from "../atoms/Toolbar";
-import { ButtonWithIcon } from "../molecules/ButtonWithIcon";
-import { MessageListArgsProvider } from "../contexts/messageListArgs";
-import { SearchBox } from "../atoms/SearchBox";
-import { CollapsableColumns } from "../atoms/CollapsableColumns";
-import { DiscussionHeader } from "../molecules/DiscussionHeader";
+import { Workspaces } from "../organisms/Workspaces.tsx";
+import { Sidebar } from "../organisms/Sidebar.tsx";
+import { Conversation } from "../organisms/Conversation.tsx";
+import { Toolbar } from "../atoms/Toolbar.tsx";
+import { ButtonWithIcon } from "../molecules/ButtonWithIcon.tsx";
+import { MessageListArgsProvider } from "../contexts/messageListArgs.tsx";
+import { SearchBox } from "../atoms/SearchBox.tsx";
+import { CollapsableColumns } from "../atoms/CollapsableColumns.tsx";
+import { DiscussionHeader } from "../molecules/DiscussionHeader.tsx";
 import { observer } from "mobx-react-lite";
-import { useApp } from "../contexts/appState";
+import { useApp } from "../contexts/appState.tsx";
+import { Search } from "../organisms/Search.tsx";
 
 const WORKSPACES_WIDTH = 80;
 const RESIZER_WIDTH = 8;
@@ -222,10 +223,11 @@ export const MainConversation = observer(
     const location = useLocation();
     const navigate = useNavigate();
     const onSearch = useCallback((search: string) => {
-      navigate("/" + channelId + "/search", { state: { search } });
+      app.setSearch(channelId, search);
     }, [channelId, navigate]);
     const searchTerm = location.state?.search;
     const threadModel = app.getThread(channelId);
+    const channelModel = app.getChannel(channelId);
 
     useEffect(() => {
       threadModel.init();
@@ -272,7 +274,18 @@ export const MainConversation = observer(
                 className="conversation"
                 channelId={channelId}
               />,
-              children && <div key="2" className="context-bar">{children}</div>,
+              (() => {
+                if (children) {return (
+                    <div key="2" className="context-bar">{children}</div>
+                  );}
+                if (channelModel.search.open) {
+                  return (
+                    <div key="2" className="context-bar">
+                      <Search />
+                    </div>
+                  );
+                }
+              })(),
             ].filter(Boolean) as [React.ReactNode, React.ReactNode?]}
           />
         </div>

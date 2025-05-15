@@ -1,5 +1,5 @@
 import { makeAutoObservable } from "mobx";
-import type { AppModel } from "./app";
+import type { AppModel } from "./app.ts";
 
 type InfoModelOpts = {
   type?: "error" | "info" | "none";

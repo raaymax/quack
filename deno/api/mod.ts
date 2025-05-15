@@ -79,7 +79,7 @@ class API extends EventTarget {
   fetch: typeof fetch;
 
   sseEnabled: boolean;
-  
+
   reconnectTimeout: number | undefined;
 
   set token(value: any) {
@@ -169,7 +169,11 @@ class API extends EventTarget {
         if (event.data === "") continue;
         const data = JSON.parse(event.data);
         console.debug("[SSE]", data);
-        this.dispatchEvent(new CustomEvent(data.type, { detail: data }));
+        try {
+          this.dispatchEvent(new CustomEvent(data.type, { detail: data }));
+        } catch (e) {
+          console.error("events: Error dispatching event", e);
+        }
       }
       console.debug("event disconnected");
     } finally {
@@ -458,9 +462,9 @@ class API extends EventTarget {
         timeoutId = null;
         reject(new Error("Timeout"));
       }, 5000);
-      
+
       if (msg.parentId === null) delete data.parentId;
-      
+
       this.fetchWithCredentials(
         `/api/channels/${data.channelId}/messages`,
         {
@@ -471,17 +475,17 @@ class API extends EventTarget {
         if (timeoutId) {
           clearTimeout(timeoutId);
           timeoutId = null;
-          
+
           if (res.status !== 200) {
             const errorData = await res.json();
             reject(errorData);
             return;
           }
-          
+
           const responseData = await res.json();
           resolve(responseData);
         }
-      }).catch(error => {
+      }).catch((error) => {
         if (timeoutId) {
           clearTimeout(timeoutId);
           timeoutId = null;

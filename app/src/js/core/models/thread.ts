@@ -1,14 +1,14 @@
 import { flow, makeAutoObservable } from "mobx";
-import type { AppModel } from "./app";
-import { MessagesModel } from "./messages";
-import { client } from "../client";
-import { MessageEncryption } from "../tools/messageEncryption";
-import { Eid, ViewMessage } from "../../types";
-import { MessageModel } from "./message";
-import { TypingModel } from "./typing";
-import { ThreadReadReceiptsModel } from "./readReceipt";
-import { InputModel } from "./input";
-import { generateHexId } from "../tools/generateHexId";
+import type { AppModel } from "./app.ts";
+import { MessagesModel } from "./messages.ts";
+import { client } from "../client.ts";
+import { MessageEncryption } from "../tools/messageEncryption.ts";
+import { Eid, ViewMessage } from "../../types.ts";
+import { MessageModel } from "./message.ts";
+import { TypingModel } from "./typing.ts";
+import { ThreadReadReceiptsModel } from "./readReceipt.ts";
+import { InputModel } from "./input.ts";
+import { generateHexId } from "../tools/generateHexId.ts";
 
 type ThreadModelOptions = {
   channelId: Eid;

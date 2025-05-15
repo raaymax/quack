@@ -1,12 +1,15 @@
 import { assertEquals } from "@std/assert";
-import { CacheEntry, Cache } from "./cache.ts";
+import { Cache, CacheEntry } from "./cache.ts";
 import { mergeRanges } from "./range.ts";
 
 type Data = string[];
 
 const merge = (a: CacheEntry<Data>, b: CacheEntry<Data>): CacheEntry<Data> => (
-  new CacheEntry(Math.min(a.from, b.from), Math.max(a.to, b.to), [...a.data, ...b.data])
-)
+  new CacheEntry(Math.min(a.from, b.from), Math.max(a.to, b.to), [
+    ...a.data,
+    ...b.data,
+  ])
+);
 
 const A = new CacheEntry(0, 1, ["A"]);
 const B = new CacheEntry(3, 6, ["B"]);
@@ -16,7 +19,10 @@ const E = new CacheEntry(13, 16, ["D"]);
 E.timestamp = new Date().getTime() - 1000 * 60 * 60 * 2;
 
 Deno.test("[CacheEntry] merge", () => {
-  assertEquals(mergeRanges(merge, A, B, C, D).toString(), "[0, 1]: [A],[3, 10]: [B,C],[11, 12]: [D]");
+  assertEquals(
+    mergeRanges(merge, A, B, C, D).toString(),
+    "[0, 1]: [A],[3, 10]: [B,C],[11, 12]: [D]",
+  );
 });
 
 Deno.test("[Cache] query from - bottom", () => {
@@ -96,7 +102,7 @@ Deno.test("[Cache] invalidate", () => {
   const cache = new Cache<Data>(A, B, C, D);
   cache.invalidate();
   assertEquals(cache.repo.length, 0);
-})
+});
 
 Deno.test("[Cache] cleanup", () => {
   const cache = new Cache<Data>(A, B, C, D, E);

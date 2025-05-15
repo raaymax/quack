@@ -6,8 +6,8 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { client } from "../../core";
-import { InputModel } from "../../core/models/input";
+import { client } from "../../core/index.ts";
+import { InputModel } from "../../core/models/input.ts";
 
 declare global {
   interface Window {

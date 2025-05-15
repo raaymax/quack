@@ -1,6 +1,6 @@
 import { createContext, useCallback, useEffect, useState } from "react";
 import { ThemeProvider } from "styled-components";
-import { IconNames } from "../atoms/Icon";
+import { IconNames } from "../atoms/Icon.tsx";
 
 export type Theme = {
   name: string;

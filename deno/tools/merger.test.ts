@@ -12,7 +12,10 @@ Deno.test("merge two lists by other properties", () => {
   const A = [{ id: 1, name: "a" }, { id: 2, name: "b" }];
   const B = [{ id: 3, name: "b" }, { id: 4, name: "c" }];
   const result = merge((a) => a.name, A, B);
-  assertEquals(result, [{ id: 1, name: "a" }, { id: 3, name: "b" }, { id: 4, name: "c" }]);
+  assertEquals(result, [{ id: 1, name: "a" }, { id: 3, name: "b" }, {
+    id: 4,
+    name: "c",
+  }]);
 });
 
 Deno.test("merge two lists by id with merge function", () => {
@@ -24,6 +27,8 @@ Deno.test("merge two lists by id with merge function", () => {
     A,
     B,
   );
-  assertEquals(result, [{ id: 1, name: "a" }, { id: 2, name: "bbc" }, { id: 3, name: "c" }]);
+  assertEquals(result, [{ id: 1, name: "a" }, { id: 2, name: "bbc" }, {
+    id: 3,
+    name: "c",
+  }]);
 });
-  

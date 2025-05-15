@@ -1,8 +1,8 @@
 import { flow, makeAutoObservable } from "mobx";
-import { User } from "../../types";
-import { client } from "../client";
-import { UserModel } from "./user";
-import type { AppModel } from "./app";
+import { User } from "../../types.ts";
+import { client } from "../client.ts";
+import { UserModel } from "./user.ts";
+import type { AppModel } from "./app.ts";
 
 export class UsersModel {
   users: { [id: string]: UserModel };

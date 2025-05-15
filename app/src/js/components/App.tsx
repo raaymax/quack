@@ -1,9 +1,10 @@
+import React from "react";
 import { createRoot } from "react-dom/client";
 import { lazy, Suspense } from "react";
-import { Register } from "./pages/Register";
-import { PasswordReset } from "./pages/PasswordReset";
-import { Login } from "./pages/Login";
-import { ThemeSelectorProvider } from "./contexts/theme";
+import { Register } from "./pages/Register.tsx";
+import { PasswordReset } from "./pages/PasswordReset.tsx";
+import { Login } from "./pages/Login.tsx";
+import { ThemeSelectorProvider } from "./contexts/theme.tsx";
 import { observer } from "mobx-react-lite";
 
 declare global {
@@ -14,7 +15,7 @@ declare global {
   }
 }
 
-const Secured = lazy(() => import("./Secured"));
+const Secured = lazy(() => import("./Secured.tsx"));
 
 if ("virtualKeyboard" in navigator) {
   navigator.virtualKeyboard.overlaysContent = true;
