@@ -1,7 +1,6 @@
 import styled from "styled-components";
 import { useSize } from "../contexts/useSize.ts";
 import { ClassNames, cn } from "../../utils.ts";
-import { Tooltip } from "./Tooltip.tsx";
 import { observer } from "mobx-react-lite";
 
 const Container = styled.button`
@@ -55,35 +54,17 @@ interface IconButtonProps {
   children?: React.ReactNode;
   className?: ClassNames;
   type?: "primary" | "secondary" | "other";
-  tooltip?: string | string[];
 }
 
-export const Button = observer(({
+export const BaseButton = observer(({
   onClick,
   size,
   children,
   className,
   type = "other",
-  tooltip,
   disabled = false,
 }: IconButtonProps) => {
   const $size = useSize(size);
-  if (tooltip) {
-    return (
-      <Tooltip text={tooltip}>
-        <Container
-          onClick={(e) => !disabled && onClick?.(e)}
-          style={{
-            minWidth: $size + "px",
-            height: $size + "px",
-          }}
-          className={cn(className, type, { disabled })}
-        >
-          {children}
-        </Container>
-      </Tooltip>
-    );
-  }
   return (
     <Container
       onClick={(e) => !disabled && onClick?.(e)}

@@ -5,7 +5,7 @@ import { type Emoji as EmojiType, EmojiDescriptor } from "../../types";
 import { Icon } from "../atoms/Icon";
 import { ClassNames, cn } from "../../utils";
 import { Emoji } from "../molecules/Emoji";
-import { Button } from "../atoms/Button";
+import { Button } from "../molecules/Button";
 import { observer } from "mobx-react-lite";
 import { useApp } from "../contexts/appState";
 

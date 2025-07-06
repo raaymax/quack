@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Button } from "../atoms/Button";
+import { Button } from "../molecules/Button";
 import { ApiError } from "../../core";
 import { InitFailedError, PageNotFoundError } from "../errors";
 
