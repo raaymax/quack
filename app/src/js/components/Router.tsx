@@ -4,13 +4,14 @@ import { Search } from "./organisms/Search.tsx";
 import { Pins } from "./organisms/Pins.tsx";
 import { app, client } from "../core/index.ts";
 import { ErrorPageS } from "./pages/ErrorPage.tsx";
-import { AppRouterProvider, useParams } from "./AppRouter.tsx";
+import { AppRouterProvider, useParams, useRouter } from "./AppRouter.tsx";
 import { useEffect, useState } from "react";
 import { InitFailedError, PageNotFoundError } from "./errors.ts";
 
 // Component to handle route loading and errors
 const RouteHandler = () => {
   const params = useParams();
+  const { navigate } = useRouter();
   const [error, setError] = useState<Error | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -41,7 +42,7 @@ const RouteHandler = () => {
           // Redirect to main channel if no channel specified
           const { mainChannelId } = await client.api.getUserConfig() || {};
           if (mainChannelId) {
-            window.location.hash = `/${mainChannelId}`;
+            navigate(`/${mainChannelId}`);
             return;
           }
         }
@@ -55,10 +56,6 @@ const RouteHandler = () => {
 
     loadRoute();
   }, [params.channelId, params.isInvite, params.isReset]);
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
 
   if (error) {
     return <ErrorPageS error={error} />;
@@ -77,10 +74,11 @@ const RouteHandler = () => {
   if (params.channelId) {
     return (
       <Main>
-        <Discussion>
-          {params.isSearch && <Search />}
-          {params.isPins && <Pins />}
-        </Discussion>
+        {/*params.isSearch && <Discussion><Search /></Discussion>*/}
+        {params.isPins && <Discussion><Pins /></Discussion>}
+        {!params.isPins && !params.isSearch && (
+          <Discussion/>
+        )}
       </Main>
     );
   }

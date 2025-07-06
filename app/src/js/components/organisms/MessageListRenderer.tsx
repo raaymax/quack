@@ -65,8 +65,8 @@ export const MessageListRenderer = observer(({
                 new Date(prev.createdAt).getTime()) < 60000;
         }
         sameDate = prev &&
-          formatDate(prev?.createdAt.toISOString()) ===
-            formatDate(msg?.createdAt.toISOString());
+          formatDate(prev?.createdAt) ===
+            formatDate(msg?.createdAt);
         prev = msg;
         return (
           <React.Fragment key={`${msg.id}-${msg.clientId}`}>
@@ -88,7 +88,7 @@ export const MessageListRenderer = observer(({
               ? (
                 <DateSeparator
                   key={`date:${msg.createdAt}`}
-                  date={msg.createdAt.toISOString()}
+                  date={msg.createdAt}
                 />
               )
               : null}
