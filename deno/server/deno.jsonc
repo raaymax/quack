@@ -6,7 +6,7 @@
     "@planigale/body-parser": "jsr:@planigale/body-parser",
     "@planigale/planigale": "jsr:@planigale/planigale",
     "@planigale/schema": "jsr:@planigale/schema",
-    "@planigale/sse": "jsr:@planigale/sse",
+    "@planigale/sse": "jsr:@planigale/sse@0.2.8",
     "@planigale/testing": "jsr:@planigale/testing",
     "@std/assert": "jsr:@std/assert@1.0.1",
     "@std/media-types": "jsr:@std/media-types@1.0.2",

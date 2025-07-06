@@ -18,11 +18,10 @@ const Container = styled.button`
     background-color: ${({ theme }) => theme.Labels};
   }
 
-  &.disabled .icon{
+  &.disabled .icon {
     cursor: not-allowed;
     color: ${({ theme }) => theme.Labels} !important;
   }
-
 
   &.primary {
     border: none;
@@ -48,8 +47,6 @@ const Container = styled.button`
       border: 1px solid ${({ theme }) => theme.SecondaryButton.Default};
     }
   }
-
-  
 `;
 interface IconButtonProps {
   disabled?: boolean;

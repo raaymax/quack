@@ -28,7 +28,7 @@ const Container = styled.div`
   .bottom {
     flex: 0 50px;
   }
-  @media (max-width : 710px) {
+  @media (max-width: 710px) {
     width: 100%;
     height: 100vh;
 
@@ -38,19 +38,19 @@ const Container = styled.div`
       vertical-align: middle;
       font-size: 20px;
       & .name {
-      height: 40px;
+        height: 40px;
         line-height: 40px;
         vertical-align: middle;
         font-size: 20px;
       }
     }
-    & .user{
+    & .user {
       height: 40px;
       line-height: 40px;
       vertical-align: middle;
       font-size: 20px;
       & .name {
-      height: 40px;
+        height: 40px;
         line-height: 40px;
         vertical-align: middle;
         font-size: 20px;
@@ -61,7 +61,6 @@ const Container = styled.div`
     flex: 0 0px;
     width: 0px;
   }
-
 `;
 export const Sidebar = observer(
   (

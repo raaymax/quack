@@ -22,7 +22,7 @@ export const Container = styled.div<{ $size?: number }>`
     display: inline-block;
   }
 
-  & > h1, & > h2, & > h3, & > h4, & > h5, {
+  & > h1, & > h2, & > h3, & > h4, & > h5 {
     flex: 1;
     padding: 0px;
     margin: 0;
@@ -39,11 +39,9 @@ export const Container = styled.div<{ $size?: number }>`
       background-color: transparent;
       .icon {
         color: ${({ theme }) => theme.SecondaryButton.Hover};
-
       }
     }
   }
-
 `;
 
 interface ToolbarProps {

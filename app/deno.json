@@ -3,14 +3,14 @@
   "version": "1.0.0",
   "exports": "./mod.ts",
   "tasks": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "types": "tsc --noEmit",
-    "storybook": "storybook dev -p 6006 --no-open",
-    "build-storybook": "storybook build",
+    "dev": "npm run dev",
+    "build": "npm run build",
+    "preview": "npm run preview",
+    "types": "npm run types",
+    "storybook": "npm run storybook",
+    "build-storybook": "npm run build-storybook",
     "chromatic": "npx chromatic",
-    "tauri": "tauri"
+    "tauri": "npm run tauri"
   },
   "imports": {
     "@deno/vite-plugin": "npm:@deno/vite-plugin@^1.0.4",
@@ -26,7 +26,7 @@
     "mobx-react-lite": "npm:mobx-react-lite@4.1.0",
     "react": "npm:react@19.0.0",
     "react-dom": "npm:react-dom@19.0.0",
-    "react-router-dom": "npm:react-router-dom@7.4.0",
+
     "styled-components": "npm:styled-components@6.1.17",
     "typescript": "npm:typescript@5.8.2",
     "workbox-navigation-preload": "npm:workbox-navigation-preload@7.3.0",

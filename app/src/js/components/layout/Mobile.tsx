@@ -1,7 +1,7 @@
 import styled, { useTheme } from "styled-components";
 import { cn, isMobile } from "../../utils";
 import { useSidebar } from "../contexts/useSidebar";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "../AppRouter.tsx";
 import { useEffect } from "react";
 import { Workspaces } from "../organisms/Workspaces";
 import { Sidebar } from "../organisms/Sidebar";
@@ -38,7 +38,7 @@ export const Container = styled.div`
     height: 100%;
     padding: 16px 0;
     background-color: ${(props) => props.theme.Navbar.Background};
-    & > *{
+    & > * {
       margin: 0 auto;
     }
     .spacer {
@@ -58,7 +58,6 @@ export const Container = styled.div`
     width: 100%;
     display: flex;
     flex-direction: column;
-  
 
     .slider {
       flex: 1 calc(100% - 50px);
@@ -67,7 +66,7 @@ export const Container = styled.div`
     .bottom {
       flex: 0 50px;
     }
-    @media (max-width : 710px) {
+    @media (max-width: 710px) {
       width: 100%;
       height: 100vh;
 
@@ -77,19 +76,19 @@ export const Container = styled.div`
         vertical-align: middle;
         font-size: 20px;
         & .name {
-        height: 40px;
+          height: 40px;
           line-height: 40px;
           vertical-align: middle;
           font-size: 20px;
         }
       }
-      & .user{
+      & .user {
         height: 40px;
         line-height: 40px;
         vertical-align: middle;
         font-size: 20px;
         & .name {
-        height: 40px;
+          height: 40px;
           line-height: 40px;
           vertical-align: middle;
           font-size: 20px;
@@ -100,11 +99,9 @@ export const Container = styled.div`
       flex: 0 0px;
       width: 0px;
     }
-
   }
 
   .discussion {
-
     display: flex;
     flex-direction: row;
     width: 100%;
@@ -130,39 +127,37 @@ export const Container = styled.div`
           .icon {
             line-height: 32px;
             font-size: 32px;
-
           }
         }
 
-        .channel{
+        .channel {
           flex: 1;
           padding-left: 30px;
           vertical-align: middle;
           font-size: 20px;
           font-weight: bold;
         }
-        .channel i{
+        .channel i {
           font-size: 1.3em;
         }
-        .channel .name{
+        .channel .name {
           padding-left: 10px;
         }
         .toolbar {
           max-width: 100%;
           flex: 1;
           flex-align: right;
-          display:flex;
+          display: flex;
         }
       }
 
       & > .conversation {
         flex: 1;
         width: 100%;
-        height: calc( 100% - 64px);
+        height: calc(100% - 64px);
         display: flex;
         flex-direction: row;
       }
-
     }
 
     .sidebar-closed.side-stream & {

@@ -20,7 +20,6 @@ const StyledButtonWithIcon = styled(ButtonWithIcon)`
     background-color: ${(props) => props.theme.Channel.Hover};
     color: ${(props) => props.theme.Channels.HoverText};
   }
-   
 `;
 
 type NavButtonProps = {

@@ -17,12 +17,12 @@ export const Menu = styled.div<{ top: number; left: number; height: number }>`
   border: 1px solid var(--primary_border_color);
   top: ${(props) => props.top}px;
   left: ${(props) => props.left}px;
-  
+
   &.hidden {
     display: none;
   }
 
-  & ul{
+  & ul {
     padding: 0;
     margin: 0;
     display: flex;
@@ -47,7 +47,7 @@ export const Menu = styled.div<{ top: number; left: number; height: number }>`
     background-color: var(--primary_active_mask);
   }
 
-  & ul li.selected{
+  & ul li.selected {
     background-color: var(--primary_active_mask);
   }
 

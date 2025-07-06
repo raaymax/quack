@@ -11,12 +11,12 @@
     "./app"
   ],
   "imports": {
-    "@jsr/planigale__sse": "npm:@jsr/planigale__sse@0.2.4",
+    "@jsr/planigale__sse": "npm:@jsr/planigale__sse@0.2.8",
     "@planigale/body-parser": "jsr:@planigale/body-parser@0.2.1",
     "@planigale/planigale": "jsr:@planigale/planigale@0.6.10",
     "@planigale/testing": "jsr:@planigale/testing@0.3.6",
     "@planigale/schema": "jsr:@planigale/schema@0.1.4",
-    "@planigale/sse": "jsr:@planigale/sse@0.2.6",
+    "@planigale/sse": "jsr:@planigale/sse@0.2.8",
     "@std/assert": "jsr:@std/assert@1.0.10",
     "@std/encoding": "jsr:@std/encoding@1.0.6",
     "@std/path": "jsr:@std/path@1.0.8",

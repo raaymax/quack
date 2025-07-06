@@ -1,10 +1,10 @@
 import react from "@vitejs/plugin-react";
-import deno from "@deno/vite-plugin";
 import { VitePWA } from "vite-plugin-pwa";
 
 import path from "node:path";
 import process from "node:process";
 import { defineConfig } from "vite";
+import fs from "node:fs";
 
 const __dirname = new URL(".", import.meta.url).pathname;
 const sslPath = path.join(__dirname, "../ssl/");
@@ -18,8 +18,8 @@ export default defineConfig(({ command }) => ({
   server: command === "serve"
     ? {
       https: {
-        key: Deno.readTextFileSync(path.join(sslPath, "key.pem")),
-        cert: Deno.readTextFileSync(path.join(sslPath, "cert.pem")),
+        key: fs.readFileSync(path.join(sslPath, "key.pem")),
+        cert: fs.readFileSync(path.join(sslPath, "cert.pem")),
       },
       port: 3000,
       strictPort: true,
@@ -46,7 +46,6 @@ export default defineConfig(({ command }) => ({
     },
   },
   plugins: [
-    deno(),
     react(),
     VitePWA({
       injectRegister: "auto",

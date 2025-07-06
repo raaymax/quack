@@ -1,7 +1,7 @@
 import React from "react";
 import { Message } from "./Message";
 import { formatDate } from "../../utils";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "../AppRouter.tsx";
 
 import { observer } from "mobx-react-lite";
 import type { MessageModel } from "../../core/models/message";
@@ -65,7 +65,8 @@ export const MessageListRenderer = observer(({
                 new Date(prev.createdAt).getTime()) < 60000;
         }
         sameDate = prev &&
-          formatDate(prev?.createdAt) === formatDate(msg?.createdAt);
+          formatDate(prev?.createdAt.toISOString()) ===
+            formatDate(msg?.createdAt.toISOString());
         prev = msg;
         return (
           <React.Fragment key={`${msg.id}-${msg.clientId}`}>
@@ -87,7 +88,7 @@ export const MessageListRenderer = observer(({
               ? (
                 <DateSeparator
                   key={`date:${msg.createdAt}`}
-                  date={msg.createdAt}
+                  date={msg.createdAt.toISOString()}
                 />
               )
               : null}

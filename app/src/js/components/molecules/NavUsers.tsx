@@ -5,7 +5,7 @@ import { client } from "../../core";
 import { User } from "../../types";
 import { ProfilePic } from "../atoms/ProfilePic";
 import { useSidebar } from "../contexts/useSidebar";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "../AppRouter.tsx";
 import { observer } from "mobx-react-lite";
 import { useApp } from "../contexts/appState";
 import {
@@ -14,7 +14,6 @@ import {
 } from "../../core/models/readReceipt";
 
 const UserListContainer = styled.div`
-
   .header {
     display: flex;
     flex-direction: row;
@@ -30,16 +29,15 @@ const UserListContainer = styled.div`
       flex: 0 15px;
       font-size: 19px;
     }
-
   }
 
   .user {
-    padding: 5px 5px 5px 20px; 
+    padding: 5px 5px 5px 20px;
     cursor: pointer;
   }
   .user .name {
     font-size: 16px;
-    padding: 0px 10px; 
+    padding: 0px 10px;
     cursor: pointer;
   }
   .user.active {
@@ -131,7 +129,7 @@ export const NavUserButton = observer(({
 const NavUserContainer = observer(
   ({ user, badges }: { user: User; badges: ReadReceiptsModel }) => {
     const app = useApp();
-    const channel = app.channels.getDirect(user.id);
+    const channel = app.channels.getDirect(user.id as any);
     let navigate = (_path: string) => {};
     try {
       navigate = useNavigate();
@@ -141,11 +139,11 @@ const NavUserContainer = observer(
     return (
       <NavUserButton
         size={30}
-        user={user}
+        user={user as any}
         className={{ active: id === channel?.id }}
-        badge={badges.getForChannel(channel?.id)}
+        badge={badges.getForChannel(channel?.id as any)}
         onClick={async () => {
-          const channel = await client.api.putDirectChannel(user.id);
+          const channel = await client.api.putDirectChannel(user.id as any);
           if (isMobile()) {
             hideSidebar();
           }
@@ -167,7 +165,7 @@ export const NavUsers = observer(() => {
       </div>
       {users && users.map((user) => (
         <NavUserContainer
-          key={user.id}
+          key={user.id as any}
           user={user}
           badges={app.readReceipts}
         />

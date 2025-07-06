@@ -50,7 +50,6 @@ const Container = styled.div`
   &:hover .add-reaction {
     display: block;
   }
-
 `;
 type ReactionsProps = {
   messageModel: MessageModel;

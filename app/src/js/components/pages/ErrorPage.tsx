@@ -1,6 +1,5 @@
 import styled from "styled-components";
 import { Button } from "../atoms/Button";
-import { useRouteError } from "react-router-dom";
 import { ApiError } from "../../core";
 import { InitFailedError, PageNotFoundError } from "../errors";
 
@@ -19,7 +18,7 @@ const Container = styled.div`
     flex: 0 0 400px;
     position: relative;
     height: 400px;
-    img{
+    img {
       position: absolute;
       top: 0;
       left: 50%;
@@ -27,7 +26,7 @@ const Container = styled.div`
     }
   }
   .title {
-    color: #FFF;
+    color: #fff;
     text-align: center;
     leading-trim: both;
     text-edge: cap;
@@ -63,7 +62,6 @@ const Container = styled.div`
   .spacer {
     flex: 1;
   }
-
 `;
 
 type ErrorPageProps = {
@@ -144,8 +142,7 @@ export const ErrorPage = (
   );
 };
 
-export const ErrorPageS = () => {
-  const error = useRouteError();
+export const ErrorPageS = ({ error }: { error?: Error }) => {
   if (error instanceof InitFailedError) {
     return (
       <ErrorPage
