@@ -13,7 +13,8 @@ services:
       - chat-mongo:/data/db
   chat:
     #build: .
-    image: ghcr.io/raaymax/quack:build-32
+    image: chat:latest
+    #image: ghcr.io/raaymax/quack:build-32
     restart: on-failure
     ports:
       - 8080:8080

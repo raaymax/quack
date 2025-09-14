@@ -1,14 +1,16 @@
-FROM denoland/deno:alpine-2.2.13 AS build
+FROM node:22.12-alpine AS build
 RUN mkdir -p /app
 WORKDIR /app
 COPY . .
-RUN deno install --allow-scripts
+WORKDIR /app/app
+RUN npm install 
+RUN mv node_modules ../node_modules
 ENV APP_NAME=quack
 ARG APP_VERSION=3.x.x
 ENV APP_VERSION=$APP_VERSION
-RUN APP_NAME=quack APP_VERSION=$APP_VERSION deno task build
+RUN APP_NAME=quack APP_VERSION=$APP_VERSION npm run build
 
-FROM denoland/deno:alpine-2.2.13
+FROM denoland/deno:alpine-2.5.0
 RUN apk -U upgrade
 RUN apk add vips-cpp build-base vips vips-dev
 ENV ENVIRONMENT=production
