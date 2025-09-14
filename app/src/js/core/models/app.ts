@@ -19,6 +19,7 @@ export class AppModel {
   mainChannelId: string | null = null;
   status: "connected" | "disconnected" = "disconnected";
   initFailed: boolean = false;
+  initCompleted: boolean = false;
   loading: boolean = false;
   loadingTimeout: number = 0;
   info: InfoModel;
@@ -129,9 +130,12 @@ export class AppModel {
       yield this.emojis.load();
       yield this.readReceipts.load();
       this.profile = this.users.get(this.userId) ?? null;
+      this.initCompleted = true;
+      return true;
     } catch (e) {
       console.error(e);
       this.initFailed = true;
+      return false;
     }
   });
 

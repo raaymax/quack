@@ -61,6 +61,10 @@ const RouteHandler = () => {
     return <ErrorPageS error={error} />;
   }
 
+  if (!app.initCompleted) {
+    return <div>Loading...</div>;
+  }
+
   // Handle special routes
   if (params.isInvite) {
     return null; // This will be handled by the main App component
