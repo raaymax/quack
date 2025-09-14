@@ -252,7 +252,7 @@ export class MessagesModel {
     const messages = yield client.messages.fetch({
       channelId: this.channelId,
       parentId: this.parentId,
-      before: this.oldest?.createdAt?.toISOString?.(),
+      before: this.oldest?.createdAt,
       pinned: this.pinned,
       search: this.search,
       limit: 50,
@@ -280,7 +280,7 @@ export class MessagesModel {
     const messages = yield client.messages.fetch({
       channelId: this.channelId,
       parentId: this.parentId,
-      after: this.latest?.createdAt?.toISOString?.(),
+      after: this.latest?.createdAt,
       pinned: this.pinned,
       search: this.search,
       limit: 50,
