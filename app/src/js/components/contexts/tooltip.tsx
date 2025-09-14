@@ -33,9 +33,15 @@ const StyledTooltip = styled.div`
   animation: fadein 0.5s;
   text-align: center;
   @keyframes fadein {
-    0% { opacity: 0; }
-    99% { opacity: 0; }
-    100%   { opacity: 1; }
+    0% {
+      opacity: 0;
+    }
+    99% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
   }
 `;
 

@@ -11,6 +11,7 @@ const Desktop = lazy(async () => {
 });
 
 export const Discussion = ({ children }: { children?: React.ReactNode }) => {
+  console.log("Rendering Discussion component");
   return (
     isMobile() ? <Mobile>{children}</Mobile> : <Desktop>{children}</Desktop>
   );

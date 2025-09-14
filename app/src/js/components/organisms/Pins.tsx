@@ -3,7 +3,7 @@ import { useCallback, useEffect } from "react";
 import { HoverProvider } from "../contexts/hover";
 import { MessageList } from "../organisms/MessageListScroller";
 import { Message as MessageType } from "../../types";
-import { useNavigate, useNavigation, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "../AppRouter.tsx";
 import { ButtonWithIcon } from "../molecules/ButtonWithIcon";
 import { MessageListArgsProvider } from "../contexts/messageListArgs";
 import { Toolbar } from "../atoms/Toolbar";
@@ -27,7 +27,7 @@ const StyledPins = styled.div`
     margin: 8px 0px;
   }
   & .message:hover {
-      background-color: var(--primary_active_mask);
+    background-color: var(--primary_active_mask);
   }
 `;
 
@@ -56,18 +56,20 @@ export const Header = observer(() => {
 
 export const PinsInner = observer(() => {
   const app = useApp();
-  const { channelId } = useParams()!;
-  const navigation = useNavigation();
+  const { channelId } = useParams();
   const navigate = useNavigate();
   useEffect(() => {
     if (!channelId) {
       return navigate("/");
     }
-  }, [navigation]);
-  const messagesModel = app.getPins(channelId ?? "");
+  }, [channelId, navigate]);
+  if (!channelId) return null;
+  const messagesModel = app.getPins(channelId);
   useEffect(() => {
-    messagesModel.init();
-  }, [channelId]);
+    if (messagesModel) {
+      messagesModel.init();
+    }
+  }, [channelId, messagesModel]);
   if (!messagesModel) return null;
   const gotoMessage = useCallback((msg: MessageType) => {
     navigate(`/${msg.channelId}${(msg.parentId ? "/t/" + msg.parentId : "")}`, {

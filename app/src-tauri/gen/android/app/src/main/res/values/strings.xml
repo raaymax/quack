@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">quack</string>
-    <string name="main_activity_title">quack</string>
+  <string name="app_name">quack</string>
+  <string name="main_activity_title">quack</string>
 </resources>

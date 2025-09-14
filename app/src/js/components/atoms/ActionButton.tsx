@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { useMessageData } from "../contexts/useMessageData.ts";
 import { client } from "../../core/index.ts";
-import { useParams } from "react-router-dom";
+import { useParams } from "../AppRouter.tsx";
 import { observer } from "mobx-react-lite";
 
 type ActionButtonProps = {

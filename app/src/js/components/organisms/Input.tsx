@@ -83,7 +83,6 @@ export const InputContainer = styled.div`
 
       .input-attachments {
         height: fit-content;
-        
       }
     }
   }
@@ -99,11 +98,11 @@ export const InputContainer = styled.div`
     font-size: 10px;
   }
 
-  .info.error{
+  .info.error {
     color: #852007;
   }
 
-  .info.action:hover{
+  .info.action:hover {
     cursor: pointer;
     font-weight: bold;
   }
@@ -119,7 +118,7 @@ export const InputContainer = styled.div`
     vertical-align: bottom;
   }
 
-  .user { 
+  .user {
     color: ${(props) => props.theme.mentionsColor};
   }
   .cmp-emoji-search {

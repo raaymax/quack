@@ -13,7 +13,6 @@ const Container = styled.div`
     padding-top: 16px;
   }
 
-
   .attachment {
     flex: 0 0 224px;
     position: relative;
@@ -44,7 +43,6 @@ const Container = styled.div`
     .text {
       flex: 1 100%;
       overflow: hidden;
-      
 
       .name {
         padding-left: 10px;
@@ -66,7 +64,7 @@ const Container = styled.div`
         color: ${(props) => props.theme.Strokes};
       }
     }
-  
+
     .remove {
       display: none;
       position: absolute;
@@ -106,7 +104,6 @@ const Container = styled.div`
   .progress {
     background-color: #216dad;
     height: 3px;
-
   }
 `;
 

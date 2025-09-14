@@ -41,8 +41,11 @@ export class HttpInterface extends Planigale {
       });
       schema.addSchema(messageSchema);
       this.use(async (req, next) => {
-        //console.log(req.method, req.url);
-        return await next();
+        const start = Date.now();
+        const ret = await next();
+        const time = Date.now() - start;
+        //console.log(req.method, req.url, ret.status, time + "ms");
+        return ret;
       });
       this.use(errorHandler);
       this.use(bodyParser);

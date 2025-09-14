@@ -50,7 +50,7 @@ const Container = styled.div`
     background: ${(props) => props.theme.ActiveOverlay};
   }
   &:hover {
-    background-color: ${(props) => props.theme.Channel.Hover}; 
+    background-color: ${(props) => props.theme.Channel.Hover};
   }
 `;
 

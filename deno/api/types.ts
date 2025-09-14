@@ -49,7 +49,7 @@ export class ApiErrorResponse extends Error {
   }
 }
 
-export type Eid = "client" extends keyof typeof globalThis ? string : EntityId;
+export type Eid = "Deno" extends keyof typeof globalThis ? EntityId : string;
 
 export type EncryptedData = {
   encrypted: string;

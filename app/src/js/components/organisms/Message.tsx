@@ -21,6 +21,7 @@ import { observer } from "mobx-react-lite";
 import { useApp } from "../contexts/appState";
 import { MessageModel } from "../../core/models/message";
 
+// deno-fmt-ignore
 const MessageContainer = styled.div`
   position: relative;
   display: flex;

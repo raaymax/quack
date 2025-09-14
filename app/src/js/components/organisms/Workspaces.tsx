@@ -13,7 +13,7 @@ const Container = styled.div`
   padding: 16px 0;
   background-color: ${(props) => props.theme.Navbar.Background};
   color: ${(props) => props.theme.Text};
-  & > *{
+  & > * {
     margin: 0 auto;
   }
   .spacer {

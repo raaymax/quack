@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "../AppRouter.tsx";
 import { observer } from "mobx-react-lite";
 
 const Link = styled.span`

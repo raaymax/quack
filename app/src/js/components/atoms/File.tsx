@@ -19,7 +19,7 @@ const FileContainer = styled.div`
     vertical-align: middle;
   }
 
- .name {
+  .name {
     padding: 0 10px;
     line-height: 30px;
     vertical-align: middle;
