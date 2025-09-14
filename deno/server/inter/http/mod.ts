@@ -42,7 +42,7 @@ export class HttpInterface extends Planigale {
       schema.addSchema(messageSchema);
       this.use(async (req, next) => {
         const start = Date.now();
-        const ret = await next()
+        const ret = await next();
         const time = Date.now() - start;
         //console.log(req.method, req.url, ret.status, time + "ms");
         return ret;
@@ -65,7 +65,10 @@ export class HttpInterface extends Planigale {
 
       this.use("/api/channels", channels(core));
       this.use("/api/channels/:channelId/messages", channelMessages(core));
-      this.use("/api/channels/:channelId/read-receipts", channelReadReceipt(core));
+      this.use(
+        "/api/channels/:channelId/read-receipts",
+        channelReadReceipt(core),
+      );
 
       // todo: move this to routes
       this.route({
