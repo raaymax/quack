@@ -71,6 +71,7 @@ export class AppModel {
   ) {
     const channel = this.getChannel(channelId);
     if (!channel) {
+      console.log(this);
       throw new Error(`Channel with id ${channelId} not found`);
     }
     return channel.getThread(parentId, { parentId, ...opts });
