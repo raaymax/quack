@@ -5,7 +5,7 @@ import { isMobile } from "../../utils.ts";
 
 import { Toolbar } from "../atoms/Toolbar.tsx";
 import { ButtonWithIcon } from "../molecules/ButtonWithIcon.tsx";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "../AppRouter.tsx";
 import { MessageListArgsProvider } from "../contexts/messageListArgs.tsx";
 import { MessageList } from "../organisms/MessageListScroller.tsx";
 import { SearchBox } from "../atoms/SearchBox.tsx";
@@ -14,6 +14,7 @@ import { observer } from "mobx-react-lite";
 import { useApp } from "../contexts/appState.tsx";
 import { BaseRenderer } from "./MessageListRenderer.tsx";
 import { MessageModel } from "../../core/models/message.ts";
+import { SearchModel } from "../../core/models/search.ts";
 
 const StyledHeader = styled.div`
   display: flex;
@@ -46,7 +47,7 @@ const StyledSearch = styled.div`
     margin: 8px 0px;
   }
   & .message:hover {
-    background-color: ${(props) => props.theme.Chatbox.Message.Hover}
+    background-color: ${(props) => props.theme.Chatbox.Message.Hover};
   }
   .mobile-search {
     flex: 1;
@@ -55,17 +56,21 @@ const StyledSearch = styled.div`
 
 export const Header = observer(() => {
   const app = useApp();
-  const { channelId } = useParams()!;
+  const { channelId } = useParams();
   const onSearch = useCallback(
     (search: string) => {
       console.log("searching", search);
-      app.setSearch(channelId, search);
+      if (channelId) {
+        app.setSearch(channelId, search);
+      }
     },
     [channelId],
   );
 
   const onClose = useCallback(() => {
-    app.clearSearch(channelId);
+    if (channelId) {
+      app.clearSearch(channelId);
+    }
   }, [channelId]);
   return (
     <StyledHeader>
@@ -113,12 +118,25 @@ export const SearchResults = observer(
     useEffect(() => {
       model.init();
     }, [model]);
+
+    // Create a wrapper object that makes SearchModel compatible with MessageList
+    const threadModelWrapper = {
+      messages: model.messages,
+      input: { value: "" }, // Dummy input
+      typing: { users: [] }, // Dummy typing
+      readReceipts: { users: [] }, // Dummy read receipts
+      search: model.text,
+      pinned: false,
+      init: () => model.init(),
+      dispose: () => model.dispose(),
+    };
+
     return (
       <StyledList>
         <div key="bottom" id="scroll-stop" />
         <MessageList
           renderer={BaseRenderer}
-          model={model}
+          model={threadModelWrapper as any}
           onMessageClicked={(msg: MessageModel) => {
             gotoMessage(msg);
           }}
@@ -130,7 +148,8 @@ export const SearchResults = observer(
 
 export const Search = observer(() => {
   const app = useApp();
-  const { channelId } = useParams()!;
+  const { channelId } = useParams();
+  if (!channelId) return null;
   const searchModel = app.getSearch(channelId);
   if (!searchModel) return null;
   return (

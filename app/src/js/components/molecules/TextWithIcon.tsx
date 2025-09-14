@@ -7,8 +7,8 @@ import { observer } from "mobx-react-lite";
 
 const Container = styled.div`
   display: inline-block;
- .text {
-    padding: 0px 10px; 
+  .text {
+    padding: 0px 10px;
   }
 `;
 

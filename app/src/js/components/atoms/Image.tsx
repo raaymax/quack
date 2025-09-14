@@ -4,6 +4,7 @@ import { filesize } from "filesize";
 import { observer } from "mobx-react-lite";
 import { client } from "../../core";
 
+// deno-fmt-ignore
 const ImageContainer = styled.div`
   cursor: pointer;
   min-width: 100px;

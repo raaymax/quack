@@ -11,19 +11,17 @@ const StyledEmoji = styled.span<{ $size?: number }>`
   padding: 0;
   margin: 0;
   ${(props) => (props.$size
-  ? `
+    ? `
   font-size: ${props.$size}px;
   line-height: ${props.$size}px;
   `
-  : "")}
-  img{
+    : "")} img {
     ${(props) => (props.$size
-  ? `
+      ? `
     height: ${props.$size}px;
     width: ${props.$size}px;
     `
-  : "")}
-    vertical-align: bottom;
+      : "")} vertical-align: bottom;
     display: inline-block;
   }
 `;

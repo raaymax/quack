@@ -108,7 +108,7 @@ class API extends EventTarget {
     this.abortController = new AbortController();
     this.source = null;
     this.tokenInit = () => {
-      this.abortController.abort("App is frozen");
+      this.abortController.abort("Token changed");
       this.abortController = new AbortController();
       if (this.sseEnabled) {
         this.reconnect(this.abortController.signal);

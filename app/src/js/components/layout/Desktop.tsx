@@ -1,7 +1,7 @@
 import styled, { useTheme } from "styled-components";
 import { cn } from "../../utils.ts";
 import { Resizer } from "../atoms/Resizer.tsx";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "../AppRouter.tsx";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Workspaces } from "../organisms/Workspaces.tsx";
 import { Sidebar } from "../organisms/Sidebar.tsx";
@@ -26,7 +26,7 @@ export const Container = styled.div`
   height: 100%;
   color: ${(props) => props.theme.Text};
   --topbar-height: 64px;
-    
+
   .resizer {
     flex: 0 0 ${RESIZER_WIDTH}px;
     &:after {
@@ -34,7 +34,7 @@ export const Container = styled.div`
       top: 0;
       right: 0;
       width: 100%;
-      content: '';
+      content: "";
       display: block;
       height: var(--topbar-height);
       border-bottom: 1px solid ${(props) => props.theme.Strokes};
@@ -56,7 +56,6 @@ export const Container = styled.div`
     width: 100%;
     height: 100%;
     overflow: hidden;
-
 
     .conversation-container {
       flex: 1;
@@ -80,7 +79,6 @@ export const Container = styled.div`
           .icon {
             line-height: 32px;
             font-size: 32px;
-
           }
         }
 
@@ -91,14 +89,14 @@ export const Container = styled.div`
           max-width: 100%;
           flex: 1;
           flex-align: right;
-          display:flex;
+          display: flex;
         }
       }
 
       & > .conversation {
         flex: 1;
         width: 100%;
-        height: calc( 100% - 64px);
+        height: calc(100% - 64px);
         display: flex;
         flex-direction: row;
       }
@@ -106,7 +104,7 @@ export const Container = styled.div`
       & > .conversation-with-context-bar {
         flex: 1;
         width: 100%;
-        height: calc( 100% - 64px);
+        height: calc(100% - 64px);
         display: flex;
         flex-direction: row;
         .conversation {
@@ -115,7 +113,6 @@ export const Container = styled.div`
           height: 100%;
         }
       }
-
 
       & > .conversation-with-context-bar.has-context-bar {
         .conversation {
@@ -278,7 +275,7 @@ export const MainConversation = observer(
                 if (children) {return (
                     <div key="2" className="context-bar">{children}</div>
                   );}
-                if (channelModel.search.open) {
+                if (channelModel?.search.open) {
                   return (
                     <div key="2" className="context-bar">
                       <Search />

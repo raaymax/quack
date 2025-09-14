@@ -5,7 +5,7 @@ import { type Emoji as EmojiType, EmojiDescriptor } from "../../types";
 import { Icon } from "../atoms/Icon";
 import { ClassNames, cn } from "../../utils";
 import { Emoji } from "../molecules/Emoji";
-import { Button } from "../atoms/Button";
+import { Button } from "../molecules/Button";
 import { observer } from "mobx-react-lite";
 import { useApp } from "../contexts/appState";
 
@@ -42,7 +42,6 @@ export const EmojiSearchContainer = styled.div`
       height: 40px;
       width: 100%;
     }
-
   }
 
   .emoji-scroll {
@@ -53,7 +52,6 @@ export const EmojiSearchContainer = styled.div`
     &::-webkit-scrollbar {
       display: none;
     }
-
   }
 
   .add-emoji {
@@ -111,7 +109,7 @@ const EmojiContainer = styled.div`
   }
   &:hover {
     border-radius: 5px;
-    background-color: rgba(249,249,249,0.05);
+    background-color: rgba(249, 249, 249, 0.05);
   }
 `;
 

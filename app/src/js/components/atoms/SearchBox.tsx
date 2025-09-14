@@ -26,7 +26,7 @@ const SearchBoxInput = styled.input`
   border: 0;
   color: ${(props) => props.theme.Text};
   padding-left: 32px;
-  &:focus{
+  &:focus {
     outline: none;
   }
   ::placeholder {

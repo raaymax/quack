@@ -1,4 +1,4 @@
-import { Button } from "../atoms/Button";
+import { Button } from "./Button";
 import { Icon, IconNames } from "../atoms/Icon";
 import { useSize } from "../contexts/useSize";
 import { ClassNames } from "../../utils";

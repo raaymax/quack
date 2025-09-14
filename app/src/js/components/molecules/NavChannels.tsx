@@ -4,7 +4,7 @@ import { ChannelCreate } from "./ChannelCreate";
 import { Channel } from "./NavChannel";
 import { useSidebar } from "../contexts/useSidebar";
 import { isMobile } from "../../utils";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "../AppRouter.tsx";
 import { observer } from "mobx-react-lite";
 import { useApp } from "../contexts/appState";
 
@@ -24,15 +24,14 @@ const ChannelsContainer = styled.div`
       flex: 0 15px;
       font-size: 19px;
     }
-
   }
 
   .channel {
-    padding: 5px 5px 5px 20px; 
+    padding: 5px 5px 5px 20px;
     cursor: pointer;
   }
   .channel .name {
-    padding: 0px 10px; 
+    padding: 0px 10px;
     cursor: pointer;
   }
   .channel.active {
@@ -78,7 +77,7 @@ export const NavChannels = observer(({ icon }: NavChannelsProps) => {
           className={{ active: id === c.id }}
           key={c.id}
           icon={icon ?? "hash"}
-          badge={badges.getForChannel(c.id)}
+          badge={badges.getForChannel(c.id as any)}
           onClick={() => {
             if (isMobile()) {
               hideSidebar();

@@ -7,7 +7,7 @@ const NewChannelContainer = styled.div`
   width: 100%;
   padding: 0;
   margin: 10px 0;
-  form{ 
+  form {
     display: flex;
     padding: 0;
     margin: 0;
@@ -15,7 +15,7 @@ const NewChannelContainer = styled.div`
   }
   input {
     padding: 0 0 0 19px;
-    margin:0;
+    margin: 0;
     border-radius: 0;
     background-color: ${(props) => props.theme.inputBackgroundColor};
     border: 1px solid #000000;
@@ -27,7 +27,7 @@ const NewChannelContainer = styled.div`
     }
   }
   button {
-    margin:0;
+    margin: 0;
     background-color: ${(props) => props.theme.actionButtonBackgroundColor};
     color: ${(props) => props.theme.actionButtonFontColor};
     border-radius: 0;
@@ -37,12 +37,12 @@ const NewChannelContainer = styled.div`
     flex: 0 40px;
     &:hover {
       background-color: ${(props) =>
-  props.theme.actionButtonHoverBackgroundColor};
+        props.theme.actionButtonHoverBackgroundColor};
       color: ${(props) => props.theme.actionButtonFontColor};
     }
     &:active {
       background-color: ${(props) =>
-  props.theme.actionButtonActiveBackgroundColor};
+        props.theme.actionButtonActiveBackgroundColor};
       color: ${(props) => props.theme.actionButtonFontColor};
     }
   }

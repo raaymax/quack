@@ -1,4 +1,4 @@
-import { Button } from "../atoms/Button";
+import { Button } from "./Button";
 import { Emoji } from "./Emoji";
 import { useSize } from "../contexts/useSize";
 import { observer } from "mobx-react-lite";

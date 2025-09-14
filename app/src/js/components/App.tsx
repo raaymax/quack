@@ -6,6 +6,7 @@ import { PasswordReset } from "./pages/PasswordReset.tsx";
 import { Login } from "./pages/Login.tsx";
 import { ThemeSelectorProvider } from "./contexts/theme.tsx";
 import { observer } from "mobx-react-lite";
+import { AppRouterProvider, useParams } from "./AppRouter.tsx";
 
 declare global {
   interface Navigator {
@@ -21,10 +22,12 @@ if ("virtualKeyboard" in navigator) {
   navigator.virtualKeyboard.overlaysContent = true;
 }
 
-export const App = observer(() => {
-  const url = new URL(window.location.toString());
-  const { hash } = url;
-  if (hash.startsWith("#/invite")) {
+// Component to handle route-based rendering
+const AppContent = observer(() => {
+  const params = useParams();
+
+  // Handle special routes
+  if (params.isInvite) {
     return (
       <ThemeSelectorProvider>
         <Register />
@@ -32,7 +35,7 @@ export const App = observer(() => {
     );
   }
 
-  if (hash.startsWith("#/reset")) {
+  if (params.isReset) {
     return (
       <ThemeSelectorProvider>
         <PasswordReset />
@@ -40,6 +43,7 @@ export const App = observer(() => {
     );
   }
 
+  // Default app route
   return (
     <ThemeSelectorProvider>
       <Login>
@@ -48,6 +52,14 @@ export const App = observer(() => {
         </Suspense>
       </Login>
     </ThemeSelectorProvider>
+  );
+});
+
+export const App = observer(() => {
+  return (
+    <AppRouterProvider>
+      <AppContent />
+    </AppRouterProvider>
   );
 });
 

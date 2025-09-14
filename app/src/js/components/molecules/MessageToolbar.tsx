@@ -4,10 +4,11 @@ import { useHovered } from "../contexts/useHovered";
 import { Toolbar } from "../atoms/Toolbar";
 import { ButtonWithEmoji } from "./ButtonWithEmoji";
 import { ButtonWithIcon } from "./ButtonWithIcon";
-import { useParams } from "react-router-dom";
+import { useParams } from "../AppRouter.tsx";
 import { observer } from "mobx-react-lite";
 import { MessageModel } from "../../core/models/message";
 
+// deno-fmt-ignore
 export const Container = styled.div`
   position: absolute;
   top: -15px;
@@ -64,7 +65,7 @@ export const MessageToolbar = observer(
 
     useEffect(() => setView(null), [hovered]);
 
-    if (hovered !== messageModel.id) return null;
+    if (hovered !== (messageModel.id as any)) return null;
 
     const reaction = (emoji: string) => (
       <ButtonWithEmoji
@@ -144,19 +145,17 @@ export const MessageToolbar = observer(
     return (
       <Container>
         <Toolbar size={40}>
-          {view === "reactions" && [
-            ":heart:",
-            ":rofl:",
-            ":thumbsup:",
-            ":thumbsdown:",
-            ":tada:",
-            ":eyes:",
-            ":white_check_mark:",
-          ].map(reaction)}
-          {view === "delete" && [
-            confirmDelete(),
-            cancelButton(),
-          ]}
+          {view === "reactions" &&
+            [
+              ":heart:",
+              ":rofl:",
+              ":thumbsup:",
+              ":thumbsdown:",
+              ":tada:",
+              ":eyes:",
+              ":white_check_mark:",
+            ].map(reaction)}
+          {view === "delete" && [confirmDelete(), cancelButton()]}
           {view === null && [
             openReactions(),
             isMine && editButton(),

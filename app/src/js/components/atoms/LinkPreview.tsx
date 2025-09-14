@@ -14,7 +14,7 @@ const Link = styled.div<{ $image: string }>`
   max-width: 300px;
   border-left: 2px solid ${(props) => props.theme.Labels};
   border-radius: 0;
-  padding: 10px;  
+  padding: 10px;
   margin-bottom: 10px;
   margin-right: 10px;
   cursor: pointer;
@@ -28,9 +28,8 @@ const Link = styled.div<{ $image: string }>`
   }
   * {
     cusor: pointer;
-  }  
-  
-  
+  }
+
   .image {
     width: 100%;
     height: 150px;
@@ -39,7 +38,7 @@ const Link = styled.div<{ $image: string }>`
     background-repeat: no-repeat;
     background-image: url(${(props) => props.$image});
   }
-  
+
   img {
     max-width: 100%;
     height: 150px;

@@ -53,7 +53,6 @@ const Container = styled.div`
       }
     }
   }
-
 `;
 
 type ThemeButtonProps = {

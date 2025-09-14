@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { observer } from "mobx-react-lite";
 import { useApp } from "../contexts/appState";
 import type { UserModel } from "../../core/models/user";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "../AppRouter.tsx";
 
 const StyledLink = styled.a`
   span {
@@ -26,7 +26,7 @@ export const UserMentionBase = observer(({ user }: UserMentionBaseProps) => {
       data-id={user.id}
       href="#"
     >
-      <span className="name">@{user?.name || user.id}</span>
+      <span className="name">@{user?.name || (user.id as any)}</span>
     </StyledLink>
   );
 });
