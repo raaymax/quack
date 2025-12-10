@@ -232,6 +232,9 @@ export const SideConversation = observer(
     const message = threadModel.messages.get(parentId);
     const navigate = useNavigate();
     const { toggleSidebar } = useSidebar();
+    useEffect(() => {
+      threadModel.init();
+    }, [channelId, parentId]);
     return (
       <MessageListArgsProvider streamId="side">
         <div
@@ -291,6 +294,10 @@ export const MainConversation = observer(
     const navigate = useNavigate();
     const threadModel = app.getThread(channelId);
     const { toggleSidebar } = useSidebar();
+
+    useEffect(() => {
+      threadModel.init();
+    }, [channelId]);
 
     return (
       <MessageListArgsProvider streamId="main" value={location.state}>
