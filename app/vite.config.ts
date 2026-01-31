@@ -21,6 +21,7 @@ export default defineConfig(({ command }) => ({
         key: fs.readFileSync(path.join(sslPath, "key.pem")),
         cert: fs.readFileSync(path.join(sslPath, "cert.pem")),
       },
+      host: true,
       port: 3000,
       strictPort: true,
       hmr: {

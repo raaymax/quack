@@ -85,6 +85,7 @@ export const MessageList = observer((props: MessageListProps) => {
   // fix scroll position when scrolling and new messages are added/removed from the list
   useEffect(() => {
     if (!element?.current) return;
+    if (!model.messages) return;
     if (list === oldList) return;
     const getRect = (): DOMRect | undefined => {
       if (!element.current) return;
@@ -107,11 +108,12 @@ export const MessageList = observer((props: MessageListProps) => {
       setCurrent([current[0], rect]);
     }
     setOldList(list);
-  }, [list, model.messages.mode, oldList, setOldList, current, setCurrent]);
+  }, [list, model.messages?.mode, oldList, setOldList, current, setCurrent]);
 
   // scroll selected item into view
   useEffect(() => {
     if (!element.current) return;
+    if (!model.messages) return;
     if (model.messages.selected === selected) return;
     const found = [...element.current.children]
       ?.find((child) =>
@@ -127,7 +129,7 @@ export const MessageList = observer((props: MessageListProps) => {
       }, 500);
       setSelected(model.messages.selected);
     }
-  }, [model.messages.selected, selected, setSelected]);
+  }, [model.messages?.selected, selected, setSelected]);
 
   const scroll = useCallback((e: React.SyntheticEvent) => {
     detectDate(e);
