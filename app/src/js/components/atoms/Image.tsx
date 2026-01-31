@@ -1,8 +1,6 @@
 import styled from "styled-components";
 import { ClassNames, cn } from "../../utils";
 import { filesize } from "filesize";
-import { observer } from "mobx-react-lite";
-import { client } from "../../core";
 
 // deno-fmt-ignore
 const ImageContainer = styled.div`
@@ -37,62 +35,39 @@ const ImageContainer = styled.div`
     line-height: 20px; /* 166.667% */
 `;
 
-const download = async (fileId: string) => {
-  window.open(client.api.getUrl(fileId));
-};
-
-type ImgProps = {
-  raw?: boolean;
-  fileName: string;
-  id?: string;
-  url?: string;
-};
-
 type ImageProps = {
   raw?: boolean;
   className?: ClassNames;
-  data: {
-    id?: string;
-    clientId?: string;
-    fileName: string;
-    url?: string;
-    size?: number;
-  };
+  fileName: string;
+  src: string;
+  downloadUrl?: string;
+  size?: number;
 };
 
-const Img = ({ raw, fileName, id, url }: ImgProps) => {
-  if (url) {
-    return <img src={url} alt={fileName} />;
-  } else if (raw) {
-    return (
+export const Image = ({
+  className,
+  raw,
+  fileName,
+  src,
+  downloadUrl,
+  size,
+}: ImageProps) => {
+  const formattedSize = filesize(size ?? 0);
+
+  return (
+    <ImageContainer
+      className={cn("file", "image", className)}
+      onClick={() => downloadUrl && window.open(downloadUrl)}
+      style={{ cursor: downloadUrl ? "pointer" : "default" }}
+    >
       <img
-        className="raw-image"
-        src={client.api.getUrl(id ?? "")}
+        className={raw ? "raw-image" : undefined}
+        src={src}
         alt={fileName}
       />
-    );
-  } else {
-    return (
-      <img src={client.api.getThumbnail(id ?? "", { h: 240 })} alt={fileName} />
-    );
-  }
+      {(fileName || size) && (
+        <div className="caption">{[fileName, formattedSize].join(", ")}</div>
+      )}
+    </ImageContainer>
+  );
 };
-
-export const Image = observer(
-  ({ className, raw, data: { fileName, id, url, size } }: ImageProps) => {
-    const formattedSize = filesize(size ?? 0);
-
-    return (
-      <ImageContainer
-        className={cn("file", "image", className)}
-        data-id={id}
-        onClick={() => id && download(id)}
-      >
-        <Img raw={raw} fileName={fileName} id={id} url={url} />
-        {(fileName || size) && (
-          <div className="caption">{[fileName, formattedSize].join(", ")}</div>
-        )}
-      </ImageContainer>
-    );
-  },
-);

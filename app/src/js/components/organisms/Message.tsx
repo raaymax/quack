@@ -20,6 +20,7 @@ import { useMessageListArgs } from "../contexts/useMessageListArgs";
 import { observer } from "mobx-react-lite";
 import { useApp } from "../contexts/appState";
 import { MessageModel } from "../../core/models/message";
+import { client } from "../../core";
 
 // deno-fmt-ignore
 const MessageContainer = styled.div`
@@ -205,7 +206,12 @@ const MessageBase = observer(
         onMouseLeave={onLeave}
       >
         {!sameUser
-          ? <ProfilePic type="regular" userId={userId} />
+          ? (
+            <ProfilePic
+              type="regular"
+              avatarUrl={user?.avatarFileId ? client.api.getUrl(user.avatarFileId) : undefined}
+            />
+          )
           : <div className="spacy side-time">{formatTime(createdAt)}</div>}
         <div className="body">
           {!sameUser && <MessageHeader user={user} createdAt={createdAt} />}

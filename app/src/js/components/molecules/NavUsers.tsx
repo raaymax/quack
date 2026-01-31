@@ -12,6 +12,7 @@ import {
   ReadReceiptModel,
   ReadReceiptsModel,
 } from "../../core/models/readReceipt";
+import { UserModel } from "../../core/models/user";
 
 const UserListContainer = styled.div`
   .header {
@@ -63,6 +64,8 @@ type NavUserButtonProps = {
     system?: boolean;
     connected?: boolean;
     lastSeen?: string;
+    avatarFileId?: string;
+    status?: "active" | "inactive" | "away";
   };
   size?: number;
   badge: ReadReceiptModel | null;
@@ -77,6 +80,10 @@ export const NavUserButton = observer(({
   className,
   onClick,
 }: NavUserButtonProps) => {
+  const avatarUrl = user.avatarFileId
+    ? client.api.getUrl(user.avatarFileId)
+    : undefined;
+
   if (user.system) {
     return (
       <NavButton
@@ -88,7 +95,7 @@ export const NavUserButton = observer(({
       >
         <ProfilePic
           type="status"
-          userId={user.id}
+          avatarUrl={avatarUrl}
           showStatus={false}
           className="pic-inline"
         />
@@ -115,7 +122,8 @@ export const NavUserButton = observer(({
     >
       <ProfilePic
         type="status"
-        userId={user.id}
+        avatarUrl={avatarUrl}
+        status={user.status || "inactive"}
         showStatus
         className="pic-inline"
       />

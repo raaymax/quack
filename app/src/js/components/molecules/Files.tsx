@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { File } from "../atoms/File";
 import { Image } from "../atoms/Image";
 import { observer } from "mobx-react-lite";
+import { client } from "../../core";
 
 const IMAGE_TYPES = [
   "image/png",
@@ -26,13 +27,25 @@ const Container = styled.div`
   }
 `;
 
+type FileData = {
+  id?: string;
+  clientId?: string;
+  fileName: string;
+  contentType: string;
+  size?: number;
+};
+
 type FilesProps = {
-  list: {
-    id?: string;
-    clientId?: string;
-    fileName: string;
-    contentType: string;
-  }[];
+  list: FileData[];
+};
+
+const getImageSrc = (file: FileData, raw: boolean): string => {
+  if (file.id) {
+    return raw
+      ? client.api.getUrl(file.id)
+      : client.api.getThumbnail(file.id, { h: 240 });
+  }
+  return "";
 };
 
 export const Files = observer(({ list }: FilesProps) =>
@@ -42,19 +55,32 @@ export const Files = observer(({ list }: FilesProps) =>
         <div className="file-list">
           {list
             .filter((file) => IMAGE_TYPES.includes(file.contentType))
-            .map((file) => (
-              <div className="fli" key={file.id || file.clientId}>
-                <Image
-                  raw={RAW_IMAGE_TYPES.includes(file.contentType)}
-                  data={file}
-                />
-              </div>
-            ))}
+            .map((file) => {
+              const raw = RAW_IMAGE_TYPES.includes(file.contentType);
+              return (
+                <div className="fli" key={file.id || file.clientId}>
+                  <Image
+                    raw={raw}
+                    fileName={file.fileName}
+                    src={getImageSrc(file, raw)}
+                    downloadUrl={file.id ? client.api.getUrl(file.id) : undefined}
+                    size={file.size}
+                  />
+                </div>
+              );
+            })}
         </div>
         <div className="file-list">
           {list
             .filter((file) => !IMAGE_TYPES.includes(file.contentType))
-            .map((file) => <File key={file.id || file.clientId} data={file} />)}
+            .map((file) => (
+              <File
+                key={file.id || file.clientId}
+                fileName={file.fileName}
+                contentType={file.contentType}
+                downloadUrl={file.id ? client.api.getDownloadUrl(file.id) : undefined}
+              />
+            ))}
         </div>
       </Container>
     )
