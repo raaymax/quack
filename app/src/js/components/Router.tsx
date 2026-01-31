@@ -78,7 +78,7 @@ const RouteHandler = () => {
   if (params.channelId) {
     return (
       <Main>
-        {/*params.isSearch && <Discussion><Search /></Discussion>*/}
+        {params.isSearch && <Discussion><Search /></Discussion>}
         {params.isPins && <Discussion><Pins /></Discussion>}
         {!params.isPins && !params.isSearch && (
           <Discussion/>

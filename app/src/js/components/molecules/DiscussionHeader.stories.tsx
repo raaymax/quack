@@ -6,7 +6,7 @@ import { AppModel } from "../../core/models/app.ts";
 import { AppProvider } from "../contexts/appState.tsx";
 
 const app = new AppModel();
-import { client } from "app/src/js/core/client.ts";
+import { client } from "../../core/client.ts";
 
 const meta: Meta<typeof DiscussionHeader> = {
   component: DiscussionHeader,
