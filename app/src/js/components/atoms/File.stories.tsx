@@ -12,9 +12,15 @@ type Story = StoryObj<typeof File>;
 
 export const Primary: Story = {
   args: {
-    data: {
-      fileName: "file.txt",
-      contentType: "text/plain",
-    },
+    fileName: "file.txt",
+    contentType: "text/plain",
+  },
+};
+
+export const WithDownload: Story = {
+  args: {
+    fileName: "document.pdf",
+    contentType: "application/pdf",
+    downloadUrl: "https://example.com/document.pdf",
   },
 };

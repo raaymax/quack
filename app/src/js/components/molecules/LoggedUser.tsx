@@ -1,6 +1,6 @@
 import styled from "styled-components";
-import { ProfilePic } from "./ProfilePic";
-import { ButtonWithIcon } from "../molecules/ButtonWithIcon";
+import { ProfilePic } from "../atoms/ProfilePic";
+import { ButtonWithIcon } from "./ButtonWithIcon";
 import { client } from "../../core";
 import { observer } from "mobx-react-lite";
 import { useApp } from "../contexts/appState";
@@ -46,15 +46,20 @@ const Container = styled.div`
 `;
 
 export const LoggedUser = observer(() => {
-  const user = useApp().profile;
+  const app = useApp();
+  const user = app.profile;
   if (!user) {
     return null;
   }
 
+  const avatarUrl = user.avatarFileId
+    ? client.api.getUrl(user.avatarFileId)
+    : undefined;
+
   return (
     <Container>
       <div className="profile-pic">
-        <ProfilePic type="personal" userId={user.id} />
+        <ProfilePic type="personal" avatarUrl={avatarUrl} />
       </div>
       <div className="user-info">
         <div className="name">{user.name}</div>
