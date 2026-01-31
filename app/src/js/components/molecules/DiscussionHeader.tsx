@@ -4,6 +4,7 @@ import { Icon } from "../atoms/Icon";
 import { Tooltip } from "../atoms/Tooltip";
 import { observer } from "mobx-react-lite";
 import { useApp } from "../contexts/appState";
+import { client } from "../../core";
 
 const Container = styled.div`
   display: flex;
@@ -79,7 +80,12 @@ export const DiscussionHeader = observer(
         {channel.isDirect
           ? (
             <div className="avatar">
-              <ProfilePic showStatus userId={user.id} type="personal" />
+              <ProfilePic
+                showStatus
+                type="personal"
+                avatarUrl={user.avatarFileId ? client.api.getUrl(user.avatarFileId) : undefined}
+                status={user.status || "inactive"}
+              />
             </div>
           )
           : (

@@ -12,40 +12,57 @@ type Story = StoryObj<typeof ProfilePic>;
 
 export const Regular: Story = {
   args: {
-    userId: "1",
     type: "regular",
+    avatarUrl: "/avatar.png",
   },
 };
 export const Personal: Story = {
   args: {
-    userId: "1",
     type: "personal",
+    avatarUrl: "/avatar.png",
   },
 };
-export const PersonalStatus: Story = {
+export const PersonalStatusActive: Story = {
   args: {
-    userId: "1",
     type: "personal",
+    avatarUrl: "/avatar.png",
     showStatus: true,
+    status: "active",
+  },
+};
+export const PersonalStatusInactive: Story = {
+  args: {
+    type: "personal",
+    avatarUrl: "/avatar.png",
+    showStatus: true,
+    status: "inactive",
+  },
+};
+export const PersonalStatusAway: Story = {
+  args: {
+    type: "personal",
+    avatarUrl: "/avatar.png",
+    showStatus: true,
+    status: "away",
   },
 };
 
 export const Status: Story = {
   args: {
-    userId: "1",
     type: "status",
+    avatarUrl: "/avatar.png",
   },
 };
 
 export const Tiny: Story = {
   args: {
-    userId: "1",
     type: "tiny",
+    avatarUrl: "/avatar.png",
   },
 };
 export const Reply: Story = {
   args: {
-    userId: "1",
     type: "reply",
+    avatarUrl: "/avatar.png",
   },
 };

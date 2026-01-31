@@ -14,9 +14,11 @@ const meta: Meta<typeof LoggedUser> = {
       </UserProvider>
     ),
   ],
-  loaders: [async () => {
-    app.users.upsert({ id: "1", name: "John Doe" } as User);
-  }],
+  loaders: [
+    async () => {
+      app.users.upsert({ id: "1", name: "John Doe" } as User);
+    },
+  ],
 };
 
 export default meta;

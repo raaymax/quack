@@ -12,31 +12,38 @@ type Story = StoryObj<typeof Image>;
 
 export const Primary: Story = {
   args: {
-    data: {
-      fileName: "file.txt",
-      id: "file-id",
-      url: "https://picsum.photos/200",
-      size: 13000,
-    },
+    fileName: "image.jpg",
+    src: "https://picsum.photos/200",
+    size: 13000,
   },
 };
 export const Wide: Story = {
   args: {
-    data: {
-      fileName: "file.txt",
-      id: "file-id",
-      url: "https://picsum.photos/1200/100",
-      size: 13000,
-    },
+    fileName: "wide-image.jpg",
+    src: "https://picsum.photos/1200/100",
+    size: 13000,
   },
 };
 export const Narrow: Story = {
   args: {
-    data: {
-      fileName: "file.txt",
-      id: "file-id",
-      url: "https://picsum.photos/100/1200",
-      size: 13000,
-    },
+    fileName: "narrow-image.jpg",
+    src: "https://picsum.photos/100/1200",
+    size: 13000,
+  },
+};
+export const Raw: Story = {
+  args: {
+    fileName: "animated.gif",
+    src: "https://picsum.photos/200",
+    size: 50000,
+    raw: true,
+  },
+};
+export const WithDownload: Story = {
+  args: {
+    fileName: "photo.jpg",
+    src: "https://picsum.photos/200",
+    downloadUrl: "https://picsum.photos/200",
+    size: 25000,
   },
 };
