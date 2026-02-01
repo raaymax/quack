@@ -179,6 +179,14 @@ export const buildEmojiNode = (
   return node;
 };
 
+export const isUserActive = (
+  lastSeen?: string,
+  thresholdMs = 5 * 60 * 1000,
+): boolean => {
+  if (!lastSeen) return false;
+  return new Date(lastSeen).getTime() > Date.now() - thresholdMs;
+};
+
 export type WithoutUndefined<T> = {
   [K in keyof T as T[K] extends undefined ? never : K]: T[K];
 };

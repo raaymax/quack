@@ -53,6 +53,9 @@ export default defineConfig(({ command }) => ({
       strategies: "injectManifest",
       srcDir: "./src",
       filename: "sw.ts",
+      injectManifest: {
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5 MiB
+      },
       devOptions: {
         enabled: true,
         type: "module",

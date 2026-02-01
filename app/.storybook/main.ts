@@ -1,23 +1,32 @@
 import type { StorybookConfig } from "@storybook/react-vite";
+import path from "node:path";
 
-import { dirname, join } from "path";
+const __dirname = new URL(".", import.meta.url).pathname;
 
-/**
- * This function is used to resolve the absolute path of a package.
- * It is needed in projects that use Yarn PnP or are set up within a monorepo.
- */
-function getAbsolutePath(value: string): any {
-  return dirname(require.resolve(join(value, "package.json")));
-}
 const config: StorybookConfig = {
-  stories: ["../src/**/*.mdx", "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
-  addons: [
-    getAbsolutePath("@storybook/addon-themes"),
-    getAbsolutePath("@chromatic-com/storybook"),
-  ],
+  stories: ["../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
+  addons: ["@storybook/addon-themes", "@chromatic-com/storybook"],
   framework: {
-    name: getAbsolutePath("@storybook/react-vite"),
+    name: "@storybook/react-vite",
     options: {},
+  },
+  viteFinal: (config) => {
+    config.define = {
+      ...config.define,
+      APP_VERSION: JSON.stringify("storybook"),
+      APP_NAME: JSON.stringify("Quack"),
+      API_URL: JSON.stringify(""),
+    };
+    config.resolve = {
+      ...config.resolve,
+      alias: {
+        ...config.resolve?.alias,
+        "@quack/encryption": path.resolve(__dirname, "../../deno/encryption/mod.ts"),
+        "@quack/api": path.resolve(__dirname, "../../deno/api/mod.ts"),
+        "@quack/tools": path.resolve(__dirname, "../../deno/tools/mod.ts"),
+      },
+    };
+    return config;
   },
 };
 export default config;

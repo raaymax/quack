@@ -2,28 +2,32 @@ import type { Meta, StoryObj } from "@storybook/react";
 
 import "../../../styles.ts";
 import { LoggedUser } from "./LoggedUser.tsx";
-import { UserProvider } from "../contexts/user.tsx";
-import { app, User } from "../../core/index.ts";
 
 const meta: Meta<typeof LoggedUser> = {
   component: LoggedUser,
-  decorators: [
-    (Story) => (
-      <UserProvider value="1">
-        <Story />
-      </UserProvider>
-    ),
-  ],
-  loaders: [
-    async () => {
-      app.users.upsert({ id: "1", name: "John Doe" } as User);
-    },
-  ],
+  argTypes: {
+    onLogout: { action: "logout clicked" },
+  },
 };
 
 export default meta;
 type Story = StoryObj<typeof LoggedUser>;
 
-export const Primary: Story = {
-  args: {},
+export const Default: Story = {
+  args: {
+    name: "John Doe",
+  },
+};
+
+export const WithAvatar: Story = {
+  args: {
+    name: "Jane Smith",
+    avatarUrl: "https://i.pravatar.cc/150?u=jane",
+  },
+};
+
+export const LongName: Story = {
+  args: {
+    name: "Alexander Bartholomew Wellington III",
+  },
 };

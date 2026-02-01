@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { NavButton } from "./NavButton";
-import { ClassNames, cn, isMobile } from "../../utils";
+import { ClassNames, cn, isMobile, isUserActive } from "../../utils";
 import { client } from "../../core";
 import { User } from "../../types";
 import { ProfilePic } from "../atoms/ProfilePic";
@@ -12,7 +12,7 @@ import {
   ReadReceiptModel,
   ReadReceiptsModel,
 } from "../../core/models/readReceipt";
-import { UserModel } from "../../core/models/user";
+import { useFileUrl } from "../hooks/useFileUrl";
 
 const UserListContainer = styled.div`
   .header {
@@ -73,16 +73,14 @@ type NavUserButtonProps = {
   onClick: () => void;
 };
 
-export const NavUserButton = observer(({
+export const NavUserButton = ({
   user,
   size,
   badge,
   className,
   onClick,
 }: NavUserButtonProps) => {
-  const avatarUrl = user.avatarFileId
-    ? client.api.getUrl(user.avatarFileId)
-    : undefined;
+  const avatarUrl = useFileUrl(user.avatarFileId);
 
   if (user.system) {
     return (
@@ -105,15 +103,14 @@ export const NavUserButton = observer(({
       </NavButton>
     );
   }
-  const active = user.lastSeen &&
-    new Date(user.lastSeen).getTime() > Date.now() - 1000 * 60 * 5;
+  const active = isUserActive(user.lastSeen);
   return (
     <NavButton
       size={size}
       className={cn("user", {
         connected: user.connected ?? false,
         offline: !user.connected,
-        recent: Boolean(active),
+        recent: active,
         system: user.system ?? false,
       }, className)}
       data-id={user.id}
@@ -132,7 +129,7 @@ export const NavUserButton = observer(({
       </span>
     </NavButton>
   );
-});
+};
 
 const NavUserContainer = observer(
   ({ user, badges }: { user: User; badges: ReadReceiptsModel }) => {
