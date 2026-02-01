@@ -3,7 +3,7 @@ import { NavUsers } from "../molecules/NavUsers";
 import { ClassNames, cn } from "../../utils";
 import styled from "styled-components";
 import { ThemeButtonConnected } from "../molecules/ThemeButtonConnected";
-import { LoggedUser } from "../molecules/LoggedUser";
+import { LoggedUserConnected } from "../molecules/LoggedUserConnected";
 import { observer } from "mobx-react-lite";
 
 const Container = styled.div`
@@ -80,7 +80,7 @@ export const Sidebar = observer(
         </div>
         <div className="bottom">
           <ThemeButtonConnected />
-          <LoggedUser />
+          <LoggedUserConnected />
         </div>
       </Container>
     );

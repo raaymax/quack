@@ -10,6 +10,26 @@ const meta: Meta<typeof ThreadLink> = {
 export default meta;
 type Story = StoryObj<typeof ThreadLink>;
 
-export const Primary: Story = {
-  args: {},
+export const Default: Story = {
+  args: {
+    channelId: "channelId",
+    parentId: "parentId123",
+    text: "View thread",
+  },
+};
+
+export const WithCustomText: Story = {
+  args: {
+    channelId: "channelId",
+    parentId: "parentId123",
+    text: "5 replies",
+  },
+};
+
+export const EmptyText: Story = {
+  args: {
+    channelId: "channelId",
+    parentId: "parentId123",
+    text: "",
+  },
 };

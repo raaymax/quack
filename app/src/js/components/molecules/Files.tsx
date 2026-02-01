@@ -1,8 +1,11 @@
 import styled from "styled-components";
 import { File } from "../atoms/File";
 import { Image } from "../atoms/Image";
-import { observer } from "mobx-react-lite";
-import { client } from "../../core";
+import {
+  getDownloadUrl,
+  getFileUrl,
+  getThumbnailUrl,
+} from "../hooks/fileUrl";
 
 const IMAGE_TYPES = [
   "image/png",
@@ -39,16 +42,46 @@ type FilesProps = {
   list: FileData[];
 };
 
-const getImageSrc = (file: FileData, raw: boolean): string => {
-  if (file.id) {
-    return raw
-      ? client.api.getUrl(file.id)
-      : client.api.getThumbnail(file.id, { h: 240 });
-  }
-  return "";
+type ImageFileItemProps = {
+  file: FileData;
+  raw: boolean;
 };
 
-export const Files = observer(({ list }: FilesProps) =>
+const ImageFileItem = ({ file, raw }: ImageFileItemProps) => {
+  const fileUrl = getFileUrl(file.id);
+  const thumbnailUrl = getThumbnailUrl(file.id, { h: 240 });
+  const src = raw ? fileUrl : thumbnailUrl;
+
+  return (
+    <div className="fli">
+      <Image
+        raw={raw}
+        fileName={file.fileName}
+        src={src ?? ""}
+        downloadUrl={fileUrl}
+        size={file.size}
+      />
+    </div>
+  );
+};
+
+type NonImageFileItemProps = {
+  file: FileData;
+};
+
+const NonImageFileItem = ({ file }: NonImageFileItemProps) => {
+  const downloadUrl = getDownloadUrl(file.id);
+
+  return (
+    <File
+      fileName={file.fileName}
+      contentType={file.contentType}
+      downloadUrl={downloadUrl}
+    />
+  );
+};
+
+export const Files = ({ list }: FilesProps) =>
   list.length > 0
     ? (
       <Container className="cmp-files">
@@ -58,15 +91,11 @@ export const Files = observer(({ list }: FilesProps) =>
             .map((file) => {
               const raw = RAW_IMAGE_TYPES.includes(file.contentType);
               return (
-                <div className="fli" key={file.id || file.clientId}>
-                  <Image
-                    raw={raw}
-                    fileName={file.fileName}
-                    src={getImageSrc(file, raw)}
-                    downloadUrl={file.id ? client.api.getUrl(file.id) : undefined}
-                    size={file.size}
-                  />
-                </div>
+                <ImageFileItem
+                  key={file.id || file.clientId}
+                  file={file}
+                  raw={raw}
+                />
               );
             })}
         </div>
@@ -74,15 +103,9 @@ export const Files = observer(({ list }: FilesProps) =>
           {list
             .filter((file) => !IMAGE_TYPES.includes(file.contentType))
             .map((file) => (
-              <File
-                key={file.id || file.clientId}
-                fileName={file.fileName}
-                contentType={file.contentType}
-                downloadUrl={file.id ? client.api.getDownloadUrl(file.id) : undefined}
-              />
+              <NonImageFileItem key={file.id || file.clientId} file={file} />
             ))}
         </div>
       </Container>
     )
-    : null
-);
+    : null;

@@ -1,8 +1,10 @@
 import type { Preview } from "@storybook/react";
 import { ThemeSelectorProvider } from "../src/js/components/contexts/theme";
 import { TooltipProvider } from "../src/js/components/contexts/tooltip";
+import { HoverProvider } from "../src/js/components/contexts/hover";
 import { app, client } from "../src/js/core";
 import { AppProvider } from "../src/js/components/contexts/appState";
+import { AppRouterProvider } from "../src/js/components/AppRouter";
 
 const preview: Preview = {
   tags: ["autodocs"],
@@ -94,22 +96,40 @@ const preview: Preview = {
       users: [],
       channelType: "PUBLIC",
     });
+    app.channels.upsert({
+      id: "toolbar-test",
+      name: "Toolbar Test Channel",
+      users: ["me"],
+      channelType: "PUBLIC",
+    });
+    app.channels.upsert({
+      id: "test",
+      name: "Test Channel",
+      users: ["me"],
+      channelType: "PUBLIC",
+    });
+    app.channels.upsert({
+      id: "unknown-channel",
+      name: "Unknown Channel",
+      users: ["me"],
+      channelType: "PUBLIC",
+    });
 
     app.emojis.upsert({
       empty: false,
-      unicode: "😀",
+      unicode: "1F600", // 😀
       shortname: ":smile:",
       category: "people",
     });
     app.emojis.upsert({
       empty: false,
-      unicode: "👍",
+      unicode: "1F44D", // 👍
       shortname: ":thumbsup:",
       category: "people",
     });
     app.emojis.upsert({
       empty: false,
-      unicode: "👎",
+      unicode: "1F44E", // 👎
       shortname: ":thumbsdown:",
       category: "people",
     });
@@ -126,13 +146,17 @@ const preview: Preview = {
   }],
   decorators: [
     (Story, args) => (
-      <AppProvider value={app}>
-        <ThemeSelectorProvider value={args.globals.theme}>
-          <TooltipProvider>
-            <Story />
-          </TooltipProvider>
-        </ThemeSelectorProvider>
-      </AppProvider>
+      <AppRouterProvider>
+        <AppProvider value={app}>
+          <ThemeSelectorProvider value={args.globals.theme}>
+            <TooltipProvider>
+              <HoverProvider>
+                <Story />
+              </HoverProvider>
+            </TooltipProvider>
+          </ThemeSelectorProvider>
+        </AppProvider>
+      </AppRouterProvider>
     ),
   ],
 };
