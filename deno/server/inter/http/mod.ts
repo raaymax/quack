@@ -18,6 +18,7 @@ import { emojis } from "./routes/emojis/mod.ts";
 import { commands } from "./routes/commands/mod.ts";
 import { channelReadReceipt, readReceipt } from "./routes/readReceipt/mod.ts";
 import { interactions } from "./routes/interactions/mod.ts";
+import { mobile } from "./routes/mobile/mod.ts";
 
 const PUBLIC_DIR = Deno.env.get("PUBLIC_DIR") ||
   join(Deno.cwd(), "..", "..", "packages", "app", "dist");
@@ -62,6 +63,7 @@ export class HttpInterface extends Planigale {
       this.use("/api/messages", messages(core));
       this.use("/api/read-receipts", readReceipt(core));
       this.use("/api/interactions", interactions(core));
+      this.use("/api/mobile", mobile(core));
 
       this.use("/api/channels", channels(core));
       this.use("/api/channels/:channelId/messages", channelMessages(core));

@@ -27,9 +27,6 @@ export default defineConfig(({ command }) => ({
       hmr: {
         overlay: false,
       },
-      watch: {
-        ignored: ["**/src-tauri/**"],
-      },
       proxy: {
         "/api": {
           target: "http://localhost:3001",

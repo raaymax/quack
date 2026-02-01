@@ -16,11 +16,6 @@ import { FilesAPI } from "./files.ts";
 
 export * from "./types.ts";
 
-declare global {
-  interface Window {
-    isTauri: boolean;
-  }
-}
 declare const document: any;
 
 const isDeno = typeof window === "undefined";
@@ -104,7 +99,7 @@ class API extends EventTarget {
 
   constructor(url: string, opts: { fetch: typeof fetch; sse?: boolean }) {
     super();
-    this.baseUrl = isDeno || window?.isTauri ? url : "";
+    this.baseUrl = isDeno ? url : "";
     this.abortController = new AbortController();
     this.source = null;
     this.tokenInit = () => {

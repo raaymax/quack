@@ -1,0 +1,15 @@
+{
+	"appId": "io.codecat.quack",
+	"appName": "Quack",
+	"webDir": "www",
+	"server": {
+		"url": "https://10.0.2.2:3000",
+		"cleartext": false
+	},
+	"android": {
+		"allowMixedContent": false,
+		"captureInput": true,
+		"webContentsDebuggingEnabled": true
+	},
+	"plugins": {}
+}

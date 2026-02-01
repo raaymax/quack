@@ -1,0 +1,36 @@
+{
+    "logs": [
+        {
+            "outputFile": "io.codecat.quack.app-mergeDebugResources-24:/values-night-v8/values-night-v8.xml",
+            "map": [
+                {
+                    "source": "/home/raay/.gradle/caches/transforms-3/1d45e5353d0bf2424a404da04798b9b8/transformed/core-splashscreen-1.0.1/res/values-night-v8/values-night-v8.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "85",
+                        "endOffsets": "136"
+                    }
+                },
+                {
+                    "source": "/home/raay/.gradle/caches/transforms-3/38765a7d7ed1dba468f8149a4e1c84cc/transformed/appcompat-1.6.1/res/values-night-v8/values-night-v8.xml",
+                    "from": {
+                        "startLines": "2,3,4,5,6,7,8,9",
+                        "startColumns": "4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,125,209,293,389,491,593,687",
+                        "endColumns": "69,83,83,95,101,101,93,88",
+                        "endOffsets": "120,204,288,384,486,588,682,771"
+                    },
+                    "to": {
+                        "startLines": "3,4,5,6,7,8,9,10",
+                        "startColumns": "4,4,4,4,4,4,4,4",
+                        "startOffsets": "141,211,295,379,475,577,679,773",
+                        "endColumns": "69,83,83,95,101,101,93,88",
+                        "endOffsets": "206,290,374,470,572,674,768,857"
+                    }
+                }
+            ]
+        }
+    ]
+}

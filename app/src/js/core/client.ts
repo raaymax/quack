@@ -3,26 +3,11 @@ import { MessageService } from "./messages.ts";
 
 export class Client {
   _api: Api | null = null;
-  _http: Promise<any> | null = null;
   messages: MessageService;
-
-  getFetch(): typeof fetch {
-    return async (
-      ...args: Parameters<typeof fetch>
-    ): ReturnType<typeof fetch> => {
-      if (window.isTauri) {
-        if (!this._http) {
-          this._http = import("@tauri-apps/plugin-http");
-        }
-        return await (await this._http).fetch(...args);
-      }
-      return await fetch(...args);
-    };
-  }
 
   get api(): Api {
     if (!this._api) {
-      this._api = new Api(API_URL, { fetch: this.getFetch() });
+      this._api = new Api(API_URL, { fetch: fetch.bind(window) });
     }
     return this._api;
   }
