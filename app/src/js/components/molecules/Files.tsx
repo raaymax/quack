@@ -2,10 +2,10 @@ import styled from "styled-components";
 import { File } from "../atoms/File";
 import { Image } from "../atoms/Image";
 import {
-  useDownloadUrl,
-  useFileUrl,
-  useThumbnailUrl,
-} from "../hooks/useFileUrl";
+  getDownloadUrl,
+  getFileUrl,
+  getThumbnailUrl,
+} from "../hooks/fileUrl";
 
 const IMAGE_TYPES = [
   "image/png",
@@ -48,8 +48,8 @@ type ImageFileItemProps = {
 };
 
 const ImageFileItem = ({ file, raw }: ImageFileItemProps) => {
-  const fileUrl = useFileUrl(file.id);
-  const thumbnailUrl = useThumbnailUrl(file.id, { h: 240 });
+  const fileUrl = getFileUrl(file.id);
+  const thumbnailUrl = getThumbnailUrl(file.id, { h: 240 });
   const src = raw ? fileUrl : thumbnailUrl;
 
   return (
@@ -70,7 +70,7 @@ type NonImageFileItemProps = {
 };
 
 const NonImageFileItem = ({ file }: NonImageFileItemProps) => {
-  const downloadUrl = useDownloadUrl(file.id);
+  const downloadUrl = getDownloadUrl(file.id);
 
   return (
     <File

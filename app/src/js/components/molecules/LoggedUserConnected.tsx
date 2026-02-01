@@ -1,14 +1,14 @@
 import { observer } from "mobx-react-lite";
 import { client } from "../../core";
 import { useApp } from "../contexts/appState";
-import { useFileUrl } from "../hooks/useFileUrl";
+import { getFileUrl } from "../hooks/fileUrl";
 import { LoggedUser } from "./LoggedUser";
 
 export const LoggedUserConnected = observer(() => {
   const app = useApp();
   const user = app.profile;
 
-  const avatarUrl = useFileUrl(user?.avatarFileId);
+  const avatarUrl = getFileUrl(user?.avatarFileId);
 
   if (!user) {
     return null;

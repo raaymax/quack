@@ -12,7 +12,7 @@ import {
   ReadReceiptModel,
   ReadReceiptsModel,
 } from "../../core/models/readReceipt";
-import { useFileUrl } from "../hooks/useFileUrl";
+import { getFileUrl } from "../hooks/fileUrl";
 
 const UserListContainer = styled.div`
   .header {
@@ -80,7 +80,7 @@ export const NavUserButton = ({
   className,
   onClick,
 }: NavUserButtonProps) => {
-  const avatarUrl = useFileUrl(user.avatarFileId);
+  const avatarUrl = getFileUrl(user.avatarFileId);
 
   if (user.system) {
     return (

@@ -3,14 +3,28 @@ import { useState, useRef } from "react";
 
 import "../../../styles.ts";
 import { TextMenu } from "./TextMenu.tsx";
-import { InputContext } from "../contexts/input.tsx";
+import { InputContext, InputContextType } from "../contexts/input.tsx";
+
+type TextMenuOption = {
+  label?: string;
+  name: string;
+  icon?: string;
+  url?: string;
+};
+
+type TextMenuWrapperProps = {
+  open?: boolean;
+  options: TextMenuOption[];
+  onSelect: (idx: number, e: React.MouseEvent) => void;
+  selected?: number;
+};
 
 // Wrapper component to provide InputContext
-const TextMenuWrapper = (props: any) => {
+const TextMenuWrapper = (props: TextMenuWrapperProps) => {
   const inputRef = useRef<HTMLDivElement>(null);
   const [selected, setSelected] = useState(props.selected ?? 0);
 
-  const mockInputContext = {
+  const mockInputContext: InputContextType = {
     input: inputRef,
     fileInput: { current: null },
     currentText: "",
@@ -31,7 +45,7 @@ const TextMenuWrapper = (props: any) => {
 
   return (
     <div style={{ position: "relative", padding: "100px 20px 20px 20px" }}>
-      <InputContext.Provider value={mockInputContext as any}>
+      <InputContext.Provider value={mockInputContext}>
         <div ref={inputRef} style={{ minHeight: "50px" }}>
           <TextMenu
             {...props}
