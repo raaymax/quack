@@ -1,0 +1,20 @@
+{
+    "logs": [
+        {
+            "outputFile": "io.codecat.quack.app-mergeDebugResources-24:/values-v31/values-v31.xml",
+            "map": [
+                {
+                    "source": "/home/raay/.gradle/caches/transforms-3/1d45e5353d0bf2424a404da04798b9b8/transformed/core-splashscreen-1.0.1/res/values-v31/values-v31.xml",
+                    "from": {
+                        "startLines": "2,9",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,473",
+                        "endLines": "8,13",
+                        "endColumns": "12,12",
+                        "endOffsets": "468,697"
+                    }
+                }
+            ]
+        }
+    ]
+}

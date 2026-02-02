@@ -1,0 +1,241 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="io.codecat.quack"
+4    android:versionCode="1"
+5    android:versionName="1.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="22"
+9        android:targetSdkVersion="34" />
+10
+11    <!-- Network -->
+12    <uses-permission android:name="android.permission.INTERNET" />
+12-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:5:5-67
+12-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:5:22-64
+13    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+13-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:6:5-79
+13-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:6:22-76
+14
+15    <!-- Foreground Service for background notifications -->
+16    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+16-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:9:5-77
+16-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:9:22-74
+17    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+17-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:10:5-87
+17-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:10:22-84
+18
+19    <!-- Notifications -->
+20    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+20-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:13:5-77
+20-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:13:22-74
+21    <uses-permission android:name="android.permission.VIBRATE" />
+21-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:14:5-66
+21-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:14:22-63
+22
+23    <!-- Boot receiver to restart service -->
+24    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+24-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:17:5-81
+24-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:17:22-78
+25
+26    <!-- Wake lock for reliable background processing -->
+27    <uses-permission android:name="android.permission.WAKE_LOCK" />
+27-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:20:5-68
+27-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:20:22-65
+28
+29    <!-- Request to ignore battery optimizations -->
+30    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+30-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:23:5-95
+30-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:23:22-92
+31
+32    <permission
+32-->[androidx.core:core:1.12.0] /home/raay/.gradle/caches/transforms-3/63015c94a275de8c72107bcb67f36850/transformed/core-1.12.0/AndroidManifest.xml:22:5-24:47
+33        android:name="io.codecat.quack.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+33-->[androidx.core:core:1.12.0] /home/raay/.gradle/caches/transforms-3/63015c94a275de8c72107bcb67f36850/transformed/core-1.12.0/AndroidManifest.xml:23:9-81
+34        android:protectionLevel="signature" />
+34-->[androidx.core:core:1.12.0] /home/raay/.gradle/caches/transforms-3/63015c94a275de8c72107bcb67f36850/transformed/core-1.12.0/AndroidManifest.xml:24:9-44
+35
+36    <uses-permission android:name="io.codecat.quack.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+36-->[androidx.core:core:1.12.0] /home/raay/.gradle/caches/transforms-3/63015c94a275de8c72107bcb67f36850/transformed/core-1.12.0/AndroidManifest.xml:26:5-97
+36-->[androidx.core:core:1.12.0] /home/raay/.gradle/caches/transforms-3/63015c94a275de8c72107bcb67f36850/transformed/core-1.12.0/AndroidManifest.xml:26:22-94
+37
+38    <application
+38-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:25:5-84:19
+39        android:allowBackup="true"
+39-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:26:9-35
+40        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+40-->[androidx.core:core:1.12.0] /home/raay/.gradle/caches/transforms-3/63015c94a275de8c72107bcb67f36850/transformed/core-1.12.0/AndroidManifest.xml:28:18-86
+41        android:debuggable="true"
+42        android:extractNativeLibs="true"
+43        android:icon="@mipmap/ic_launcher"
+43-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:27:9-43
+44        android:label="@string/app_name"
+44-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:28:9-41
+45        android:networkSecurityConfig="@xml/network_security_config"
+45-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:32:9-69
+46        android:roundIcon="@mipmap/ic_launcher_round"
+46-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:29:9-54
+47        android:supportsRtl="true"
+47-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:30:9-35
+48        android:theme="@style/AppTheme" >
+48-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:31:9-40
+49        <activity
+49-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:34:9-55:20
+50            android:name="io.codecat.quack.MainActivity"
+50-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:36:13-41
+51            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode"
+51-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:35:13-129
+52            android:exported="true"
+52-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:40:13-36
+53            android:label="@string/title_activity_main"
+53-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:37:13-56
+54            android:launchMode="singleTask"
+54-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:39:13-44
+55            android:theme="@style/AppTheme.NoActionBarLaunch" >
+55-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:38:13-62
+56            <intent-filter>
+56-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:42:13-45:29
+57                <action android:name="android.intent.action.MAIN" />
+57-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:43:17-69
+57-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:43:25-66
+58
+59                <category android:name="android.intent.category.LAUNCHER" />
+59-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:44:17-77
+59-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:44:27-74
+60            </intent-filter>
+61
+62            <!-- Deep links for notifications -->
+63            <intent-filter>
+63-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:48:13-53:29
+64                <action android:name="android.intent.action.VIEW" />
+64-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:49:17-69
+64-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:49:25-66
+65
+66                <category android:name="android.intent.category.DEFAULT" />
+66-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:50:17-76
+66-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:50:27-73
+67                <category android:name="android.intent.category.BROWSABLE" />
+67-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:51:17-78
+67-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:51:27-75
+68
+69                <data android:scheme="quack" />
+69-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:52:17-48
+69-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:52:23-45
+70            </intent-filter>
+71        </activity>
+72
+73        <!-- Background notification service -->
+74        <service
+74-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:58:9-62:56
+75            android:name="io.codecat.quack.QuackNotificationService"
+75-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:59:13-53
+76            android:enabled="true"
+76-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:60:13-35
+77            android:exported="false"
+77-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:61:13-37
+78            android:foregroundServiceType="dataSync" />
+78-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:62:13-53
+79
+80        <!-- Boot receiver to restart service after device reboot -->
+81        <receiver
+81-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:65:9-73:20
+82            android:name="io.codecat.quack.BootReceiver"
+82-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:66:13-41
+83            android:enabled="true"
+83-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:67:13-35
+84            android:exported="true" >
+84-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:68:13-36
+85            <intent-filter>
+85-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:69:13-72:29
+86                <action android:name="android.intent.action.BOOT_COMPLETED" />
+86-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:70:17-79
+86-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:70:25-76
+87                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+87-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:71:17-82
+87-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:71:25-79
+88            </intent-filter>
+89        </receiver>
+90
+91        <provider
+92            android:name="androidx.core.content.FileProvider"
+92-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:76:13-62
+93            android:authorities="io.codecat.quack.fileprovider"
+93-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:77:13-64
+94            android:exported="false"
+94-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:78:13-37
+95            android:grantUriPermissions="true" >
+95-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:79:13-47
+96            <meta-data
+96-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:80:13-82:64
+97                android:name="android.support.FILE_PROVIDER_PATHS"
+97-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:81:17-67
+98                android:resource="@xml/file_paths" />
+98-->/home/raay/Workspace/Quack/mobile/android/app/src/main/AndroidManifest.xml:82:17-51
+99        </provider>
+100        <provider
+100-->[androidx.emoji2:emoji2:1.2.0] /home/raay/.gradle/caches/transforms-3/1bbb717693b496f978543c94b205aded/transformed/emoji2-1.2.0/AndroidManifest.xml:24:9-32:20
+101            android:name="androidx.startup.InitializationProvider"
+101-->[androidx.emoji2:emoji2:1.2.0] /home/raay/.gradle/caches/transforms-3/1bbb717693b496f978543c94b205aded/transformed/emoji2-1.2.0/AndroidManifest.xml:25:13-67
+102            android:authorities="io.codecat.quack.androidx-startup"
+102-->[androidx.emoji2:emoji2:1.2.0] /home/raay/.gradle/caches/transforms-3/1bbb717693b496f978543c94b205aded/transformed/emoji2-1.2.0/AndroidManifest.xml:26:13-68
+103            android:exported="false" >
+103-->[androidx.emoji2:emoji2:1.2.0] /home/raay/.gradle/caches/transforms-3/1bbb717693b496f978543c94b205aded/transformed/emoji2-1.2.0/AndroidManifest.xml:27:13-37
+104            <meta-data
+104-->[androidx.emoji2:emoji2:1.2.0] /home/raay/.gradle/caches/transforms-3/1bbb717693b496f978543c94b205aded/transformed/emoji2-1.2.0/AndroidManifest.xml:29:13-31:52
+105                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+105-->[androidx.emoji2:emoji2:1.2.0] /home/raay/.gradle/caches/transforms-3/1bbb717693b496f978543c94b205aded/transformed/emoji2-1.2.0/AndroidManifest.xml:30:17-75
+106                android:value="androidx.startup" />
+106-->[androidx.emoji2:emoji2:1.2.0] /home/raay/.gradle/caches/transforms-3/1bbb717693b496f978543c94b205aded/transformed/emoji2-1.2.0/AndroidManifest.xml:31:17-49
+107            <meta-data
+107-->[androidx.lifecycle:lifecycle-process:2.6.1] /home/raay/.gradle/caches/transforms-3/b414665569fe05ff35e1c52496ccb76d/transformed/lifecycle-process-2.6.1/AndroidManifest.xml:29:13-31:52
+108                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+108-->[androidx.lifecycle:lifecycle-process:2.6.1] /home/raay/.gradle/caches/transforms-3/b414665569fe05ff35e1c52496ccb76d/transformed/lifecycle-process-2.6.1/AndroidManifest.xml:30:17-78
+109                android:value="androidx.startup" />
+109-->[androidx.lifecycle:lifecycle-process:2.6.1] /home/raay/.gradle/caches/transforms-3/b414665569fe05ff35e1c52496ccb76d/transformed/lifecycle-process-2.6.1/AndroidManifest.xml:31:17-49
+110            <meta-data
+110-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/raay/.gradle/caches/transforms-3/7ac1d7dd2b986f1b5e9c009ca557d199/transformed/profileinstaller-1.3.0/AndroidManifest.xml:29:13-31:52
+111                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+111-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/raay/.gradle/caches/transforms-3/7ac1d7dd2b986f1b5e9c009ca557d199/transformed/profileinstaller-1.3.0/AndroidManifest.xml:30:17-85
+112                android:value="androidx.startup" />
+112-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/raay/.gradle/caches/transforms-3/7ac1d7dd2b986f1b5e9c009ca557d199/transformed/profileinstaller-1.3.0/AndroidManifest.xml:31:17-49
+113        </provider>
+114
+115        <receiver
+115-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/raay/.gradle/caches/transforms-3/7ac1d7dd2b986f1b5e9c009ca557d199/transformed/profileinstaller-1.3.0/AndroidManifest.xml:34:9-52:20
+116            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+116-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/raay/.gradle/caches/transforms-3/7ac1d7dd2b986f1b5e9c009ca557d199/transformed/profileinstaller-1.3.0/AndroidManifest.xml:35:13-76
+117            android:directBootAware="false"
+117-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/raay/.gradle/caches/transforms-3/7ac1d7dd2b986f1b5e9c009ca557d199/transformed/profileinstaller-1.3.0/AndroidManifest.xml:36:13-44
+118            android:enabled="true"
+118-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/raay/.gradle/caches/transforms-3/7ac1d7dd2b986f1b5e9c009ca557d199/transformed/profileinstaller-1.3.0/AndroidManifest.xml:37:13-35
+119            android:exported="true"
+119-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/raay/.gradle/caches/transforms-3/7ac1d7dd2b986f1b5e9c009ca557d199/transformed/profileinstaller-1.3.0/AndroidManifest.xml:38:13-36
+120            android:permission="android.permission.DUMP" >
+120-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/raay/.gradle/caches/transforms-3/7ac1d7dd2b986f1b5e9c009ca557d199/transformed/profileinstaller-1.3.0/AndroidManifest.xml:39:13-57
+121            <intent-filter>
+121-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/raay/.gradle/caches/transforms-3/7ac1d7dd2b986f1b5e9c009ca557d199/transformed/profileinstaller-1.3.0/AndroidManifest.xml:40:13-42:29
+122                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+122-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/raay/.gradle/caches/transforms-3/7ac1d7dd2b986f1b5e9c009ca557d199/transformed/profileinstaller-1.3.0/AndroidManifest.xml:41:17-91
+122-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/raay/.gradle/caches/transforms-3/7ac1d7dd2b986f1b5e9c009ca557d199/transformed/profileinstaller-1.3.0/AndroidManifest.xml:41:25-88
+123            </intent-filter>
+124            <intent-filter>
+124-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/raay/.gradle/caches/transforms-3/7ac1d7dd2b986f1b5e9c009ca557d199/transformed/profileinstaller-1.3.0/AndroidManifest.xml:43:13-45:29
+125                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+125-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/raay/.gradle/caches/transforms-3/7ac1d7dd2b986f1b5e9c009ca557d199/transformed/profileinstaller-1.3.0/AndroidManifest.xml:44:17-85
+125-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/raay/.gradle/caches/transforms-3/7ac1d7dd2b986f1b5e9c009ca557d199/transformed/profileinstaller-1.3.0/AndroidManifest.xml:44:25-82
+126            </intent-filter>
+127            <intent-filter>
+127-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/raay/.gradle/caches/transforms-3/7ac1d7dd2b986f1b5e9c009ca557d199/transformed/profileinstaller-1.3.0/AndroidManifest.xml:46:13-48:29
+128                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+128-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/raay/.gradle/caches/transforms-3/7ac1d7dd2b986f1b5e9c009ca557d199/transformed/profileinstaller-1.3.0/AndroidManifest.xml:47:17-88
+128-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/raay/.gradle/caches/transforms-3/7ac1d7dd2b986f1b5e9c009ca557d199/transformed/profileinstaller-1.3.0/AndroidManifest.xml:47:25-85
+129            </intent-filter>
+130            <intent-filter>
+130-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/raay/.gradle/caches/transforms-3/7ac1d7dd2b986f1b5e9c009ca557d199/transformed/profileinstaller-1.3.0/AndroidManifest.xml:49:13-51:29
+131                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+131-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/raay/.gradle/caches/transforms-3/7ac1d7dd2b986f1b5e9c009ca557d199/transformed/profileinstaller-1.3.0/AndroidManifest.xml:50:17-95
+131-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/raay/.gradle/caches/transforms-3/7ac1d7dd2b986f1b5e9c009ca557d199/transformed/profileinstaller-1.3.0/AndroidManifest.xml:50:25-92
+132            </intent-filter>
+133        </receiver>
+134    </application>
+135
+136</manifest>

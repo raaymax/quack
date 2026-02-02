@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+
+# Android build outputs
+android/app/build/
+android/.gradle/
+android/build/
+android/local.properties
+
+# Capacitor generated (copied on sync)
+android/app/src/main/assets/public/
+android/app/src/main/assets/capacitor.config.json
+
+# IDE
+.idea/
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment (use .envrc.example as template)
+.envrc
+
+# Generated config (from chat.config.ts via npm run config)
+mobile.config.json

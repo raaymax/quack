@@ -13,7 +13,7 @@ then
 
   # Tab 2: claude
   tmux new-window -t $SESS -n "claude" -c "$DIR"
-  tmux send-keys -t $SESS:2 'claude' C-m
+  tmux send-keys -t $SESS:2 'claude --dangerously-skip-permissions' C-m
 
   # Tab 3: dev servers (3 panes)
   tmux new-window -t $SESS -n "dev" -c "$DIR"

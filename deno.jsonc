@@ -62,10 +62,9 @@
     "migrate": "deno task -c ./deno/migrate/deno.json migrate up",
     "migrate:tests": "DATABASE_URL='mongodb://chat:chat@localhost:27017/tests?authSource=admin' deno task migrate",
     "test": "DATABASE_URL='mongodb://chat:chat@localhost:27017/tests?authSource=admin' deno test -A",
-    "ssl": "mkdir -p ssl && openssl req -x509 -newkey rsa:4096 -keyout ssl/key.pem -out ssl/cert.pem -days 365 -nodes -subj '/CN=localhost'",
+    "ssl": "mkdir -p ssl && openssl req -x509 -newkey rsa:4096 -keyout ssl/key.pem -out ssl/cert.pem -days 365 -nodes -subj '/CN=localhost' -addext 'subjectAltName=DNS:localhost,IP:127.0.0.1,IP:10.0.2.2'",
     "check": "deno fmt && deno lint && deno task test",
-    "android:build": "npm run android:build",
-    "desktop:build": "npm run desktop:build"
+    "mobile:config": "deno run -A deno/tools/export-mobile-config.ts"
   },
   "compilerOptions": {
     "jsx": "react",

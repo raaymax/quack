@@ -1,0 +1,150 @@
+[
+    {
+        "merged": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-merged_res-26:/drawable-land-mdpi_splash.png.flat",
+        "source": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-main-28:/drawable-land-mdpi/splash.png"
+    },
+    {
+        "merged": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-merged_res-26:/mipmap-xxxhdpi_ic_launcher_foreground.png.flat",
+        "source": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-main-28:/mipmap-xxxhdpi/ic_launcher_foreground.png"
+    },
+    {
+        "merged": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-merged_res-26:/drawable-land-hdpi_splash.png.flat",
+        "source": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-main-28:/drawable-land-hdpi/splash.png"
+    },
+    {
+        "merged": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-merged_res-26:/drawable-port-xxxhdpi_splash.png.flat",
+        "source": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-main-28:/drawable-port-xxxhdpi/splash.png"
+    },
+    {
+        "merged": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-merged_res-26:/mipmap-xxxhdpi_ic_launcher_round.png.flat",
+        "source": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-main-28:/mipmap-xxxhdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-merged_res-26:/drawable_splash.png.flat",
+        "source": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-main-28:/drawable/splash.png"
+    },
+    {
+        "merged": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-merged_res-26:/mipmap-xxhdpi_ic_launcher_foreground.png.flat",
+        "source": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-main-28:/mipmap-xxhdpi/ic_launcher_foreground.png"
+    },
+    {
+        "merged": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-merged_res-26:/mipmap-xhdpi_ic_launcher_foreground.png.flat",
+        "source": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-main-28:/mipmap-xhdpi/ic_launcher_foreground.png"
+    },
+    {
+        "merged": "io.codecat.quack.app-merged_res-26:/xml_network_security_config.xml.flat",
+        "source": "io.codecat.quack.app-main-28:/xml/network_security_config.xml"
+    },
+    {
+        "merged": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-merged_res-26:/xml_network_security_config.xml.flat",
+        "source": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-main-28:/xml/network_security_config.xml"
+    },
+    {
+        "merged": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-merged_res-26:/layout_activity_main.xml.flat",
+        "source": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-main-28:/layout/activity_main.xml"
+    },
+    {
+        "merged": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-merged_res-26:/drawable-anydpi-v24_ic_launcher_foreground.xml.flat",
+        "source": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-pngs-22:/drawable-anydpi-v24/ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-merged_res-26:/drawable-land-xhdpi_splash.png.flat",
+        "source": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-main-28:/drawable-land-xhdpi/splash.png"
+    },
+    {
+        "merged": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-merged_res-26:/xml_config.xml.flat",
+        "source": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-main-28:/xml/config.xml"
+    },
+    {
+        "merged": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-merged_res-26:/drawable-port-xxhdpi_splash.png.flat",
+        "source": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-main-28:/drawable-port-xxhdpi/splash.png"
+    },
+    {
+        "merged": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-merged_res-26:/mipmap-xxhdpi_ic_launcher_round.png.flat",
+        "source": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-main-28:/mipmap-xxhdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-merged_res-26:/mipmap-xxhdpi_ic_launcher.png.flat",
+        "source": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-main-28:/mipmap-xxhdpi/ic_launcher.png"
+    },
+    {
+        "merged": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-merged_res-26:/mipmap-mdpi_ic_launcher_foreground.png.flat",
+        "source": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-main-28:/mipmap-mdpi/ic_launcher_foreground.png"
+    },
+    {
+        "merged": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-merged_res-26:/mipmap-mdpi_ic_launcher.png.flat",
+        "source": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-main-28:/mipmap-mdpi/ic_launcher.png"
+    },
+    {
+        "merged": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-merged_res-26:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-main-28:/mipmap-anydpi-v26/ic_launcher_round.xml"
+    },
+    {
+        "merged": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-merged_res-26:/mipmap-hdpi_ic_launcher_foreground.png.flat",
+        "source": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-main-28:/mipmap-hdpi/ic_launcher_foreground.png"
+    },
+    {
+        "merged": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-merged_res-26:/drawable-land-xxhdpi_splash.png.flat",
+        "source": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-main-28:/drawable-land-xxhdpi/splash.png"
+    },
+    {
+        "merged": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-merged_res-26:/drawable-port-hdpi_splash.png.flat",
+        "source": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-main-28:/drawable-port-hdpi/splash.png"
+    },
+    {
+        "merged": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-merged_res-26:/mipmap-xxxhdpi_ic_launcher.png.flat",
+        "source": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-main-28:/mipmap-xxxhdpi/ic_launcher.png"
+    },
+    {
+        "merged": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-merged_res-26:/drawable_ic_launcher_background.xml.flat",
+        "source": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-main-28:/drawable/ic_launcher_background.xml"
+    },
+    {
+        "merged": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-merged_res-26:/drawable-port-mdpi_splash.png.flat",
+        "source": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-main-28:/drawable-port-mdpi/splash.png"
+    },
+    {
+        "merged": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-merged_res-26:/drawable_ic_notification.xml.flat",
+        "source": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-main-28:/drawable/ic_notification.xml"
+    },
+    {
+        "merged": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-merged_res-26:/mipmap-hdpi_ic_launcher_round.png.flat",
+        "source": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-main-28:/mipmap-hdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-merged_res-26:/drawable-port-xhdpi_splash.png.flat",
+        "source": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-main-28:/drawable-port-xhdpi/splash.png"
+    },
+    {
+        "merged": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-merged_res-26:/raw_quack_notification.mp3.flat",
+        "source": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-main-28:/raw/quack_notification.mp3"
+    },
+    {
+        "merged": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-merged_res-26:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-main-28:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-merged_res-26:/mipmap-xhdpi_ic_launcher_round.png.flat",
+        "source": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-main-28:/mipmap-xhdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-merged_res-26:/xml_file_paths.xml.flat",
+        "source": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-main-28:/xml/file_paths.xml"
+    },
+    {
+        "merged": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-merged_res-26:/mipmap-xhdpi_ic_launcher.png.flat",
+        "source": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-main-28:/mipmap-xhdpi/ic_launcher.png"
+    },
+    {
+        "merged": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-merged_res-26:/mipmap-mdpi_ic_launcher_round.png.flat",
+        "source": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-main-28:/mipmap-mdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-merged_res-26:/drawable-land-xxxhdpi_splash.png.flat",
+        "source": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-main-28:/drawable-land-xxxhdpi/splash.png"
+    },
+    {
+        "merged": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-merged_res-26:/mipmap-hdpi_ic_launcher.png.flat",
+        "source": "/home/raay/.gradle/daemon/8.2.1/io.codecat.quack.app-main-28:/mipmap-hdpi/ic_launcher.png"
+    }
+]

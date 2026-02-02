@@ -26,5 +26,6 @@ dist-ssr
 dev-dist
 .vite
 *storybook.log
+storybook-static/
 quack.keystore
 
