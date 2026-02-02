@@ -11,11 +11,14 @@ import java.util.concurrent.TimeUnit
 class QuackConnection(
     serverUrl: String,
     private val authToken: String,
+    private val userId: String,
     private val listener: ConnectionListener
 ) {
     companion object {
         private const val TAG = "QuackConnection"
-        private const val RECONNECT_DELAY_MS = 5000L
+        private const val INITIAL_RECONNECT_DELAY_MS = 1000L
+        private const val MAX_RECONNECT_DELAY_MS = 60000L
+        private const val RECONNECT_BACKOFF_MULTIPLIER = 2.0
 
         /**
          * Normalizes the server URL for Android emulator.
@@ -29,6 +32,7 @@ class QuackConnection(
     }
 
     private val serverUrl: String = normalizeUrl(serverUrl)
+    private var reconnectAttempts = 0
 
     interface ConnectionListener {
         fun onConnected()
@@ -123,19 +127,33 @@ class QuackConnection(
         // Check for connected status
         if (json.optString("status") == "connected") {
             Log.d(TAG, "Received connected status")
+            reconnectAttempts = 0 // Reset backoff on successful connection
             listener.onConnected()
+            return
+        }
+
+        // Check for ping/heartbeat (just acknowledge, no action needed)
+        if (json.optString("type") == "ping") {
+            Log.d(TAG, "Received heartbeat ping")
             return
         }
 
         // Check for notification
         if (json.optString("type") == "notification") {
+            // Skip notifications from self (already filtered server-side, but double-check)
+            val senderId = json.optString("senderId", null)
+            if (senderId == userId) {
+                Log.d(TAG, "Skipping notification from self")
+                return
+            }
+
             val notification = NotificationPayload(
                 type = json.getString("type"),
                 channelId = json.optString("channelId", null),
                 parentId = json.optString("parentId", null),
                 title = json.optString("title", "New message"),
                 body = json.optString("body", ""),
-                senderId = json.optString("senderId", null),
+                senderId = senderId,
                 senderName = json.optString("senderName", null)
             )
             listener.onNotification(notification)
@@ -145,17 +163,25 @@ class QuackConnection(
     private fun scheduleReconnect() {
         if (!isRunning) return
 
-        Log.d(TAG, "Scheduling reconnect in ${RECONNECT_DELAY_MS}ms")
+        // Calculate delay with exponential backoff
+        val delay = minOf(
+            (INITIAL_RECONNECT_DELAY_MS * Math.pow(RECONNECT_BACKOFF_MULTIPLIER, reconnectAttempts.toDouble())).toLong(),
+            MAX_RECONNECT_DELAY_MS
+        )
+        reconnectAttempts++
+
+        Log.d(TAG, "Scheduling reconnect in ${delay}ms (attempt $reconnectAttempts)")
         reconnectHandler?.postDelayed({
             if (isRunning) {
                 doConnect()
             }
-        }, RECONNECT_DELAY_MS)
+        }, delay)
     }
 
     fun disconnect() {
         Log.d(TAG, "Disconnecting")
         isRunning = false
+        reconnectAttempts = 0
         reconnectHandler?.removeCallbacksAndMessages(null)
         reconnectHandler = null
         eventSource?.cancel()

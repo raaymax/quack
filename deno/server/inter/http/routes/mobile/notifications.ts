@@ -13,6 +13,8 @@ type BusMessage = {
   [key: string]: unknown;
 };
 
+const HEARTBEAT_INTERVAL_MS = 30000; // 30 seconds
+
 export default (core: Core) =>
   new Route({
     method: "GET",
@@ -30,10 +32,24 @@ export default (core: Core) =>
         return res;
       }
 
+      // Set up heartbeat to keep connection alive and detect stale connections
+      const heartbeatInterval = setInterval(() => {
+        try {
+          target.sendMessage({ data: JSON.stringify({ type: "ping" }) });
+        } catch (_e) {
+          // Connection closed, cleanup will happen via close event
+        }
+      }, HEARTBEAT_INTERVAL_MS);
+
       // Subscribe to bus events for this user
       const off = core.bus.on(userId, async (msg: BusMessage) => {
         // Only process message events for notifications
         if (msg.type !== "message") {
+          return;
+        }
+
+        // Skip notifications for user's own messages
+        if (msg.userId === userId) {
           return;
         }
 
@@ -44,11 +60,17 @@ export default (core: Core) =>
             target.sendMessage({ data: JSON.stringify(notification) });
           }
         } catch (e) {
-          console.error("[MobileNotifications] Error building notification:", e);
+          console.error(
+            "[MobileNotifications] Error building notification:",
+            e,
+          );
         }
       });
 
-      target.addEventListener("close", () => off(), { once: true });
+      target.addEventListener("close", () => {
+        clearInterval(heartbeatInterval);
+        off();
+      }, { once: true });
 
       return res;
     },
@@ -66,7 +88,9 @@ async function buildNotification(
   let channelName = "";
 
   if (msg.channelId) {
-    const channel = await repo.channel.get({ id: EntityId.from(msg.channelId) });
+    const channel = await repo.channel.get({
+      id: EntityId.from(msg.channelId),
+    });
     if (channel) {
       channelName = channel.name;
       title = `#${channel.name}`;

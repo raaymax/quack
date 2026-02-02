@@ -21,17 +21,9 @@ function getServerUrl(): string {
   return process.env.QUACK_SERVER_URL || "https://quack.example.com";
 }
 
-/**
- * Normalizes the server URL for Android emulator.
- * Replaces localhost/127.0.0.1 with 10.0.2.2 (emulator's alias for host machine).
- */
-function normalizeUrlForEmulator(url: string): string {
-  return url
-    .replace("://localhost", "://10.0.2.2")
-    .replace("://127.0.0.1", "://10.0.2.2");
-}
-
-const serverUrl = normalizeUrlForEmulator(getServerUrl());
+// Note: URL normalization for Android emulator (localhost -> 10.0.2.2)
+// is handled in QuackConnection.kt to keep config clean and avoid confusion
+const serverUrl = getServerUrl();
 const isLocalDev = serverUrl.startsWith("http://");
 
 const config: CapacitorConfig = {

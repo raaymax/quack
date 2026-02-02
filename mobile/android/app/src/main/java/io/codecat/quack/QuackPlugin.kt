@@ -46,9 +46,9 @@ class QuackPlugin : Plugin() {
     @PluginMethod
     fun isServiceRunning(call: PluginCall) {
         activity?.let { act ->
-            val isConfigured = QuackNotificationService.isConfigured(act)
+            val isRunning = QuackNotificationService.isRunning(act)
             val result = JSObject()
-            result.put("running", isConfigured)
+            result.put("running", isRunning)
             call.resolve(result)
         } ?: call.reject("Activity not available")
     }

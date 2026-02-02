@@ -1,9 +1,9 @@
 package io.codecat.quack
 
+import android.app.ActivityManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
@@ -14,18 +14,38 @@ import android.os.IBinder
 import android.os.PowerManager
 import android.util.Log
 import androidx.core.app.ServiceCompat
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
 
 class QuackNotificationService : Service(), QuackConnection.ConnectionListener {
 
     companion object {
         private const val TAG = "QuackNotificationService"
-        private const val PREFS_NAME = "quack_prefs"
+        private const val PREFS_NAME = "quack_secure_prefs"
         private const val PREF_SERVER_URL = "server_url"
         private const val PREF_AUTH_TOKEN = "auth_token"
         private const val PREF_USER_ID = "user_id"
+        private const val WAKE_LOCK_TIMEOUT_MS = 10 * 60 * 1000L // 10 minutes
+
+        private fun getEncryptedPrefs(context: Context) = try {
+            val masterKey = MasterKey.Builder(context)
+                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                .build()
+
+            EncryptedSharedPreferences.create(
+                context,
+                PREFS_NAME,
+                masterKey,
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            )
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to create encrypted prefs, falling back to regular prefs", e)
+            context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        }
 
         fun start(context: Context, serverUrl: String, authToken: String, userId: String) {
-            val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            val prefs = getEncryptedPrefs(context)
             prefs.edit()
                 .putString(PREF_SERVER_URL, serverUrl)
                 .putString(PREF_AUTH_TOKEN, authToken)
@@ -46,12 +66,23 @@ class QuackNotificationService : Service(), QuackConnection.ConnectionListener {
         }
 
         fun isConfigured(context: Context): Boolean {
-            val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            val prefs = getEncryptedPrefs(context)
             return prefs.getString(PREF_AUTH_TOKEN, null) != null
         }
 
+        fun isRunning(context: Context): Boolean {
+            val manager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+            @Suppress("DEPRECATION")
+            for (service in manager.getRunningServices(Int.MAX_VALUE)) {
+                if (QuackNotificationService::class.java.name == service.service.className) {
+                    return true
+                }
+            }
+            return false
+        }
+
         fun clearCredentials(context: Context) {
-            val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            val prefs = getEncryptedPrefs(context)
             prefs.edit().clear().apply()
         }
     }
@@ -77,13 +108,13 @@ class QuackNotificationService : Service(), QuackConnection.ConnectionListener {
         Log.d(TAG, "Service created")
         notificationHelper = NotificationHelper(this)
 
-        // Acquire partial wake lock to keep CPU running
+        // Acquire partial wake lock with timeout to keep CPU running
         val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
         wakeLock = powerManager.newWakeLock(
             PowerManager.PARTIAL_WAKE_LOCK,
             "Quack::NotificationService"
         )
-        wakeLock?.acquire()
+        wakeLock?.acquire(WAKE_LOCK_TIMEOUT_MS)
 
         // Register for network changes
         registerNetworkCallback()
@@ -108,12 +139,13 @@ class QuackNotificationService : Service(), QuackConnection.ConnectionListener {
         }
 
         // Get credentials and connect
-        val prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val prefs = getEncryptedPrefs(this)
         val serverUrl = prefs.getString(PREF_SERVER_URL, null)
         val authToken = prefs.getString(PREF_AUTH_TOKEN, null)
+        val userId = prefs.getString(PREF_USER_ID, null)
 
-        if (serverUrl != null && authToken != null) {
-            startConnection(serverUrl, authToken)
+        if (serverUrl != null && authToken != null && userId != null) {
+            startConnection(serverUrl, authToken, userId)
         } else {
             Log.w(TAG, "No credentials configured, stopping service")
             stopSelf()
@@ -122,9 +154,9 @@ class QuackNotificationService : Service(), QuackConnection.ConnectionListener {
         return START_STICKY
     }
 
-    private fun startConnection(serverUrl: String, authToken: String) {
+    private fun startConnection(serverUrl: String, authToken: String, userId: String) {
         connection?.disconnect()
-        connection = QuackConnection(serverUrl, authToken, this)
+        connection = QuackConnection(serverUrl, authToken, userId, this)
         connection?.connect()
     }
 
@@ -135,11 +167,12 @@ class QuackNotificationService : Service(), QuackConnection.ConnectionListener {
             override fun onAvailable(network: Network) {
                 Log.d(TAG, "Network available, reconnecting")
                 // Reconnect when network becomes available
-                val prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                val prefs = getEncryptedPrefs(this@QuackNotificationService)
                 val serverUrl = prefs.getString(PREF_SERVER_URL, null)
                 val authToken = prefs.getString(PREF_AUTH_TOKEN, null)
-                if (serverUrl != null && authToken != null) {
-                    startConnection(serverUrl, authToken)
+                val userId = prefs.getString(PREF_USER_ID, null)
+                if (serverUrl != null && authToken != null && userId != null) {
+                    startConnection(serverUrl, authToken, userId)
                 }
             }
 
