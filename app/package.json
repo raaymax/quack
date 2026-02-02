@@ -21,7 +21,7 @@
     "mobx-react-lite": "4.1.0",
     "react": "19.1.1",
     "react-dom": "19.1.1",
-    "react-router-dom": "7.9.1",
+    "react-router-dom": "7.13.0",
     "styled-components": "6.1.19",
     "workbox-navigation-preload": "7.3.0",
     "workbox-precaching": "7.3.0",
