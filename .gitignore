@@ -1,4 +1,5 @@
 .envrc
+CLAUDE.md
 dist
 .turbo
 node_modules
