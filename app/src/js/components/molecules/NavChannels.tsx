@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import styled from "styled-components";
-import { ChannelCreate } from "./ChannelCreate";
+import { ChannelCreateForm } from "./ChannelCreateForm";
 import { Channel } from "./NavChannel";
 import { useSidebar } from "../contexts/useSidebar";
 import { isMobile } from "../../utils";
@@ -50,7 +50,7 @@ type NavChannelsProps = {
 };
 
 export const NavChannels = observer(({ icon }: NavChannelsProps) => {
-  const [show, setShow] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const app = useApp();
   let navigate = (_path: string) => {};
   try {
@@ -60,16 +60,32 @@ export const NavChannels = observer(({ icon }: NavChannelsProps) => {
   const { channelId: id } = useParams();
   const { hideSidebar } = useSidebar();
   const channels = app.channels.getAll(["PUBLIC", "PRIVATE"]);
+
+  const handleCreateChannel = useCallback(
+    (data: { name: string; description: string; type: "public" | "private" }) => {
+      app.channels.create({
+        name: data.name,
+        channelType: data.type.toUpperCase() as "PUBLIC" | "PRIVATE",
+      });
+      setShowCreateModal(false);
+    },
+    [app]
+  );
+
   return (
     <ChannelsContainer>
       <div className="header">
         <span className="title">channels</span>
         <i
-          className={show ? "fa-solid fa-minus" : "fa-solid fa-plus"}
-          onClick={() => setShow(!show)}
+          className="fa-solid fa-plus"
+          onClick={() => setShowCreateModal(true)}
         />
       </div>
-      {show && <ChannelCreate />}
+      <ChannelCreateForm
+        isOpen={showCreateModal}
+        onSubmit={handleCreateChannel}
+        onCancel={() => setShowCreateModal(false)}
+      />
       {channels && channels.map((c) => (
         <Channel
           channelId={c.id}
