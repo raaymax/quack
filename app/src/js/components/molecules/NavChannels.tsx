@@ -65,6 +65,7 @@ export const NavChannels = observer(({ icon }: NavChannelsProps) => {
     (data: { name: string; description: string; type: "public" | "private" }) => {
       app.channels.create({
         name: data.name,
+        description: data.description,
         channelType: data.type.toUpperCase() as "PUBLIC" | "PRIVATE",
       });
       setShowCreateModal(false);

@@ -26,6 +26,7 @@ export type OutgoingChannelCreate = {
   type: "channel:create";
   channelType?: "PUBLIC" | "PRIVATE" | "DIRECT";
   name: string;
+  description?: string;
   users?: string[];
 };
 
