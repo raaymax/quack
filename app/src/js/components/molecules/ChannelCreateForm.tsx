@@ -392,7 +392,7 @@ export const ChannelCreateForm = ({
                 id="channel-name"
                 type="text"
                 value={name}
-                onChange={(e) => setName(e.target.value.toLowerCase().replace(/\s+/g, "-"))}
+                onChange={(e) => setName(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "-").replace(/-+/g, "-"))}
                 placeholder="e.g. marketing"
                 autoFocus
               />
