@@ -544,6 +544,7 @@ class API extends EventTarget {
           method: "POST",
           body: JSON.stringify({
             name: msg.name,
+            description: msg.description,
             users: msg.users,
             channelType: msg.channelType,
           }),
