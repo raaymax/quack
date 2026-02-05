@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { ModalOverlay, ModalContainer, ModalHeader, ModalCloseButton } from "./Modal";
 import { Icon } from "./Icon";
-import "../../styles.ts";
+import "../../../styles.ts";
 
 const meta: Meta = {
   title: "Atoms/Modal",
