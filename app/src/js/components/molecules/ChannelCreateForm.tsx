@@ -1,158 +1,13 @@
 import { useCallback, useState } from "react";
 import styled from "styled-components";
 import { Icon } from "../atoms/Icon";
-
-const Overlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-
-  @media (max-width: 540px) {
-    align-items: flex-end;
-  }
-`;
-
-const Modal = styled.div`
-  background-color: ${({ theme }) => theme.Chatbox.Background};
-  border-radius: 12px;
-  border: 1px solid ${({ theme }) => theme.Strokes};
-  width: 100%;
-  max-width: 480px;
-  max-height: 90vh;
-  overflow-y: auto;
-  padding: 24px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.24);
-
-  @media (max-width: 540px) {
-    max-width: 100%;
-    max-height: 85vh;
-    border-radius: 16px 16px 0 0;
-    padding: 20px 16px;
-    padding-bottom: calc(20px + env(safe-area-inset-bottom));
-  }
-`;
-
-const Header = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 24px;
-
-  h2 {
-    color: ${({ theme }) => theme.Text};
-    font-size: 24px;
-    font-weight: 600;
-    line-height: 32px;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  @media (max-width: 540px) {
-    margin-bottom: 20px;
-
-    h2 {
-      font-size: 20px;
-      line-height: 28px;
-      gap: 8px;
-    }
-  }
-`;
-
-const CloseButton = styled.button`
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 8px;
-  border-radius: 8px;
-  color: ${({ theme }) => theme.Labels};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  &:hover {
-    background-color: ${({ theme }) => theme.Channel.Hover};
-    color: ${({ theme }) => theme.Text};
-  }
-`;
+import { ModalOverlay, ModalContainer, ModalHeader, ModalCloseButton } from "../atoms/Modal";
+import { FormInput, FormTextArea, FormLabel, FormGroup, FormHelpText } from "../atoms/FormInput";
 
 const Form = styled.form`
   display: flex;
   flex-direction: column;
   gap: 20px;
-`;
-
-const FormGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-`;
-
-const Label = styled.label`
-  color: ${({ theme }) => theme.Text};
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 20px;
-  padding-left: 4px;
-`;
-
-const Input = styled.input`
-  width: 100%;
-  height: 48px;
-  padding: 12px 16px;
-  border-radius: 8px;
-  border: 1px solid ${({ theme }) => theme.Strokes};
-  background-color: ${({ theme }) => theme.Input.Background};
-  color: ${({ theme }) => theme.Text};
-  font-size: 16px;
-  box-sizing: border-box;
-  transition: border-color 0.2s ease;
-
-  &::placeholder {
-    color: ${({ theme }) => theme.Labels};
-  }
-
-  &:focus {
-    outline: none;
-    border-color: ${({ theme }) => theme.PrimaryButton.Background};
-  }
-`;
-
-const TextArea = styled.textarea`
-  min-height: 80px;
-  padding: 12px 16px;
-  border-radius: 8px;
-  border: 1px solid ${({ theme }) => theme.Strokes};
-  background-color: ${({ theme }) => theme.Input.Background};
-  color: ${({ theme }) => theme.Text};
-  font-size: 16px;
-  font-family: inherit;
-  resize: vertical;
-  transition: border-color 0.2s ease;
-
-  &::placeholder {
-    color: ${({ theme }) => theme.Labels};
-  }
-
-  &:focus {
-    outline: none;
-    border-color: ${({ theme }) => theme.PrimaryButton.Background};
-  }
-`;
-
-const HelpText = styled.span`
-  color: ${({ theme }) => theme.Labels};
-  font-size: 12px;
-  line-height: 16px;
-  padding-left: 4px;
 `;
 
 const ChannelTypeSelector = styled.div`
@@ -297,6 +152,17 @@ const NameInputWrapper = styled.div`
   }
 `;
 
+/**
+ * Normalizes a channel name to be lowercase with only alphanumeric characters and hyphens.
+ * Multiple consecutive hyphens are collapsed into a single hyphen.
+ */
+export const normalizeChannelName = (value: string): string => {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9-]/g, "-")
+    .replace(/-+/g, "-");
+};
+
 type ChannelType = "public" | "private";
 
 type ChannelCreateFormProps = {
@@ -338,21 +204,19 @@ export const ChannelCreateForm = ({
   if (!isOpen) return null;
 
   return (
-    <Overlay onClick={handleOverlayClick}>
-      <Modal>
-        <Header>
+    <ModalOverlay onClick={handleOverlayClick}>
+      <ModalContainer>
+        <ModalHeader>
           <h2>
             <Icon icon="hash" size={24} />
             Create a channel
           </h2>
-          <CloseButton onClick={onCancel} type="button">
-            <Icon icon="xmark" size={20} />
-          </CloseButton>
-        </Header>
+          <ModalCloseButton onClick={onCancel} />
+        </ModalHeader>
 
         <Form onSubmit={handleSubmit}>
           <FormGroup>
-            <Label>Channel type</Label>
+            <FormLabel>Channel type</FormLabel>
             <ChannelTypeSelector>
               <ChannelTypeOption
                 type="button"
@@ -385,34 +249,34 @@ export const ChannelCreateForm = ({
           </FormGroup>
 
           <FormGroup>
-            <Label htmlFor="channel-name">Name</Label>
+            <FormLabel htmlFor="channel-name">Name</FormLabel>
             <NameInputWrapper>
               <NamePrefix>#</NamePrefix>
-              <Input
+              <FormInput
                 id="channel-name"
                 type="text"
                 value={name}
-                onChange={(e) => setName(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "-").replace(/-+/g, "-"))}
+                onChange={(e) => setName(normalizeChannelName(e.target.value))}
                 placeholder="e.g. marketing"
                 autoFocus
               />
             </NameInputWrapper>
-            <HelpText>
+            <FormHelpText>
               Names must be lowercase, without spaces or periods.
-            </HelpText>
+            </FormHelpText>
           </FormGroup>
 
           <FormGroup>
-            <Label htmlFor="channel-description">
+            <FormLabel htmlFor="channel-description">
               Description <span style={{ fontWeight: 400 }}>(optional)</span>
-            </Label>
-            <TextArea
+            </FormLabel>
+            <FormTextArea
               id="channel-description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="What's this channel about?"
             />
-            <HelpText>Let people know what this channel is for.</HelpText>
+            <FormHelpText>Let people know what this channel is for.</FormHelpText>
           </FormGroup>
 
           <ButtonGroup>
@@ -424,8 +288,8 @@ export const ChannelCreateForm = ({
             </Button>
           </ButtonGroup>
         </Form>
-      </Modal>
-    </Overlay>
+      </ModalContainer>
+    </ModalOverlay>
   );
 };
 
