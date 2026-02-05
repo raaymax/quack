@@ -12,6 +12,7 @@ import { ButtonWithIcon } from "../molecules/ButtonWithIcon";
 import { MessageListArgsProvider } from "../contexts/messageListArgs";
 import { observer } from "mobx-react-lite";
 import { useApp } from "../contexts/appState";
+import { DescriptionBar } from "../molecules/DescriptionBar";
 
 const WORKSPACES_WIDTH = 80;
 
@@ -154,7 +155,7 @@ export const Container = styled.div`
       & > .conversation {
         flex: 1;
         width: 100%;
-        height: calc(100% - 64px);
+        min-height: 0;
         display: flex;
         flex-direction: row;
       }
@@ -346,6 +347,7 @@ export const MainConversation = observer(
               {/*<ButtonWithIcon icon="refresh" onClick={() => dispatch(init({}))} iconSize={24} />*/}
             </Toolbar>
           </div>
+          <DescriptionBar channelId={channelId} />
           <div className="conversation">
             {(!children || !isMobile()) && (
               <Conversation channelId={channelId} />
