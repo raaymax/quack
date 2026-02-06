@@ -2,8 +2,17 @@ import type { Meta, StoryObj } from "@storybook/react";
 
 import { Message } from "./Message.tsx";
 import { HoverProvider } from "../contexts/hover.tsx";
-import { app } from "../../core/index.ts";
+import { app, client } from "../../core/index.ts";
 import { MessageModel } from "../../core/models/message.ts";
+
+// Store original getUrl to restore later
+const originalGetUrl = client.api.getUrl;
+
+// Mock file URLs for stories
+const mockFileUrls: Record<string, string> = {
+  "123": "https://picsum.photos/seed/img1/400/300",
+  "321": "https://picsum.photos/seed/img2/400/300",
+};
 
 const LOREM =
   "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris sollicitudin scelerisque nisl quis condimentum. Aliquam eget lacus eros. Vestibulum ac posuere massa, eget euismod enim. Nulla interdum magna tortor. Vestibulum sagittis, ex in maximus maximus, neque purus tempor magna, sit amet molestie sapien est id augue. Nulla imperdiet leo nec nisl commodo, nec fringilla leo vehicula. Suspendisse nibh orci, convallis at dictum ut, volutpat non orci. Nulla scelerisque sapien eget purus ullamcorper, eu pellentesque odio tincidunt. Vivamus quis maximus sapien, vitae placerat urna. Vestibulum finibus facilisis aliquam. Aliquam iaculis augue vel metus varius cursus.";
@@ -13,6 +22,10 @@ const meta: Meta<typeof Message> = {
   title: "Organisms/Message",
   parameters: {},
   loaders: [async () => {
+    // Mock getUrl to return placeholder images for fake file IDs
+    client.api.getUrl = (fileId: string) => {
+      return mockFileUrls[fileId] || originalGetUrl(fileId);
+    };
     app.channels.upsert({
       id: "test",
       name: "main",
