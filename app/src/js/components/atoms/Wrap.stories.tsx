@@ -4,6 +4,13 @@ import { Wrap } from "./Wrap.tsx";
 
 const meta: Meta<typeof Wrap> = {
   component: Wrap,
+  title: "Atoms/Wrap",
+  argTypes: {
+    children: {
+      control: false,
+      description: "Content to wrap",
+    },
+  },
 };
 
 export default meta;

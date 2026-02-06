@@ -4,8 +4,29 @@ import { BaseButton } from "./BaseButton.tsx";
 
 const meta: Meta<typeof BaseButton> = {
   component: BaseButton,
+  title: "Atoms/BaseButton",
   argTypes: {
-    onClick: { action: "clicked" },
+    type: {
+      control: "select",
+      options: ["primary", "secondary", "other"],
+      description: "Button style variant",
+    },
+    size: {
+      control: { type: "number", min: 20, max: 60, step: 4 },
+      description: "Button size in pixels",
+    },
+    disabled: {
+      control: "boolean",
+      description: "Whether the button is disabled",
+    },
+    children: {
+      control: "text",
+      description: "Button content",
+    },
+    onClick: {
+      action: "clicked",
+      description: "Click handler",
+    },
   },
 };
 

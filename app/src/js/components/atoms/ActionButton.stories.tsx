@@ -7,6 +7,21 @@ import { app } from "../../core/index.ts";
 
 const meta: Meta<typeof ActionButton> = {
   component: ActionButton,
+  title: "Atoms/ActionButton",
+  argTypes: {
+    children: {
+      control: "text",
+      description: "Button content",
+    },
+    action: {
+      control: "text",
+      description: "Action identifier sent to API",
+    },
+    payload: {
+      control: "object",
+      description: "Additional payload data",
+    },
+  },
   loaders: [async () => {
     app.channels.upsert({
       id: "test",

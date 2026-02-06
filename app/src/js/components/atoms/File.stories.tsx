@@ -4,6 +4,21 @@ import { File } from "./File.tsx";
 
 const meta: Meta<typeof File> = {
   component: File,
+  title: "Atoms/File",
+  argTypes: {
+    fileName: {
+      control: "text",
+      description: "Display name of the file",
+    },
+    contentType: {
+      control: "text",
+      description: "MIME type of the file",
+    },
+    downloadUrl: {
+      control: "text",
+      description: "URL to open on click",
+    },
+  },
 };
 
 export default meta;
