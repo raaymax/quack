@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import "../../../styles.ts";
 import { ReadReceiptModel } from "../../core/models/readReceipt.ts";
 import { app } from "../../core/index.ts";
 import { ReadReceipt } from "./ReadReceipt.tsx";

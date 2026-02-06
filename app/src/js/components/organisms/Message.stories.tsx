@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import "../../../styles.ts";
 import { Message } from "./Message.tsx";
 import { HoverProvider } from "../contexts/hover.tsx";
 import { app } from "../../core/index.ts";

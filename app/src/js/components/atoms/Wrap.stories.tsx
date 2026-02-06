@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import "../../../styles.ts";
 import { Wrap } from "./Wrap.tsx";
 
 const meta: Meta<typeof Wrap> = {

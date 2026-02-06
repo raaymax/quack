@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import "../../../styles.ts";
 import { Text } from "./Text.tsx";
 
 const meta: Meta<typeof Text> = {

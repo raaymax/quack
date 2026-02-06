@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import "../../../styles.ts";
 import { StatusLine } from "./StatusLine.tsx";
 import { AppModel } from "../../core/models/app.ts";
 

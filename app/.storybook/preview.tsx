@@ -1,10 +1,12 @@
 import type { Preview } from "@storybook/react";
+import "../src/styles.ts";
 import { ThemeSelectorProvider } from "../src/js/components/contexts/theme";
 import { TooltipProvider } from "../src/js/components/contexts/tooltip";
 import { HoverProvider } from "../src/js/components/contexts/hover";
 import { app, client } from "../src/js/core";
 import { AppProvider } from "../src/js/components/contexts/appState";
 import { AppRouterProvider } from "../src/js/components/AppRouter";
+import { allModes } from "./modes";
 
 const preview: Preview = {
   tags: ["autodocs"],
@@ -23,6 +25,7 @@ const preview: Preview = {
     theme: "light",
   },
   parameters: {
+    layout: "centered",
     controls: {
       matchers: {
         color: /(background|color)$/i,
@@ -35,6 +38,24 @@ const preview: Preview = {
         { name: "Light", value: "var(--background-color)" },
       ],
       default: "Dark",
+    },
+    viewport: {
+      viewports: {
+        desktop: {
+          name: "Desktop",
+          styles: {
+            width: `${allModes.default.viewport}px`,
+            height: "900px",
+          },
+        },
+        mobile: {
+          name: "Mobile",
+          styles: {
+            width: `${allModes.mobile.viewport.width}px`,
+            height: `${allModes.mobile.viewport.height}px`,
+          },
+        },
+      },
     },
   },
   loaders: [async () => {

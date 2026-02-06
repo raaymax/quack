@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import "../../../styles.ts";
 import { ChannelLink } from "./ChannelLink.tsx";
 
 const meta: Meta<typeof ChannelLink> = {

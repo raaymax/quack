@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { FormInput, FormTextArea, FormLabel, FormGroup, FormHelpText } from "./FormInput";
-import "../../../styles.ts";
 
 const meta: Meta = {
   title: "Atoms/FormInput",

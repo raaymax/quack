@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import "../../../styles.ts";
 import { ChannelCreateForm } from "./ChannelCreateForm.tsx";
 
 const meta: Meta<typeof ChannelCreateForm> = {
