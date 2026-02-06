@@ -40,5 +40,5 @@ All cryptographic operations are in `deno/encryption/mod.ts`, shared between fro
 - **Positive:** PBKDF2 with 100k iterations provides reasonable resistance to brute-force attacks on passwords.
 - **Negative:** Key management complexity — users must not lose their password, or they lose access to encrypted messages.
 - **Negative:** No forward secrecy — compromised EC private key exposes all past messages with that user.
-- **Negative:** No multi-device key sync — adding a new device requires key transfer.
+- **Positive:** Multi-device support — encrypted secrets are stored on the server and decrypted via the user's password, so any device can recover keys at login without key transfer.
 - **Negative:** Server-side search over encrypted messages is not possible.

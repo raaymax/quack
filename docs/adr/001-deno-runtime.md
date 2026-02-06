@@ -6,11 +6,11 @@ Accepted
 
 ## Context
 
-The backend needed a JavaScript/TypeScript runtime. The main candidates were Node.js and Deno. The project values TypeScript-first development, built-in security, and modern standards-based APIs. The frontend build tooling (Vite) already runs on Node.js, so both runtimes would coexist in the repo regardless.
+The backend needed a JavaScript/TypeScript runtime. The main candidates were Node.js and Deno. The project values TypeScript-first development, built-in security, and modern standards-based APIs.
 
 ## Decision
 
-Use **Deno 2** as the runtime for the backend server and all shared modules. Node.js remains only for the frontend build toolchain (Vite, Storybook).
+Use **Deno 2** as the runtime for the backend server and all shared modules. The frontend build toolchain (Vite, Storybook) currently runs on Node.js/npm due to stability issues in Deno's Node compatibility layer that caused crashes. The plan is to migrate the frontend to Deno once these issues are resolved.
 
 Key factors:
 - **Native TypeScript** — No compilation step needed for backend code.
@@ -23,7 +23,7 @@ Key factors:
 ## Consequences
 
 - **Positive:** Single-language stack (TypeScript everywhere), no transpilation for backend, built-in formatter/linter/test runner, modern standard APIs.
-- **Positive:** Shared modules (`@quack/encryption`, `@quack/api`) work in both Deno and browser contexts because they use Web Crypto API.
+- **Positive:** Deno and browser environments share the same Web APIs, so packages written for one work in both — shared modules (`@quack/encryption`, `@quack/api`) run unmodified in Deno and the browser.
 - **Negative:** Smaller ecosystem than Node.js — some libraries require `npm:` compatibility shims.
 - **Negative:** Developers need familiarity with Deno conventions (`mod.ts` barrels, `deno.jsonc` config, JSR imports).
-- **Negative:** Two package management systems in one repo (Deno + npm).
+- **Negative:** Two package management systems in one repo (Deno + npm) — temporary, pending Deno stability fixes for the frontend toolchain.
