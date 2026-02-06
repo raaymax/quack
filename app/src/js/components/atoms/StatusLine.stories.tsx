@@ -5,6 +5,7 @@ import { AppModel } from "../../core/models/app.ts";
 
 const meta: Meta<typeof StatusLine> = {
   component: StatusLine,
+  title: "Atoms/StatusLine",
   loaders: [async () => {
   }],
 };

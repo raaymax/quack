@@ -4,6 +4,29 @@ import { Image } from "./Image.tsx";
 
 const meta: Meta<typeof Image> = {
   component: Image,
+  title: "Atoms/Image",
+  argTypes: {
+    fileName: {
+      control: "text",
+      description: "Display name of the file",
+    },
+    src: {
+      control: "text",
+      description: "Image source URL",
+    },
+    downloadUrl: {
+      control: "text",
+      description: "URL to open on click",
+    },
+    size: {
+      control: "number",
+      description: "File size in bytes",
+    },
+    raw: {
+      control: "boolean",
+      description: "Whether to display at full size",
+    },
+  },
 };
 
 export default meta;

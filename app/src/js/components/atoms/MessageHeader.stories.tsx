@@ -6,6 +6,13 @@ import { app } from "../../core/index.ts";
 
 const meta: Meta<typeof MessageHeader> = {
   component: MessageHeader,
+  title: "Atoms/MessageHeader",
+  argTypes: {
+    createdAt: {
+      control: "text",
+      description: "ISO date string for message timestamp",
+    },
+  },
   loaders: [async () => {
     app.users.upsert({
       id: "123",

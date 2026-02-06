@@ -4,6 +4,27 @@ import { ProfilePic } from "./ProfilePic.tsx";
 
 const meta: Meta<typeof ProfilePic> = {
   component: ProfilePic,
+  title: "Atoms/ProfilePic",
+  argTypes: {
+    type: {
+      control: "select",
+      options: ["regular", "personal", "status", "tiny", "reply"],
+      description: "Size variant of the profile picture",
+    },
+    status: {
+      control: "select",
+      options: ["active", "inactive", "away"],
+      description: "User status indicator color",
+    },
+    showStatus: {
+      control: "boolean",
+      description: "Whether to show the status indicator",
+    },
+    avatarUrl: {
+      control: "text",
+      description: "URL of the avatar image",
+    },
+  },
 };
 
 export default meta;
