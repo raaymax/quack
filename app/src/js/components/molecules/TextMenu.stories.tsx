@@ -59,7 +59,26 @@ const TextMenuWrapper = (props: TextMenuWrapperProps) => {
 
 const meta: Meta<typeof TextMenu> = {
   component: TextMenu,
+  title: "Molecules/TextMenu",
   render: (args) => <TextMenuWrapper {...args} />,
+  argTypes: {
+    open: {
+      control: "boolean",
+      description: "Whether the menu is visible",
+    },
+    options: {
+      control: "object",
+      description: "Array of menu options with name, label, icon, or url",
+    },
+    selected: {
+      control: { type: "number", min: 0 },
+      description: "Index of currently selected option",
+    },
+    onSelect: {
+      action: "selected",
+      description: "Called when an option is selected",
+    },
+  },
 };
 
 export default meta;

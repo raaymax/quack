@@ -7,8 +7,12 @@ import { FileModel } from "../../core/models/files";
 // requires a complex FilesModel that's hard to mock
 const meta: Meta<typeof Attachment> = {
   component: Attachment,
+  title: "Molecules/Attachment",
   argTypes: {
-    onDelete: { action: "delete" },
+    onDelete: {
+      action: "delete",
+      description: "Called when delete button is clicked",
+    },
   },
 };
 

@@ -4,8 +4,24 @@ import { NavUserButton } from "./NavUsers.tsx";
 
 const meta: Meta<typeof NavUserButton> = {
   component: NavUserButton,
+  title: "Molecules/NavUserButton",
   argTypes: {
-    onClick: { action: "clicked" },
+    user: {
+      control: "object",
+      description: "User object with id, name, status, etc.",
+    },
+    badge: {
+      control: "object",
+      description: "Badge object with count for unread messages",
+    },
+    size: {
+      control: { type: "number", min: 24, max: 64, step: 4 },
+      description: "Avatar size in pixels",
+    },
+    onClick: {
+      action: "clicked",
+      description: "Click handler",
+    },
   },
 };
 

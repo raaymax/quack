@@ -10,6 +10,7 @@ const LOREM =
 
 const meta: Meta<typeof Message> = {
   component: Message,
+  title: "Organisms/Message",
   parameters: {},
   loaders: [async () => {
     app.channels.upsert({
@@ -26,6 +27,21 @@ const meta: Meta<typeof Message> = {
       </HoverProvider>
     ),
   ],
+  argTypes: {
+    model: {
+      control: false,
+      description: "MessageModel instance",
+    },
+    mode: {
+      control: "select",
+      options: ["default", "thread", "pinned", "search"],
+      description: "Display mode for the message",
+    },
+    sameUser: {
+      control: "boolean",
+      description: "Whether this message is from the same user as the previous one",
+    },
+  },
 };
 
 export default meta;

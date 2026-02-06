@@ -4,8 +4,20 @@ import { LoggedUser } from "./LoggedUser.tsx";
 
 const meta: Meta<typeof LoggedUser> = {
   component: LoggedUser,
+  title: "Molecules/LoggedUser",
   argTypes: {
-    onLogout: { action: "logout clicked" },
+    name: {
+      control: "text",
+      description: "User display name",
+    },
+    avatarUrl: {
+      control: "text",
+      description: "URL for user avatar image",
+    },
+    onLogout: {
+      action: "logout clicked",
+      description: "Called when logout button is clicked",
+    },
   },
 };
 

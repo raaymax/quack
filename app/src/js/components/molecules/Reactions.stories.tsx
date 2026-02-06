@@ -18,6 +18,7 @@ const createMessageModel = () => {
 
 const meta: Meta<typeof Reactions> = {
   component: Reactions,
+  title: "Molecules/Reactions",
 };
 
 export default meta;

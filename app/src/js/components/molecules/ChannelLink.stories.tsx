@@ -4,6 +4,13 @@ import { ChannelLink } from "./ChannelLink.tsx";
 
 const meta: Meta<typeof ChannelLink> = {
   component: ChannelLink,
+  title: "Molecules/ChannelLink",
+  argTypes: {
+    channelId: {
+      control: "text",
+      description: "ID of the channel to link to",
+    },
+  },
 };
 
 export default meta;
