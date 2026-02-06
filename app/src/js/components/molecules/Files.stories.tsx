@@ -4,6 +4,13 @@ import { Files } from "./Files.tsx";
 
 const meta: Meta<typeof Files> = {
   component: Files,
+  title: "Molecules/Files",
+  argTypes: {
+    list: {
+      control: "object",
+      description: "Array of file objects to display",
+    },
+  },
 };
 
 export default meta;

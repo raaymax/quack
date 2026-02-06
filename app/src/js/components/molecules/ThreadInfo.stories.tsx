@@ -4,8 +4,16 @@ import { ThreadInfo } from "./ThreadInfo.tsx";
 
 const meta: Meta<typeof ThreadInfo> = {
   component: ThreadInfo,
+  title: "Molecules/ThreadInfo",
   argTypes: {
-    navigate: { action: "navigate" },
+    msg: {
+      control: "object",
+      description: "Message object with thread replies",
+    },
+    navigate: {
+      action: "navigate",
+      description: "Called when thread link is clicked",
+    },
   },
 };
 

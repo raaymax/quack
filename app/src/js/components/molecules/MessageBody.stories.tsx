@@ -4,6 +4,17 @@ import { MessageBodyRenderer } from "./MessageBody.tsx";
 
 const meta: Meta<typeof MessageBodyRenderer> = {
   component: MessageBodyRenderer,
+  title: "Molecules/MessageBody",
+  argTypes: {
+    body: {
+      control: "object",
+      description: "Parsed message body structure with formatting",
+    },
+    opts: {
+      control: "object",
+      description: "Rendering options (e.g., emojiOnly)",
+    },
+  },
 };
 
 export default meta;

@@ -4,6 +4,7 @@ import { LoadingIndicator } from "./LoadingIndicator.tsx";
 
 const meta: Meta<typeof LoadingIndicator> = {
   component: LoadingIndicator,
+  title: "Molecules/LoadingIndicator",
 };
 
 export default meta;

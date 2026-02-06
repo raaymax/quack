@@ -21,6 +21,7 @@ const createMessageModel = (overrides: any) => {
 
 const meta: Meta<typeof MessageToolbar> = {
   component: MessageToolbar,
+  title: "Molecules/MessageToolbar",
 };
 
 export default meta;

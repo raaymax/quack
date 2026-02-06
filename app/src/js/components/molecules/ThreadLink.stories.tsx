@@ -4,6 +4,21 @@ import { ThreadLink } from "./ThreadLink.tsx";
 
 const meta: Meta<typeof ThreadLink> = {
   component: ThreadLink,
+  title: "Molecules/ThreadLink",
+  argTypes: {
+    channelId: {
+      control: "text",
+      description: "ID of the channel containing the thread",
+    },
+    parentId: {
+      control: "text",
+      description: "ID of the parent message",
+    },
+    text: {
+      control: "text",
+      description: "Link text to display",
+    },
+  },
 };
 
 export default meta;
