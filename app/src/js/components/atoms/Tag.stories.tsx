@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import "../../../styles.ts";
 import { Tag } from "./Tag.tsx";
 
 const meta: Meta<typeof Tag> = {

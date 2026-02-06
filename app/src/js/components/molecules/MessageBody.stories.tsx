@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import "../../../styles.ts";
 import { MessageBodyRenderer } from "./MessageBody.tsx";
 
 const meta: Meta<typeof MessageBodyRenderer> = {

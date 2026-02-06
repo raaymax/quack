@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import "../../../styles.ts";
 import { DiscussionHeader } from "./DiscussionHeader.tsx";
 
 const meta: Meta<typeof DiscussionHeader> = {

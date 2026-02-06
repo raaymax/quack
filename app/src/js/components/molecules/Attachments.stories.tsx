@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import "../../../styles.ts";
 import { Attachment } from "./Attachments.tsx";
 import { FileModel } from "../../core/models/files";
 

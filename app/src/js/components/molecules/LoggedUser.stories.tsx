@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import "../../../styles.ts";
 import { LoggedUser } from "./LoggedUser.tsx";
 
 const meta: Meta<typeof LoggedUser> = {

@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import "../../../styles.ts";
 import { NavChannels } from "./NavChannels.tsx";
 
 const meta: Meta<typeof NavChannels> = {

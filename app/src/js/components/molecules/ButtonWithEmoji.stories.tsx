@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import "../../../styles.ts";
 import { ButtonWithEmoji } from "./ButtonWithEmoji.tsx";
 
 const meta: Meta<typeof ButtonWithEmoji> = {

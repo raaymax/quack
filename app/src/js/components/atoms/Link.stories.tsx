@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import "../../../styles.ts";
 import { Link } from "./Link.tsx";
 
 const meta: Meta<typeof Link> = {

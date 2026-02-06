@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import "../../../styles.ts";
 import { Reactions } from "./Reactions.tsx";
 import { MessageModel } from "../../core/models/message.ts";
 import { app } from "../../core/index.ts";

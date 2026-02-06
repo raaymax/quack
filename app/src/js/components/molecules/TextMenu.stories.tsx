@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState, useRef } from "react";
 
-import "../../../styles.ts";
 import { TextMenu } from "./TextMenu.tsx";
 import { InputContext, InputContextType } from "../contexts/input.tsx";
 
