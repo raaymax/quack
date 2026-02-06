@@ -67,7 +67,9 @@ async function generateCert() {
     console.log("\nCertificate generated successfully!");
     console.log(`  Key:  ${join(sslDir, "key.pem")}`);
     console.log(`  Cert: ${join(sslDir, "cert.pem")}`);
-    console.log("\nTo use on Android emulator, install ssl/cert.pem as CA certificate.");
+    console.log(
+      "\nTo use on Android emulator, install ssl/cert.pem as CA certificate.",
+    );
   } else {
     console.error("\nFailed to generate certificate");
     Deno.exit(1);
