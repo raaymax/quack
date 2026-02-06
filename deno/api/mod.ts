@@ -361,11 +361,11 @@ class API extends EventTarget {
   };
 
   createChannel = async (
-    { name, users, channelType }: CreateChannelRequest,
+    { name, description, users, channelType }: CreateChannelRequest,
   ) => {
     return await this.callApi("/api/channels", {
       method: "POST",
-      body: JSON.stringify({ name, users, channelType }),
+      body: JSON.stringify({ name, description, users, channelType }),
       headers: {
         "Content-Type": "application/json",
       },
@@ -544,6 +544,7 @@ class API extends EventTarget {
           method: "POST",
           body: JSON.stringify({
             name: msg.name,
+            description: msg.description,
             users: msg.users,
             channelType: msg.channelType,
           }),

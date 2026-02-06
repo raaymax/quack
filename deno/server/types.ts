@@ -71,6 +71,7 @@ export type Channel = {
   id: EntityId;
   channelType: ChannelType;
   name: string;
+  description?: string;
   cid: string;
   private: boolean;
   direct: boolean;

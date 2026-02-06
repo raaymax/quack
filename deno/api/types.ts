@@ -61,6 +61,7 @@ export type ChannelType = "PUBLIC" | "PRIVATE" | "DIRECT";
 export type Channel = {
   id: string;
   name: string;
+  description?: string;
   users: string[];
   channelType: ChannelType;
   priv?: boolean;
@@ -130,6 +131,7 @@ export type Emoji = {
 
 export type CreateChannelRequest = {
   name: string;
+  description?: string;
   channelType?: ChannelType;
   users?: string[];
 };

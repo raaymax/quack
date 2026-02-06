@@ -12,6 +12,7 @@ export default createCommand({
       userId: Id,
       channelType: v.optional(v.enum_(ChannelType), ChannelType.PUBLIC),
       name: v.string(),
+      description: v.optional(v.string(), ""),
       users: v.optional(IdArr, []),
       encryptionKey: v.optional(v.nullable(v.string()), null),
     }),
@@ -28,6 +29,7 @@ export default createCommand({
     userId,
     users,
     name,
+    description,
     encryptionKey,
   } = channel;
 
@@ -54,6 +56,7 @@ export default createCommand({
 
   const channelId = await repo.channel.create({
     name,
+    description,
     channelType,
     private: channelType === "PRIVATE",
     direct: false,

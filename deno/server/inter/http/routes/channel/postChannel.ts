@@ -12,6 +12,7 @@ export default (core: Core) =>
         required: ["name"],
         properties: {
           name: { type: "string" },
+          description: { type: "string" },
           channelType: {
             type: "string",
             enum: [ChannelType.DIRECT, ChannelType.PUBLIC, ChannelType.PRIVATE],
@@ -31,6 +32,7 @@ export default (core: Core) =>
         body: {
           userId: req.state.user.id,
           name: req.body.name,
+          description: req.body.description,
           channelType: req.body.channelType,
           users: req.body.users,
           encryptionKey: req.body.encryptionKey,
