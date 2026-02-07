@@ -29,5 +29,8 @@ jobs:
       with:
         deno-version: '2.x'
     - run: deno install --allow-scripts
+    - name: Frontend lint
+      working-directory: app
+      run: npx eslint src/ --ext .ts,.tsx
     - run: deno task migrate:tests
     - run: deno task check

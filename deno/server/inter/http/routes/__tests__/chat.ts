@@ -19,7 +19,7 @@ export type RegistrationRequest = {
   email: string;
 };
 
-type Arg<T extends Object> = T | ((chat: Chat) => T);
+type Arg<T extends object> = T | ((chat: Chat) => T);
 const asyncLocalStorage = new AsyncLocalStorage<{ instances: Chat[] }>();
 
 type AgentTestParams = Parameters<typeof Agent["test"]>;
@@ -113,7 +113,7 @@ export class Chat {
     this._register();
   }
 
-  arg<I extends Object>(arg: Arg<I>): I {
+  arg<I extends object>(arg: Arg<I>): I {
     if (typeof arg === "function") {
       return arg(this);
     }

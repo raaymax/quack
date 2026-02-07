@@ -37,6 +37,26 @@ module.exports = {
       { allowConstantExport: true },
     ],
     "@typescript-eslint/no-explicit-any": ["warn"],
+    "@typescript-eslint/consistent-type-imports": ["warn", {
+      prefer: "type-imports",
+      fixStyle: "inline-type-imports",
+    }],
+    "@typescript-eslint/no-unused-vars": ["warn", {
+      argsIgnorePattern: "^_",
+      varsIgnorePattern: "^_",
+    }],
     "no-console": ["warn"],
+    "no-restricted-imports": ["warn", {
+      patterns: [
+        {
+          group: ["../organisms/*", "../organisms"],
+          message: "Atoms and molecules should not import from organisms.",
+        },
+        {
+          group: ["../pages/*", "../pages"],
+          message: "Atoms, molecules, and organisms should not import from pages.",
+        },
+      ],
+    }],
   },
 };

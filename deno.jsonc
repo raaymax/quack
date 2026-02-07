@@ -40,7 +40,7 @@
   },
   "lint": {
     "include": ["deno/"],
-    "exclude": ["packages/", "deno/**/__tests__/*", "deno/server/uploads/**", "**/node_modules/**", "app/.cache", "temp/**"],
+    "exclude": ["packages/", "deno/server/uploads/**", "**/node_modules/**", "app/.cache", "temp/**"],
     "rules": {
       "tags": ["recommended"],
       "exclude": ["no-unused-vars", "no-explicit-any", "require-await"]

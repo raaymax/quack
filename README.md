@@ -164,6 +164,13 @@ npm run cap:open  # Opens Android Studio
 
 See [Mobile App Documentation](docs/mobile-app.md) for detailed setup instructions.
 
+# Documentation
+
+- [System Architecture](docs/ARCHITECTURE.md) — Backend layers, frontend patterns, data flow, encryption
+- [Coding Conventions](docs/CONVENTIONS.md) — File naming, component patterns, import order, git workflow
+- [Architecture Decision Records](docs/adr/README.md) — 12 ADRs covering runtime, state management, encryption, and more
+- [Mobile App](docs/mobile-app.md) — Capacitor Android build setup
+
 # Plugins
 Chat have plugin system. Example plugin can be found in `plugins/example`.
 How to use plugins and plugin hook points TBA.
