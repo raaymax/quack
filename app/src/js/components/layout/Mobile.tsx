@@ -7,7 +7,7 @@ import { Workspaces } from "../organisms/Workspaces";
 import { Sidebar } from "../organisms/Sidebar";
 import { Conversation } from "../organisms/Conversation";
 import { Channel } from "../molecules/NavChannel";
-import { Toolbar } from "../atoms/Toolbar";
+import { Toolbar } from "../molecules/Toolbar";
 import { ButtonWithIcon } from "../molecules/ButtonWithIcon";
 import { MessageListArgsProvider } from "../contexts/messageListArgs";
 import { observer } from "mobx-react-lite";

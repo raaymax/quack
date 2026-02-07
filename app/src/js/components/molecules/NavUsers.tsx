@@ -4,6 +4,7 @@ import { ClassNames, cn, isMobile, isUserActive } from "../../utils";
 import { client } from "../../core";
 import { User } from "../../types";
 import { ProfilePic } from "../atoms/ProfilePic";
+import { SectionHeader } from "../atoms/SectionHeader";
 import { useSidebar } from "../contexts/useSidebar";
 import { useNavigate, useParams } from "../AppRouter.tsx";
 import { observer } from "mobx-react-lite";
@@ -15,23 +16,6 @@ import {
 import { getFileUrl } from "../hooks/fileUrl";
 
 const UserListContainer = styled.div`
-  .header {
-    display: flex;
-    flex-direction: row;
-    padding: 5px 10px;
-    padding-top: 20px;
-    font-weight: bold;
-    .title {
-      flex: 1;
-    }
-
-    i {
-      cursor: pointer;
-      flex: 0 15px;
-      font-size: 19px;
-    }
-  }
-
   .user {
     padding: 5px 5px 5px 20px;
     cursor: pointer;
@@ -165,9 +149,7 @@ export const NavUsers = observer(() => {
 
   return (
     <UserListContainer>
-      <div className="header">
-        <span className="title">users</span>
-      </div>
+      <SectionHeader title="users" />
       {users && users.map((user) => (
         <NavUserContainer
           key={user.id as any}

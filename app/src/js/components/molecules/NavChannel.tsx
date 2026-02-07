@@ -1,36 +1,14 @@
 import { useEffect } from "react";
 import styled from "styled-components";
 import { Badge } from "../atoms/Badge";
+import { TooltipTag } from "../atoms/TooltipTag";
 import { TextWithIcon } from "./TextWithIcon";
 import { ClassNames, cn } from "../../utils";
-import { Tooltip } from "../atoms/Tooltip";
 import { User } from "../../types";
 import { observer } from "mobx-react-lite";
 import { useApp } from "../contexts/appState";
 import type { ChannelModel } from "../../core/models/channel";
 import { ReadReceiptModel } from "../../core/models/readReceipt";
-
-const TagContainer = styled.div`
-  font-size: 16px;
-  border: 1px solid ${(props) => props.theme.PrimaryButton.Background};
-  color: ${(props) => props.theme.PrimaryButton.Text};
-  line-height: 26px;
-  vertical-align: middle;
-  padding: 2px 12px;
-  border-radius: 8px;
-  margin-left: 12px;
-`;
-
-const Tag = observer((
-  { children, tooltip }: {
-    children: React.ReactNode;
-    tooltip: string | string[];
-  },
-) => (
-  <TagContainer>
-    <Tooltip text={tooltip}>{children}</Tooltip>
-  </TagContainer>
-));
 
 const Container = styled.div`
   display: flex;
@@ -82,7 +60,7 @@ export const InlineChannel = observer(({
     {(badge && badge.count > 0) ? <Badge>{badge.count}</Badge> : null}
     {secured
       ? (
-        <Tag
+        <TooltipTag
           tooltip={[
             "Messages in this channel are encrypted",
             "using your password",
@@ -90,7 +68,7 @@ export const InlineChannel = observer(({
           ]}
         >
           E2EE
-        </Tag>
+        </TooltipTag>
       )
       : null}
   </Container>

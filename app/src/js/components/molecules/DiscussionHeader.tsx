@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { ProfilePic } from "../atoms/ProfilePic";
 import { Icon } from "../atoms/Icon";
-import { Tooltip } from "../atoms/Tooltip";
+import { TooltipTag } from "../atoms/TooltipTag";
 import { observer } from "mobx-react-lite";
 import { useApp } from "../contexts/appState";
 import { client } from "../../core";
@@ -40,32 +40,6 @@ const Container = styled.div`
     margin-left: 8px;
   }
 `;
-const TagContainer = styled.div`
-  font-size: 16px;
-  border: 1px solid ${(props) => props.theme.PrimaryButton.Background};
-  color: ${(props) => props.theme.Text};
-  line-height: 32px;
-  vertical-align: middle;
-  padding: 0px 12px;
-  border-radius: 8px;
-  margin-left: 12px;
-  font-style: normal;
-  cursor: help;
-  .tooltip-container {
-    line-height: 28px;
-  }
-`;
-
-const Tag = observer((
-  { children, tooltip }: {
-    children: React.ReactNode;
-    tooltip: string | string[];
-  },
-) => (
-  <TagContainer>
-    <Tooltip text={tooltip}>{children}</Tooltip>
-  </TagContainer>
-));
 
 export const DiscussionHeader = observer(
   ({ channelId }: { channelId: string }) => {
@@ -101,7 +75,8 @@ export const DiscussionHeader = observer(
         </div>
         {isEncrypted
           ? (
-            <Tag
+            <TooltipTag
+              variant="header"
               tooltip={[
                 "Messages in this channel are encrypted",
                 "using your password",
@@ -109,7 +84,7 @@ export const DiscussionHeader = observer(
               ]}
             >
               E2EE
-            </Tag>
+            </TooltipTag>
           )
           : null}
       </Container>

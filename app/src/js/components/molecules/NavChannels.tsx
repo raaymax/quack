@@ -2,6 +2,7 @@ import { useCallback, useState } from "react";
 import styled from "styled-components";
 import { ChannelCreateForm } from "./ChannelCreateForm";
 import { Channel } from "./NavChannel";
+import { SectionHeader } from "../atoms/SectionHeader";
 import { useSidebar } from "../contexts/useSidebar";
 import { isMobile } from "../../utils";
 import { useNavigate, useParams } from "../AppRouter.tsx";
@@ -9,23 +10,6 @@ import { observer } from "mobx-react-lite";
 import { useApp } from "../contexts/appState";
 
 const ChannelsContainer = styled.div`
-  .header {
-    display: flex;
-    flex-direction: row;
-    padding: 5px 10px;
-    padding-top: 20px;
-    font-weight: bold;
-    .title {
-      flex: 1;
-    }
-
-    i {
-      cursor: pointer;
-      flex: 0 15px;
-      font-size: 19px;
-    }
-  }
-
   .channel {
     padding: 5px 5px 5px 20px;
     cursor: pointer;
@@ -75,13 +59,11 @@ export const NavChannels = observer(({ icon }: NavChannelsProps) => {
 
   return (
     <ChannelsContainer>
-      <div className="header">
-        <span className="title">channels</span>
-        <i
-          className="fa-solid fa-plus"
-          onClick={() => setShowCreateModal(true)}
-        />
-      </div>
+      <SectionHeader
+        title="channels"
+        actionIcon="plus"
+        onAction={() => setShowCreateModal(true)}
+      />
       <ChannelCreateForm
         isOpen={showCreateModal}
         onSubmit={handleCreateChannel}

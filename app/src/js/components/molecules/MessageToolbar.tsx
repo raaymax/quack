@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 import { useHovered } from "../contexts/useHovered";
-import { Toolbar } from "../atoms/Toolbar";
+import { Toolbar } from "./Toolbar";
 import { ButtonWithEmoji } from "./ButtonWithEmoji";
 import { ButtonWithIcon } from "./ButtonWithIcon";
 import { useParams } from "../AppRouter.tsx";

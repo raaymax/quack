@@ -6,7 +6,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Workspaces } from "../organisms/Workspaces.tsx";
 import { Sidebar } from "../organisms/Sidebar.tsx";
 import { Conversation } from "../organisms/Conversation.tsx";
-import { Toolbar } from "../atoms/Toolbar.tsx";
+import { Toolbar } from "../molecules/Toolbar.tsx";
 import { ButtonWithIcon } from "../molecules/ButtonWithIcon.tsx";
 import { MessageListArgsProvider } from "../contexts/messageListArgs.tsx";
 import { SearchBox } from "../atoms/SearchBox.tsx";

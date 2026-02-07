@@ -4,7 +4,7 @@ import { Link } from "../atoms/Link";
 import { ChannelLink } from "./ChannelLink";
 import { UserMention } from "./UserMention";
 import { ThreadLink } from "./ThreadLink";
-import { ActionButton } from "../atoms/ActionButton";
+import { ActionButton } from "./ActionButton";
 import * as types from "../../types";
 import { Wrap } from "../atoms/Wrap";
 import { observer } from "mobx-react-lite";
