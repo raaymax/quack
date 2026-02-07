@@ -7,7 +7,7 @@ import { app } from "../../core/index.ts";
 
 const meta: Meta<typeof ActionButton> = {
   component: ActionButton,
-  title: "Atoms/ActionButton",
+  title: "Molecules/ActionButton",
   argTypes: {
     children: {
       control: "text",

@@ -1,12 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
 import { Toolbar } from "./Toolbar.tsx";
-import { Icon } from "./Icon.tsx";
-import { BaseButton } from "./BaseButton.tsx";
+import { Icon } from "../atoms/Icon.tsx";
+import { BaseButton } from "../atoms/BaseButton.tsx";
 
 const meta: Meta<typeof Toolbar> = {
   component: Toolbar,
-  title: "Atoms/Toolbar",
+  title: "Molecules/Toolbar",
   argTypes: {
     size: {
       control: { type: "number", min: 24, max: 48, step: 4 },

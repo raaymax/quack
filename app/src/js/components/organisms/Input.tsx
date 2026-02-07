@@ -7,7 +7,7 @@ import { InputProvider } from "../contexts/input";
 import { useInput } from "../contexts/useInput";
 
 import { StatusLine } from "../atoms/StatusLine";
-import { Toolbar } from "../atoms/Toolbar";
+import { Toolbar } from "../molecules/Toolbar";
 
 import { Attachments } from "../molecules/Attachments";
 import { EmojiSelector } from "../molecules/InputEmojiSelector";

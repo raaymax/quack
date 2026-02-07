@@ -3,7 +3,7 @@ import { useCallback, useEffect } from "react";
 import { HoverProvider } from "../contexts/hover.tsx";
 import { isMobile } from "../../utils.ts";
 
-import { Toolbar } from "../atoms/Toolbar.tsx";
+import { Toolbar } from "../molecules/Toolbar.tsx";
 import { ButtonWithIcon } from "../molecules/ButtonWithIcon.tsx";
 import { useLocation, useNavigate, useParams } from "../AppRouter.tsx";
 import { MessageListArgsProvider } from "../contexts/messageListArgs.tsx";
