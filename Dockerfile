@@ -10,7 +10,7 @@ ARG APP_VERSION=3.x.x
 ENV APP_VERSION=$APP_VERSION
 RUN APP_NAME=quack APP_VERSION=$APP_VERSION npm run build
 
-FROM denoland/deno:alpine-2.5.0
+FROM denoland/deno:alpine-2.6.8
 RUN apk -U upgrade
 RUN apk add vips-cpp build-base vips vips-dev
 ENV ENVIRONMENT=production
