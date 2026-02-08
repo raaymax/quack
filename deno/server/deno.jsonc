@@ -14,7 +14,7 @@
     "@std/uuid": "jsr:@std/uuid@1.0.9",
     "@ts-rex/bcrypt": "jsr:@ts-rex/bcrypt@1.0.3",
     "mongodb": "npm:mongodb@6.19.0",
-    "valibot": "npm:valibot@0.31.1",
+    "valibot": "npm:valibot@1.1.0",
     "@cliffy/command": "jsr:@cliffy/command@1.0.0-rc.5"
   },
   "test": {

@@ -137,9 +137,9 @@ Create standard story template with:
 - [x] **@std library aligned** - Server @std versions now match root (assert, path, uuid) (PR #255)
 - [x] **MongoDB aligned** - Server now uses 6.19.0 matching root (PR #255)
 - [x] **deno.lock regenerated** - Clean lock file with aligned versions (PR #255)
-- [ ] **Valibot version mismatch** - Root uses 1.1.0, server uses 0.31.1 (DEFERRED - major breaking change, 37 files affected)
+- [x] **Valibot version aligned** - Server updated from 0.31.1 to 1.1.0 (BaseSchema→GenericSchema, transform type fixes)
 - [ ] **Chromatic major update** - 13.3.5 → 15.0.0 (DEFERRED - review changelog first)
-- [ ] **@planigale versions** - 4 different versions in lock file (needs audit)
+- [x] **@planigale versions** - Audited: 5 packages at latest versions, no conflicts (different packages, not version conflicts)
 
 ### 2.4 Console Statements
 - [ ] Replace ~41 `console.*` calls in app source with structured logging
