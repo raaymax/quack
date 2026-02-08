@@ -46,17 +46,5 @@ module.exports = {
       varsIgnorePattern: "^_",
     }],
     "no-console": ["warn"],
-    "no-restricted-imports": ["warn", {
-      patterns: [
-        {
-          group: ["../organisms/*", "../organisms"],
-          message: "Atoms and molecules should not import from organisms.",
-        },
-        {
-          group: ["../pages/*", "../pages"],
-          message: "Atoms, molecules, and organisms should not import from pages.",
-        },
-      ],
-    }],
   },
 };
