@@ -37,6 +37,7 @@ const RouteHandler = () => {
           console.log("Loading channel:", params.channelId);
           const channel = await client.api.getChannelById(params.channelId);
           if (!channel) throw new PageNotFoundError();
+          app.channels.upsert(channel);
           console.log("Channel loaded:", channel);
         } else {
           // Redirect to main channel if no channel specified
@@ -61,7 +62,7 @@ const RouteHandler = () => {
     return <ErrorPageS error={error} />;
   }
 
-  if (!app.initCompleted) {
+  if (isLoading || !app.initCompleted) {
     return <div>Loading...</div>;
   }
 

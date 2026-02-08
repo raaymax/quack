@@ -98,7 +98,7 @@ export const Primary: Story = {
   args: {
     model: MessageModel.from({
       ...BaseMessage,
-    }, app.getMessages("test")),
+    }, app.getMessages("test")!),
   },
 };
 
@@ -106,7 +106,7 @@ export const LongText: Story = {
   args: {
     model: MessageModel.from({
       ...LongTextMessage,
-    }, app.getMessages("test")),
+    }, app.getMessages("test")!),
   },
 };
 
@@ -124,7 +124,7 @@ export const WithThread: Story = {
           userId: "321",
         },
       ],
-    }, app.getMessages("test")),
+    }, app.getMessages("test")!),
   },
 };
 export const WithReaction: Story = {
@@ -145,7 +145,7 @@ export const WithReaction: Story = {
           reaction: ":thumbsdown:",
         },
       ],
-    }, app.getMessages("test")),
+    }, app.getMessages("test")!),
   },
 };
 
@@ -154,7 +154,7 @@ export const Ephemeral: Story = {
     model: MessageModel.from({
       ...BaseMessage,
       ephemeral: true,
-    }, app.getMessages("test")),
+    }, app.getMessages("test")!),
   },
 };
 
@@ -162,7 +162,7 @@ export const Continuation: Story = {
   args: {
     model: MessageModel.from({
       ...BaseMessage,
-    }, app.getMessages("test")),
+    }, app.getMessages("test")!),
     mode: "default",
     sameUser: true,
   },
@@ -177,7 +177,7 @@ export const EmojiOnly: Story = {
         emoji: ":thumbsup:",
       },
       emojiOnly: true,
-    }, app.getMessages("test")),
+    }, app.getMessages("test")!),
     mode: "default",
   },
 };
@@ -198,7 +198,7 @@ export const WithImages: Story = {
           contentType: "image/jpeg",
         },
       ],
-    }, app.getMessages("test")),
+    }, app.getMessages("test")!),
     mode: "default",
   },
 };
@@ -212,7 +212,7 @@ export const WithError: Story = {
         msg: "Sending message failed",
         action: "retry",
       },
-    }, app.getMessages("test")),
+    }, app.getMessages("test")!),
     mode: "default",
   },
 };
@@ -253,7 +253,7 @@ export const WithLinkPreview: Story = {
           contentType: "text/html",
         },
       ],
-    }, app.getMessages("test")),
+    }, app.getMessages("test")!),
     mode: "default",
   },
 };
@@ -290,7 +290,7 @@ export const WithLinkAnnotations: Story = {
           ],
         },
       ],
-    }, app.getMessages("test")),
+    }, app.getMessages("test")!),
     mode: "default",
   },
 };

@@ -13,7 +13,7 @@ const createMessageModel = () => {
       { userId: "me", reaction: "👍" },
       { userId: "you", reaction: "👎" },
     ],
-  }, app.getMessages("test"));
+  }, app.getMessages("test")!);
 };
 
 const meta: Meta<typeof Reactions> = {

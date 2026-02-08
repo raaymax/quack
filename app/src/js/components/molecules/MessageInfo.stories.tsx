@@ -60,7 +60,7 @@ export const InfoMessage: Story = {
         type: "info",
         msg: "Message delivered",
       },
-    }, app.getMessages("test")),
+    }, app.getMessages("test")!),
   },
 };
 
@@ -72,7 +72,7 @@ export const ErrorMessage: Story = {
         type: "error",
         msg: "Sending message failed",
       },
-    }, app.getMessages("test")),
+    }, app.getMessages("test")!),
   },
 };
 
@@ -85,7 +85,7 @@ export const WithAction: Story = {
         msg: "Sending message failed - click to retry",
         action: "resend",
       },
-    }, app.getMessages("test")),
+    }, app.getMessages("test")!),
   },
 };
 
@@ -93,6 +93,6 @@ export const NoInfo: Story = {
   args: {
     messageModel: MessageModel.from({
       ...BaseMessage,
-    }, app.getMessages("test")),
+    }, app.getMessages("test")!),
   },
 };

@@ -12,7 +12,7 @@ export const MessageInfo = observer(
       if (info?.action === "resend") {
         app
           .getThread(messageModel.channelId, messageModel.parentId)
-          .resendMessage(messageModel);
+          ?.resendMessage(messageModel);
       }
     }, [clientId, info]);
 

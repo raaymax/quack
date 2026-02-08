@@ -219,7 +219,7 @@ export class MessageModel implements ViewMessage {
 
   async remove() {
     if (!this.root) throw new Error("Root not set");
-    await this.root.getMessages(this.channelId, this.parentId).remove(this.id);
+    await this.root.getMessages(this.channelId, this.parentId)?.remove(this.id);
   }
 
   addReaction = flow(function* (this: MessageModel, reaction: string) {

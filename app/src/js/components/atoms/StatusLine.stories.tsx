@@ -23,7 +23,7 @@ type Story = StoryObj<typeof StatusLine>;
 
 export const Primary: Story = {
   args: {
-    typing: app.getThread("123", null, { init: false }).typing,
+    typing: app.getThread("123", null, { init: false })!.typing,
     info: app.info,
   },
 };
