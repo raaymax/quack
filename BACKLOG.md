@@ -201,6 +201,7 @@ Create standard story template with:
 
 ### 3.4 Error Handling Standardization
 **Problem:** Multiple error types without consistent handling
+- [x] Fix blank screen on non-existent/loading channels — `getThread()`/`getMessages()` now return null instead of throwing, Router gates on `isLoading`, channels upserted into store on navigation
 - [ ] Audit error classes in `deno/server/core/errors.ts` and `deno/server/inter/http/errors.ts`
 - [ ] Create unified error handling pattern
 - [ ] Standardize error responses across API
@@ -279,6 +280,7 @@ Create standard story template with:
 - [ ] **Channel files browser** - Dedicated view to browse/search all files shared in a channel
 - [ ] **Frontend observability** - Error reporting, logging, stats, and diagnostics dashboard
 - [ ] **Splash screen** - Add proper loading/splash screen on app startup
+- [ ] **Smooth channel loading transition** - Replace full-screen "Loading..." text with inline loading indicator in channel view to avoid screen blink when switching channels
 - [ ] **Release process** - Fix release workflow, consider bundled/binary distribution
 
 ---

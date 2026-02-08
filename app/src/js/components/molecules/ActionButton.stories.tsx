@@ -35,7 +35,7 @@ const meta: Meta<typeof ActionButton> = {
       userId: "me",
       flat: "Hello, world!",
       message: { text: "Hello, world!" },
-    }, app.getMessages("test"));
+    }, app.getMessages("test")!);
     return (
       <MessageProvider value={message}>
         <ActionButton action={action} payload={payload} style={style}>

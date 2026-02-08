@@ -38,6 +38,7 @@ export class ChannelsModel {
 
   find = flow(function* (this: ChannelsModel, id: string) {
     const channel = yield client.api.getChannelById(id);
+    if (!channel) return null;
     this.channels[channel.id] = new ChannelModel(channel, this.root);
   });
 

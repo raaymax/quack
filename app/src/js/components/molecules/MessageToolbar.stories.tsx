@@ -15,7 +15,7 @@ const createMessageModel = (overrides: any) => {
       channelId: "toolbar-test",
       ...overrides,
     },
-    app.getMessages("toolbar-test"),
+    app.getMessages("toolbar-test")!,
   );
 };
 

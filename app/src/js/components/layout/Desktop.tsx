@@ -160,7 +160,7 @@ export const SideConversation = observer(
   ({ channelId, parentId }: SideConversationProps) => {
     const app = useApp();
     const threadModel = app.getThread(channelId, parentId);
-    if (!parentId) return null;
+    if (!parentId || !threadModel) return null;
     const message = threadModel.messages.get(parentId);
     const navigate = useNavigate();
 
@@ -228,8 +228,10 @@ export const MainConversation = observer(
     const channelModel = app.getChannel(channelId);
 
     useEffect(() => {
-      threadModel.init();
+      threadModel?.init();
     }, [channelId]);
+
+    if (!threadModel) return null;
 
     return (
       <MessageListArgsProvider streamId="main" value={location.state}>
