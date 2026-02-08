@@ -4,7 +4,7 @@ import { SearchBox } from "./SearchBox.tsx";
 
 const meta: Meta<typeof SearchBox> = {
   component: SearchBox,
-  title: "Atoms/SearchBox",
+  title: "Molecules/SearchBox",
   argTypes: {
     placeholder: {
       control: "text",
