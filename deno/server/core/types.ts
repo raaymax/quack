@@ -26,11 +26,11 @@ import {
 
 export const Id = v.pipe(
   v.union([v.string(), v.instance(EntityId)]),
-  v.transform((i: string) => EntityId.from(i)),
+  v.transform((i) => EntityId.from(i as string)),
 );
 export const IdArr = v.pipe(
   v.array(v.union([v.string(), v.instance(EntityId)])),
-  v.transform((i: string[]) => i.map(EntityId.from)),
+  v.transform((i) => (i as string[]).map(EntityId.from)),
 );
 
 export const vMessageBodyBullet: v.GenericSchema<MessageBodyBullet> = v.object({

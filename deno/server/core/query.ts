@@ -10,7 +10,7 @@ export type Event = {
 };
 export type Definition = {
   type: string;
-  body: v.BaseSchema<any, any, any>;
+  body: v.GenericSchema<any, any, any>;
 };
 
 export function createQuery<A extends Definition, B>(

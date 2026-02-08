@@ -20,18 +20,21 @@ function serialize<A>(obj: A): any {
 
 export type Definition<
   T extends string,
-  U extends v.BaseSchema<any, any, any>,
+  U extends v.GenericSchema<any, any, any>,
 > = {
   type: T;
   body: U;
 };
 
-export type Handler<U extends v.BaseSchema<any, any, any>> = (
+export type Handler<U extends v.GenericSchema<any, any, any>> = (
   body: v.InferOutput<U>,
   core: Core,
 ) => Promise<void | EntityId | string | null>;
 
-export type Command<T extends string, U extends v.BaseSchema<any, any, any>> = {
+export type Command<
+  T extends string,
+  U extends v.GenericSchema<any, any, any>,
+> = {
   type: T;
   def: Definition<T, U>;
   handler: (
@@ -44,7 +47,7 @@ export type Command<T extends string, U extends v.BaseSchema<any, any, any>> = {
 
 export function createCommand<
   T extends string,
-  U extends v.BaseSchema<any, any, any>,
+  U extends v.GenericSchema<any, any, any>,
 >(def: Definition<T, U>, fn: Handler<U>): Command<T, U> {
   const exec = async (rawbody: v.InferInput<U>, core: Core) => {
     try {
