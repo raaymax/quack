@@ -280,7 +280,7 @@ Create standard story template with:
 - [ ] **Channel files browser** - Dedicated view to browse/search all files shared in a channel
 - [ ] **Frontend observability** - Error reporting, logging, stats, and diagnostics dashboard
 - [ ] **Splash screen** - Add proper loading/splash screen on app startup
-- [ ] **Smooth channel loading transition** - Replace full-screen "Loading..." text with inline loading indicator in channel view to avoid screen blink when switching channels
+- [x] **Smooth channel loading transition** - Replace full-screen "Loading..." text with inline loading indicator in channel view to avoid screen blink when switching channels
 - [ ] **Release process** - Fix release workflow, consider bundled/binary distribution
 
 ---
