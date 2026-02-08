@@ -42,7 +42,7 @@ type Story = StoryObj<typeof Input>;
 export const Default: Story = {
   render: () => {
     const model = getInputModel();
-    if (!model) return <div>Input model not available. Channel "test" may not be initialized.</div>;
+    if (!model) return <div>Input model not available. Channel &quot;test&quot; may not be initialized.</div>;
     return (
       <StoryContainer>
         <Input model={model} />

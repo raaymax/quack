@@ -11,7 +11,7 @@ import { client } from "../client.ts";
 import type { MessagesModel } from "./messages.ts";
 
 export class MessageModel implements ViewMessage {
-  secured: false = false;
+  secured = false as const;
   id: Eid;
   channelId: Eid;
   userId: Eid;

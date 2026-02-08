@@ -37,6 +37,14 @@ module.exports = {
       { allowConstantExport: true },
     ],
     "@typescript-eslint/no-explicit-any": ["warn"],
+    "@typescript-eslint/consistent-type-imports": ["warn", {
+      prefer: "type-imports",
+      fixStyle: "inline-type-imports",
+    }],
+    "@typescript-eslint/no-unused-vars": ["warn", {
+      argsIgnorePattern: "^_",
+      varsIgnorePattern: "^_",
+    }],
     "no-console": ["warn"],
   },
 };
