@@ -11,10 +11,12 @@ ENV APP_VERSION=$APP_VERSION
 RUN APP_NAME=quack APP_VERSION=$APP_VERSION npm run build
 
 FROM denoland/deno:alpine-2.6.8
-# WORKAROUND: Deno alpine image ships glibc-linked libs in /usr/local/lib/ that break apk on arm64
+# WORKAROUND: Deno alpine image ships glibc-linked libs in /usr/local/lib/ that break
+# apk and post-install triggers. Remove them so system tools use Alpine's musl libs.
 # See: https://github.com/denoland/deno_docker/issues/373 — remove when fixed upstream
-RUN LD_LIBRARY_PATH=/usr/lib apk -U upgrade
-RUN LD_LIBRARY_PATH=/usr/lib apk add vips-cpp build-base vips vips-dev
+RUN rm -f /usr/local/lib/lib*.so*
+RUN apk -U upgrade
+RUN apk add vips-cpp build-base vips vips-dev
 ENV ENVIRONMENT=production
 RUN mkdir -p /app
 WORKDIR /app
