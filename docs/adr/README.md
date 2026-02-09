@@ -20,6 +20,7 @@ This directory contains Architecture Decision Records (ADRs) for Quack Chat.
 | [012](012-pwa-first.md) | PWA-first with Capacitor native shell for Android | Accepted |
 | [013](013-custom-push-notifications.md) | Custom push notifications via SSE (no FCM/Google dependency) | Accepted |
 | [014](014-repository-pattern-over-orm.md) | Repository pattern over ORM for database access | Accepted |
+| [015](015-tauri-desktop-app.md) | Tauri v2 for desktop app with SSE notifications | Accepted |
 
 ## Format
 
