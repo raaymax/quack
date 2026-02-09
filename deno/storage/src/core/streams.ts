@@ -1,43 +1,34 @@
 import { Readable } from "node:stream";
 
-interface ListenerInterface {
-  data: (chunk: any) => void;
-  end: (chunk: any) => void;
-  close: (err: any) => void;
-  error: (err: any) => void;
-}
-
 export function toWebStream(nodeStream: Readable) {
   let destroyed = false;
-  const listeners = {} as ListenerInterface;
+  // deno-lint-ignore no-explicit-any
+  const listeners: Record<string, (...args: any[]) => void> = {};
 
-  function start(controller: any) {
+  function start(controller: ReadableStreamDefaultController<Uint8Array>) {
     listeners.data = onData;
     listeners.end = onData;
     listeners.end = onDestroy;
     listeners.close = onDestroy;
     listeners.error = onDestroy;
     for (const name in listeners) {
-      nodeStream.on(name, listeners[name as keyof ListenerInterface]);
+      nodeStream.on(name, listeners[name]);
     }
 
     nodeStream.pause();
 
-    function onData(chunk: any) {
+    function onData(chunk: Uint8Array) {
       if (destroyed) return;
       controller.enqueue(new Uint8Array(chunk));
       nodeStream.pause();
     }
 
-    function onDestroy(err: any) {
+    function onDestroy(err?: Error) {
       if (destroyed) return;
       destroyed = true;
 
       for (const name in listeners) {
-        nodeStream.removeListener(
-          name,
-          listeners[name as keyof ListenerInterface],
-        );
+        nodeStream.removeListener(name, listeners[name]);
       }
 
       if (err) controller.error(err);
@@ -54,10 +45,7 @@ export function toWebStream(nodeStream: Readable) {
     destroyed = true;
 
     for (const name in listeners) {
-      nodeStream.removeListener(
-        name,
-        listeners[name as keyof ListenerInterface],
-      );
+      nodeStream.removeListener(name, listeners[name]);
     }
 
     nodeStream.push(null);
@@ -75,7 +63,7 @@ class NodeReadable extends Readable {
 
   private reader: ReadableStreamDefaultReader<Uint8Array>;
 
-  private pendingRead?: Promise<any>;
+  private pendingRead?: Promise<ReadableStreamReadResult<Uint8Array>>;
 
   constructor(stream: ReadableStream) {
     super();

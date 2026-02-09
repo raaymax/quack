@@ -13,7 +13,7 @@ export class Database {
 
   databaseUrl: string;
 
-  promises: Promise<any>[] = [];
+  promises: Promise<unknown>[] = [];
 
   connected = false;
 
