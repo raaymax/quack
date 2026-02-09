@@ -8,7 +8,7 @@ export type Config = {
   port: number;
   databaseUrl: string;
   cors: (string | RegExp)[];
-  plugins?: ((app: any, core: any) => Promise<any> | any)[];
+  plugins?: ((app: unknown, core: unknown) => Promise<void> | void)[];
   webhooks?: {
     url: string;
     events?: string[];
