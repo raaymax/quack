@@ -2,26 +2,7 @@ import * as v from "valibot";
 import { EntityId } from "../types.ts";
 import type { Core } from "./core.ts";
 import { AppError } from "./errors.ts";
-
-function recursiveSerialize(obj: unknown): unknown {
-  if (obj instanceof EntityId) {
-    return obj.toString();
-  }
-  if (Array.isArray(obj)) {
-    return obj.map(recursiveSerialize);
-  }
-  if (typeof obj === "object" && obj !== null) {
-    const record = obj as Record<string, unknown>;
-    for (const key in record) {
-      record[key] = recursiveSerialize(record[key]);
-    }
-  }
-  return obj;
-}
-
-function serialize<A>(obj: A): A {
-  return recursiveSerialize(obj) as A;
-}
+import { serialize } from "./serializer.ts";
 
 export type Definition<
   T extends string,
