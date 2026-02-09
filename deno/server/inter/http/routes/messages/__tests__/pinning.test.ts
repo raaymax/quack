@@ -23,26 +23,26 @@ Deno.test("Pinning other user messsage", async (t) => {
         flat: "Hello",
         message: { text: "Hello" },
         clientId: "hello",
-      }, (msg: any) => {
-        pinMessageId = msg.id;
+      }, (msg) => {
+        pinMessageId = msg.id as string;
       });
       await t.step("pinning message", async () => {
         await member.pinMessage({ messageId: pinMessageId })
-          .getPinnedMessages((messages: any) => {
+          .getPinnedMessages((messages) => {
             assertEquals(messages.length, 1);
             assertEquals(messages[0].id, pinMessageId);
           });
-        await admin.getPinnedMessages((messages: any) => {
+        await admin.getPinnedMessages((messages) => {
           assertEquals(messages.length, 1);
           assertEquals(messages[0].id, pinMessageId);
         });
       });
       await t.step("unpinning message by other user", async () => {
         await admin.pinMessage({ messageId: pinMessageId, pinned: false })
-          .getPinnedMessages((messages: any) => {
+          .getPinnedMessages((messages) => {
             assertEquals(messages.length, 0);
           });
-        await member.getPinnedMessages((messages: any) => {
+        await member.getPinnedMessages((messages) => {
           assertEquals(messages.length, 0);
         });
       });

@@ -43,7 +43,7 @@ Deno.test("Adding emojis and listing them", async () => {
           fileName: "smile.png",
           contentType: "image/png",
         }])
-        .nextEvent((event: any) => {
+        .nextEvent((event) => {
           assertEquals(event.type, "emoji");
           assertEquals(event.shortname, ":smile:");
         })
