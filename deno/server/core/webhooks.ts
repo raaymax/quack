@@ -7,15 +7,15 @@ export class Webhooks {
     this.core.bus.onNotif(this.handleEvent.bind(this));
   }
 
-  async handleEvent(event: any) {
+  async handleEvent(event: Record<string, unknown>) {
     for (const webhook of (this.config?.webhooks ?? [])) {
-      if (!webhook.events || webhook.events.includes(event.type)) {
+      if (!webhook.events || webhook.events.includes(event.type as string)) {
         await this.send(webhook, event);
       }
     }
   }
 
-  async send(webhook: Webhook, event: any) {
+  async send(webhook: Webhook, event: Record<string, unknown>) {
     try {
       const body = JSON.stringify({ type: event.type, event });
       const res = await fetch(webhook.url, {

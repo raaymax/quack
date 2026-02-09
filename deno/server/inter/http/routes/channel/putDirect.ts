@@ -26,7 +26,7 @@ export default (core: Core) =>
         },
       });
       const channel = await core.channel.get({
-        id: channelId,
+        id: channelId!,
         userId: req.state.user.id,
       });
       return Res.json(channel);

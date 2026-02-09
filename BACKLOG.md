@@ -116,9 +116,12 @@ Create standard story template with:
 
 ### 2.1 Type Safety (HIGH PRIORITY)
 - [ ] Fix pre-existing TypeScript errors (17 errors in base)
-- [ ] Remove `any` types - 20 instances in app/src
+- [x] Remove `any` types from backend core (serializers, bus, command/query, repos, webhooks) — PR #267
+- [ ] Remove `any` types from storage, encryption, config modules
+- [ ] Remove `any` types from API module (`deno/api/`)
+- [ ] Remove `any` types from frontend (models, components, contexts)
+- [ ] Remove `any` types from test files and helpers
 - [ ] Fix `style: any` unused prop in `ActionButton.tsx:10`
-- [ ] Add proper typing to API module (`deno/api/mod.ts` - `payload: any`, `document: any`)
 - [ ] Remove `@ts-ignore` comments in `deno/api/files.ts` (5+ instances)
 - [ ] Standardize Props interface naming
 

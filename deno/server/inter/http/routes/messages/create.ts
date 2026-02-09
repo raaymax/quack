@@ -54,7 +54,7 @@ export default (core: Core) =>
         body: { ...req.body, userId, channelId },
       });
 
-      const msg = await core.message.get({ userId, messageId: id });
+      const msg = await core.message.get({ userId, messageId: id! });
       return Response.json(msg);
     },
   });
