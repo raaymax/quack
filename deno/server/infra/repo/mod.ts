@@ -36,7 +36,7 @@ export class Repository {
 
   constructor(config: Config) {
     const databaseUrl = config.databaseUrl ?? Deno.env.get("DATABASE_URL") ??
-      "mongodb://chat:chat@localhost:27017/tests?authSource=admin";
+      "mongodb://chat:chat@localhost:27017/chat?authSource=admin";
     const db = new Database(databaseUrl);
     this.user = new UserRepo(db);
     this.session = new SessionRepo(db);

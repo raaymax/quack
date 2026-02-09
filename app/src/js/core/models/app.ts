@@ -70,18 +70,13 @@ export class AppModel {
     opts: { init?: boolean } = {},
   ) {
     const channel = this.getChannel(channelId);
-    if (!channel) {
-      console.log(this);
-      throw new Error(`Channel with id ${channelId} not found`);
-    }
+    if (!channel) return null;
     return channel.getThread(parentId, { parentId, ...opts });
   }
 
   getMessages(channelId: string, parentId?: string | null) {
     const channel = this.getChannel(channelId);
-    if (!channel) {
-      throw new Error(`Channel with id ${channelId} not found`);
-    }
+    if (!channel) return null;
     return channel.getMessages(parentId);
   }
 

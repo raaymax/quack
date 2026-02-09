@@ -7,11 +7,12 @@ import { Workspaces } from "../organisms/Workspaces";
 import { Sidebar } from "../organisms/Sidebar";
 import { Conversation } from "../organisms/Conversation";
 import { Channel } from "../molecules/NavChannel";
-import { Toolbar } from "../atoms/Toolbar";
+import { Toolbar } from "../molecules/Toolbar";
 import { ButtonWithIcon } from "../molecules/ButtonWithIcon";
 import { MessageListArgsProvider } from "../contexts/messageListArgs";
 import { observer } from "mobx-react-lite";
 import { useApp } from "../contexts/appState";
+import { DescriptionBar } from "../molecules/DescriptionBar";
 
 const WORKSPACES_WIDTH = 80;
 
@@ -154,7 +155,7 @@ export const Container = styled.div`
       & > .conversation {
         flex: 1;
         width: 100%;
-        height: calc(100% - 64px);
+        min-height: 0;
         display: flex;
         flex-direction: row;
       }
@@ -228,10 +229,13 @@ export const SideConversation = observer(
   ({ channelId, parentId }: SideConversationProps) => {
     const app = useApp();
     const threadModel = app.getThread(channelId, parentId);
-    if (!parentId) return null;
+    if (!parentId || !threadModel) return null;
     const message = threadModel.messages.get(parentId);
     const navigate = useNavigate();
     const { toggleSidebar } = useSidebar();
+    useEffect(() => {
+      threadModel.init();
+    }, [channelId, parentId]);
     return (
       <MessageListArgsProvider streamId="side">
         <div
@@ -292,6 +296,12 @@ export const MainConversation = observer(
     const threadModel = app.getThread(channelId);
     const { toggleSidebar } = useSidebar();
 
+    useEffect(() => {
+      threadModel?.init();
+    }, [channelId]);
+
+    if (!threadModel) return null;
+
     return (
       <MessageListArgsProvider streamId="main" value={location.state}>
         <div
@@ -339,6 +349,7 @@ export const MainConversation = observer(
               {/*<ButtonWithIcon icon="refresh" onClick={() => dispatch(init({}))} iconSize={24} />*/}
             </Toolbar>
           </div>
+          <DescriptionBar channelId={channelId} />
           <div className="conversation">
             {(!children || !isMobile()) && (
               <Conversation channelId={channelId} />

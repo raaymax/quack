@@ -1,9 +1,10 @@
 import styled from "styled-components";
 import { NavButton } from "./NavButton";
-import { ClassNames, cn, isMobile } from "../../utils";
+import { ClassNames, cn, isMobile, isUserActive } from "../../utils";
 import { client } from "../../core";
 import { User } from "../../types";
 import { ProfilePic } from "../atoms/ProfilePic";
+import { SectionHeader } from "../atoms/SectionHeader";
 import { useSidebar } from "../contexts/useSidebar";
 import { useNavigate, useParams } from "../AppRouter.tsx";
 import { observer } from "mobx-react-lite";
@@ -12,25 +13,9 @@ import {
   ReadReceiptModel,
   ReadReceiptsModel,
 } from "../../core/models/readReceipt";
+import { getFileUrl } from "../hooks/fileUrl";
 
 const UserListContainer = styled.div`
-  .header {
-    display: flex;
-    flex-direction: row;
-    padding: 5px 10px;
-    padding-top: 20px;
-    font-weight: bold;
-    .title {
-      flex: 1;
-    }
-
-    i {
-      cursor: pointer;
-      flex: 0 15px;
-      font-size: 19px;
-    }
-  }
-
   .user {
     padding: 5px 5px 5px 20px;
     cursor: pointer;
@@ -63,6 +48,8 @@ type NavUserButtonProps = {
     system?: boolean;
     connected?: boolean;
     lastSeen?: string;
+    avatarFileId?: string;
+    status?: "active" | "inactive" | "away";
   };
   size?: number;
   badge: ReadReceiptModel | null;
@@ -70,13 +57,15 @@ type NavUserButtonProps = {
   onClick: () => void;
 };
 
-export const NavUserButton = observer(({
+export const NavUserButton = ({
   user,
   size,
   badge,
   className,
   onClick,
 }: NavUserButtonProps) => {
+  const avatarUrl = getFileUrl(user.avatarFileId);
+
   if (user.system) {
     return (
       <NavButton
@@ -88,7 +77,7 @@ export const NavUserButton = observer(({
       >
         <ProfilePic
           type="status"
-          userId={user.id}
+          avatarUrl={avatarUrl}
           showStatus={false}
           className="pic-inline"
         />
@@ -98,15 +87,14 @@ export const NavUserButton = observer(({
       </NavButton>
     );
   }
-  const active = user.lastSeen &&
-    new Date(user.lastSeen).getTime() > Date.now() - 1000 * 60 * 5;
+  const active = isUserActive(user.lastSeen);
   return (
     <NavButton
       size={size}
       className={cn("user", {
         connected: user.connected ?? false,
         offline: !user.connected,
-        recent: Boolean(active),
+        recent: active,
         system: user.system ?? false,
       }, className)}
       data-id={user.id}
@@ -115,7 +103,8 @@ export const NavUserButton = observer(({
     >
       <ProfilePic
         type="status"
-        userId={user.id}
+        avatarUrl={avatarUrl}
+        status={user.status || "inactive"}
         showStatus
         className="pic-inline"
       />
@@ -124,7 +113,7 @@ export const NavUserButton = observer(({
       </span>
     </NavButton>
   );
-});
+};
 
 const NavUserContainer = observer(
   ({ user, badges }: { user: User; badges: ReadReceiptsModel }) => {
@@ -160,9 +149,7 @@ export const NavUsers = observer(() => {
 
   return (
     <UserListContainer>
-      <div className="header">
-        <span className="title">users</span>
-      </div>
+      <SectionHeader title="users" />
       {users && users.map((user) => (
         <NavUserContainer
           key={user.id as any}

@@ -1,18 +1,31 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import "../../../styles.ts";
 import { Message } from "./Message.tsx";
 import { HoverProvider } from "../contexts/hover.tsx";
-import { app } from "../../core/index.ts";
+import { app, client } from "../../core/index.ts";
 import { MessageModel } from "../../core/models/message.ts";
+
+// Store original getUrl to restore later
+const originalGetUrl = client.api.getUrl;
+
+// Mock file URLs for stories
+const mockFileUrls: Record<string, string> = {
+  "123": "https://picsum.photos/seed/img1/400/300",
+  "321": "https://picsum.photos/seed/img2/400/300",
+};
 
 const LOREM =
   "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris sollicitudin scelerisque nisl quis condimentum. Aliquam eget lacus eros. Vestibulum ac posuere massa, eget euismod enim. Nulla interdum magna tortor. Vestibulum sagittis, ex in maximus maximus, neque purus tempor magna, sit amet molestie sapien est id augue. Nulla imperdiet leo nec nisl commodo, nec fringilla leo vehicula. Suspendisse nibh orci, convallis at dictum ut, volutpat non orci. Nulla scelerisque sapien eget purus ullamcorper, eu pellentesque odio tincidunt. Vivamus quis maximus sapien, vitae placerat urna. Vestibulum finibus facilisis aliquam. Aliquam iaculis augue vel metus varius cursus.";
 
 const meta: Meta<typeof Message> = {
   component: Message,
+  title: "Organisms/Message",
   parameters: {},
   loaders: [async () => {
+    // Mock getUrl to return placeholder images for fake file IDs
+    client.api.getUrl = (fileId: string) => {
+      return mockFileUrls[fileId] || originalGetUrl(fileId);
+    };
     app.channels.upsert({
       id: "test",
       name: "main",
@@ -27,6 +40,21 @@ const meta: Meta<typeof Message> = {
       </HoverProvider>
     ),
   ],
+  argTypes: {
+    model: {
+      control: false,
+      description: "MessageModel instance",
+    },
+    mode: {
+      control: "select",
+      options: ["default", "thread", "pinned", "search"],
+      description: "Display mode for the message",
+    },
+    sameUser: {
+      control: "boolean",
+      description: "Whether this message is from the same user as the previous one",
+    },
+  },
 };
 
 export default meta;
@@ -70,7 +98,7 @@ export const Primary: Story = {
   args: {
     model: MessageModel.from({
       ...BaseMessage,
-    }, app.getMessages("test")),
+    }, app.getMessages("test")!),
   },
 };
 
@@ -78,7 +106,7 @@ export const LongText: Story = {
   args: {
     model: MessageModel.from({
       ...LongTextMessage,
-    }, app.getMessages("test")),
+    }, app.getMessages("test")!),
   },
 };
 
@@ -96,7 +124,7 @@ export const WithThread: Story = {
           userId: "321",
         },
       ],
-    }, app.getMessages("test")),
+    }, app.getMessages("test")!),
   },
 };
 export const WithReaction: Story = {
@@ -117,7 +145,7 @@ export const WithReaction: Story = {
           reaction: ":thumbsdown:",
         },
       ],
-    }, app.getMessages("test")),
+    }, app.getMessages("test")!),
   },
 };
 
@@ -126,7 +154,7 @@ export const Ephemeral: Story = {
     model: MessageModel.from({
       ...BaseMessage,
       ephemeral: true,
-    }, app.getMessages("test")),
+    }, app.getMessages("test")!),
   },
 };
 
@@ -134,7 +162,7 @@ export const Continuation: Story = {
   args: {
     model: MessageModel.from({
       ...BaseMessage,
-    }, app.getMessages("test")),
+    }, app.getMessages("test")!),
     mode: "default",
     sameUser: true,
   },
@@ -149,7 +177,7 @@ export const EmojiOnly: Story = {
         emoji: ":thumbsup:",
       },
       emojiOnly: true,
-    }, app.getMessages("test")),
+    }, app.getMessages("test")!),
     mode: "default",
   },
 };
@@ -170,7 +198,7 @@ export const WithImages: Story = {
           contentType: "image/jpeg",
         },
       ],
-    }, app.getMessages("test")),
+    }, app.getMessages("test")!),
     mode: "default",
   },
 };
@@ -184,7 +212,7 @@ export const WithError: Story = {
         msg: "Sending message failed",
         action: "retry",
       },
-    }, app.getMessages("test")),
+    }, app.getMessages("test")!),
     mode: "default",
   },
 };
@@ -225,7 +253,7 @@ export const WithLinkPreview: Story = {
           contentType: "text/html",
         },
       ],
-    }, app.getMessages("test")),
+    }, app.getMessages("test")!),
     mode: "default",
   },
 };
@@ -262,7 +290,7 @@ export const WithLinkAnnotations: Story = {
           ],
         },
       ],
-    }, app.getMessages("test")),
+    }, app.getMessages("test")!),
     mode: "default",
   },
 };

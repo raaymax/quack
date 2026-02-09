@@ -2,6 +2,8 @@ import styled from "styled-components";
 import { ProfilePic } from "../atoms/ProfilePic";
 import { observer } from "mobx-react-lite";
 import { ReadReceiptModel } from "../../core/models/readReceipt";
+import { useApp } from "../contexts/appState";
+import { client } from "../../core";
 
 const StyledReadReceipt = styled.div`
   position: relative;
@@ -23,6 +25,8 @@ type ReadReceiptProps = {
 };
 
 export const ReadReceipt = observer(({ model }: ReadReceiptProps) => {
+  const app = useApp();
+
   if (!model) return null;
   if (!model.length) return null;
 
@@ -30,10 +34,19 @@ export const ReadReceipt = observer(({ model }: ReadReceiptProps) => {
     <StyledReadReceipt>
       {model.length && (
         <div>
-          {model
-            .map((p) => (
-              <ProfilePic userId={p.userId} key={p.userId} type="tiny" />
-            ))}
+          {model.map((p) => {
+            const user = app.users.get(p.userId);
+            const avatarUrl = user?.avatarFileId
+              ? client.api.getUrl(user.avatarFileId)
+              : undefined;
+            return (
+              <ProfilePic
+                key={p.userId}
+                type="tiny"
+                avatarUrl={avatarUrl}
+              />
+            );
+          })}
         </div>
       )}
     </StyledReadReceipt>

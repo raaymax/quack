@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="NONE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="48944160-9268-4aaa-a3d4-badf022846f4" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../app/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../app/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/Cargo.lock" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/Cargo.toml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/build.rs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/capabilities/default.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/gen/android/.editorconfig" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/gen/android/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/gen/android/app/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/gen/android/app/build.gradle.kts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/gen/android/app/proguard-rules.pro" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/gen/android/app/src/main/AndroidManifest.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/gen/android/app/src/main/java/io/codecat/chat/app/MainActivity.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/gen/android/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/gen/android/app/src/main/res/drawable/ic_launcher_background.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/gen/android/app/src/main/res/layout/activity_main.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/gen/android/app/src/main/res/mipmap-hdpi/ic_launcher.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/gen/android/app/src/main/res/mipmap-hdpi/ic_launcher_foreground.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/gen/android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/gen/android/app/src/main/res/mipmap-mdpi/ic_launcher.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/gen/android/app/src/main/res/mipmap-mdpi/ic_launcher_foreground.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/gen/android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/gen/android/app/src/main/res/mipmap-xhdpi/ic_launcher.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/gen/android/app/src/main/res/mipmap-xhdpi/ic_launcher_foreground.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/gen/android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/gen/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/gen/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_foreground.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/gen/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/gen/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/gen/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/gen/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/gen/android/app/src/main/res/raw/cert.pem" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/gen/android/app/src/main/res/raw/cert2.pem" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/gen/android/app/src/main/res/values-night/themes.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/gen/android/app/src/main/res/values/colors.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/gen/android/app/src/main/res/values/strings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/gen/android/app/src/main/res/values/themes.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/gen/android/app/src/main/res/xml/file_paths.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/gen/android/app/src/main/res/xml/network_security_config.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/gen/android/build.gradle.kts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/gen/android/buildSrc/build.gradle.kts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/gen/android/buildSrc/src/main/java/io/codecat/chat/app/kotlin/BuildTask.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/gen/android/buildSrc/src/main/java/io/codecat/chat/app/kotlin/RustPlugin.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/gen/android/gradle.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/gen/android/gradle/wrapper/gradle-wrapper.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/gen/android/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/gen/android/gradlew" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/gen/android/gradlew.bat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/gen/android/settings.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/src/lib.rs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/src/main.rs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src-tauri/tauri.conf.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/js/core/client.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/js/core/client.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/vite.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../app/vite.config.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../deno.jsonc" beforeDir="false" afterPath="$PROJECT_DIR$/../deno.jsonc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../deno/api/mod.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../deno/api/mod.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../deno/server/inter/http/mod.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../deno/server/inter/http/mod.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../tmux.sh" beforeDir="false" afterPath="$PROJECT_DIR$/../tmux.sh" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 7
+}]]></component>
+  <component name="ProjectId" id="395C09cyLfUDHr4Np8tP9J7bZon" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "git-widget-placeholder": "dev",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/home/raay/Workspace/Quack/mobile",
+    "settings.editor.selected.configurable": "preferences.keymap"
+  }
+}]]></component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="48944160-9268-4aaa-a3d4-badf022846f4" name="Changes" comment="" />
+      <created>1769976319927</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1769976319927</updated>
+    </task>
+    <servers />
+  </component>
+</project>

@@ -13,3 +13,6 @@ todo.txt
 tsconfig.tsbuildinfo
 /ssl
 temp/
+
+# Android build artifacts
+mobile/android/**/build/

@@ -3,7 +3,7 @@ import { useCallback, useEffect } from "react";
 import { HoverProvider } from "../contexts/hover.tsx";
 import { isMobile } from "../../utils.ts";
 
-import { Toolbar } from "../atoms/Toolbar.tsx";
+import { Toolbar } from "../molecules/Toolbar.tsx";
 import { ButtonWithIcon } from "../molecules/ButtonWithIcon.tsx";
 import { useLocation, useNavigate, useParams } from "../AppRouter.tsx";
 import { MessageListArgsProvider } from "../contexts/messageListArgs.tsx";
@@ -56,6 +56,7 @@ const StyledSearch = styled.div`
 
 export const Header = observer(() => {
   const app = useApp();
+  const navigate = useNavigate();
   const { channelId } = useParams();
   const onSearch = useCallback(
     (search: string) => {
@@ -70,8 +71,9 @@ export const Header = observer(() => {
   const onClose = useCallback(() => {
     if (channelId) {
       app.clearSearch(channelId);
+      navigate(`/${channelId}`);
     }
-  }, [channelId]);
+  }, [channelId, navigate]);
   return (
     <StyledHeader>
       {isMobile()
@@ -118,6 +120,11 @@ export const SearchResults = observer(
     useEffect(() => {
       model.init();
     }, [model]);
+
+    // Don't render MessageList until messages model is ready
+    if (!model.messages) {
+      return <StyledList><div>Enter search query...</div></StyledList>;
+    }
 
     // Create a wrapper object that makes SearchModel compatible with MessageList
     const threadModelWrapper = {

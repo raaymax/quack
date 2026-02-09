@@ -10,6 +10,7 @@ import { SearchModel } from "./search.ts";
 export class ChannelModel {
   id: string;
   name: string;
+  description?: string;
   users: string[];
   threads: Record<string, ThreadModel>;
   search: SearchModel;
@@ -23,6 +24,7 @@ export class ChannelModel {
     this.root = root;
     this.id = value.id;
     this.name = value.name;
+    this.description = value.description;
     this.users = value.users;
     this.channelType = value.channelType;
     this.search = new SearchModel({
@@ -130,6 +132,7 @@ export class ChannelModel {
 
   patch = (value: Channel) => {
     this.name = value.name;
+    this.description = value.description;
     this.users = value.users;
     this.channelType = value.channelType;
   };

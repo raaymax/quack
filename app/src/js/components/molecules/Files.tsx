@@ -1,7 +1,11 @@
 import styled from "styled-components";
 import { File } from "../atoms/File";
 import { Image } from "../atoms/Image";
-import { observer } from "mobx-react-lite";
+import {
+  getDownloadUrl,
+  getFileUrl,
+  getThumbnailUrl,
+} from "../hooks/fileUrl";
 
 const IMAGE_TYPES = [
   "image/png",
@@ -26,37 +30,82 @@ const Container = styled.div`
   }
 `;
 
-type FilesProps = {
-  list: {
-    id?: string;
-    clientId?: string;
-    fileName: string;
-    contentType: string;
-  }[];
+type FileData = {
+  id?: string;
+  clientId?: string;
+  fileName: string;
+  contentType: string;
+  size?: number;
 };
 
-export const Files = observer(({ list }: FilesProps) =>
+type FilesProps = {
+  list: FileData[];
+};
+
+type ImageFileItemProps = {
+  file: FileData;
+  raw: boolean;
+};
+
+const ImageFileItem = ({ file, raw }: ImageFileItemProps) => {
+  const fileUrl = getFileUrl(file.id);
+  const thumbnailUrl = getThumbnailUrl(file.id, { h: 240 });
+  const src = raw ? fileUrl : thumbnailUrl;
+
+  return (
+    <div className="fli">
+      <Image
+        raw={raw}
+        fileName={file.fileName}
+        src={src ?? ""}
+        downloadUrl={fileUrl}
+        size={file.size}
+      />
+    </div>
+  );
+};
+
+type NonImageFileItemProps = {
+  file: FileData;
+};
+
+const NonImageFileItem = ({ file }: NonImageFileItemProps) => {
+  const downloadUrl = getDownloadUrl(file.id);
+
+  return (
+    <File
+      fileName={file.fileName}
+      contentType={file.contentType}
+      downloadUrl={downloadUrl}
+    />
+  );
+};
+
+export const Files = ({ list }: FilesProps) =>
   list.length > 0
     ? (
       <Container className="cmp-files">
         <div className="file-list">
           {list
             .filter((file) => IMAGE_TYPES.includes(file.contentType))
-            .map((file) => (
-              <div className="fli" key={file.id || file.clientId}>
-                <Image
-                  raw={RAW_IMAGE_TYPES.includes(file.contentType)}
-                  data={file}
+            .map((file) => {
+              const raw = RAW_IMAGE_TYPES.includes(file.contentType);
+              return (
+                <ImageFileItem
+                  key={file.id || file.clientId}
+                  file={file}
+                  raw={raw}
                 />
-              </div>
-            ))}
+              );
+            })}
         </div>
         <div className="file-list">
           {list
             .filter((file) => !IMAGE_TYPES.includes(file.contentType))
-            .map((file) => <File key={file.id || file.clientId} data={file} />)}
+            .map((file) => (
+              <NonImageFileItem key={file.id || file.clientId} file={file} />
+            ))}
         </div>
       </Container>
     )
-    : null
-);
+    : null;

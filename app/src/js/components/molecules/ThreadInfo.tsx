@@ -2,6 +2,8 @@ import styled from "styled-components";
 import { formatDateDetailed, formatTime } from "../../utils";
 import { ProfilePic } from "../atoms/ProfilePic";
 import { observer } from "mobx-react-lite";
+import { useApp } from "../contexts/appState";
+import { client } from "../../core";
 
 const Container = styled.div`
   width: auto;
@@ -53,6 +55,7 @@ type ThreadInfoProps = {
 
 export const ThreadInfo = observer(
   ({ navigate = () => {}, msg }: ThreadInfoProps) => {
+    const app = useApp();
     const {
       updatedAt,
       thread,
@@ -67,15 +70,20 @@ export const ThreadInfo = observer(
           navigate(`/${channelId}/t/${id}`);
         }}
       >
-        {[...new Set(thread.map((t) => t.userId))]
-          .map((userId) => (
+        {[...new Set(thread.map((t) => t.userId))].map((userId) => {
+          const user = app.users.get(userId);
+          const avatarUrl = user?.avatarFileId
+            ? client.api.getUrl(user.avatarFileId)
+            : undefined;
+          return (
             <ProfilePic
               className="thread-profile-pic"
               type="reply"
               key={userId}
-              userId={userId}
+              avatarUrl={avatarUrl}
             />
-          ))}
+          );
+        })}
         <div className="replies">
           {thread.length} {thread.length > 1 ? "replies" : "reply"}
         </div>

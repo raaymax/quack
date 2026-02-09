@@ -224,10 +224,9 @@ export function processUrls(text: string, info: SerializeInfo): MessageBody {
   return [{ text }];
 }
 
-// eslint-disable-next-line no-useless-escape
 const matchUrl = (text: string) =>
   text.match(
-    /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()!,@:%_\+.~#?&\/\/=]*)/g,
+    /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()!,@:%_+.~#?&//=]*)/g,
   );
 
 const isNotEmpty = (e: MessageBodyPart): boolean => {

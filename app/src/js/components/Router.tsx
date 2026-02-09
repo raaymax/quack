@@ -13,31 +13,31 @@ const RouteHandler = () => {
   const params = useParams();
   const { navigate } = useRouter();
   const [error, setError] = useState<Error | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isInitialLoading, setIsInitialLoading] = useState(!app.initCompleted);
 
   useEffect(() => {
     const loadRoute = async () => {
       try {
-        setIsLoading(true);
         setError(null);
 
         // Handle special routes
         if (params.isInvite || params.isReset) {
-          setIsLoading(false);
+          setIsInitialLoading(false);
           return;
         }
 
         // Initialize app if not already done
         await app.init();
-        console.log("App initialized:", app.initFailed);
         if (app.initFailed) throw new InitFailedError();
+        setIsInitialLoading(false);
 
         // Handle channel routes
         if (params.channelId) {
-          console.log("Loading channel:", params.channelId);
+          app.setLoading(true);
           const channel = await client.api.getChannelById(params.channelId);
+          app.setLoading(false);
           if (!channel) throw new PageNotFoundError();
-          console.log("Channel loaded:", channel);
+          app.channels.upsert(channel);
         } else {
           // Redirect to main channel if no channel specified
           const { mainChannelId } = await client.api.getUserConfig() || {};
@@ -46,11 +46,9 @@ const RouteHandler = () => {
             return;
           }
         }
-
-        setIsLoading(false);
       } catch (err) {
         setError(err instanceof Error ? err : new Error("Unknown error"));
-        setIsLoading(false);
+        setIsInitialLoading(false);
       }
     };
 
@@ -61,7 +59,7 @@ const RouteHandler = () => {
     return <ErrorPageS error={error} />;
   }
 
-  if (!app.initCompleted) {
+  if (isInitialLoading) {
     return <div>Loading...</div>;
   }
 
@@ -78,7 +76,7 @@ const RouteHandler = () => {
   if (params.channelId) {
     return (
       <Main>
-        {/*params.isSearch && <Discussion><Search /></Discussion>*/}
+        {params.isSearch && <Discussion><Search /></Discussion>}
         {params.isPins && <Discussion><Pins /></Discussion>}
         {!params.isPins && !params.isSearch && (
           <Discussion/>

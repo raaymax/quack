@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import "../../../styles.ts";
 import { EmojiSearch } from "./EmojiSearch.tsx";
 import { app } from "../../core/index.ts";
 
 const meta: Meta<typeof EmojiSearch> = {
   component: EmojiSearch,
+  title: "Organisms/EmojiSearch",
   parameters: {},
   loaders: [async () => {
     app.emojis.load();

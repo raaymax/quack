@@ -1,12 +1,18 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import "../../../styles.ts";
 import { ReadReceiptModel } from "../../core/models/readReceipt.ts";
 import { app } from "../../core/index.ts";
 import { ReadReceipt } from "./ReadReceipt.tsx";
 
 const meta: Meta<typeof ReadReceipt> = {
   component: ReadReceipt,
+  title: "Molecules/ReadReceipt",
+  argTypes: {
+    model: {
+      control: "object",
+      description: "Array of ReadReceiptModel objects representing users who read the message",
+    },
+  },
 };
 
 export default meta;

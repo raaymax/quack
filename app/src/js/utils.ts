@@ -179,6 +179,17 @@ export const buildEmojiNode = (
   return node;
 };
 
+/** Threshold for considering a user "active" (5 minutes) */
+export const ACTIVE_USER_THRESHOLD_MS = 5 * 60 * 1000;
+
+export const isUserActive = (
+  lastSeen?: string,
+  thresholdMs = ACTIVE_USER_THRESHOLD_MS,
+): boolean => {
+  if (!lastSeen) return false;
+  return new Date(lastSeen).getTime() > Date.now() - thresholdMs;
+};
+
 export type WithoutUndefined<T> = {
   [K in keyof T as T[K] extends undefined ? never : K]: T[K];
 };

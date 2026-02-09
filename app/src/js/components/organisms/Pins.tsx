@@ -6,7 +6,7 @@ import { Message as MessageType } from "../../types";
 import { useNavigate, useParams } from "../AppRouter.tsx";
 import { ButtonWithIcon } from "../molecules/ButtonWithIcon";
 import { MessageListArgsProvider } from "../contexts/messageListArgs";
-import { Toolbar } from "../atoms/Toolbar";
+import { Toolbar } from "../molecules/Toolbar";
 import { BaseRenderer } from "./MessageListRenderer";
 import { observer } from "mobx-react-lite";
 import { useApp } from "../contexts/appState";

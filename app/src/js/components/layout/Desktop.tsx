@@ -6,12 +6,13 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Workspaces } from "../organisms/Workspaces.tsx";
 import { Sidebar } from "../organisms/Sidebar.tsx";
 import { Conversation } from "../organisms/Conversation.tsx";
-import { Toolbar } from "../atoms/Toolbar.tsx";
+import { Toolbar } from "../molecules/Toolbar.tsx";
 import { ButtonWithIcon } from "../molecules/ButtonWithIcon.tsx";
 import { MessageListArgsProvider } from "../contexts/messageListArgs.tsx";
 import { SearchBox } from "../atoms/SearchBox.tsx";
 import { CollapsableColumns } from "../atoms/CollapsableColumns.tsx";
 import { DiscussionHeader } from "../molecules/DiscussionHeader.tsx";
+import { DescriptionBar } from "../molecules/DescriptionBar.tsx";
 import { observer } from "mobx-react-lite";
 import { useApp } from "../contexts/appState.tsx";
 import { Search } from "../organisms/Search.tsx";
@@ -96,7 +97,7 @@ export const Container = styled.div`
       & > .conversation {
         flex: 1;
         width: 100%;
-        height: calc(100% - 64px);
+        min-height: 0;
         display: flex;
         flex-direction: row;
       }
@@ -104,7 +105,7 @@ export const Container = styled.div`
       & > .conversation-with-context-bar {
         flex: 1;
         width: 100%;
-        height: calc(100% - 64px);
+        min-height: 0;
         display: flex;
         flex-direction: row;
         .conversation {
@@ -159,7 +160,7 @@ export const SideConversation = observer(
   ({ channelId, parentId }: SideConversationProps) => {
     const app = useApp();
     const threadModel = app.getThread(channelId, parentId);
-    if (!parentId) return null;
+    if (!parentId || !threadModel) return null;
     const message = threadModel.messages.get(parentId);
     const navigate = useNavigate();
 
@@ -227,8 +228,10 @@ export const MainConversation = observer(
     const channelModel = app.getChannel(channelId);
 
     useEffect(() => {
-      threadModel.init();
+      threadModel?.init();
     }, [channelId]);
+
+    if (!threadModel) return null;
 
     return (
       <MessageListArgsProvider streamId="main" value={location.state}>
@@ -260,6 +263,7 @@ export const MainConversation = observer(
               />
             </Toolbar>
           </div>
+          <DescriptionBar channelId={channelId} />
           <CollapsableColumns
             className={cn("conversation-with-context-bar", {
               "has-context-bar": Boolean(children),

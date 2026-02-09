@@ -1,0 +1,27 @@
+{
+  "name": "@quack/mobile",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Quack Mobile App - Native Android shell for Quack PWA",
+  "type": "module",
+  "main": "./src/quack-plugin.ts",
+  "exports": {
+    ".": "./src/quack-plugin.ts",
+    "./plugin": "./src/quack-plugin.ts"
+  },
+  "scripts": {
+    "config": "cd .. && deno task mobile:config",
+    "build": "echo 'No build needed - loads from server'",
+    "cap:sync": "npm run config && npx cap sync android",
+    "cap:open": "npx cap open android",
+    "cap:run": "npm run config && npx cap run android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.0.0",
+    "@capacitor/core": "^8.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.0.0",
+    "typescript": "^5.9.3"
+  }
+}

@@ -1,10 +1,10 @@
-import { useCallback } from "react";
 import styled from "styled-components";
 
 import { ProfilePic } from "../atoms/ProfilePic";
 import { LinkPreviewList } from "../atoms/LinkPreview";
 import { MessageBodyRenderer } from "../molecules/MessageBody";
 import { Files } from "../molecules/Files";
+import { MessageInfo } from "../molecules/MessageInfo";
 import { Reactions } from "../molecules/Reactions";
 import { MessageToolbar } from "../molecules/MessageToolbar";
 import { ThreadInfo } from "../molecules/ThreadInfo";
@@ -20,6 +20,7 @@ import { useMessageListArgs } from "../contexts/useMessageListArgs";
 import { observer } from "mobx-react-lite";
 import { useApp } from "../contexts/appState";
 import { MessageModel } from "../../core/models/message";
+import { client } from "../../core";
 
 // deno-fmt-ignore
 const MessageContainer = styled.div`
@@ -132,30 +133,6 @@ const MessageContainer = styled.div`
   }
 `;
 
-const Info = observer(({ messageModel }: { messageModel: MessageModel }) => {
-  const { clientId, info } = messageModel;
-  const app = useApp();
-
-  const onAction = useCallback(() => {
-    if (info?.action === "resend") {
-      app.getThread(messageModel.channelId, messageModel.parentId)
-        .resendMessage(messageModel);
-    }
-  }, [clientId, info]);
-
-  if (!info) return null;
-  return (
-    <div
-      onClick={onAction}
-      className={["info", info.type, ...(info.action ? ["action"] : [])].join(
-        " ",
-      )}
-    >
-      {info.msg}
-    </div>
-  );
-});
-
 type MessageBaseProps = {
   model: MessageModel;
   onClick?: (e?: React.MouseEvent) => void;
@@ -205,7 +182,12 @@ const MessageBase = observer(
         onMouseLeave={onLeave}
       >
         {!sameUser
-          ? <ProfilePic type="regular" userId={userId} />
+          ? (
+            <ProfilePic
+              type="regular"
+              avatarUrl={user?.avatarFileId ? client.api.getUrl(user.avatarFileId) : undefined}
+            />
+          )
           : <div className="spacy side-time">{formatTime(createdAt)}</div>}
         <div className="body">
           {!sameUser && <MessageHeader user={user} createdAt={createdAt} />}
@@ -219,7 +201,7 @@ const MessageBase = observer(
 
           <Files list={model.attachments || []} />
           {linkPreviews && <LinkPreviewList links={linkPreviews} />}
-          <Info messageModel={model} />
+          <MessageInfo messageModel={model} />
           <Reactions messageModel={model} />
           {streamName != "side" && (
             <ThreadInfo navigate={navigate} msg={model} />

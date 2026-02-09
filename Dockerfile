@@ -10,9 +10,17 @@ ARG APP_VERSION=3.x.x
 ENV APP_VERSION=$APP_VERSION
 RUN APP_NAME=quack APP_VERSION=$APP_VERSION npm run build
 
-FROM denoland/deno:alpine-2.5.0
-RUN apk -U upgrade
-RUN apk add vips-cpp build-base vips vips-dev
+FROM denoland/deno:alpine-2.6.8
+# WORKAROUND: Deno alpine image ships glibc-linked libs in /usr/local/lib/ that break
+# apk and post-install triggers (libz, libcrypto, libzstd, libgcc_s shadow Alpine's musl libs).
+# Move them aside during apk install, then restore for Deno compatibility.
+# See: https://github.com/denoland/deno_docker/issues/373 — remove when fixed upstream
+RUN mv /usr/local/lib /usr/local/lib.bak \
+    && mkdir /usr/local/lib \
+    && apk -U upgrade \
+    && apk add vips-cpp build-base vips vips-dev \
+    && cp -a /usr/local/lib.bak/* /usr/local/lib/ \
+    && rm -rf /usr/local/lib.bak
 ENV ENVIRONMENT=production
 RUN mkdir -p /app
 WORKDIR /app

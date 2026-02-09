@@ -1,10 +1,16 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import "../../../styles.ts";
 import { LinkPreview } from "./LinkPreview.tsx";
 
 const meta: Meta<typeof LinkPreview> = {
   component: LinkPreview,
+  title: "Atoms/LinkPreview",
+  argTypes: {
+    link: {
+      control: "object",
+      description: "Link preview data with url, siteName, title, description, and images",
+    },
+  },
 };
 
 export default meta;

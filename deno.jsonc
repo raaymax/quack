@@ -18,6 +18,7 @@
     "@planigale/sse": "jsr:@planigale/sse@0.2.8",
     "@std/assert": "jsr:@std/assert@1.0.14",
     "@std/encoding": "jsr:@std/encoding@1.0.10",
+    "@std/fs": "jsr:@std/fs@1.0.17",
     "@std/path": "jsr:@std/path@1.1.2",
     "@types/node": "npm:@types/node@^24.4.0",
     "argon2": "npm:@node-rs/argon2@2.0.2",
@@ -39,7 +40,7 @@
   },
   "lint": {
     "include": ["deno/"],
-    "exclude": ["packages/", "deno/**/__tests__/*", "deno/server/uploads/**", "**/node_modules/**", "app/.cache", "temp/**"],
+    "exclude": ["packages/", "deno/server/uploads/**", "**/node_modules/**", "app/.cache", "temp/**"],
     "rules": {
       "tags": ["recommended"],
       "exclude": ["no-unused-vars", "no-explicit-any", "require-await"]
@@ -62,10 +63,9 @@
     "migrate": "deno task -c ./deno/migrate/deno.json migrate up",
     "migrate:tests": "DATABASE_URL='mongodb://chat:chat@localhost:27017/tests?authSource=admin' deno task migrate",
     "test": "DATABASE_URL='mongodb://chat:chat@localhost:27017/tests?authSource=admin' deno test -A",
-    "ssl": "mkdir -p ssl && openssl req -x509 -newkey rsa:4096 -keyout ssl/key.pem -out ssl/cert.pem -days 365 -nodes -subj '/CN=localhost'",
+    "ssl": "deno run -A deno/tools/generate-ssl.ts",
     "check": "deno fmt && deno lint && deno task test",
-    "android:build": "npm run android:build",
-    "desktop:build": "npm run desktop:build"
+    "mobile:config": "deno run -A deno/tools/export-mobile-config.ts"
   },
   "compilerOptions": {
     "jsx": "react",

@@ -25,6 +25,7 @@ Inspired by Slack but more affordable for private use, Quack combines the best f
 
 - E2EE support for more privacy
 - Progressive Web Application (PWA)
+- Native Android app with background notifications
 - Self-hosted for privacy and security
 - Multi-channel support
 - Direct messaging
@@ -150,6 +151,25 @@ cd ./app
 npm install
 npm run storybook
 ```
+
+## Mobile App
+Build the native Android app with background push notifications:
+```sh
+cd ./mobile
+npm install
+export QUACK_SERVER_URL="https://your-quack-server.com"
+npm run cap:sync
+npm run cap:open  # Opens Android Studio
+```
+
+See [Mobile App Documentation](docs/mobile-app.md) for detailed setup instructions.
+
+# Documentation
+
+- [System Architecture](docs/ARCHITECTURE.md) — Backend layers, frontend patterns, data flow, encryption
+- [Coding Conventions](docs/CONVENTIONS.md) — File naming, component patterns, import order, git workflow
+- [Architecture Decision Records](docs/adr/README.md) — 12 ADRs covering runtime, state management, encryption, and more
+- [Mobile App](docs/mobile-app.md) — Capacitor Android build setup
 
 # Plugins
 Chat have plugin system. Example plugin can be found in `plugins/example`.

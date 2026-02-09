@@ -11,7 +11,7 @@ import { client } from "../client.ts";
 import type { MessagesModel } from "./messages.ts";
 
 export class MessageModel implements ViewMessage {
-  secured: false = false;
+  secured = false as const;
   id: Eid;
   channelId: Eid;
   userId: Eid;
@@ -219,7 +219,7 @@ export class MessageModel implements ViewMessage {
 
   async remove() {
     if (!this.root) throw new Error("Root not set");
-    await this.root.getMessages(this.channelId, this.parentId).remove(this.id);
+    await this.root.getMessages(this.channelId, this.parentId)?.remove(this.id);
   }
 
   addReaction = flow(function* (this: MessageModel, reaction: string) {

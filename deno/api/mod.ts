@@ -1,4 +1,3 @@
-// deno-lint-ignore-file no-window
 import { SSESource } from "@jsr/planigale__sse";
 import {
   ApiErrorResponse,
@@ -16,11 +15,6 @@ import { FilesAPI } from "./files.ts";
 
 export * from "./types.ts";
 
-declare global {
-  interface Window {
-    isTauri: boolean;
-  }
-}
 declare const document: any;
 
 const isDeno = typeof window === "undefined";
@@ -104,7 +98,7 @@ class API extends EventTarget {
 
   constructor(url: string, opts: { fetch: typeof fetch; sse?: boolean }) {
     super();
-    this.baseUrl = isDeno || window?.isTauri ? url : "";
+    this.baseUrl = isDeno ? url : "";
     this.abortController = new AbortController();
     this.source = null;
     this.tokenInit = () => {
@@ -367,11 +361,11 @@ class API extends EventTarget {
   };
 
   createChannel = async (
-    { name, users, channelType }: CreateChannelRequest,
+    { name, description, users, channelType }: CreateChannelRequest,
   ) => {
     return await this.callApi("/api/channels", {
       method: "POST",
-      body: JSON.stringify({ name, users, channelType }),
+      body: JSON.stringify({ name, description, users, channelType }),
       headers: {
         "Content-Type": "application/json",
       },
@@ -550,6 +544,7 @@ class API extends EventTarget {
           method: "POST",
           body: JSON.stringify({
             name: msg.name,
+            description: msg.description,
             users: msg.users,
             channelType: msg.channelType,
           }),

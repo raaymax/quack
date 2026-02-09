@@ -19,6 +19,7 @@ export type RegistrationRequest = {
   email: string;
 };
 
+// deno-lint-ignore ban-types
 type Arg<T extends Object> = T | ((chat: Chat) => T);
 const asyncLocalStorage = new AsyncLocalStorage<{ instances: Chat[] }>();
 
@@ -113,6 +114,7 @@ export class Chat {
     this._register();
   }
 
+  // deno-lint-ignore ban-types
   arg<I extends Object>(arg: Arg<I>): I {
     if (typeof arg === "function") {
       return arg(this);

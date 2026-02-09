@@ -39,10 +39,12 @@ export class EmojiModel {
 export class EmojisModel {
   emojis: { [id: string]: EmojiModel };
   root: AppModel;
+  _fuse: Fuse<EmojiModel> | null = null;
 
   constructor(root: AppModel) {
     makeAutoObservable(this, {
       root: false,
+      _fuse: false,
     });
     this.root = root;
     this.emojis = {};
@@ -54,6 +56,7 @@ export class EmojisModel {
       Object.values(this.emojis).map((emoji) => emoji.dispose()),
     );
     this.emojis = {};
+    this._fuse = null;
   }
 
   upsert(emoji: Emoji) {
@@ -62,6 +65,7 @@ export class EmojisModel {
     } else {
       this.emojis[emoji.shortname].patch(emoji);
     }
+    this._fuse = null; // Invalidate cache when emojis change
   }
 
   load = flow(function* (this: EmojisModel) {
@@ -81,13 +85,16 @@ export class EmojisModel {
   }
 
   getFuse() {
-    return new Fuse(Object.values(this.emojis).filter((e: Emoji) => !e.empty), {
-      findAllMatches: true,
-      includeMatches: true,
-      keys: [
-        "name",
-        "shortname",
-      ],
-    });
+    if (!this._fuse) {
+      this._fuse = new Fuse(
+        Object.values(this.emojis).filter((e: Emoji) => !e.empty),
+        {
+          findAllMatches: true,
+          includeMatches: true,
+          keys: ["name", "shortname"],
+        },
+      );
+    }
+    return this._fuse;
   }
 }

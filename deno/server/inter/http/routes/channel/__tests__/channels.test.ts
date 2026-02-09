@@ -50,6 +50,29 @@ Deno.test("/api/channels", async () => {
   });
 });
 
+Deno.test("/api/channels - channel with description", async () => {
+  await Chat.test(app, { type: "handler" }, async (agent) => {
+    await Chat.init(repo, agent)
+      .login("admin")
+      .connectSSE()
+      .createChannel({
+        name: "test-channel-with-description",
+        description: "This is a test channel description",
+      })
+      .nextEvent((event: any) => {
+        assertEquals(event.type, "channel");
+        assertEquals(event.name, "test-channel-with-description");
+        assertEquals(event.description, "This is a test channel description");
+      })
+      .getChannel(async (channel) => {
+        assertEquals(channel.name, "test-channel-with-description");
+        assertEquals(channel.description, "This is a test channel description");
+      })
+      .removeChannel()
+      .end();
+  });
+});
+
 Deno.test("/api/channels - other user receives notification about channel", async () =>
   await Chat.test(app, { type: "handler" }, async (agent) => {
     const member = Chat.init(repo, agent).login("member");

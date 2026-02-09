@@ -39,7 +39,7 @@ export const Conversation = observer(
       e.preventDefault();
       e.stopPropagation();
       const { files } = e.dataTransfer;
-      app.getThread(channelId, parentId).input.files.uploadMany(files);
+      app.getThread(channelId, parentId)?.input.files.uploadMany(files);
     }, [channelId, parentId]);
 
     const dragOverHandler = useCallback((ev: React.DragEvent) => {
@@ -52,7 +52,7 @@ export const Conversation = observer(
     }, [latest]);
 
     useEffect(() => {
-      app.getMessages(channelId, parentId).load();
+      app.getMessages(channelId, parentId)?.load();
     }, []);
 
     useEffect(() => {

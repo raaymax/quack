@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import styled from "styled-components";
-import { ChannelCreate } from "./ChannelCreate";
+import { ChannelCreateForm } from "./ChannelCreateForm";
 import { Channel } from "./NavChannel";
+import { SectionHeader } from "../atoms/SectionHeader";
 import { useSidebar } from "../contexts/useSidebar";
 import { isMobile } from "../../utils";
 import { useNavigate, useParams } from "../AppRouter.tsx";
@@ -9,23 +10,6 @@ import { observer } from "mobx-react-lite";
 import { useApp } from "../contexts/appState";
 
 const ChannelsContainer = styled.div`
-  .header {
-    display: flex;
-    flex-direction: row;
-    padding: 5px 10px;
-    padding-top: 20px;
-    font-weight: bold;
-    .title {
-      flex: 1;
-    }
-
-    i {
-      cursor: pointer;
-      flex: 0 15px;
-      font-size: 19px;
-    }
-  }
-
   .channel {
     padding: 5px 5px 5px 20px;
     cursor: pointer;
@@ -50,7 +34,7 @@ type NavChannelsProps = {
 };
 
 export const NavChannels = observer(({ icon }: NavChannelsProps) => {
-  const [show, setShow] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const app = useApp();
   let navigate = (_path: string) => {};
   try {
@@ -60,16 +44,31 @@ export const NavChannels = observer(({ icon }: NavChannelsProps) => {
   const { channelId: id } = useParams();
   const { hideSidebar } = useSidebar();
   const channels = app.channels.getAll(["PUBLIC", "PRIVATE"]);
+
+  const handleCreateChannel = useCallback(
+    (data: { name: string; description: string; type: "public" | "private" }) => {
+      app.channels.create({
+        name: data.name,
+        description: data.description,
+        channelType: data.type.toUpperCase() as "PUBLIC" | "PRIVATE",
+      });
+      setShowCreateModal(false);
+    },
+    [app]
+  );
+
   return (
     <ChannelsContainer>
-      <div className="header">
-        <span className="title">channels</span>
-        <i
-          className={show ? "fa-solid fa-minus" : "fa-solid fa-plus"}
-          onClick={() => setShow(!show)}
-        />
-      </div>
-      {show && <ChannelCreate />}
+      <SectionHeader
+        title="channels"
+        actionIcon="plus"
+        onAction={() => setShowCreateModal(true)}
+      />
+      <ChannelCreateForm
+        isOpen={showCreateModal}
+        onSubmit={handleCreateChannel}
+        onCancel={() => setShowCreateModal(false)}
+      />
       {channels && channels.map((c) => (
         <Channel
           channelId={c.id}
