@@ -19,8 +19,8 @@ RUN mv /usr/local/lib /usr/local/lib.bak \
     && mkdir /usr/local/lib \
     && apk -U upgrade \
     && apk add vips-cpp build-base vips vips-dev \
-    && rm -rf /usr/local/lib \
-    && mv /usr/local/lib.bak /usr/local/lib
+    && cp -a /usr/local/lib.bak/* /usr/local/lib/ \
+    && rm -rf /usr/local/lib.bak
 ENV ENVIRONMENT=production
 RUN mkdir -p /app
 WORKDIR /app
