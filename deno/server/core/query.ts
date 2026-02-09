@@ -6,7 +6,7 @@ import { serialize } from "./serializer.ts";
 
 export type Event = {
   type: string;
-  body: any;
+  body: unknown;
 };
 export type Definition = {
   type: string;
@@ -38,7 +38,10 @@ export function createQuery<A extends Definition, B>(
       async internal() {
         return await exec(body);
       },
-      then(onfulfilled: (value: B) => any, onrejected: (reason: any) => any) {
+      then<TResult1 = B, TResult2 = never>(
+        onfulfilled: (value: B) => TResult1 | PromiseLike<TResult1>,
+        onrejected: (reason: unknown) => TResult2 | PromiseLike<TResult2>,
+      ): PromiseLike<TResult1 | TResult2> {
         return exec(body).then((ret) => serialize(ret)).then(
           onfulfilled,
           onrejected,

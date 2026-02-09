@@ -117,7 +117,7 @@ Create standard story template with:
 ### 2.1 Type Safety (HIGH PRIORITY)
 - [ ] Fix pre-existing TypeScript errors (17 errors in base)
 - [x] Remove `any` types from backend core (serializers, bus, command/query, repos, HTTP/CLI) — PR #272
-- [x] Remove `any` types from storage, encryption, config, migrate, tools modules
+- [x] Remove `any` types from storage, encryption, config, migrate, tools modules — PR #273
 - [ ] Remove `any` types from API module (`deno/api/`) — ~30 instances
 - [ ] Remove `any` types from frontend (`app/src/`) — ~20 instances
 - [ ] Remove `any` types from test files — ~98 instances across 19 files
