@@ -49,7 +49,7 @@ export class MessageModel implements ViewMessage {
     favicons: string[];
     charset: string;
   }[];
-  parsingErrors?: any[];
+  parsingErrors?: Array<{ message: string; path?: string }>;
   attachments?: Array<{
     id: string;
     fileName: string;

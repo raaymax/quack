@@ -118,7 +118,7 @@ export const NavUserButton = ({
 const NavUserContainer = observer(
   ({ user, badges }: { user: User; badges: ReadReceiptsModel }) => {
     const app = useApp();
-    const channel = app.channels.getDirect(user.id as any);
+    const channel = app.channels.getDirect(String(user.id));
     let navigate = (_path: string) => {};
     try {
       navigate = useNavigate();
@@ -128,11 +128,11 @@ const NavUserContainer = observer(
     return (
       <NavUserButton
         size={30}
-        user={user as any}
+        user={user as unknown as NavUserButtonProps["user"]}
         className={{ active: id === channel?.id }}
-        badge={badges.getForChannel(channel?.id as any)}
+        badge={badges.getForChannel(channel?.id ? String(channel.id) : "")}
         onClick={async () => {
-          const channel = await client.api.putDirectChannel(user.id as any);
+          const channel = await client.api.putDirectChannel(String(user.id));
           if (isMobile()) {
             hideSidebar();
           }
@@ -152,7 +152,7 @@ export const NavUsers = observer(() => {
       <SectionHeader title="users" />
       {users && users.map((user) => (
         <NavUserContainer
-          key={user.id as any}
+          key={String(user.id)}
           user={user}
           badges={app.readReceipts}
         />

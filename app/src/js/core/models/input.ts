@@ -43,6 +43,7 @@ export class InputModel {
   }
 
   send = flow(function* (this: InputModel, html: HTMLElement) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const payload: any = fromDom(html);
     html.innerHTML = "";
     payload.attachments = this.files.toJSON();

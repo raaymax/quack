@@ -20,6 +20,7 @@ export class Client {
     return this.api.req(...args);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   on(name: string, cb: (e: any) => void) {
     this.api.on(name, (ev: Event) => {
       if (ev instanceof CustomEvent) {
@@ -32,6 +33,7 @@ export class Client {
     return this;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   on2(name: string, cb: (e: any) => void) {
     const handler = (ev: Event) => {
       if (ev instanceof CustomEvent) {
@@ -45,7 +47,7 @@ export class Client {
     return () => this.api.off(name, handler);
   }
 
-  emit(type: string, data: any) {
+  emit(type: string, data: unknown) {
     return this.api.emit(new CustomEvent(type, { detail: data }));
   }
 }

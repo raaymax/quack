@@ -66,7 +66,7 @@ const Container = styled.div`
 
 type ErrorPageProps = {
   title?: string;
-  debug?: any;
+  debug?: Record<string, unknown>;
   buttons?: ("retry" | "back" | "home")[];
   description?: string | string[];
 };
