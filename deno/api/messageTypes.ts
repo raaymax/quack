@@ -22,7 +22,7 @@ export type MessageBodyButton = {
   button: string;
   _action: string;
   _style: string;
-  _payload: any;
+  _payload: Record<string, unknown>;
 };
 export type MessageBodyWrap = { wrap: MessageBody };
 export type MessageBodyColumn = { column: MessageBody; _width: number };
@@ -101,7 +101,7 @@ export type MessageData = {
     favicons: string[];
     charset: string;
   }[];
-  parsingErrors?: any[];
+  parsingErrors?: Array<{ message: string; path?: string }>;
   attachments?: Array<{ // TODO make this a separate entity
     id: string;
     fileName: string;
