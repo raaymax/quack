@@ -118,7 +118,7 @@ Create standard story template with:
 - [ ] Fix pre-existing TypeScript errors (17 errors in base)
 - [x] Remove `any` types from backend core (serializers, bus, command/query, repos, HTTP/CLI) — PR #272
 - [x] Remove `any` types from storage, encryption, config, migrate, tools modules — PR #273
-- [ ] Remove `any` types from API module (`deno/api/`) — ~30 instances
+- [x] Remove `any` types from API module (`deno/api/`) — PR #274
 - [ ] Remove `any` types from frontend (`app/src/`) — ~20 instances
 - [ ] Remove `any` types from test files — ~98 instances across 19 files
 - [ ] Fix `style: any` unused prop in `ActionButton.tsx:10`
@@ -304,6 +304,10 @@ Create standard story template with:
     - PR #255: Dependency updates (npm packages, @std alignment, ESLint React version)
     - PR #272: Remove `any` types from backend core
     - PR #273: Remove `any` types from storage, encryption, config, migrate, tools
+<<<<<<< HEAD
+    - PR #274: Remove `any` types from API module
+=======
+>>>>>>> origin/dev
   - 🔄 **Section 3: Architecture Refactoring - IN PROGRESS**
     - ✅ 3.7 Documentation: ARCHITECTURE.md, CONVENTIONS.md, 14 ADRs, CLAUDE.md
       - PR #256: Architecture docs
