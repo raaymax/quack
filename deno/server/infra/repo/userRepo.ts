@@ -23,7 +23,10 @@ export class UserRepo extends Repo<UserQuery, DbUser> {
       );
   }
 
-  async upgrade(query: UserQuery, data: { publicKey: any; secrets: Secret }) {
+  async upgrade(
+    query: UserQuery,
+    data: { publicKey: JsonWebKey; secrets: Secret },
+  ) {
     const { db } = await this.connect();
     await db.collection(this.COLLECTION)
       .updateOne(

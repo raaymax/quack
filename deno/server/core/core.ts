@@ -125,9 +125,20 @@ export class Core {
     }
   }
 
-  dispatch = (evt: EventFrom<typeof commands[keyof typeof commands]>) => (
-    (commands[evt.type] as any).handler(evt.body, this)
-  );
+  dispatch = (evt: EventFrom<typeof commands[keyof typeof commands]>) => {
+    // Type assertion needed: evt.type and evt.body are correlated through
+    // the discriminated union, but TypeScript can't prove it for indexed access
+    type AnyCommand = typeof commands[keyof typeof commands];
+    const cmd = commands[evt.type] as AnyCommand;
+    // deno-lint-ignore no-explicit-any
+    return (cmd.handler as (
+      body: any,
+      core: Core,
+    ) => ReturnType<AnyCommand["handler"]>)(
+      evt.body,
+      this,
+    );
+  };
 
   close = async () => {
     this.events.dispatch({

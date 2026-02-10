@@ -2,21 +2,7 @@ import * as v from "valibot";
 import { EntityId } from "../types.ts";
 import type { Core } from "./core.ts";
 import { AppError } from "./errors.ts";
-
-function serialize<A>(obj: A): any {
-  if (obj instanceof EntityId) {
-    return obj.toString();
-  }
-  if (Array.isArray(obj)) {
-    return obj.map(serialize);
-  }
-  if (typeof obj === "object") {
-    for (const key in obj) {
-      obj[key] = serialize(obj[key]);
-    }
-  }
-  return obj;
-}
+import { serialize } from "./serializer.ts";
 
 export type Definition<
   T extends string,
@@ -69,10 +55,12 @@ export function createCommand<
     internal() {
       return exec(body, core);
     },
-    then(
-      onfulfilled: (value: void | EntityId | string | null) => any,
-      onrejected: (reason: any) => any,
-    ) {
+    then<TResult1 = void | EntityId | string | null, TResult2 = never>(
+      onfulfilled: (
+        value: void | EntityId | string | null,
+      ) => TResult1 | PromiseLike<TResult1>,
+      onrejected: (reason: unknown) => TResult2 | PromiseLike<TResult2>,
+    ): PromiseLike<TResult1 | TResult2> {
       return exec(body, core).then((r) => serialize(r)).then(
         onfulfilled,
         onrejected,
@@ -94,10 +82,11 @@ export type CommandDirectory<T extends { type: string }[]> = {
 export function buildCommandCollection<T extends { type: string }[]>(
   events: T,
 ): CommandDirectory<T> {
-  return events.reduce((acc, curr) => {
-    acc[curr.type] = curr;
-    return acc;
-  }, {} as any);
+  const result: Record<string, T[number]> = {};
+  for (const curr of events) {
+    result[curr.type] = curr;
+  }
+  return result as CommandDirectory<T>;
 }
 
 export type EventFrom<T> = T extends Command<infer T, infer U>
