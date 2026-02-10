@@ -55,12 +55,12 @@ export class FilesAPI {
         delete this.aborts[args.clientId];
         resolve(data);
       }, { once: true });
-      xhr.upload.addEventListener("progress", (e: any) => {
+      xhr.upload.addEventListener("progress", (e: ProgressEvent) => {
         if (e.lengthComputable) {
           args.onProgress?.((e.loaded / e.total) * 100);
         }
       });
-      xhr.addEventListener("error", (e: any) => {
+      xhr.addEventListener("error", (e: Event) => {
         delete this.aborts[args.clientId];
         reject(e);
       }, { once: true });
@@ -120,7 +120,7 @@ export class FilesAPI {
     return new Promise((resolve, reject) => {
       (async () => {
         try {
-          const chunks: any[] = [];
+          const chunks: BlobPart[] = [];
           // @ts-ignore This is only for browsers
           for await (const chunk of stream) {
             chunks.push(chunk.value);

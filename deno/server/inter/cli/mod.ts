@@ -3,9 +3,15 @@ import { Command } from "@cliffy/command";
 const run = new Command()
   .arguments("<config:string>")
   .description("Runs the chat server.")
-  .action((options: any, source: string, destination?: string) => {
-    console.log("clone command called");
-  });
+  .action(
+    (
+      _options: Record<string, unknown>,
+      source: string,
+      _destination?: string,
+    ) => {
+      console.log("clone command called");
+    },
+  );
 
 await new Command()
   .name("chat")

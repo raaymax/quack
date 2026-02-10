@@ -10,8 +10,18 @@ type ScalingOpts = {
   height?: number;
 };
 
+interface FileService {
+  upload(
+    stream: ReadableStream<Uint8Array>,
+    options: FileOpts,
+  ): Promise<string>;
+  get(id: string): Promise<FileData>;
+  remove(id: string): Promise<void>;
+  exists(id: string): Promise<boolean>;
+}
+
 class Files {
-  _sharp: any;
+  _sharp: typeof sharp | null | undefined = undefined;
   async getSharp() {
     if (this._sharp === undefined) {
       try {
@@ -28,7 +38,7 @@ class Files {
   static getFileId = (id: string, width = 0, height = 0) =>
     `${id}-${width}x${height}`;
 
-  private service: any;
+  private service!: FileService;
 
   constructor(config: Config) {
     this.init(config.storage);
