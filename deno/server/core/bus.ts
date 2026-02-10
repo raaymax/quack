@@ -1,12 +1,14 @@
 import { EntityId } from "../types.ts";
 import { serialize } from "./serializer.ts";
 
-type Listeners = { [key: string]: ((...args: any[]) => void)[] };
+type BusMessage = Record<string, unknown>;
+type BusCallback = (msg: BusMessage) => void;
+type Listeners = { [key: string]: BusCallback[] };
 
 class Emitter {
   listeners: Listeners = {};
 
-  on = (ev: string, cb: (...args: any[]) => void) => {
+  on = (ev: string, cb: BusCallback) => {
     this.listeners[ev] = this.listeners[ev] ?? [];
     this.listeners[ev].push(cb);
     return () => {
@@ -14,10 +16,10 @@ class Emitter {
     };
   };
 
-  emit = (ev: string, ...args: any[]) => {
+  emit = (ev: string, msg: BusMessage) => {
     (this.listeners[ev] ?? []).forEach((cb) => {
       try {
-        cb(...serialize(args));
+        cb(serialize(msg));
       } catch (e) {
         console.error(e);
       }
@@ -45,7 +47,11 @@ export class Bus {
       {},
     );
 
-  group = (userIds: (EntityId | string)[], msg: any, senderId?: EntityId) => {
+  group = (
+    userIds: (EntityId | string)[],
+    msg: BusMessage,
+    senderId?: EntityId,
+  ) => {
     this.internalBus.emit("notif", {
       ...msg,
       _target: "group",
@@ -57,7 +63,7 @@ export class Bus {
     });
   };
 
-  direct = (userId: EntityId | string, msg: any) => {
+  direct = (userId: EntityId | string, msg: BusMessage) => {
     this.internalBus.emit(userId.toString(), { ...msg, _target: "direct" });
     this.internalBus.emit("notif", {
       ...msg,
@@ -66,12 +72,12 @@ export class Bus {
     });
   };
 
-  broadcast = (msg: any) => {
+  broadcast = (msg: BusMessage) => {
     this.internalBus.emit("all", { ...msg, _target: "broadcast" });
     this.internalBus.emit("notif", { ...msg, _target: "broadcast" });
   };
 
-  on = (userId: EntityId | string, cb: (...args: any[]) => void) => {
+  on = (userId: EntityId | string, cb: BusCallback) => {
     const a = this.internalBus.on(userId.toString(), cb);
     const b = this.internalBus.on("all", cb);
     return () => {
@@ -80,8 +86,8 @@ export class Bus {
     };
   };
 
-  notif = (msg: any) =>
+  notif = (msg: BusMessage) =>
     this.internalBus.emit("notif", { ...msg, _target: "notif" });
 
-  onNotif = (cb: (...args: any[]) => void) => this.internalBus.on("notif", cb);
+  onNotif = (cb: BusCallback) => this.internalBus.on("notif", cb);
 }

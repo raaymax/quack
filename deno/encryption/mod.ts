@@ -36,7 +36,7 @@ export function encryptor(jwk: JsonWebKey) {
   ]);
 
   return {
-    encrypt: async (message: any) => {
+    encrypt: async (message: unknown) => {
       const iv = crypto.getRandomValues(new Uint8Array(12)); // GCM uses 12 bytes IV
       const encoded = new TextEncoder().encode(JSON.stringify(message));
       const keyy = await key;
@@ -70,7 +70,7 @@ export function encryptor(jwk: JsonWebKey) {
   };
 }
 export async function encrypt(
-  message: any,
+  message: unknown,
   encryptionKey: JsonWebKey | CryptoKey,
 ) {
   const key = importKey(encryptionKey);
@@ -88,7 +88,7 @@ export async function encrypt(
   };
 }
 
-export async function decrypt<T = any>(
+export async function decrypt<T = unknown>(
   data: { encrypted: string; _iv: string },
   encryptionKey: JsonWebKey | CryptoKey,
 ): Promise<T> {
@@ -291,7 +291,7 @@ export async function prepareRegistration(
   };
 }
 
-export async function decryptSessionSecrets<T = any>(
+export async function decryptSessionSecrets<T = unknown>(
   email: string,
   password: string,
   secrets: EncryptedData,

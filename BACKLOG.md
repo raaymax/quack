@@ -116,12 +116,13 @@ Create standard story template with:
 
 ### 2.1 Type Safety (HIGH PRIORITY)
 - [ ] Fix pre-existing TypeScript errors (16 errors in base)
-- [x] Remove `any` types from backend core — serializers, bus, command/query, infra (PR #272)
-- [x] Remove `any` types from storage, encryption, config, migrate, tools (PR #273)
-- [x] Remove `any` types from API module — `ApiError.payload`, `callApi`, `mapFn`, files, messageTypes (PR #274)
-- [x] Remove `any` types from frontend — client, plugins, utils, models, components (PR #275)
-- [ ] Remove `any` types from test files (~98 instances across 19 files)
+- [x] Remove `any` types from backend core (serializers, bus, command/query, repos, HTTP/CLI) — PR #272
+- [x] Remove `any` types from storage, encryption, config, migrate, tools modules — PR #273
+- [x] Remove `any` types from API module (`deno/api/`) — PR #274
+- [x] Remove `any` types from frontend — client, plugins, utils, models, components — PR #275
+- [ ] Remove `any` types from test files — ~98 instances across 19 files
 - [x] Fix `style: any` prop in `ActionButton.tsx` — typed as `string` (PR #275)
+- [ ] Remove `@ts-ignore` comments in `deno/api/files.ts` (5+ instances)
 - [ ] Standardize Props interface naming
 
 ### 2.2 Dead Code & Unused Exports
@@ -301,6 +302,12 @@ Create standard story template with:
     - PR #254: Message story image fix
   - 🔄 **Section 2: Code Cleanup - IN PROGRESS**
     - PR #255: Dependency updates (npm packages, @std alignment, ESLint React version)
+    - PR #272: Remove `any` types from backend core
+    - PR #273: Remove `any` types from storage, encryption, config, migrate, tools
+<<<<<<< HEAD
+    - PR #274: Remove `any` types from API module
+=======
+>>>>>>> origin/dev
   - 🔄 **Section 3: Architecture Refactoring - IN PROGRESS**
     - ✅ 3.7 Documentation: ARCHITECTURE.md, CONVENTIONS.md, 14 ADRs, CLAUDE.md
       - PR #256: Architecture docs

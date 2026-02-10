@@ -9,7 +9,7 @@ export class ChannelRepo extends Repo<ChannelQuery, Channel> {
   override makeQuery(data: ChannelQuery) {
     const { userId, users, usersCount, ...rest } = serialize(data);
     const query = { ...rest };
-    const userQuery: any = {};
+    const userQuery: Record<string, unknown> = {};
     if (userId) userQuery["$elemMatch"] = { $eq: userId };
     if (users) userQuery["$all"] = users;
     if (usersCount) userQuery["$size"] = usersCount;
