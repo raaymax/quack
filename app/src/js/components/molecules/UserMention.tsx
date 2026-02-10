@@ -26,7 +26,7 @@ export const UserMentionBase = observer(({ user }: UserMentionBaseProps) => {
       data-id={user.id}
       href="#"
     >
-      <span className="name">@{user?.name || (user.id as any)}</span>
+      <span className="name">@{user?.name || String(user.id)}</span>
     </StyledLink>
   );
 });

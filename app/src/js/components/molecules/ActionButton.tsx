@@ -7,8 +7,8 @@ import { observer } from "mobx-react-lite";
 type ActionButtonProps = {
   children: React.ReactNode;
   action: string;
-  style: any;
-  payload: any;
+  style?: string;
+  payload?: Record<string, unknown>;
 };
 
 export const ActionButton = observer(

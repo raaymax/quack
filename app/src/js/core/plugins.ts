@@ -2,13 +2,13 @@ import { client } from "./client.ts";
 
 declare global {
   interface Window {
-    Chat: any;
+    Chat: typeof plugins;
   }
 }
 
-const registry: Record<string, Array<any>> = {};
+const registry: Record<string, Array<unknown>> = {};
 const plugins = {
-  register: (slot: string, data: any) => {
+  register: (slot: string, data: unknown) => {
     if (typeof data === "function") {
       data = data(client);
     }
@@ -16,7 +16,7 @@ const plugins = {
     [data].flat().forEach((d) => registry[slot].push(d));
   },
 
-  get: (slot: string): any => registry[slot] || [],
+  get: (slot: string): unknown[] => registry[slot] || [],
 };
 
 window.Chat = plugins;

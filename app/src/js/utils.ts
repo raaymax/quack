@@ -32,7 +32,7 @@ export const cn = (...classes: ClassNames[]) =>
     return item;
   }).flat().filter(Boolean).join(" ");
 
-export const same = (o1: any, o2: any, fields: string[]): boolean => {
+export const same = (o1: Record<string, unknown>, o2: Record<string, unknown>, fields: string[]): boolean => {
   return fields.every((field) => {
     return o1 && o2 && o1[field] === o2[field];
   });
