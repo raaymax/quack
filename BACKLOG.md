@@ -120,7 +120,7 @@ Create standard story template with:
 - [x] Remove `any` types from storage, encryption, config, migrate, tools modules — PR #273
 - [x] Remove `any` types from API module (`deno/api/`) — PR #274
 - [x] Remove `any` types from frontend — client, plugins, utils, models, components — PR #275
-- [ ] Remove `any` types from test files — ~98 instances across 19 files
+- [x] Remove `any` types from test files (chat.ts helper, 14 test files, users.ts) — PR #276
 - [x] Fix `style: any` prop in `ActionButton.tsx` — typed as `string` (PR #275)
 - [ ] Remove `@ts-ignore` comments in `deno/api/files.ts` (5+ instances)
 - [ ] Standardize Props interface naming
@@ -302,11 +302,15 @@ Create standard story template with:
     - PR #254: Message story image fix
   - 🔄 **Section 2: Code Cleanup - IN PROGRESS**
     - PR #255: Dependency updates (npm packages, @std alignment, ESLint React version)
+<<<<<<< HEAD
+    - PRs #272-276: Remove `any` types across codebase (~120 instances)
+=======
     - PR #272: Remove `any` types from backend core
     - PR #273: Remove `any` types from storage, encryption, config, migrate, tools
 <<<<<<< HEAD
     - PR #274: Remove `any` types from API module
 =======
+>>>>>>> origin/dev
 >>>>>>> origin/dev
   - 🔄 **Section 3: Architecture Refactoring - IN PROGRESS**
     - ✅ 3.7 Documentation: ARCHITECTURE.md, CONVENTIONS.md, 14 ADRs, CLAUDE.md

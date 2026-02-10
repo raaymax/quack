@@ -29,7 +29,10 @@ Deno.test("command /echo <text>", async () =>
           assertEquals(event.type, "message");
           assert(event.clientId, "Event should have clientId");
           assertEquals(event.flat, "Hello World!!");
-          assertEquals(event.message.text, "Hello World!!");
+          assertEquals(
+            (event.message as Record<string, unknown>).text,
+            "Hello World!!",
+          );
           assertEquals(event.channelId, chat.channelId);
         })
         .end(),
@@ -37,7 +40,7 @@ Deno.test("command /echo <text>", async () =>
 
 Deno.test("command /emoji <name>", async () =>
   await Chat.test(app, { type: "handler" }, async (agent) => {
-    const state: any = {};
+    const state: Record<string, unknown> = {};
     try {
       await Chat.init(repo, agent)
         .login("admin")
@@ -52,11 +55,11 @@ Deno.test("command /emoji <name>", async () =>
         ], async ({ channelId }) => {
           state.channelId = channelId;
         })
-        .nextEvent((event: any) => {
+        .nextEvent((event) => {
           assertEquals(event.type, "emoji");
           assertEquals(event.shortname, ":party-parrot:");
         })
-        .nextEvent((event: any) => {
+        .nextEvent((event) => {
           assertEquals(event.type, "message");
           assert(event.clientId, "Event should have clientId");
           assertEquals(event.flat, "Emoji :party-parrot: created");
@@ -82,12 +85,14 @@ Deno.test("command /invite", async () => {
       .createChannel({ name: "test-commands-invite" })
       .connectSSE()
       .executeCommand("/invite", [], ({ json }) => {
-        url = json.data;
+        url = json.data as string;
       })
-      .nextEvent((event: any) => {
+      .nextEvent((event) => {
         assertEquals(event.type, "message");
         assert(event.clientId, "Event should have clientId");
-        const m = event.flat.match("(https?://.*/invite/[0-9a-f]{32})");
+        const m = (event.flat as string).match(
+          "(https?://.*/invite/[0-9a-f]{32})",
+        );
         assert(m, "Result should contain invitation link");
         assertEquals(m[1], url);
       })
@@ -108,7 +113,7 @@ Deno.test("command /avatar", async () => {
           contentType: "image/gif",
         },
       ])
-      .nextEvent((event: any) => {
+      .nextEvent((event) => {
         assertEquals(event.type, "user");
         assertEquals(event.avatarFileId, "party-parrot");
       })
@@ -129,8 +134,8 @@ Deno.test("command /version", async () => {
       .nextEvent((event) => {
         assertEquals(event.type, "message");
         assert(event.clientId, "Event should have clientId");
-        assertEquals(event.flat.includes("server-version"), true);
-        assertEquals(event.flat.includes("client-version"), true);
+        assertEquals((event.flat as string).includes("server-version"), true);
+        assertEquals((event.flat as string).includes("client-version"), true);
       })
       .end();
   });
@@ -146,10 +151,10 @@ Deno.test("command /help", async () => {
       .nextEvent((event) => {
         assertEquals(event.type, "message");
         assert(event.clientId, "Event should have clientId");
-        assertEquals(event.flat.includes("/avatar"), true);
-        assertEquals(event.flat.includes("/emoji"), true);
-        assertEquals(event.flat.includes("/invite"), true);
-        assertEquals(event.flat.includes("/version"), true);
+        assertEquals((event.flat as string).includes("/avatar"), true);
+        assertEquals((event.flat as string).includes("/emoji"), true);
+        assertEquals((event.flat as string).includes("/invite"), true);
+        assertEquals((event.flat as string).includes("/version"), true);
       })
       .end();
   });
@@ -169,7 +174,7 @@ Deno.test("command /leave", async () => {
       .nextEvent((event, chat) => {
         assertEquals(event.type, "channel");
         assert(
-          !event.users.find((u: any) => u === chat.userId),
+          !(event.users as string[]).find((u) => u === chat.userId),
           "Updated channel should not contain user",
         );
       })

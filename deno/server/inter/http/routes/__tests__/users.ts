@@ -5,6 +5,7 @@ import * as enc from "@quack/encryption";
 export const ensureUser = async (
   repo: Repository,
   email: string,
+  // deno-lint-ignore no-explicit-any
   rest: any = {},
 ) => {
   const user = await repo.user.get({ email });
