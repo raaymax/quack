@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Quack</title>
+  <style>
+    body {
+      margin: 0;
+      background: #1a1d21;
+      color: #d1d2d3;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      flex-direction: column;
+    }
+    h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+    p { color: #9ea0a3; }
+    input {
+      padding: 12px 16px;
+      font-size: 16px;
+      border: 1px solid #3a3d41;
+      border-radius: 6px;
+      background: #2c2f33;
+      color: #d1d2d3;
+      width: 350px;
+      margin-top: 16px;
+      outline: none;
+    }
+    input:focus { border-color: #673ab8; }
+    button {
+      margin-top: 12px;
+      padding: 12px 32px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      background: #673ab8;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover { background: #7c4dcc; }
+    .error { color: #e74c3c; margin-top: 8px; font-size: 14px; display: none; }
+  </style>
+</head>
+<body>
+  <h1>Quack</h1>
+  <p>Enter your Quack server URL to connect</p>
+  <input type="url" id="server-url" placeholder="https://your-quack-server.com" autofocus />
+  <div class="error" id="error"></div>
+  <button id="connect">Connect</button>
+
+  <script>
+    const STORE_KEY = 'server_url';
+
+    async function loadSavedUrl() {
+      try {
+        if (window.__TAURI__) {
+          const { load } = await import('https://unpkg.com/@tauri-apps/plugin-store/dist/index.min.mjs');
+          const store = await load('config.json');
+          const url = await store.get(STORE_KEY);
+          if (url) {
+            window.location.href = url;
+            return;
+          }
+        }
+      } catch (e) {
+        console.log('No saved URL, showing setup screen');
+      }
+    }
+
+    async function connect() {
+      const input = document.getElementById('server-url');
+      const error = document.getElementById('error');
+      const url = input.value.trim().replace(/\/+$/, '');
+
+      if (!url) {
+        error.textContent = 'Please enter a server URL';
+        error.style.display = 'block';
+        return;
+      }
+
+      try {
+        new URL(url);
+      } catch {
+        error.textContent = 'Invalid URL format';
+        error.style.display = 'block';
+        return;
+      }
+
+      error.style.display = 'none';
+
+      try {
+        if (window.__TAURI__) {
+          const { load } = await import('https://unpkg.com/@tauri-apps/plugin-store/dist/index.min.mjs');
+          const store = await load('config.json');
+          await store.set(STORE_KEY, url);
+          await store.save();
+        }
+      } catch (e) {
+        console.error('Failed to save URL:', e);
+      }
+
+      window.location.href = url;
+    }
+
+    document.getElementById('connect').addEventListener('click', connect);
+    document.getElementById('server-url').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') connect();
+    });
+
+    loadSavedUrl();
+  </script>
+</body>
+</html>
