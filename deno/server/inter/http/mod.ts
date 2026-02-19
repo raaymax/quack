@@ -33,7 +33,7 @@ export class HttpInterface extends Planigale {
       schema.addKeyword({
         keyword: "requireAny",
         type: "object",
-        validate: (keys: string[], data: any) => {
+        validate: (keys: string[], data: Record<string, unknown>) => {
           if (keys.some((key) => key in data)) {
             return true;
           }

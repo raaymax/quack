@@ -13,7 +13,7 @@ Deno.test("webhook should be sent", async (t) => {
       },
     ],
   });
-  const { promise, resolve } = Promise.withResolvers<any>();
+  const { promise, resolve } = Promise.withResolvers<Record<string, unknown>>();
   const srv = Deno.serve({
     port: 8123,
     handler: async (req) => {
@@ -34,7 +34,7 @@ Deno.test("webhook should be sent", async (t) => {
   const event = await promise;
 
   assertEquals(event.type, "message");
-  assertEquals(event.event.flat, "test");
+  assertEquals((event.event as Record<string, unknown>).flat, "test");
 
   await srv.shutdown();
   await app.close();
@@ -72,7 +72,7 @@ Deno.test("webhook should be called once", async (t) => {
       },
     ],
   });
-  const { promise, resolve } = Promise.withResolvers<any>();
+  const { promise, resolve } = Promise.withResolvers<Record<string, unknown>>();
   const srv = Deno.serve({
     port: 8123,
     handler: async (req) => {
@@ -96,7 +96,7 @@ Deno.test("webhook should be called once", async (t) => {
 
   assertEquals(calls, 1);
   assertEquals(event.type, "message");
-  assertEquals(event.event.flat, "test");
+  assertEquals((event.event as Record<string, unknown>).flat, "test");
 
   await srv.shutdown();
   await app.close();

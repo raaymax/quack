@@ -28,9 +28,13 @@ Deno.test("PUT /api/messages/:messageId/react - sending reacts to messages", asy
           messageId: state.messageId,
           reaction: ":thumbsup:",
         }))
-          .getMessages({}, (messages: any) => {
-            assertEquals(messages[0].reactions.length, 1);
-            assertEquals(messages[0].reactions[0], {
+          .getMessages({}, (messages) => {
+            const reactions = messages[0].reactions as Record<
+              string,
+              unknown
+            >[];
+            assertEquals(reactions.length, 1);
+            assertEquals(reactions[0], {
               userId: admin.userId,
               reaction: ":thumbsup:",
             });
@@ -38,7 +42,7 @@ Deno.test("PUT /api/messages/:messageId/react - sending reacts to messages", asy
       });
 
       await t.step("checking reactions by second user", async () => {
-        await member.getMessages({}, (messages: any, { state }) => {
+        await member.getMessages({}, (messages, { state }) => {
           state.messageId = messages[0].id;
         });
       });
@@ -54,17 +58,21 @@ Deno.test("PUT /api/messages/:messageId/react - sending reacts to messages", asy
               messageId: state.messageId,
               reaction: ":thumbsup:",
             }))
-            .getMessages({}, (messages: any) => {
-              assertEquals(messages[0].reactions.length, 3);
-              assertEquals(messages[0].reactions[0], {
+            .getMessages({}, (messages) => {
+              const reactions = messages[0].reactions as Record<
+                string,
+                unknown
+              >[];
+              assertEquals(reactions.length, 3);
+              assertEquals(reactions[0], {
                 userId: admin.userId,
                 reaction: ":thumbsup:",
               });
-              assertEquals(messages[0].reactions[1], {
+              assertEquals(reactions[1], {
                 userId: member.userId,
                 reaction: ":thumbsdown:",
               });
-              assertEquals(messages[0].reactions[2], {
+              assertEquals(reactions[2], {
                 userId: member.userId,
                 reaction: ":thumbsup:",
               });
@@ -77,13 +85,17 @@ Deno.test("PUT /api/messages/:messageId/react - sending reacts to messages", asy
           messageId: state.messageId,
           reaction: ":thumbsup:",
         }))
-          .getMessages({}, (messages: any) => {
-            assertEquals(messages[0].reactions.length, 2);
-            assertEquals(messages[0].reactions[0], {
+          .getMessages({}, (messages) => {
+            const reactions = messages[0].reactions as Record<
+              string,
+              unknown
+            >[];
+            assertEquals(reactions.length, 2);
+            assertEquals(reactions[0], {
               userId: admin.userId,
               reaction: ":thumbsup:",
             });
-            assertEquals(messages[0].reactions[1], {
+            assertEquals(reactions[1], {
               userId: member.userId,
               reaction: ":thumbsdown:",
             });
@@ -120,10 +132,11 @@ Deno.test("PUT /api/messages/:messageId/react - SSR about reactions", async (t) 
             messageId: state.messageId,
             reaction: ":thumbsup:",
           }));
-        await member.nextEvent((event: any) => {
+        await member.nextEvent((event) => {
+          const reactions = event.reactions as Record<string, unknown>[];
           assertEquals(event.type, "message");
-          assertEquals(event.reactions.length, 1);
-          assertEquals(event.reactions[0], {
+          assertEquals(reactions.length, 1);
+          assertEquals(reactions[0], {
             userId: admin.userId,
             reaction: ":thumbsup:",
           });
@@ -135,9 +148,10 @@ Deno.test("PUT /api/messages/:messageId/react - SSR about reactions", async (t) 
             messageId: state.messageId,
             reaction: ":thumbsup:",
           }));
-        await member.nextEvent((event: any) => {
+        await member.nextEvent((event) => {
+          const reactions = event.reactions as Record<string, unknown>[];
           assertEquals(event.type, "message");
-          assertEquals(event.reactions.length, 0);
+          assertEquals(reactions.length, 0);
         });
       });
     } finally {

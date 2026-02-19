@@ -1,6 +1,6 @@
 import { mergeRanges, Range } from "./range.ts";
 
-export class CacheEntry<T extends any[]> extends Range {
+export class CacheEntry<T extends unknown[]> extends Range {
   data: T;
   timestamp: number;
 
@@ -10,7 +10,7 @@ export class CacheEntry<T extends any[]> extends Range {
     this.timestamp = new Date().getTime();
   }
 
-  static sort(repo: CacheEntry<any>[]) {
+  static sort(repo: CacheEntry<unknown[]>[]) {
     return [...repo].sort((a, b) => a.from - b.from);
   }
 
@@ -24,7 +24,7 @@ export type CacheQuery = {
   to?: number;
 };
 
-export class Cache<T extends any[]> {
+export class Cache<T extends unknown[]> {
   repo: CacheEntry<T>[] = [];
 
   merge = (a: CacheEntry<T>, b: CacheEntry<T>): CacheEntry<T> => (

@@ -2,7 +2,7 @@ import { Agent } from "@planigale/testing";
 import { assertEquals } from "@std/assert";
 import { createApp } from "../../__tests__/app.ts";
 import { Chat } from "../../__tests__/chat.ts";
-import { MessageInteractionEvent } from "../../../../../events.ts";
+import type { Event, MessageInteractionEvent } from "../../../../../events.ts";
 import { EntityId } from "../../../../../types.ts";
 
 const { app, repo, core } = createApp();
@@ -16,7 +16,7 @@ Deno.test("POST /api/interactions - dispatching interactions", async (t) => {
         .createChannel({ name: "test-messages-interactions" });
       const { promise, resolve, reject } = Promise.withResolvers<void>();
       (async () => {
-        const event: any = await new Promise((resolve) =>
+        const event: Event = await new Promise((resolve) =>
           core.events.once(resolve)
         );
         if (event.type !== "message:interaction") {
@@ -50,7 +50,7 @@ Deno.test("POST /api/interactions - graceful shutdown", async (t) => {
         .login("admin")
         .createChannel({ name: "test-messages-interactions" });
       for (let i = 0; i < 5; i++) {
-        const { promise, resolve } = Promise.withResolvers<any>();
+        const { promise, resolve } = Promise.withResolvers<Event>();
         core.events.once(resolve);
         await admin.interaction({ action: "test", clientId: "clientId" });
         await promise;

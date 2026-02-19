@@ -115,10 +115,13 @@ Create standard story template with:
 ## 2. Code Cleanup
 
 ### 2.1 Type Safety (HIGH PRIORITY)
-- [ ] Fix pre-existing TypeScript errors (17 errors in base)
-- [ ] Remove `any` types - 20 instances in app/src
-- [ ] Fix `style: any` unused prop in `ActionButton.tsx:10`
-- [ ] Add proper typing to API module (`deno/api/mod.ts` - `payload: any`, `document: any`)
+- [ ] Fix pre-existing TypeScript errors (16 errors in base)
+- [x] Remove `any` types from backend core (serializers, bus, command/query, repos, HTTP/CLI) — PR #272
+- [x] Remove `any` types from storage, encryption, config, migrate, tools modules — PR #273
+- [x] Remove `any` types from API module (`deno/api/`) — PR #274
+- [x] Remove `any` types from frontend — client, plugins, utils, models, components — PR #275
+- [x] Remove `any` types from test files (chat.ts helper, 14 test files, users.ts) — PR #276
+- [x] Fix `style: any` prop in `ActionButton.tsx` — typed as `string` (PR #275)
 - [ ] Remove `@ts-ignore` comments in `deno/api/files.ts` (5+ instances)
 - [ ] Standardize Props interface naming
 
@@ -288,7 +291,7 @@ Create standard story template with:
 ## Notes
 
 - Created: 2026-02-06
-- Last updated: 2026-02-08
+- Last updated: 2026-02-09
 - Progress:
   - ✅ **Section 1: Storybook Cleanup - COMPLETE**
     - PR #249: Config fixes
@@ -299,6 +302,16 @@ Create standard story template with:
     - PR #254: Message story image fix
   - 🔄 **Section 2: Code Cleanup - IN PROGRESS**
     - PR #255: Dependency updates (npm packages, @std alignment, ESLint React version)
+<<<<<<< HEAD
+    - PRs #272-276: Remove `any` types across codebase (~120 instances)
+=======
+    - PR #272: Remove `any` types from backend core
+    - PR #273: Remove `any` types from storage, encryption, config, migrate, tools
+<<<<<<< HEAD
+    - PR #274: Remove `any` types from API module
+=======
+>>>>>>> origin/dev
+>>>>>>> origin/dev
   - 🔄 **Section 3: Architecture Refactoring - IN PROGRESS**
     - ✅ 3.7 Documentation: ARCHITECTURE.md, CONVENTIONS.md, 14 ADRs, CLAUDE.md
       - PR #256: Architecture docs

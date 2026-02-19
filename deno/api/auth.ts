@@ -8,10 +8,15 @@ import * as enc from "@quack/encryption";
 import type API from "./mod.ts";
 
 export class ApiError extends Error {
-  payload: any;
+  payload: Record<string, unknown>;
   url: string;
   status: number;
-  constructor(msg: string, status: number, url: string, payload: any) {
+  constructor(
+    msg: string,
+    status: number,
+    url: string,
+    payload: Record<string, unknown>,
+  ) {
     super(msg);
     this.status = status;
     this.url = url;
