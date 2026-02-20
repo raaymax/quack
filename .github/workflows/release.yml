@@ -11,6 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    outputs:
+      version: ${{ steps.version.outputs.result }}
 
     steps:
       - name: Extract version from labels
@@ -47,3 +49,10 @@ jobs:
             });
 
             core.info(`Created release ${version}`);
+
+  docker:
+    needs: release
+    uses: ./.github/workflows/docker.yml
+    with:
+      version: ${{ needs.release.outputs.version }}
+    secrets: inherit

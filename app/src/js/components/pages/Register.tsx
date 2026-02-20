@@ -57,8 +57,9 @@ export const Register = () => {
           console.log(err);
           setMsg(err.message);
         } else {
-          if ((err as any)?.errorCode === "USER_ALREADY_EXISTS") {
-            setMsg((err as any).message);
+          const errObj = err as { errorCode?: string; message?: string };
+          if (errObj.errorCode === "USER_ALREADY_EXISTS") {
+            setMsg(errObj.message ?? "User already exists");
           } else {
             console.log(err);
             setMsg("Unknown error");

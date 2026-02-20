@@ -143,7 +143,7 @@ export const SearchResults = observer(
         <div key="bottom" id="scroll-stop" />
         <MessageList
           renderer={BaseRenderer}
-          model={threadModelWrapper as any}
+          model={threadModelWrapper as unknown as import("../../core/models/thread").ThreadModel}
           onMessageClicked={(msg: MessageModel) => {
             gotoMessage(msg);
           }}

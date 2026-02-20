@@ -76,7 +76,7 @@ export const NavChannels = observer(({ icon }: NavChannelsProps) => {
           className={{ active: id === c.id }}
           key={c.id}
           icon={icon ?? "hash"}
-          badge={badges.getForChannel(c.id as any)}
+          badge={badges.getForChannel(String(c.id))}
           onClick={() => {
             if (isMobile()) {
               hideSidebar();

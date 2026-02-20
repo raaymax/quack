@@ -18,7 +18,11 @@ Deno.test("Check all validations for message field", async (t) => {
     name: "messages-formating-check",
     users: [EntityId.from(userId)],
   }, async (channelId) => {
-    const testPart = async (status: number, name: string, message: any) =>
+    const testPart = async (
+      status: number,
+      name: string,
+      message: Record<string, unknown> | Record<string, unknown>[],
+    ) =>
       await t.step(name, async () =>
         await agent.request()
           .post(`/api/channels/${channelId}/messages/`)

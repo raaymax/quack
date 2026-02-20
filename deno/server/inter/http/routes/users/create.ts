@@ -56,7 +56,7 @@ export default (core: Core) =>
           secrets: req.body.secrets,
         },
       });
-      const user: DbUser | null = await core.user.get({ id: createdId });
+      const user: DbUser | null = await core.user.get({ id: createdId! });
       if (!user) {
         throw new InternalServerError(
           new Error("User not created, but no error thrown"),

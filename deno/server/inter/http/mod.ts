@@ -33,7 +33,7 @@ export class HttpInterface extends Planigale {
       schema.addKeyword({
         keyword: "requireAny",
         type: "object",
-        validate: (keys: string[], data: any) => {
+        validate: (keys: string[], data: Record<string, unknown>) => {
           if (keys.some((key) => key in data)) {
             return true;
           }
@@ -63,7 +63,8 @@ export class HttpInterface extends Planigale {
       this.use("/api/messages", messages(core));
       this.use("/api/read-receipts", readReceipt(core));
       this.use("/api/interactions", interactions(core));
-      this.use("/api/mobile", mobile(core));
+      this.use("/api/notifications", mobile(core));
+      this.use("/api/mobile", mobile(core)); // legacy alias
 
       this.use("/api/channels", channels(core));
       this.use("/api/channels/:channelId/messages", channelMessages(core));

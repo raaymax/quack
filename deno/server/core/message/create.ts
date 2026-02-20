@@ -5,7 +5,7 @@ import { AccessDenied, InvalidMessage, ResourceNotFound } from "../errors.ts";
 import { flatten } from "./flatten.ts";
 import { ChannelType, EntityId } from "../../types.ts";
 
-function filterUndefined(data: any) {
+function filterUndefined(data: Record<string, unknown>) {
   return Object.fromEntries(
     Object.entries(data).filter(([, v]) => v !== undefined),
   );
@@ -79,7 +79,7 @@ export default createCommand({
     userId: msg.userId,
     links: msg.links,
     mentions: msg.mentions,
-    attachments: msg.attachments?.map((file: any) => ({
+    attachments: msg.attachments?.map((file) => ({
       id: file.id,
       fileName: file.fileName,
       contentType: file.contentType,
@@ -104,9 +104,8 @@ export default createCommand({
     type: "channel:join",
     body: {
       channelId: msg.channelId.toString(),
-      userIds: msg.mentions.filter((m: any) =>
-        !channel.users.some((u) => u.eq(m))
-      ).map((u) => u.toString()),
+      userIds: msg.mentions.filter((m) => !channel.users.some((u) => u.eq(m)))
+        .map((u) => u.toString()),
     },
   }).internal();
 

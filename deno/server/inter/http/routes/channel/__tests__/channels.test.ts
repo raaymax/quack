@@ -27,7 +27,7 @@ Deno.test("/api/channels", async () => {
       .login("admin")
       .connectSSE()
       .createChannel({ name: "test-channel-creation" })
-      .nextEvent((event: any) => {
+      .nextEvent((event) => {
         assertEquals(event.type, "channel");
         assertEquals(event.name, "test-channel-creation");
       })
@@ -59,7 +59,7 @@ Deno.test("/api/channels - channel with description", async () => {
         name: "test-channel-with-description",
         description: "This is a test channel description",
       })
-      .nextEvent((event: any) => {
+      .nextEvent((event) => {
         assertEquals(event.type, "channel");
         assertEquals(event.name, "test-channel-with-description");
         assertEquals(event.description, "This is a test channel description");
@@ -84,7 +84,7 @@ Deno.test("/api/channels - other user receives notification about channel", asyn
         users: [member.userIdR],
       });
       await member
-        .nextEvent((event: any) => {
+        .nextEvent((event) => {
           assertEquals(event.type, "channel");
           assertEquals(event.name, "test-channel-creation-2");
         })
