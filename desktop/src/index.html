@@ -274,7 +274,7 @@
     async function loadServers() {
       try {
         if (window.__TAURI__) {
-          const { load } = await import('https://unpkg.com/@tauri-apps/plugin-store/dist/index.min.mjs');
+          const { load } = window.__TAURI__.store;
           store = await load('config.json');
 
           // Migrate legacy single-URL key
