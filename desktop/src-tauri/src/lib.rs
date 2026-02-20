@@ -91,11 +91,14 @@ pub fn run() {
         .expect("error while building tauri application")
         .run(|app_handle, event| {
             // On macOS, clicking the dock icon fires Reopen — show the window
+            #[cfg(target_os = "macos")]
             if let tauri::RunEvent::Reopen { .. } = event {
                 if let Some(window) = app_handle.get_webview_window("main") {
                     let _ = window.show();
                     let _ = window.set_focus();
                 }
             }
+            #[cfg(not(target_os = "macos"))]
+            let _ = (app_handle, event);
         });
 }
