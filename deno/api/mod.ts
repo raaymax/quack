@@ -88,7 +88,7 @@ class API extends EventTarget {
 
   sseEnabled: boolean;
 
-  reconnectTimeout: number | undefined;
+  reconnectTimeout: ReturnType<typeof setTimeout> | undefined;
 
   set token(value: string | undefined) {
     if (typeof value === "string" && value.trim() !== "") {
@@ -466,7 +466,7 @@ class API extends EventTarget {
   async sendMessage(msg: Partial<Message>): Promise<Record<string, unknown>> {
     return await new Promise((resolve, reject) => {
       const data = { ...msg };
-      let timeoutId: number | null = setTimeout(() => {
+      let timeoutId: ReturnType<typeof setTimeout> | null = setTimeout(() => {
         timeoutId = null;
         reject(new Error("Timeout"));
       }, 5000);
