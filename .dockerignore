@@ -6,3 +6,24 @@ dist
 app/src-tauri
 chat.config.ts
 chat.config.js
+
+# Platform shells not part of the server image
+desktop
+mobile
+
+# Build outputs (frontend dist is rebuilt in the build stage and copied to /app/public)
+app/dist
+app/storybook-static
+
+# Dev / worktree / planning artifacts
+.worktrees
+.planning
+.github
+.vscode
+.idea
+
+# Logs and local junk
+*.log
+file-service.log
+.DS_Store
+coverage
