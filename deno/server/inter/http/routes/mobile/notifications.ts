@@ -42,7 +42,8 @@ export default (core: Core) =>
       }, HEARTBEAT_INTERVAL_MS);
 
       // Subscribe to bus events for this user
-      const off = core.bus.on(userId, async (msg: BusMessage) => {
+      const off = core.bus.on(userId, async (raw) => {
+        const msg = raw as BusMessage;
         // Only process message events for notifications
         if (msg.type !== "message") {
           return;

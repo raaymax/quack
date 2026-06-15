@@ -5,9 +5,11 @@ import { Repository } from "../../../../infra/mod.ts";
 import { ensureUser } from "./users.ts";
 import {
   Channel,
+  Emoji,
   EntityId,
   Message,
   ReplaceEntityId,
+  User,
 } from "../../../../types.ts";
 import { AsyncLocalStorage } from "node:async_hooks";
 import API, { LoginError, Result, UserSession } from "@quack/api";
@@ -17,6 +19,19 @@ export type RegistrationRequest = {
   name: string;
   password: string;
   email: string;
+};
+
+type CommandResult = {
+  status: string;
+  json: Record<string, unknown>;
+  channelId: string;
+  events: SSESource | null;
+};
+
+type Attachment = {
+  id: string;
+  fileName: string;
+  contentType: string;
 };
 
 // deno-lint-ignore ban-types
@@ -46,11 +61,12 @@ export class Chat {
 
   currentStep = 0;
 
-  state: any = {};
+  // deno-lint-ignore no-explicit-any
+  state: Record<string, any> = {};
 
-  steps: any[] = [];
+  steps: Array<() => Promise<void>> = [];
 
-  cleanup: any[] = [];
+  cleanup: Array<() => Promise<void>> = [];
 
   appVersion = "client-version";
 
@@ -134,7 +150,7 @@ export class Chat {
     data: Arg<
       { token: string; email: string; password: string; oldPassword: string }
     >,
-    test?: (session: Result) => Promise<any> | any,
+    test?: (session: Result) => Promise<void> | void,
   ) {
     this.steps.push(async () => {
       const resetData = this.arg(data);
@@ -158,7 +174,9 @@ export class Chat {
     return this;
   }
 
-  nextEvent(fn: (event: any, chat: Chat) => any) {
+  nextEvent(
+    fn: (event: Record<string, unknown>, chat: Chat) => Promise<void> | void,
+  ) {
     this.steps.push(async () => {
       const { event } = await this.eventSource?.next() || {};
       await fn(JSON.parse(event?.data || "{}"), this);
@@ -169,7 +187,7 @@ export class Chat {
   login(
     email = "admin",
     password = "123",
-    test?: (session: Result<UserSession, LoginError>) => Promise<any> | any,
+    test?: (session: Result<UserSession, LoginError>) => Promise<void> | void,
   ) {
     this.steps.push(async () => {
       await ensureUser(this.repo, email);
@@ -183,7 +201,10 @@ export class Chat {
     return this;
   }
 
-  checkToken(tokenData: Arg<string>, test?: (body: any) => Promise<any> | any) {
+  checkToken(
+    tokenData: Arg<string>,
+    test?: (body: Record<string, unknown>) => Promise<void> | void,
+  ) {
     this.steps.push(async () => {
       const token = this.arg(tokenData);
       const ret = await this.api.auth.checkRegistrationToken({ token });
@@ -194,7 +215,7 @@ export class Chat {
 
   register(
     data: RegistrationRequest,
-    test?: (body: any) => Promise<any> | any,
+    test?: (body: Record<string, unknown>) => Promise<void> | void,
   ) {
     this.steps.push(async () => {
       const body = await this.api.auth.register(data);
@@ -212,7 +233,7 @@ export class Chat {
 
   createChannel(
     channelData: Arg<Partial<ReplaceEntityId<Channel>>>,
-    test?: (channel: Channel, chat: Chat) => Promise<any> | any,
+    test?: (channel: Channel, chat: Chat) => Promise<void> | void,
   ) {
     let channelId: string;
     this.steps.push(async () => {
@@ -248,7 +269,7 @@ export class Chat {
     test?: (
       channel: ReplaceEntityId<Channel>,
       chat: Chat,
-    ) => Promise<any> | any,
+    ) => Promise<void> | void,
   ) {
     this.steps.push(async () => {
       const { userId } = this.arg(data);
@@ -278,7 +299,7 @@ export class Chat {
     test?: (
       channel: ReplaceEntityId<Channel>,
       chat: Chat,
-    ) => Promise<any> | any,
+    ) => Promise<void> | void,
   ) {
     this.steps.push(async () => {
       const { userId } = this.arg(data);
@@ -326,7 +347,7 @@ export class Chat {
   }
 
   getChannel(
-    fn: (channel: ReplaceEntityId<Channel>, chat: Chat) => Promise<any> | any,
+    fn: (channel: ReplaceEntityId<Channel>, chat: Chat) => Promise<void> | void,
   ) {
     this.steps.push(async () => {
       const res = await this.agent.request()
@@ -339,7 +360,7 @@ export class Chat {
     return this;
   }
 
-  getEmojis(fn: (emojis: any[]) => Promise<any>) {
+  getEmojis(fn: (emojis: Emoji[]) => Promise<void> | void) {
     this.steps.push(async () => {
       const res = await this.agent.request()
         .get("/api/emojis")
@@ -351,7 +372,7 @@ export class Chat {
     return this;
   }
 
-  getConfig(fn: (config: any) => Promise<any>) {
+  getConfig(fn: (config: Record<string, unknown>) => Promise<void> | void) {
     this.steps.push(async () => {
       const res = await this.agent.request()
         .get("/api/profile/config")
@@ -363,7 +384,7 @@ export class Chat {
     return this;
   }
 
-  getChannels(fn: (channels: Channel[]) => Promise<any> | any) {
+  getChannels(fn: (channels: Channel[]) => Promise<void> | void) {
     this.steps.push(async () => {
       const res = await this.agent.request()
         .get("/api/channels")
@@ -375,7 +396,9 @@ export class Chat {
     return this;
   }
 
-  getUsers(fn: (users: any[], chat: Chat) => Promise<any>) {
+  getUsers(
+    fn: (users: User[], chat: Chat) => Promise<void> | void,
+  ) {
     this.steps.push(async () => {
       const res = await this.agent.request()
         .get("/api/users")
@@ -389,7 +412,7 @@ export class Chat {
 
   getUser(
     userId: string | ((chat: Chat) => string),
-    fn: (user: any) => Promise<any>,
+    fn: (user: User) => Promise<void> | void,
   ) {
     this.steps.push(async () => {
       const id = typeof userId === "function" ? userId(this) : userId;
@@ -405,7 +428,10 @@ export class Chat {
 
   getMessages(
     queryData: Arg<{ parentId?: string | null }> = {},
-    test?: (messages: any[], chat: Chat) => Promise<any> | any,
+    test?: (
+      messages: Record<string, unknown>[],
+      chat: Chat,
+    ) => Promise<void> | void,
   ) {
     this.steps.push(async () => {
       const { parentId } = this.arg(queryData);
@@ -429,7 +455,7 @@ export class Chat {
     test?: (
       message: ReplaceEntityId<Message>,
       chat: Chat,
-    ) => Promise<any> | any,
+    ) => Promise<void> | void,
   ) {
     this.steps.push(async () => {
       const message = this.arg(messageData);
@@ -453,7 +479,7 @@ export class Chat {
       channelId?: string;
       parentId?: string;
       clientId: string;
-      payload?: any;
+      payload?: Record<string, unknown>;
       action: string;
     }>,
   ) {
@@ -487,7 +513,10 @@ export class Chat {
   }
 
   getChannelReadReceipts(
-    fn: (receipts: any[], chat: Chat) => Promise<any> | any,
+    fn: (
+      receipts: Record<string, unknown>[],
+      chat: Chat,
+    ) => Promise<void> | void,
   ) {
     this.steps.push(async () => {
       const res = await this.agent.request()
@@ -500,7 +529,12 @@ export class Chat {
     return this;
   }
 
-  getReadReceipts(fn: (receipts: any[], chat: Chat) => Promise<any> | any) {
+  getReadReceipts(
+    fn: (
+      receipts: Record<string, unknown>[],
+      chat: Chat,
+    ) => Promise<void> | void,
+  ) {
     this.steps.push(async () => {
       const res = await this.agent.request()
         .get("/api/read-receipts")
@@ -514,7 +548,10 @@ export class Chat {
 
   updateReadReceipts(
     messageId: string | ((chat: Chat) => string),
-    test?: (receipt: any, chat: Chat) => Promise<any> | any,
+    test?: (
+      receipt: Record<string, unknown>,
+      chat: Chat,
+    ) => Promise<void> | void,
   ) {
     this.steps.push(async () => {
       const res = await this.agent.request()
@@ -537,8 +574,8 @@ export class Chat {
 
   executeCommand(
     command: string,
-    attachments: any[],
-    test?: (...args: any) => any,
+    attachments: Attachment[],
+    test?: (result: CommandResult) => Promise<void> | void,
   ) {
     this.steps.push(async () => {
       if (!this.channelId) {
@@ -577,7 +614,12 @@ export class Chat {
     return this;
   }
 
-  getPinnedMessages(fn: (messages: any[], chat: Chat) => Promise<any> | any) {
+  getPinnedMessages(
+    fn: (
+      messages: Record<string, unknown>[],
+      chat: Chat,
+    ) => Promise<void> | void,
+  ) {
     this.steps.push(async () => {
       const res = await this.agent.request()
         .get(`/api/channels/${this.channelId}/messages?pinned=true`)
@@ -600,7 +642,7 @@ export class Chat {
     return this;
   }
 
-  step(test: (chat: Chat) => any) {
+  step(test: (chat: Chat) => Promise<void> | void) {
     this.steps.push(async () => {
       await test(this);
     });
@@ -612,7 +654,7 @@ export class Chat {
     return this;
   }
 
-  async then(resolve: (self?: any) => any, reject: (e: unknown) => any) {
+  async then(resolve: (self?: void) => void, reject: (e: unknown) => void) {
     let cleanupStart = false;
     try {
       while (this.steps[this.currentStep]) {

@@ -16,7 +16,7 @@
     "@types/node": "npm:@types/node@20.10.4",
     "concat-stream": "npm:concat-stream@2.0.0",
     "mongodb": "npm:mongodb@6.12.0",
-    "sharp": "npm:sharp@0.33.0",
+    "@cf-wasm/photon": "npm:@cf-wasm/photon@0.3.6",
     "google-auth-library": "npm:google-auth-library@9.15.0"
   }
 }

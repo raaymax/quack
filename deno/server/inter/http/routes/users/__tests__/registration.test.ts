@@ -21,8 +21,8 @@ Deno.test("POST /api/users - user creation flow", async (t) => {
         .sendMessage({ flat: "secret" });
 
       await t.step("creating invite", async () => {
-        await admin.executeCommand("/invite", [], ({ json }: any) => {
-          url = json.data;
+        await admin.executeCommand("/invite", [], ({ json }) => {
+          url = json.data as string;
         });
         const m = url.match(/https?:\/\/.*\/invite\/(.*)$/);
         assert(m);
@@ -31,8 +31,8 @@ Deno.test("POST /api/users - user creation flow", async (t) => {
 
       await t.step("creating second invite", async () => {
         let url2: string = "";
-        await admin.executeCommand("/invite", [], ({ json }: any) => {
-          url2 = json.data;
+        await admin.executeCommand("/invite", [], ({ json }) => {
+          url2 = json.data as string;
         });
         const m = url2.match(/https?:\/\/.*\/invite\/(.*)$/);
         assert(m);
@@ -66,7 +66,7 @@ Deno.test("POST /api/users - user creation flow", async (t) => {
             assert(session.secrets._iv);
           })
           .openChannel("user-invite-test")
-          .getMessages({}, (msgs: any[]) => {
+          .getMessages({}, (msgs) => {
             assertEquals(msgs[0].flat, "secret");
           });
       });

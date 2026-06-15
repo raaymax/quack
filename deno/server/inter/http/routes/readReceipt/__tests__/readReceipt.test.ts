@@ -1,4 +1,4 @@
-import { assertEquals } from "@std/assert";
+import { assert, assertEquals } from "@std/assert";
 import { Chat } from "../../__tests__/chat.ts";
 import { createApp } from "../../__tests__/app.ts";
 
@@ -19,10 +19,9 @@ Deno.test("/api/channels/:channelId/read-receipts", async () =>
         }, (msg, { state }) => {
           state.messageId = msg.id;
         })
-        .getChannelReadReceipts((receipts: any, self) => {
-          const receipt = receipts.find((r: any) =>
-            r.channelId === self.channelId
-          );
+        .getChannelReadReceipts((receipts, self) => {
+          const receipt = receipts.find((r) => r.channelId === self.channelId);
+          assert(receipt, "Receipt should exist");
           assertEquals(receipt.count, 0);
           assertEquals(receipt.lastMessageId, self.state.messageId);
         })
@@ -51,12 +50,12 @@ Deno.test("/api/channels/:channelId/read-receipts - SSE", async () =>
 
       await admin.connectSSE();
       await member
-        .getMessages({}, async (messages: any, { state, channelId }) => {
+        .getMessages({}, async (messages, { state, channelId }) => {
           state.messageId = messages[0].id;
         })
         .updateReadReceipts(({ state }) => state.messageId);
 
-      await admin.nextEvent((event: any) => {
+      await admin.nextEvent((event) => {
         assertEquals(event.type, "readReceipt");
         assertEquals(event.lastMessageId, member.state.messageId);
         assertEquals(event.userId, member.userId);
@@ -88,7 +87,7 @@ Deno.test("/api/read-receipts", async () => {
         clientId: "test2",
       });
       await member
-        .getMessages({}, async (messages: any, { state }) => {
+        .getMessages({}, async (messages, { state }) => {
           state.messageId = messages[0].id;
         })
         .updateReadReceipts(({ state }) => state.messageId);
@@ -102,11 +101,10 @@ Deno.test("/api/read-receipts", async () => {
         message: { text: "Hello" },
         clientId: "test4",
       });
-      await member.getReadReceipts((receipts: any) => {
+      await member.getReadReceipts((receipts) => {
         assertEquals(receipts.length, 1);
-        const receipt = receipts.find((r: any) =>
-          r.channelId === member.channelId
-        );
+        const receipt = receipts.find((r) => r.channelId === member.channelId);
+        assert(receipt, "Receipt should exist");
         assertEquals(receipt.count, 2);
       });
     } finally {

@@ -24,15 +24,17 @@ Deno.test("POST /auth/session - wrong params", async () => {
 
   const body = await res.json();
   assertEquals(
-    body.errors?.map((e: any) => e?.params?.missingProperty).sort(),
+    body.errors?.map((e: Record<string, unknown>) =>
+      (e?.params as Record<string, unknown>)?.missingProperty
+    ).sort(),
     ["email", "password"],
   );
 });
 
 Deno.test("Login/logout", async (t) => {
-  let token: any = null;
-  let userId: any = null;
-  let key: any = null;
+  let token: string | null = null;
+  let userId: string | null = null;
+  let key: string | null = null;
   await ensureUser(repo, "admin");
 
   await t.step("POST /auth/session - Create session", async () => {
@@ -92,8 +94,8 @@ Deno.test("Login/logout", async (t) => {
 });
 
 Deno.test("Login/logout - cookies", async (t) => {
-  let token: any = null;
-  let userId: any = null;
+  let token: string | null = null;
+  let userId: string | null = null;
 
   await t.step("POST /auth/session - Create session", async () => {
     const credentials = await enc.prepareCredentials("admin", "123");

@@ -7,7 +7,7 @@ export type TooltipContextType = {
     content: React.ReactNode,
     parent: React.ReactNode | HTMLElement,
   ) => void;
-  hide: (p: any) => void;
+  hide: (p: React.ReactNode | HTMLElement) => void;
 };
 
 export const TooltipContext = createContext<TooltipContextType | undefined>(
@@ -67,7 +67,7 @@ export const TooltipProvider = ({ children }: TooltipContextProps) => {
     [setContent, setPos, setParent],
   );
 
-  const hide = useCallback((p: any) => {
+  const hide = useCallback((p: React.ReactNode | HTMLElement) => {
     if (parent === p) {
       setParent(null);
     }

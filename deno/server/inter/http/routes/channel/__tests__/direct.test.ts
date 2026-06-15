@@ -25,7 +25,7 @@ Deno.test("/api/channels/direct/:userId", async () => {
         .nextEvent((event, chat) => {
           assertEquals(event.type, "message");
           assertEquals(event.flat, "hello");
-          chat.channelId = event.channelId;
+          chat.channelId = event.channelId as string;
           chat.state.directChannelId = event.channelId;
         })
         .getMessages({}, (messages) => {

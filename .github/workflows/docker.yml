@@ -4,6 +4,12 @@ on:
   push:
     tags:
       - v*
+  workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -37,7 +43,7 @@ jobs:
     - uses: actions/checkout@v3
     - uses: denoland/setup-deno@v2
       with:
-        deno-version: '2.x'
+        deno-version: '2.6.8'
     - run: deno install --allow-scripts
     - run: deno task migrate:tests
     - run: deno task check
@@ -73,6 +79,9 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=tag
+            type=raw,value=${{ inputs.version }},enable=${{ inputs.version != '' }}
 
       - name: Build and push Docker image
         id: push
@@ -85,7 +94,7 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64
           build-args: |
-            APP_VERSION=${{ github.ref_name }}
+            APP_VERSION=${{ inputs.version || github.ref_name }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
       

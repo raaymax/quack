@@ -39,7 +39,7 @@ export class FileModel {
   async dispose() {
     this.id = undefined;
     this.clientId = "";
-    this.stream = null as any;
+    this.stream = null as unknown as ReadableStream;
     this.status = "pending";
     this.fileSize = 0;
     this.fileName = "";
@@ -144,7 +144,7 @@ export class FilesModel {
       local.patch({ status: "error", progress: 0, error: "unknown error" });
     }
   });
-  toJSON(): any {
+  toJSON(): Array<{ id?: string; clientId: string; fileName: string; fileSize: number; contentType: string }> {
     return this.list.map((f) => ({
       id: f.id,
       clientId: f.clientId,

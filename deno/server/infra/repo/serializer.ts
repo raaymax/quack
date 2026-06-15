@@ -1,7 +1,8 @@
 import { EntityId } from "../../types.ts";
 import { ObjectId } from "./db.ts";
 
-function recursiveDeserialize(obj: any): any {
+// deno-lint-ignore no-explicit-any
+function recursiveDeserialize(obj: unknown): any {
   if (obj instanceof EntityId) {
     return EntityId.from(obj);
   }
@@ -11,41 +12,46 @@ function recursiveDeserialize(obj: any): any {
   if (Array.isArray(obj)) {
     return obj.map(recursiveDeserialize);
   }
-  if (typeof obj === "object") {
-    for (const key in obj) {
-      obj[key] = recursiveDeserialize(obj[key]);
+  if (typeof obj === "object" && obj !== null) {
+    const record = obj as Record<string, unknown>;
+    for (const key in record) {
+      record[key] = recursiveDeserialize(record[key]);
     }
-    if (obj && obj._id) {
-      obj.id = obj._id;
-      delete obj._id;
+    if (record._id) {
+      record.id = record._id;
+      delete record._id;
     }
   }
   return obj;
 }
 
-export function deserialize(data: any) {
+// deno-lint-ignore no-explicit-any
+export function deserialize(data: unknown): any {
   return recursiveDeserialize(data);
 }
 
-function recursiveSerialize(obj: any): any {
+// deno-lint-ignore no-explicit-any
+function recursiveSerialize(obj: unknown): any {
   if (obj instanceof EntityId) {
     return new ObjectId(obj.value);
   }
   if (Array.isArray(obj)) {
     return obj.map(recursiveSerialize);
   }
-  if (typeof obj === "object") {
-    for (const key in obj) {
-      obj[key] = recursiveSerialize(obj[key]);
+  if (typeof obj === "object" && obj !== null) {
+    const record = obj as Record<string, unknown>;
+    for (const key in record) {
+      record[key] = recursiveSerialize(record[key]);
     }
-    if (obj && obj.id) {
-      obj._id = obj.id;
-      delete obj.id;
+    if (record.id) {
+      record._id = record.id;
+      delete record.id;
     }
   }
   return obj;
 }
 
-export function serialize(data: any) {
+// deno-lint-ignore no-explicit-any
+export function serialize(data: unknown): any {
   return recursiveSerialize(data);
 }

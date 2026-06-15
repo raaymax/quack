@@ -29,7 +29,7 @@ Deno.test("GET /api/users/:userId - getUser with an id and alias", async () => {
       })
       .getUser(({ state }) => state.member.id, async (user: User) => {
         assert(user.name === "Member");
-        assert((user as any).secrets === undefined);
+        assert((user as Record<string, unknown>).secrets === undefined);
         assert(user.publicKey);
       })
       .end();
@@ -46,8 +46,8 @@ Deno.test("GET /api/users - getAllUsers", async () => {
         const userNames = users.map((u: User) => u.name);
         assert(userNames.includes("Admin"));
         assert(userNames.includes("Member"));
-        assert((users[0] as any).password === undefined);
-        assert((users[1] as any).password === undefined);
+        assert((users[0] as Record<string, unknown>).password === undefined);
+        assert((users[1] as Record<string, unknown>).password === undefined);
       })
       .end();
   });
@@ -63,8 +63,8 @@ Deno.test("POST /api/users - user creation flow", async () => {
       await admin.login("admin")
         .createChannel({ name: "user-invite-test" })
         .sendMessage({ flat: "secret" })
-        .executeCommand("/invite", [], ({ json }: any) => {
-          url = json.data;
+        .executeCommand("/invite", [], ({ json }) => {
+          url = json.data as string;
         });
       const m = url.match(/https?:\/\/.*\/invite\/(.*)$/);
       assert(m);
@@ -78,7 +78,7 @@ Deno.test("POST /api/users - user creation flow", async () => {
         })
         .login("jack", "test123")
         .openChannel("user-invite-test")
-        .getMessages({}, (msgs: any[]) => {
+        .getMessages({}, (msgs) => {
           assertEquals(msgs[0].flat, "secret");
         })
         .end();

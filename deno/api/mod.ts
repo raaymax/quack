@@ -15,7 +15,16 @@ import { FilesAPI } from "./files.ts";
 
 export * from "./types.ts";
 
-declare const document: any;
+export type ApiResponse = {
+  type: "response";
+  status: "ok";
+  seqId?: string;
+  data: Record<string, unknown>[];
+};
+
+declare const document: {
+  addEventListener: (type: string, listener: () => void) => void;
+} | undefined;
 
 const isDeno = typeof window === "undefined";
 
@@ -36,10 +45,15 @@ async function waitBeforeRetry(retry: number) {
 }
 
 export class ApiError extends Error {
-  payload: any;
+  payload: Record<string, unknown>;
   url: string;
   status: number;
-  constructor(msg: string, status: number, url: string, payload: any) {
+  constructor(
+    msg: string,
+    status: number,
+    url: string,
+    payload: Record<string, unknown>,
+  ) {
     super(msg);
     this.status = status;
     this.url = url;
@@ -50,7 +64,7 @@ export class ApiError extends Error {
 class API extends EventTarget {
   baseUrl: string;
 
-  _http: any;
+  _http: unknown;
   _token: string | undefined;
 
   userId: string | undefined;
@@ -74,9 +88,9 @@ class API extends EventTarget {
 
   sseEnabled: boolean;
 
-  reconnectTimeout: number | undefined;
+  reconnectTimeout: ReturnType<typeof setTimeout> | undefined;
 
-  set token(value: any) {
+  set token(value: string | undefined) {
     if (typeof value === "string" && value.trim() !== "") {
       this._token = value;
       this.tokenInit();
@@ -183,7 +197,7 @@ class API extends EventTarget {
   async fetchWithCredentials(
     url: string,
     opts: RequestInit = {},
-  ): Promise<any> {
+  ): Promise<Response> {
     return await this.fetch(
       `${this.baseUrl}${url}`,
       this.token
@@ -211,11 +225,11 @@ class API extends EventTarget {
     url: string,
     opts: {
       seqId?: string;
-      mapFn?: (i: any) => any;
+      mapFn?: (i: Record<string, unknown>) => Record<string, unknown>;
       retry?: number;
       retries?: number;
     } & RequestInit = {},
-  ): Promise<any> {
+  ): Promise<ApiResponse | ApiErrorResponse> {
     const retries = opts?.retries ?? 5;
     const retry = opts?.retry ?? 0;
     const res = await this.fetchWithCredentials(url, opts);
@@ -333,7 +347,7 @@ class API extends EventTarget {
       ...Object.fromEntries(
         Object.entries(query).filter(([_, v]) => typeof v !== "undefined"),
       ),
-    } as any);
+    } as Record<string, string>);
     return await this.getResource(
       `/api/channels/${channelId}/messages?${params.toString()}`,
     );
@@ -439,7 +453,7 @@ class API extends EventTarget {
       appId?: string;
       clientId: string;
       action: string;
-      payload: any;
+      payload?: Record<string, unknown>;
     },
   ): Promise<void> {
     const res = await this.fetchWithCredentials(`/api/interactions`, {
@@ -449,10 +463,10 @@ class API extends EventTarget {
     await res.body?.cancel();
   }
 
-  async sendMessage(msg: Partial<Message>): Promise<any> {
+  async sendMessage(msg: Partial<Message>): Promise<Record<string, unknown>> {
     return await new Promise((resolve, reject) => {
       const data = { ...msg };
-      let timeoutId: number | null = setTimeout(() => {
+      let timeoutId: ReturnType<typeof setTimeout> | null = setTimeout(() => {
         timeoutId = null;
         reject(new Error("Timeout"));
       }, 5000);
@@ -489,7 +503,7 @@ class API extends EventTarget {
     });
   }
 
-  async sendCommand(cmd: Partial<Command>): Promise<any> {
+  async sendCommand(cmd: Partial<Command>): Promise<Record<string, unknown>> {
     const data = { ...cmd };
     const res = await this.fetchWithCredentials(
       "/api/commands/execute",
@@ -521,13 +535,13 @@ class API extends EventTarget {
       case "channels:load": {
         return this.callApi("/api/channels", {
           seqId: msg.seqId,
-          mapFn: (i: any) => ({ type: "channel", ...i }),
+          mapFn: (i: Record<string, unknown>) => ({ type: "channel", ...i }),
         });
       }
       case "user:getAll": {
         return this.callApi("/api/users", {
           seqId: msg.seqId,
-          mapFn: (i: any) => ({ type: "user", ...i }),
+          mapFn: (i: Record<string, unknown>) => ({ type: "user", ...i }),
         });
       }
       case "user:get": {
@@ -536,7 +550,7 @@ class API extends EventTarget {
       case "emoji:getAll": {
         return this.callApi("/api/emojis", {
           seqId: msg.seqId,
-          mapFn: (i: any) => ({ type: "emoji", ...i }),
+          mapFn: (i: Record<string, unknown>) => ({ type: "emoji", ...i }),
         });
       }
       case "channel:create": {
@@ -565,6 +579,7 @@ class API extends EventTarget {
           },
         );
 
+        if (createRes instanceof ApiErrorResponse) return createRes;
         return await this.callApi(`/api/messages/${createRes.data[0].id}`, {
           method: "GET",
         });
@@ -599,19 +614,19 @@ class API extends EventTarget {
           `/api/channels/${msg.channelId}/messages?q=${msg.text}`,
           {
             seqId: msg.seqId,
-            mapFn: (i: any) => ({ type: "search", ...i }),
+            mapFn: (i: Record<string, unknown>) => ({ type: "search", ...i }),
           },
         );
       case "readReceipt:getOwn": {
         return this.callApi("/api/read-receipts", {
           seqId: msg.seqId,
-          mapFn: (i: any) => ({ type: "badge", ...i }),
+          mapFn: (i: Record<string, unknown>) => ({ type: "badge", ...i }),
         });
       }
       case "readReceipt:getChannel": {
         return this.callApi(`/api/channels/${msg.channelId}/read-receipts`, {
           seqId: msg.seqId,
-          mapFn: (i: any) => ({ type: "badge", ...i }),
+          mapFn: (i: Record<string, unknown>) => ({ type: "badge", ...i }),
         });
       }
       case "readReceipt:update": {

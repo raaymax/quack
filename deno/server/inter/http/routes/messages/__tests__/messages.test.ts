@@ -427,7 +427,11 @@ Deno.test("Messages history", async (t) => {
 
       const body = await res.json();
       assertEquals(body.length, 3);
-      assertEquals(body.map((m: any) => m.flat), ["t2", "t1", "t0"]);
+      assertEquals(body.map((m: Record<string, unknown>) => m.flat), [
+        "t2",
+        "t1",
+        "t0",
+      ]);
     });
 
     await t.step("GET /api/channels/:channelId/messages - limit", async () => {
@@ -438,7 +442,10 @@ Deno.test("Messages history", async (t) => {
 
       const body = await res.json();
       assertEquals(body.length, 2);
-      assertEquals(body.map((m: any) => m.flat), ["t2", "t1"]);
+      assertEquals(body.map((m: Record<string, unknown>) => m.flat), [
+        "t2",
+        "t1",
+      ]);
     });
 
     await t.step(
@@ -455,7 +462,10 @@ Deno.test("Messages history", async (t) => {
 
         const body = await res.json();
         assertEquals(body.length, 2);
-        assertEquals(body.map((m: any) => m.flat), ["t1", "t0"]);
+        assertEquals(body.map((m: Record<string, unknown>) => m.flat), [
+          "t1",
+          "t0",
+        ]);
       },
     );
     await t.step("GET /api/channels/:channelId/messages - before", async () => {
@@ -470,7 +480,7 @@ Deno.test("Messages history", async (t) => {
 
       const body = await res.json();
       assertEquals(body.length, 1);
-      assertEquals(body.map((m: any) => m.flat), ["t0"]);
+      assertEquals(body.map((m: Record<string, unknown>) => m.flat), ["t0"]);
     });
     await t.step("GET /api/channels/:channelId/messages - after", async () => {
       const res = await agent.request()
@@ -484,7 +494,10 @@ Deno.test("Messages history", async (t) => {
 
       const body = await res.json();
       assertEquals(body.length, 2);
-      assertEquals(body.map((m: any) => m.flat), ["t2", "t1"]);
+      assertEquals(body.map((m: Record<string, unknown>) => m.flat), [
+        "t2",
+        "t1",
+      ]);
     });
     await t.step("GET /api/channels/:channelId/messages - pinend", async () => {
       const res = await agent.request()
@@ -494,7 +507,7 @@ Deno.test("Messages history", async (t) => {
 
       const body = await res.json();
       assertEquals(body.length, 1);
-      assertEquals(body.map((m: any) => m.flat), ["t1"]);
+      assertEquals(body.map((m: Record<string, unknown>) => m.flat), ["t1"]);
     });
     await t.step("GET /api/channels/:channelId/messages - offset", async () => {
       const res = await agent.request()
@@ -504,7 +517,7 @@ Deno.test("Messages history", async (t) => {
 
       const body = await res.json();
       assertEquals(body.length, 1);
-      assertEquals(body.map((m: any) => m.flat), ["t2"]);
+      assertEquals(body.map((m: Record<string, unknown>) => m.flat), ["t2"]);
     });
     await t.step("GET /api/channels/:channelId/messages - search", async () => {
       const res = await agent.request()
@@ -514,7 +527,7 @@ Deno.test("Messages history", async (t) => {
 
       const body = await res.json();
       assertEquals(body.length, 1);
-      assertEquals(body.map((m: any) => m.flat), ["t1"]);
+      assertEquals(body.map((m: Record<string, unknown>) => m.flat), ["t1"]);
     });
   });
   await agent.close();
