@@ -19,9 +19,6 @@ interface FileService {
   exists(id: string): Promise<boolean>;
 }
 
-// Source images larger than this are streamed as-is instead of being decoded
-// for thumbnailing. Resizing decodes the whole bitmap into memory, so this caps
-// the transient allocation a single pathological upload can trigger.
 const MAX_RESIZE_BYTES = 25 * 1024 * 1024;
 
 class Files {
@@ -74,8 +71,6 @@ class Files {
 
     const resized = await this.scale(file, width, height);
     if (!resized) {
-      // Decoding/resizing failed (e.g. corrupt or unsupported image): fall back
-      // to streaming the original rather than failing the request.
       return this.service.get(id);
     }
 
@@ -100,8 +95,6 @@ class Files {
       );
       img = PhotonImage.new_from_byteslice(bytes);
 
-      // Resolve a missing dimension from the source aspect ratio so a single
-      // requested side (the UI only sends height) doesn't distort the image.
       const ow = img.get_width();
       const oh = img.get_height();
       let w = width || 0;
@@ -113,7 +106,6 @@ class Files {
       const result = file.contentType === "image/png"
         ? out.get_bytes()
         : out.get_bytes_jpeg(90);
-      // Copy into a fresh ArrayBuffer-backed view so it satisfies BlobPart.
       return new Blob([new Uint8Array(result)]).stream();
     } catch (e) {
       console.warn("[storage] thumbnail resize failed, serving original", e);

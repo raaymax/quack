@@ -15,8 +15,6 @@ FROM denoland/deno:alpine-2.6.8
 # apk and post-install triggers (libz, libcrypto, libzstd, libgcc_s shadow Alpine's musl libs).
 # Move them aside during apk install, then restore for Deno compatibility.
 # See: https://github.com/denoland/deno_docker/issues/373 — remove when fixed upstream
-# libvips/build-base removed (thumbnailing is now pure-WASM @cf-wasm/photon); musl-dev
-# is kept because @node-rs/argon2's prebuilt native binding needs /usr/lib/libc.so.
 RUN mv /usr/local/lib /usr/local/lib.bak \
     && mkdir /usr/local/lib \
     && apk -U upgrade \
