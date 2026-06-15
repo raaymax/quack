@@ -18,7 +18,7 @@ FROM denoland/deno:alpine-2.6.8
 RUN mv /usr/local/lib /usr/local/lib.bak \
     && mkdir /usr/local/lib \
     && apk -U upgrade \
-    && apk add vips-cpp build-base vips vips-dev \
+    && apk add musl-dev \
     && cp -a /usr/local/lib.bak/* /usr/local/lib/ \
     && rm -rf /usr/local/lib.bak
 ENV ENVIRONMENT=production
