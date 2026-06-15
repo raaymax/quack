@@ -11,8 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    outputs:
-      version: ${{ steps.version.outputs.result }}
+      actions: write
 
     steps:
       - name: Extract version from labels
@@ -50,9 +49,16 @@ jobs:
 
             core.info(`Created release ${version}`);
 
-  docker:
-    needs: release
-    uses: ./.github/workflows/docker.yml
-    with:
-      version: ${{ needs.release.outputs.version }}
-    secrets: inherit
+      - name: Trigger Docker image build
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const version = '${{ steps.version.outputs.result }}';
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'docker.yml',
+              ref: 'main',
+              inputs: { version },
+            });
+            core.info(`Dispatched docker.yml build for ${version}`);
