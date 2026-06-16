@@ -34,6 +34,7 @@ export default createCommand({
     await repo.user.updateCredentials({ email }, "password", {
       ...user.secrets.password,
       hash: await argon2.hash(password),
+      kdf: "v2",
     });
   }
 

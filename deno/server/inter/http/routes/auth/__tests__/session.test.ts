@@ -149,17 +149,20 @@ Deno.test("Login - migrates legacy auth hash", async (t) => {
   const user = await repo.user.get({ email });
   assert(user);
   await repo.user.updateCredentials({ email }, "password", {
-    ...user.secrets.password,
     hash: await argonHash(creds.login.legacyPassword),
+    data: user.secrets.password.data,
+    createdAt: user.secrets.password.createdAt,
   });
 
   await t.step(
-    "legacy login succeeds and migrates the stored hash",
+    "legacy login succeeds and migrates the stored credential",
     async () => {
       await Agent.request(app)
         .post("/api/auth/session")
         .json(creds.login)
         .expect(200);
+      const migrated = await repo.user.get({ email });
+      assertEquals(migrated?.secrets.password.kdf, "v2");
     },
   );
 
