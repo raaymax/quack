@@ -5,9 +5,15 @@ export * from "@quack/api";
 export type DbUser = User & {
   password?: string;
   resetToken?: string;
+  system?: boolean;
 
   secrets: {
-    password: { hash: string; data: EncryptedData; createdAt: Date };
+    password: {
+      hash: string;
+      data: EncryptedData;
+      createdAt: Date;
+      kdf?: string;
+    };
     backup?: { hash: string; data: EncryptedData; createdAt: Date };
   };
 
@@ -21,6 +27,7 @@ export type Secret = {
     _iv: string;
   };
   createdAt: Date;
+  kdf?: string;
 };
 
 export type Interaction = {

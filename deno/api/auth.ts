@@ -6,6 +6,12 @@ import type {
 } from "./types.ts";
 import * as enc from "@quack/encryption";
 import type API from "./mod.ts";
+import {
+  clearSessionKeys,
+  loadSessionKeys,
+  saveSessionKeys,
+  type SessionKeys,
+} from "./cryptoStore.ts";
 
 export class ApiError extends Error {
   payload: Record<string, unknown>;
@@ -54,7 +60,6 @@ class AuthAPI extends EventTarget {
     { email, password }: { email: string; password: string },
   ): Promise<Result<UserSession, LoginError>> {
     const credentials = await enc.prepareCredentials(email, password);
-    localStorage.setItem("key", credentials.key);
     const ret = await this.api.fetchWithCredentials("/api/auth/session", {
       method: "POST",
       body: JSON.stringify(credentials.login),
@@ -64,53 +69,66 @@ class AuthAPI extends EventTarget {
       return { status: "error", ...error };
     }
     const session: UserSession = await ret.json();
-    await this.validateSession(session);
+    await this.activateSession(session, credentials.encryptionKey);
     return session;
   }
 
   async restoreSession(): Promise<Result<UserSession>> {
-    const key = localStorage.getItem("key");
-    if (!key) return { status: "error" };
+    const keys = await loadSessionKeys();
+    if (!keys) return { status: "error" };
     const ret = await this.api.fetchWithCredentials("/api/auth/session");
     const session = await ret.json();
-    if (!await this.validateSession(session)) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("userId");
-      localStorage.removeItem("key");
+    if (session.status !== "ok") {
+      await this.clear();
+      return session;
     }
+    this.applyKeys(session, keys);
     return session;
   }
 
-  async validateSession(session: UserSession): Promise<boolean> {
+  async activateSession(
+    session: UserSession,
+    encryptionKey: JsonWebKey,
+  ): Promise<boolean> {
     try {
-      const key = localStorage.getItem("key");
-      if (!key) return false;
-      if (session.status === "ok") {
-        localStorage.setItem("userId", session.userId);
-        this.api.token = session.token;
-        localStorage.setItem("token", session.token);
-        const encryptionKey = enc.joinJSON<JsonWebKey>([key, session.key]);
-        const secrets: UserSessionSecrets = await enc.decrypt(
-          session.secrets,
-          encryptionKey,
-        );
-        if (secrets.sanityCheck !== "valid") return false;
-        this.api.userEncryptionKey = secrets.encryptionKey;
-        this.api.privateKey = secrets.privateKey;
-        this.api.publicKey = session.publicKey;
-        return true;
+      if (session.status !== "ok") return false;
+      const secrets: UserSessionSecrets = await enc.decrypt(
+        session.secrets,
+        encryptionKey,
+      );
+      if (secrets.sanityCheck !== "valid") return false;
+      const keys: SessionKeys = {
+        privateKey: await enc.importPrivateKey(secrets.privateKey),
+      };
+      this.applyKeys(session, keys);
+      try {
+        await saveSessionKeys(keys);
+      } catch (e) {
+        console.warn("Could not persist session keys", e);
       }
-      return false;
+      return true;
     } catch (e) {
-      console.error("Error validating session", e);
+      console.error("Error activating session", e);
       return false;
     }
   }
 
-  async logout() {
-    localStorage.removeItem("key");
+  applyKeys(session: UserSession, keys: SessionKeys) {
+    localStorage.setItem("userId", session.userId);
+    this.api.token = session.token;
+    localStorage.setItem("token", session.token);
+    this.api.privateKey = keys.privateKey;
+    this.api.publicKey = session.publicKey;
+  }
+
+  async clear() {
     localStorage.removeItem("token");
     localStorage.removeItem("userId");
+    await clearSessionKeys();
+  }
+
+  async logout() {
+    await this.clear();
     const ret = await this.api.fetchWithCredentials("/api/auth/session", {
       method: "DELETE",
       body: "{}",

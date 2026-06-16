@@ -10,18 +10,29 @@ export class SessionRepo {
   }
 
   #generateToken() {
-    return Math.random().toString(36).substring(2, 15) +
-      Math.random().toString(36).substring(2, 15);
+    return Array.from(
+      crypto.getRandomValues(new Uint8Array(32)),
+      (b) => b.toString(16).padStart(2, "0"),
+    ).join("");
   }
 
-  async create(data: { userId: EntityId }): Promise<EntityId> {
+  async create(data: { userId: EntityId; expires: Date }): Promise<EntityId> {
     const { db } = await this.connect();
     const newSession = serialize({
       userId: data.userId,
       token: this.#generateToken(),
+      expires: data.expires,
     });
     const ret = await db.collection("sessions").insertOne(newSession);
     return deserialize(ret.insertedId);
+  }
+
+  async refresh(id: EntityId, expires: Date): Promise<void> {
+    const { db } = await this.connect();
+    await db.collection("sessions").updateOne(
+      serialize({ id }),
+      { $set: { expires } },
+    );
   }
 
   async remove(data: { id?: EntityId }): Promise<void> {

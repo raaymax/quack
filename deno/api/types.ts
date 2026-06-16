@@ -107,7 +107,6 @@ export type UserSession = {
   userId: string;
   publicKey: JsonWebKey;
   secrets: EncryptedData;
-  key: string;
 };
 
 export type LoginError = {
