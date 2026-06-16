@@ -50,15 +50,13 @@ Deno.test("Login/logout", async (t) => {
     token = body.token;
     userId = body.userId;
     key = credentials.login.key;
-    assert(
-      res.headers.get("Set-Cookie")?.includes(`key=${credentials.login.key}`),
-    );
-    assert(
-      /^token=.+; HttpOnly; Path=\/$/.test(
-        res.headers.get("Set-Cookie")?.toString() ?? "",
-      ),
-      "Set-Cookie header is not correct",
-    );
+    const setCookie = res.headers.get("Set-Cookie")?.toString() ?? "";
+    assert(setCookie.includes(`key=${credentials.login.key}`));
+    assert(/token=[^;]+/.test(setCookie), "token cookie is set");
+    assert(setCookie.includes("HttpOnly"), "token cookie is HttpOnly");
+    assert(setCookie.includes("Path=/"), "token cookie has Path=/");
+    assert(setCookie.includes("Max-Age="), "token cookie is persistent");
+    assert(setCookie.includes("SameSite=Lax"), "token cookie is SameSite=Lax");
   });
 
   await t.step("GET /auth/session - Get session with bearer", async () => {
@@ -109,12 +107,12 @@ Deno.test("Login/logout - cookies", async (t) => {
     assert(body.id);
     token = body.token;
     userId = body.userId;
-    assert(
-      /^token=.+; HttpOnly; Path=\/$/.test(
-        res.headers.get("Set-Cookie")?.toString() ?? "",
-      ),
-      "Set-Cookie header is not correct",
-    );
+    const setCookie = res.headers.get("Set-Cookie")?.toString() ?? "";
+    assert(/token=[^;]+/.test(setCookie), "token cookie is set");
+    assert(setCookie.includes("HttpOnly"), "token cookie is HttpOnly");
+    assert(setCookie.includes("Path=/"), "token cookie has Path=/");
+    assert(setCookie.includes("Max-Age="), "token cookie is persistent");
+    assert(setCookie.includes("SameSite=Lax"), "token cookie is SameSite=Lax");
   });
 
   await t.step("GET /auth/session - Get session with cookie", async () => {
