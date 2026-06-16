@@ -1,5 +1,6 @@
 import { assert, assertEquals } from "@std/assert";
 import { Agent } from "@planigale/testing";
+import { hash as argonHash } from "argon2";
 import { createApp } from "../../__tests__/app.ts";
 import { ensureUser } from "../../__tests__/users.ts";
 import * as enc from "@quack/encryption";
@@ -135,6 +136,38 @@ Deno.test("Login/logout - cookies", async (t) => {
       .expect(200);
     const body = await res.json();
     assertEquals(body.status, "no-session");
+  });
+
+  core.close();
+});
+
+Deno.test("Login - migrates legacy auth hash", async (t) => {
+  const email = "legacy-user";
+  await ensureUser(repo, email);
+  const creds = await enc.prepareCredentials(email, "123");
+
+  const user = await repo.user.get({ email });
+  assert(user);
+  await repo.user.updateCredentials({ email }, "password", {
+    ...user.secrets.password,
+    hash: await argonHash(creds.login.legacyPassword),
+  });
+
+  await t.step(
+    "legacy login succeeds and migrates the stored hash",
+    async () => {
+      await Agent.request(app)
+        .post("/api/auth/session")
+        .json(creds.login)
+        .expect(200);
+    },
+  );
+
+  await t.step("subsequent login works with the new hash alone", async () => {
+    await Agent.request(app)
+      .post("/api/auth/session")
+      .json({ email, password: creds.login.password })
+      .expect(200);
   });
 
   core.close();

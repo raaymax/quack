@@ -10,8 +10,9 @@ export default createCommand({
   body: v.object({
     email: v.string(),
     password: v.string(),
+    legacyPassword: v.optional(v.string()),
   }),
-}, async ({ email, password }, { repo }) => {
+}, async ({ email, password, legacyPassword }, { repo }) => {
   const user = await repo.user.get({ email });
   if (!user) return null;
   if (user.password) {
@@ -23,7 +24,19 @@ export default createCommand({
     );
   }
 
-  if (!await argon2.verify(user.secrets.password.hash, password)) return null;
+  const storedHash = user.secrets.password.hash;
+  if (!await argon2.verify(storedHash, password)) {
+    if (
+      !legacyPassword || !await argon2.verify(storedHash, legacyPassword)
+    ) {
+      return null;
+    }
+    await repo.user.updateCredentials({ email }, "password", {
+      ...user.secrets.password,
+      hash: await argon2.hash(password),
+    });
+  }
+
   const expires = new Date(Date.now() + SESSION_TTL_SECONDS * 1000);
   const sessionId = await repo.session.create({ userId: user.id, expires });
   return sessionId;

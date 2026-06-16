@@ -181,12 +181,20 @@ export async function hashPassword(password: string, salt: string) {
   return keyBase64;
 }
 
+async function deriveAuthSalt(salt: string): Promise<string> {
+  const digest = await crypto.subtle.digest(
+    "SHA-256",
+    new TextEncoder().encode(`${salt}::auth`),
+  );
+  return toBase64(digest);
+}
+
 export async function generatePasswordKeys(
   password: string,
   salt: string,
 ): Promise<{ hash: string; encryptionKey: JsonWebKey }> {
   return {
-    hash: await hashPassword(password, salt),
+    hash: await hashPassword(password, await deriveAuthSalt(salt)),
     encryptionKey: await deriveEncryptionKeyFromPassword(
       password,
       salt,
@@ -197,7 +205,8 @@ export async function generatePasswordKeys(
 export async function prepareCredentials(email: string, password: string) {
   const salt = await deriveSaltFromEmail(email);
   const { hash, encryptionKey } = await generatePasswordKeys(password, salt);
-  return { login: { email, password: hash }, encryptionKey };
+  const legacyPassword = await hashPassword(password, salt);
+  return { login: { email, password: hash, legacyPassword }, encryptionKey };
 }
 
 export async function generateKey() {
