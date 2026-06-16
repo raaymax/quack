@@ -27,8 +27,6 @@ export class SessionRepo {
     return deserialize(ret.insertedId);
   }
 
-  // Sliding expiration: push the session's expiry forward so active users are
-  // not logged out. The TTL index on `expires` removes it once it lapses.
   async refresh(id: EntityId, expires: Date): Promise<void> {
     const { db } = await this.connect();
     await db.collection("sessions").updateOne(

@@ -10,8 +10,6 @@ export default (core: Core) =>
     url: "/session",
     handler: async (req) => {
       if (req.state.session) {
-        // Sliding expiration: extend the persisted session and re-issue the
-        // cookies with a fresh Max-Age so active users stay logged in.
         const expires = new Date(Date.now() + SESSION_TTL_SECONDS * 1000);
         await core.repo.session.refresh(req.state.session.id, expires);
 
