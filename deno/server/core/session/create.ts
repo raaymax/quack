@@ -3,6 +3,7 @@ import * as argon2 from "argon2";
 import { createCommand } from "../command.ts";
 import * as enc from "@quack/encryption";
 import { PasswordResetRequired } from "../errors.ts";
+import { SESSION_TTL_SECONDS } from "./constants.ts";
 
 export default createCommand({
   type: "session:create",
@@ -23,6 +24,7 @@ export default createCommand({
   }
 
   if (!await argon2.verify(user.secrets.password.hash, password)) return null;
-  const sessionId = await repo.session.create({ userId: user.id });
+  const expires = new Date(Date.now() + SESSION_TTL_SECONDS * 1000);
+  const sessionId = await repo.session.create({ userId: user.id, expires });
   return sessionId;
 });

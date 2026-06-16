@@ -91,6 +91,7 @@ PBKDF2 key derivation → ECDH key exchange (P-256) → AES-GCM message encrypti
 - **File naming**: Backend `camelCase.ts`, components `PascalCase.tsx`, hooks `useXxx.ts`, models `camelCase.ts`, tests `__tests__/name.test.ts`
 - **Backend barrels**: `mod.ts`; **Frontend**: no barrels (direct imports)
 - **Import order**: external libs → types → core/models → components (atoms→molecules→organisms) → utils
+- **No code comments**: do not add explanatory comments; code should be self-documenting through clear naming
 - Never mention AI usage in code or documentation
 - Do not add AI co-author lines to commits
 
