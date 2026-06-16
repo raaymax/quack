@@ -75,9 +75,7 @@ class API extends EventTarget {
 
   abortController: AbortController;
 
-  userEncryptionKey: JsonWebKey | null = null;
-
-  privateKey: JsonWebKey | null = null;
+  privateKey: CryptoKey | null = null;
 
   publicKey: JsonWebKey | null = null;
 

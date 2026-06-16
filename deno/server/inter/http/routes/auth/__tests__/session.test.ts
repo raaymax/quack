@@ -1,5 +1,6 @@
 import { assert, assertEquals } from "@std/assert";
 import { Agent } from "@planigale/testing";
+import { hash as argonHash } from "argon2";
 import { createApp } from "../../__tests__/app.ts";
 import { ensureUser } from "../../__tests__/users.ts";
 import * as enc from "@quack/encryption";
@@ -34,7 +35,6 @@ Deno.test("POST /auth/session - wrong params", async () => {
 Deno.test("Login/logout", async (t) => {
   let token: string | null = null;
   let userId: string | null = null;
-  let key: string | null = null;
   await ensureUser(repo, "admin");
 
   await t.step("POST /auth/session - Create session", async () => {
@@ -49,28 +49,22 @@ Deno.test("Login/logout", async (t) => {
     assert(body.id);
     token = body.token;
     userId = body.userId;
-    key = credentials.login.key;
-    assert(
-      res.headers.get("Set-Cookie")?.includes(`key=${credentials.login.key}`),
-    );
-    assert(
-      /^token=.+; HttpOnly; Path=\/$/.test(
-        res.headers.get("Set-Cookie")?.toString() ?? "",
-      ),
-      "Set-Cookie header is not correct",
-    );
+    const setCookie = res.headers.get("Set-Cookie")?.toString() ?? "";
+    assert(/token=[^;]+/.test(setCookie), "token cookie is set");
+    assert(setCookie.includes("HttpOnly"), "token cookie is HttpOnly");
+    assert(setCookie.includes("Path=/"), "token cookie has Path=/");
+    assert(setCookie.includes("Max-Age="), "token cookie is persistent");
+    assert(setCookie.includes("SameSite=Lax"), "token cookie is SameSite=Lax");
   });
 
   await t.step("GET /auth/session - Get session with bearer", async () => {
     const res = await Agent.request(app)
       .get("/api/auth/session")
-      .header("Cookie", `key=${key}`)
       .header("Authorization", `Bearer ${token}`)
       .expect(200);
     const body = await res.json();
     assertEquals(body.userId, userId);
     assertEquals(body.token, token);
-    assertEquals(body.key, key);
   });
 
   await t.step("DELETE /auth/session", async () => {
@@ -109,12 +103,12 @@ Deno.test("Login/logout - cookies", async (t) => {
     assert(body.id);
     token = body.token;
     userId = body.userId;
-    assert(
-      /^token=.+; HttpOnly; Path=\/$/.test(
-        res.headers.get("Set-Cookie")?.toString() ?? "",
-      ),
-      "Set-Cookie header is not correct",
-    );
+    const setCookie = res.headers.get("Set-Cookie")?.toString() ?? "";
+    assert(/token=[^;]+/.test(setCookie), "token cookie is set");
+    assert(setCookie.includes("HttpOnly"), "token cookie is HttpOnly");
+    assert(setCookie.includes("Path=/"), "token cookie has Path=/");
+    assert(setCookie.includes("Max-Age="), "token cookie is persistent");
+    assert(setCookie.includes("SameSite=Lax"), "token cookie is SameSite=Lax");
   });
 
   await t.step("GET /auth/session - Get session with cookie", async () => {
@@ -142,6 +136,41 @@ Deno.test("Login/logout - cookies", async (t) => {
       .expect(200);
     const body = await res.json();
     assertEquals(body.status, "no-session");
+  });
+
+  core.close();
+});
+
+Deno.test("Login - migrates legacy auth hash", async (t) => {
+  const email = "legacy-user";
+  await ensureUser(repo, email);
+  const creds = await enc.prepareCredentials(email, "123");
+
+  const user = await repo.user.get({ email });
+  assert(user);
+  await repo.user.updateCredentials({ email }, "password", {
+    hash: await argonHash(creds.login.legacyPassword),
+    data: user.secrets.password.data,
+    createdAt: user.secrets.password.createdAt,
+  });
+
+  await t.step(
+    "legacy login succeeds and migrates the stored credential",
+    async () => {
+      await Agent.request(app)
+        .post("/api/auth/session")
+        .json(creds.login)
+        .expect(200);
+      const migrated = await repo.user.get({ email });
+      assertEquals(migrated?.secrets.password.kdf, "v2");
+    },
+  );
+
+  await t.step("subsequent login works with the new hash alone", async () => {
+    await Agent.request(app)
+      .post("/api/auth/session")
+      .json({ email, password: creds.login.password })
+      .expect(200);
   });
 
   core.close();

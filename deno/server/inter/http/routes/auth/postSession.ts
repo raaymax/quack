@@ -1,6 +1,7 @@
 import { Res, Route } from "@planigale/planigale";
 import { AccessDenied } from "../../errors.ts";
 import { Core } from "../../../../core/mod.ts";
+import { authCookieOptions } from "../../cookies.ts";
 
 export default (core: Core) =>
   new Route({
@@ -14,7 +15,7 @@ export default (core: Core) =>
         properties: {
           email: { type: "string" },
           password: { type: "string" },
-          key: { type: "string" },
+          legacyPassword: { type: "string" },
         },
       },
     },
@@ -29,6 +30,7 @@ export default (core: Core) =>
         body: {
           email: req.body.email,
           password: req.body.password,
+          legacyPassword: req.body.legacyPassword,
         },
       });
       if (!sessionId) {
@@ -38,9 +40,9 @@ export default (core: Core) =>
       if (!session) {
         throw new AccessDenied("Invalid login or password");
       }
-      const res = Res.json({ status: "ok", ...session, key: req.body.key });
-      res.cookies.set("token", session.token, { httpOnly: true, path: "/" });
-      res.cookies.set("key", req.body.key, { httpOnly: true, path: "/" });
+      const res = Res.json({ status: "ok", ...session });
+      const cookieOpts = authCookieOptions(core);
+      res.cookies.set("token", session.token, cookieOpts);
       return res;
     },
   });

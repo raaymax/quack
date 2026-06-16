@@ -1,4 +1,3 @@
-/* global JsonWebKey */
 import * as enc from "@quack/encryption";
 import { BaseMessage, FullMessage, Message, MessageData } from "../client.ts";
 import { EncryptedData, EncryptedMessage } from "../../types.ts";
@@ -8,7 +7,7 @@ type Messages = Message | Message[];
 export class MessageEncryption {
   static decrypt = async (
     msg: Messages,
-    encryptionKey?: JsonWebKey | null,
+    encryptionKey?: CryptoKey | null,
   ): Promise<FullMessage[]> => {
     try {
       if (!encryptionKey) {
@@ -40,7 +39,7 @@ export class MessageEncryption {
 
   static encrypt = async (
     msg: FullMessage,
-    encryptionKey: JsonWebKey,
+    encryptionKey: CryptoKey,
   ): Promise<Partial<Message>> => {
     const { clientId, channelId, parentId, ...data } = msg;
     if (!encryptionKey) {

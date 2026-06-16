@@ -1,4 +1,3 @@
-/* global JsonWebKey */
 import { flow, makeAutoObservable } from "mobx";
 import { Channel } from "../../types.ts";
 import type { AppModel } from "./app.ts";
@@ -17,7 +16,7 @@ export class ChannelModel {
   channelType: "DIRECT" | "PRIVATE" | "PUBLIC";
   root: AppModel;
 
-  channelKey: JsonWebKey | null = null;
+  channelKey: CryptoKey | null = null;
 
   constructor(value: Channel, root: AppModel) {
     makeAutoObservable(this, { root: false });

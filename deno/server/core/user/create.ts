@@ -48,6 +48,7 @@ export default createCommand({
         hash: await hash(password),
         data: secrets,
         createdAt: new Date(),
+        kdf: "v2",
       },
     },
     mainChannelId: invitation.channelId,
