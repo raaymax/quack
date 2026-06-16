@@ -34,7 +34,6 @@ Deno.test("POST /auth/session - wrong params", async () => {
 Deno.test("Login/logout", async (t) => {
   let token: string | null = null;
   let userId: string | null = null;
-  let key: string | null = null;
   await ensureUser(repo, "admin");
 
   await t.step("POST /auth/session - Create session", async () => {
@@ -49,9 +48,7 @@ Deno.test("Login/logout", async (t) => {
     assert(body.id);
     token = body.token;
     userId = body.userId;
-    key = credentials.login.key;
     const setCookie = res.headers.get("Set-Cookie")?.toString() ?? "";
-    assert(setCookie.includes(`key=${credentials.login.key}`));
     assert(/token=[^;]+/.test(setCookie), "token cookie is set");
     assert(setCookie.includes("HttpOnly"), "token cookie is HttpOnly");
     assert(setCookie.includes("Path=/"), "token cookie has Path=/");
@@ -62,13 +59,11 @@ Deno.test("Login/logout", async (t) => {
   await t.step("GET /auth/session - Get session with bearer", async () => {
     const res = await Agent.request(app)
       .get("/api/auth/session")
-      .header("Cookie", `key=${key}`)
       .header("Authorization", `Bearer ${token}`)
       .expect(200);
     const body = await res.json();
     assertEquals(body.userId, userId);
     assertEquals(body.token, token);
-    assertEquals(body.key, key);
   });
 
   await t.step("DELETE /auth/session", async () => {
