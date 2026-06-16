@@ -29,17 +29,14 @@ function importKey(key: JsonWebKey | CryptoKey): Promise<CryptoKey> {
   ]);
 }
 
-export function encryptor(jwk: JsonWebKey) {
-  const key = crypto.subtle.importKey("jwk", jwk, { name: "AES-GCM" }, false, [
-    "encrypt",
-    "decrypt",
-  ]);
+export function encryptor(key: JsonWebKey | CryptoKey) {
+  const keyPromise = importKey(key);
 
   return {
     encrypt: async (message: unknown) => {
       const iv = crypto.getRandomValues(new Uint8Array(12)); // GCM uses 12 bytes IV
       const encoded = new TextEncoder().encode(JSON.stringify(message));
-      const keyy = await key;
+      const keyy = await keyPromise;
       const encrypted = await crypto.subtle.encrypt(
         { name: "AES-GCM", iv },
         keyy,
@@ -56,7 +53,7 @@ export function encryptor(jwk: JsonWebKey) {
       const iv = fromBase64(data._iv);
       const plaintext = await crypto.subtle.decrypt(
         { name: "AES-GCM", iv },
-        await key,
+        await keyPromise,
         ciphertext,
       );
       const decoder = new TextDecoder();
@@ -200,8 +197,7 @@ export async function generatePasswordKeys(
 export async function prepareCredentials(email: string, password: string) {
   const salt = await deriveSaltFromEmail(email);
   const { hash, encryptionKey } = await generatePasswordKeys(password, salt);
-  const keys = splitJSON(encryptionKey);
-  return { login: { email, password: hash, key: keys[0] }, key: keys[1] };
+  return { login: { email, password: hash }, encryptionKey };
 }
 
 export async function generateKey() {
@@ -302,16 +298,9 @@ export async function decryptSessionSecrets<T = unknown>(
 }
 
 export async function deriveSharedKey(
-  privateKey: JsonWebKey,
+  privateKey: CryptoKey,
   otherPublicKey: JsonWebKey,
-): Promise<JsonWebKey> {
-  const privKey = await crypto.subtle.importKey(
-    "jwk",
-    privateKey,
-    { name: "ECDH", namedCurve: "P-256" },
-    true,
-    ["deriveKey"],
-  );
+): Promise<CryptoKey> {
   const pubKey = await crypto.subtle.importKey(
     "jwk",
     otherPublicKey,
@@ -320,19 +309,30 @@ export async function deriveSharedKey(
     [],
   );
 
-  const sharedKey = await crypto.subtle.deriveKey(
+  return await crypto.subtle.deriveKey(
     {
       name: "ECDH",
       public: pubKey,
     },
-    privKey,
+    privateKey,
     {
       name: "AES-GCM",
       length: 256,
     },
-    true,
+    false,
     ["encrypt", "decrypt"],
   );
+}
 
-  return await crypto.subtle.exportKey("jwk", sharedKey);
+export function importPrivateKey(
+  jwk: JsonWebKey,
+  extractable = false,
+): Promise<CryptoKey> {
+  return crypto.subtle.importKey(
+    "jwk",
+    jwk,
+    { name: "ECDH", namedCurve: "P-256" },
+    extractable,
+    ["deriveKey", "deriveBits"],
+  );
 }

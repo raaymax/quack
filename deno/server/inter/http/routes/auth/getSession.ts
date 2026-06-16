@@ -16,15 +16,10 @@ export default (core: Core) =>
         const cookieOpts = authCookieOptions(core);
         const res = Res.json({
           ...req.state.session,
-          user: req.state.user.id, // FIXME: remove
-          status: "ok", // FIXME: remove
-          key: req.cookies.get("key"),
+          user: req.state.user.id,
+          status: "ok",
         });
         res.cookies.set("token", req.state.session.token, cookieOpts);
-        const key = req.cookies.get("key");
-        if (key) {
-          res.cookies.set("key", key, cookieOpts);
-        }
         return res;
       }
       const res = Res.json({ status: "no-session" });

@@ -15,7 +15,6 @@ export default (core: Core) =>
         properties: {
           email: { type: "string" },
           password: { type: "string" },
-          key: { type: "string" },
         },
       },
     },
@@ -39,10 +38,9 @@ export default (core: Core) =>
       if (!session) {
         throw new AccessDenied("Invalid login or password");
       }
-      const res = Res.json({ status: "ok", ...session, key: req.body.key });
+      const res = Res.json({ status: "ok", ...session });
       const cookieOpts = authCookieOptions(core);
       res.cookies.set("token", session.token, cookieOpts);
-      res.cookies.set("key", req.body.key, cookieOpts);
       return res;
     },
   });

@@ -16,6 +16,7 @@ export default (core: Core) =>
       }
       const res = Res.empty();
       res.cookies.delete("token", { path: "/" });
+      res.cookies.delete("key", { path: "/" });
       return res;
     },
   });
