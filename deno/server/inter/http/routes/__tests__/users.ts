@@ -21,6 +21,7 @@ export const ensureUser = async (
           hash: await hash(data.password),
           data: data.secrets,
           createdAt: new Date(),
+          kdf: "v2",
         },
       },
       ...rest,

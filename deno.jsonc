@@ -65,7 +65,8 @@
     "test": "DATABASE_URL='mongodb://chat:chat@localhost:27017/tests?authSource=admin' deno test -A",
     "ssl": "deno run -A deno/tools/generate-ssl.ts",
     "check": "deno fmt && deno lint && deno task test",
-    "mobile:config": "deno run -A deno/tools/export-mobile-config.ts"
+    "mobile:config": "deno run -A deno/tools/export-mobile-config.ts",
+    "auth:status": "deno run -A deno/tools/auth-migration-status.ts"
   },
   "compilerOptions": {
     "jsx": "react",

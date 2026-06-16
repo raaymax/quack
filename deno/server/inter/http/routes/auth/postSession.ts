@@ -15,6 +15,7 @@ export default (core: Core) =>
         properties: {
           email: { type: "string" },
           password: { type: "string" },
+          legacyPassword: { type: "string" },
         },
       },
     },
@@ -29,6 +30,7 @@ export default (core: Core) =>
         body: {
           email: req.body.email,
           password: req.body.password,
+          legacyPassword: req.body.legacyPassword,
         },
       });
       if (!sessionId) {
