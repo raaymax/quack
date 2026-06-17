@@ -159,7 +159,6 @@ export class FilesModel {
       local.patch({ status: "error", progress: 0, error: "unknown error" });
     }
   });
-  // Legacy command path: attachments keyed by the storage id.
   toJSON(): Array<{ id?: string; clientId: string; fileName: string; fileSize: number; contentType: string }> {
     return this.list.map((f) => ({
       id: f.storageId,
@@ -170,15 +169,12 @@ export class FilesModel {
     }));
   }
 
-  // File entity ids of successfully uploaded files, for message.fileIds.
   fileIds(): string[] {
     return this.list
       .filter((f) => f.status === "ok" && f.id)
       .map((f) => f.id as string);
   }
 
-  // Resolved-file shapes for optimistic (ghost) rendering before the server
-  // echoes the message back with its own resolved files.
   toFiles() {
     return this.list
       .filter((f) => f.status === "ok" && f.id && f.storageId)

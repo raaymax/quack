@@ -6,10 +6,6 @@ type WithFiles = {
   files?: FileEntry[];
 };
 
-// Resolves message.fileIds -> message.files (denormalized for read), batched
-// across the whole page in a single query. Mutates the messages in place.
-// Leaves legacy embedded attachments untouched; the two render side by side
-// on the client.
 export async function resolveFiles(
   repo: Repository,
   messages: Array<unknown>,

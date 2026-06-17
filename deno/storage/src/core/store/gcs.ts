@@ -14,7 +14,7 @@ function parseResolution(raw: unknown): Resolution | null {
       return { width: parsed.width, height: parsed.height };
     }
   } catch {
-    // ignore malformed metadata
+    return null;
   }
   return null;
 }

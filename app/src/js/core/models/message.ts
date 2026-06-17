@@ -18,9 +18,6 @@ type ViewAttachment = {
   url: string;
 };
 
-// Merges legacy embedded attachments with new resolved file entities into a
-// single view list. Both render through the same path; legacy attachments are
-// keyed by storage id, file entities by their storageId.
 function toAttachments(
   value: {
     attachments?: Array<{ id: string; fileName: string; contentType: string }>;

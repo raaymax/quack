@@ -41,8 +41,6 @@ export class MessageEncryption {
     msg: FullMessage,
     encryptionKey: CryptoKey,
   ): Promise<Partial<Message>> => {
-    // `fileIds` stays plaintext so the server can attach files even for
-    // encrypted DMs; `files` is local-only ghost data and is never sent.
     const { clientId, channelId, parentId, fileIds, files: _files, ...data } =
       msg;
     const plain = {

@@ -48,8 +48,6 @@ export class InputModel {
     html.innerHTML = "";
     const fileIds = this.files.fileIds();
     payload.fileIds = fileIds;
-    // Local-only resolved files so the optimistic ghost renders attachments
-    // immediately; the server recomputes `files` from `fileIds` on echo.
     payload.files = this.files.toFiles();
     if (payload.flat.length === 0 && fileIds.length === 0) return;
     const m = payload.flat.match("^/([^ ]+)( (.*))?");
