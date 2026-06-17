@@ -1,5 +1,8 @@
 import type API from "./mod.ts";
 import { FileUpload } from "./types.ts";
+import { MessageFile } from "./messageTypes.ts";
+
+export type UploadResult = { status: string; file: MessageFile };
 
 export class FilesAPI {
   aborts: Record<string, () => void> = {};
@@ -8,6 +11,21 @@ export class FilesAPI {
   constructor(api: API) {
     this.api = api;
   }
+
+  list = async (channelId: string): Promise<MessageFile[]> => {
+    const res = await this.api.fetchWithCredentials(
+      `/api/channels/${channelId}/files`,
+      { method: "GET" },
+    );
+    return await res.json();
+  };
+
+  remove = async (channelId: string, fileId: string): Promise<void> => {
+    await this.api.fetchWithCredentials(
+      `/api/channels/${channelId}/files/${fileId}`,
+      { method: "DELETE" },
+    );
+  };
 
   isRequestStreamSupported = (() => {
     let duplexAccessed = false;
@@ -36,17 +54,19 @@ export class FilesAPI {
 
   upload = async (
     args: FileUpload,
-  ): Promise<{ status: string; id: string }> => {
+    channelId: string,
+  ): Promise<UploadResult> => {
     if (this.isRequestStreamSupported) {
-      return await this.uplaodFileStream(args);
+      return await this.uplaodFileStream(args, channelId);
     } else {
-      return await this.uploadFileOld(args);
+      return await this.uploadFileOld(args, channelId);
     }
   };
 
   private uploadFileOld = (
     args: FileUpload,
-  ): Promise<{ status: string; id: string }> => {
+    channelId: string,
+  ): Promise<UploadResult> => {
     return new Promise((resolve, reject) => {
       // @ts-ignore This is only for browsers
       const xhr = new XMLHttpRequest();
@@ -64,7 +84,7 @@ export class FilesAPI {
         delete this.aborts[args.clientId];
         reject(e);
       }, { once: true });
-      xhr.open("POST", "/api/files", true);
+      xhr.open("POST", `/api/channels/${channelId}/files`, true);
       xhr.setRequestHeader("Authorization", `Bearer ${this.api.token}`);
 
       const formData = new FormData();
@@ -79,7 +99,8 @@ export class FilesAPI {
 
   private uplaodFileStream = async (
     args: FileUpload,
-  ): Promise<{ status: string; id: string }> => {
+    channelId: string,
+  ): Promise<UploadResult> => {
     let uploadedSize = 0;
     const abortController = new AbortController();
     this.aborts[args.clientId] = () => abortController.abort();
@@ -92,18 +113,21 @@ export class FilesAPI {
         },
       }),
     );
-    const res = await this.api.fetchWithCredentials("/api/files", {
-      method: "POST",
-      signal: abortController.signal,
-      duplex: "half",
-      headers: {
-        Authorization: `Bearer ${localStorage.token}`,
-        "Content-Type": args.contentType || "application/octet-stream",
-        "Content-Length": args.fileSize.toString(),
-        "Content-Disposition": `attachment; filename="${args.fileName}"`,
+    const res = await this.api.fetchWithCredentials(
+      `/api/channels/${channelId}/files`,
+      {
+        method: "POST",
+        signal: abortController.signal,
+        duplex: "half",
+        headers: {
+          Authorization: `Bearer ${localStorage.token}`,
+          "Content-Type": args.contentType || "application/octet-stream",
+          "Content-Length": args.fileSize.toString(),
+          "Content-Disposition": `attachment; filename="${args.fileName}"`,
+        },
+        body: blobStream,
       },
-      body: blobStream,
-    });
+    );
 
     delete this.aborts[args.clientId];
 

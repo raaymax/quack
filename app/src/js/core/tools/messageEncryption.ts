@@ -41,12 +41,19 @@ export class MessageEncryption {
     msg: FullMessage,
     encryptionKey: CryptoKey,
   ): Promise<Partial<Message>> => {
-    const { clientId, channelId, parentId, ...data } = msg;
+    // `fileIds` stays plaintext so the server can attach files even for
+    // encrypted DMs; `files` is local-only ghost data and is never sent.
+    const { clientId, channelId, parentId, fileIds, files: _files, ...data } =
+      msg;
+    const plain = {
+      clientId,
+      channelId,
+      parentId,
+      ...(fileIds?.length ? { fileIds } : {}),
+    };
     if (!encryptionKey) {
       return {
-        clientId,
-        channelId,
-        parentId,
+        ...plain,
         ...data,
         secured: false,
       };
@@ -54,9 +61,7 @@ export class MessageEncryption {
     const e = enc.encryptor(encryptionKey);
     const encrypted: EncryptedData = await e.encrypt(data);
     const m: Partial<EncryptedMessage> = {
-      clientId,
-      channelId,
-      parentId,
+      ...plain,
       ...encrypted,
       secured: true,
     };

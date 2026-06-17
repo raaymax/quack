@@ -5,6 +5,7 @@ import { generateHexId } from "../tools/generateHexId.ts";
 
 type FileUploadPatch = FileUpload & {
   id: string;
+  storageId: string;
   status: string;
   progress: number;
   error: string | null;
@@ -12,6 +13,7 @@ type FileUploadPatch = FileUpload & {
 
 export class FileModel {
   id?: string;
+  storageId?: string;
   clientId: string;
   stream: ReadableStream;
   status: string;
@@ -38,6 +40,7 @@ export class FileModel {
 
   async dispose() {
     this.id = undefined;
+    this.storageId = undefined;
     this.clientId = "";
     this.stream = null as unknown as ReadableStream;
     this.status = "pending";
@@ -49,7 +52,8 @@ export class FileModel {
   }
 
   patch = (value: Partial<FileUploadPatch>) => {
-    this.id = value.id;
+    if (value.id !== undefined) this.id = value.id;
+    if (value.storageId !== undefined) this.storageId = value.storageId;
     if (value.status) this.status = value.status;
     if (value.fileSize) this.fileSize = value.fileSize;
     if (value.fileName) this.fileName = value.fileName;
@@ -66,11 +70,14 @@ export class FileModel {
 export class FilesModel {
   list: FileModel[];
 
+  channelId: string;
+
   root: AppModel;
 
-  constructor(root: AppModel) {
+  constructor(root: AppModel, channelId: string) {
     makeAutoObservable(this, { root: false });
     this.root = root;
+    this.channelId = channelId;
     this.list = [];
   }
 
@@ -128,10 +135,18 @@ export class FilesModel {
     this.list.push(local);
 
     try {
-      const { status, id: fileId } = yield client.api.files.upload(local);
+      const { status, file } = yield client.api.files.upload(
+        local,
+        this.channelId,
+      );
 
-      if (status === "ok") {
-        local.patch({ status, id: fileId, progress: 100 });
+      if (status === "ok" && file) {
+        local.patch({
+          status,
+          id: file.id,
+          storageId: file.storageId,
+          progress: 100,
+        });
       } else {
         local.patch({ status, progress: 0, error: "something went wrong" });
       }
@@ -144,13 +159,41 @@ export class FilesModel {
       local.patch({ status: "error", progress: 0, error: "unknown error" });
     }
   });
+  // Legacy command path: attachments keyed by the storage id.
   toJSON(): Array<{ id?: string; clientId: string; fileName: string; fileSize: number; contentType: string }> {
     return this.list.map((f) => ({
-      id: f.id,
+      id: f.storageId,
       clientId: f.clientId,
       fileName: f.fileName,
       fileSize: f.fileSize,
       contentType: f.contentType,
     }));
+  }
+
+  // File entity ids of successfully uploaded files, for message.fileIds.
+  fileIds(): string[] {
+    return this.list
+      .filter((f) => f.status === "ok" && f.id)
+      .map((f) => f.id as string);
+  }
+
+  // Resolved-file shapes for optimistic (ghost) rendering before the server
+  // echoes the message back with its own resolved files.
+  toFiles() {
+    return this.list
+      .filter((f) => f.status === "ok" && f.id && f.storageId)
+      .map((f) => ({
+        id: f.id as string,
+        storageId: f.storageId as string,
+        channelId: this.channelId,
+        uploaderId: this.root.userId ?? "",
+        fileName: f.fileName,
+        contentType: f.contentType,
+        size: f.fileSize,
+        resolution: null,
+        status: "attached" as const,
+        messageId: null,
+        createdAt: new Date().toISOString(),
+      }));
   }
 }

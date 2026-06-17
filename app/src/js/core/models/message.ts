@@ -4,11 +4,45 @@ import {
   Eid,
   FullMessage,
   MessageBody,
+  MessageFile,
   ViewMessage,
   ViewProgress,
 } from "../../types.ts";
 import { client } from "../client.ts";
 import type { MessagesModel } from "./messages.ts";
+
+type ViewAttachment = {
+  id: string;
+  fileName: string;
+  contentType: string;
+  url: string;
+};
+
+// Merges legacy embedded attachments with new resolved file entities into a
+// single view list. Both render through the same path; legacy attachments are
+// keyed by storage id, file entities by their storageId.
+function toAttachments(
+  value: {
+    attachments?: Array<{ id: string; fileName: string; contentType: string }>;
+    files?: MessageFile[];
+  },
+): ViewAttachment[] {
+  const legacy = (value.attachments ?? []).map((a) => ({
+    id: a.id,
+    fileName: a.fileName,
+    contentType: a.contentType,
+    url: client.api.getUrl(a.id),
+  }));
+  const resolved = (value.files ?? [])
+    .filter((f) => f.status !== "deleted")
+    .map((f) => ({
+      id: f.storageId,
+      fileName: f.fileName,
+      contentType: f.contentType,
+      url: client.api.getUrl(f.storageId),
+    }));
+  return [...legacy, ...resolved];
+}
 
 export class MessageModel implements ViewMessage {
   secured = false as const;
@@ -56,6 +90,7 @@ export class MessageModel implements ViewMessage {
     contentType: string;
     url: string;
   }>;
+  fileIds?: Eid[];
 
   progress?: ViewProgress[];
   info?: {
@@ -96,14 +131,9 @@ export class MessageModel implements ViewMessage {
       mentions: value.mentions ?? [],
       linkPreviews: value.linkPreviews ?? [],
       parsingErrors: value.parsingErrors ?? [],
-      attachments: value.attachments?.map((attachment) => {
-        return {
-          id: attachment.id,
-          fileName: attachment.fileName,
-          contentType: attachment.contentType,
-          url: client.api.getUrl(attachment.id),
-        };
-      }),
+      attachments: value.attachments ?? [],
+      fileIds: value.fileIds ?? [],
+      files: value.files ?? [],
       info: value.info ?? null,
     }, parent);
   };
@@ -130,14 +160,8 @@ export class MessageModel implements ViewMessage {
     this.mentions = value.mentions;
     this.linkPreviews = value.linkPreviews;
     this.parsingErrors = value.parsingErrors;
-    this.attachments = value.attachments?.map((attachment) => {
-      return {
-        id: attachment.id,
-        fileName: attachment.fileName,
-        contentType: attachment.contentType,
-        url: client.api.getUrl(attachment.id),
-      };
-    });
+    this.fileIds = value.fileIds;
+    this.attachments = toAttachments(value);
 
     this.parent = parent;
   }
@@ -168,6 +192,7 @@ export class MessageModel implements ViewMessage {
     this.linkPreviews = [];
     this.parsingErrors = [];
     this.attachments = [];
+    this.fileIds = [];
     this.progress = [];
     this.info = undefined;
     this.editing = false;
@@ -193,16 +218,10 @@ export class MessageModel implements ViewMessage {
     }
     if (value.info !== undefined) this.info = value.info;
     if (value.editing !== undefined) this.editing = value.editing;
+    if (value.fileIds !== undefined) this.fileIds = value.fileIds;
 
-    if (value.attachments) {
-      this.attachments = value.attachments?.map((attachment) => {
-        return {
-          id: attachment.id,
-          fileName: attachment.fileName,
-          contentType: attachment.contentType,
-          url: client.api.getUrl(attachment.id),
-        };
-      });
+    if (value.attachments !== undefined || value.files !== undefined) {
+      this.attachments = toAttachments(value);
     }
     return this;
   };
@@ -268,7 +287,7 @@ export class MessageModel implements ViewMessage {
       reactions: this.reactions,
       flat: this.flat,
       message: this.message,
-      attachments: this.attachments,
+      fileIds: this.fileIds,
     };
   }
 }
