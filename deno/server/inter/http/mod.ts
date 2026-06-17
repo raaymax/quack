@@ -17,6 +17,7 @@ import { channelMessages, messages } from "./routes/messages/mod.ts";
 import { emojis } from "./routes/emojis/mod.ts";
 import { commands } from "./routes/commands/mod.ts";
 import { channelReadReceipt, readReceipt } from "./routes/readReceipt/mod.ts";
+import { channelFiles } from "./routes/file/mod.ts";
 import { interactions } from "./routes/interactions/mod.ts";
 import { mobile } from "./routes/mobile/mod.ts";
 
@@ -71,6 +72,7 @@ export class HttpInterface extends Planigale {
         "/api/channels/:channelId/read-receipts",
         channelReadReceipt(core),
       );
+      this.use("/api/channels/:channelId/files", channelFiles(core));
 
       // todo: move this to routes
       this.route({

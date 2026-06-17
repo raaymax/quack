@@ -32,6 +32,10 @@ import CheckChannelAccess from "./channel/checkAccess.ts";
 import InteractionWithMessage from "./message/interaction.ts";
 import ChannelUserTyping from "./channel/userTyping.ts";
 import UserReset from "./user/reset.ts";
+import RegisterFile from "./file/register.ts";
+import AttachFiles from "./file/attach.ts";
+import RemoveFile from "./file/remove.ts";
+import GetChannelFiles from "./file/getChannel.ts";
 import { registerCommand } from "./command/repository.ts";
 
 import { Repository, storage } from "../infra/mod.ts";
@@ -59,6 +63,9 @@ const commands = buildCommandCollection([
   InteractionWithMessage,
   ChannelUserTyping,
   UserReset,
+  RegisterFile,
+  AttachFiles,
+  RemoveFile,
 ]);
 
 export class Core {
@@ -107,6 +114,10 @@ export class Core {
   readReceipt = {
     getAll: GetAllReadReceipts(this),
     getChannel: GetChannelReadReceipts(this),
+  };
+
+  file = {
+    getChannel: GetChannelFiles(this),
   };
 
   constructor(arg: {

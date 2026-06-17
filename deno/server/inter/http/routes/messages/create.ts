@@ -42,6 +42,10 @@ export default (core: Core) =>
               },
             },
           },
+          fileIds: {
+            type: "array",
+            items: { type: "string", format: "entity-id" },
+          },
         },
       },
     },

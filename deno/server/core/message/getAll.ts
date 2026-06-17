@@ -1,6 +1,7 @@
 import * as v from "valibot";
 import { Id } from "../types.ts";
 import { createQuery } from "../query.ts";
+import { resolveFiles } from "../file/resolveFiles.ts";
 
 export default createQuery({
   type: "message:getAll",
@@ -44,7 +45,10 @@ export default createQuery({
       id: parentId,
       channelId,
     });
-    return [parent, ...msgs];
+    const result = [parent, ...msgs];
+    await resolveFiles(repo, result);
+    return result;
   }
+  await resolveFiles(repo, msgs);
   return msgs;
 });

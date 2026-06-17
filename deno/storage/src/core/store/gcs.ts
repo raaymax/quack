@@ -1,7 +1,23 @@
 /* eslint-disable class-methods-use-this */
 import { GoogleAuth } from "google-auth-library";
 import { ResourceNotFound } from "@planigale/planigale";
-import type { FileData, FileOpts } from "../types.ts";
+import type { FileData, FileMeta, FileOpts, Resolution } from "../types.ts";
+
+function parseResolution(raw: unknown): Resolution | null {
+  if (typeof raw !== "string") return null;
+  try {
+    const parsed = JSON.parse(raw);
+    if (
+      parsed && typeof parsed.width === "number" &&
+      typeof parsed.height === "number"
+    ) {
+      return { width: parsed.width, height: parsed.height };
+    }
+  } catch {
+    // ignore malformed metadata
+  }
+  return null;
+}
 
 // const API_URL = "http://localhost:8888";
 const API_URL = "https://storage.googleapis.com";
@@ -86,6 +102,9 @@ class Gcs {
       body: JSON.stringify({
         metadata: {
           filename: file.filename,
+          ...(file.resolution
+            ? { resolution: JSON.stringify(file.resolution) }
+            : {}),
         },
       }),
     });
@@ -95,6 +114,46 @@ class Gcs {
     }
 
     return fileId;
+  }
+
+  async stat(fileId: string): Promise<FileMeta> {
+    const token = await this.getAccessToken();
+    const meta = await fetch(this.getUrl(fileId), {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const metadata = await meta.json();
+    if (meta.status !== 200) {
+      throw new ResourceNotFound("File not found");
+    }
+    const filename = metadata.metadata?.filename || "file";
+    return {
+      id: fileId,
+      contentType: metadata.contentType || "application/octet-stream",
+      filename: typeof filename === "string" ? filename : "file",
+      size: parseInt(metadata.size, 10) || 0,
+      resolution: parseResolution(metadata.metadata?.resolution),
+    };
+  }
+
+  async list(prefix: string): Promise<string[]> {
+    const token = await this.getAccessToken();
+    const res = await fetch(
+      `${API_URL}/storage/v1/b/${this.bucketName}/o?prefix=${
+        encodeURIComponent(prefix)
+      }`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+    const data = await res.json();
+    if (res.status !== 200) {
+      return [];
+    }
+    return (data.items ?? []).map((item: { name: string }) => item.name);
   }
 
   async remove(fileId: string): Promise<void> {
@@ -144,6 +203,7 @@ class Gcs {
       contentType: metadata.contentType || "application/octet-stream",
       filename: typeof filename === "string" ? filename : "file",
       size: parseInt(metadata.size, 10) || 0,
+      resolution: parseResolution(metadata.metadata?.resolution),
       stream: res.body,
     };
   };

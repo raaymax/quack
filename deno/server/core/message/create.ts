@@ -4,6 +4,7 @@ import { Id, IdArr } from "../types.ts";
 import { AccessDenied, InvalidMessage, ResourceNotFound } from "../errors.ts";
 import { flatten } from "./flatten.ts";
 import { ChannelType, EntityId } from "../../types.ts";
+import { resolveFiles } from "../file/resolveFiles.ts";
 
 function filterUndefined(data: Record<string, unknown>) {
   return Object.fromEntries(
@@ -36,6 +37,7 @@ export default createCommand({
         })),
         [],
       ),
+      fileIds: v.optional(IdArr, []),
     }),
     ["userId", "channelId"],
   ),
@@ -84,6 +86,7 @@ export default createCommand({
       fileName: file.fileName,
       contentType: file.contentType,
     })),
+    fileIds: msg.fileIds?.length ? msg.fileIds : undefined,
     createdAt: new Date(),
   });
   const id: EntityId = await (async () => {
@@ -109,6 +112,18 @@ export default createCommand({
     },
   }).internal();
 
+  if (msg.fileIds?.length) {
+    await core.dispatch({
+      type: "file:attach",
+      body: {
+        fileIds: msg.fileIds.map((f) => f.toString()),
+        messageId: id.toString(),
+        channelId: channel.id.toString(),
+        userId: msg.userId.toString(),
+      },
+    }).internal();
+  }
+
   if (id && msg.parentId) {
     await repo.message.updateThread({
       id,
@@ -120,6 +135,7 @@ export default createCommand({
   }
 
   const created = await repo.message.getR({ id });
+  await resolveFiles(repo, [created]);
   bus.group(channel.users, { type: "message", ...created });
 
   await core.dispatch({

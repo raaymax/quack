@@ -74,6 +74,12 @@ export type BaseMessage = {
     reaction: string;
   }>;
 
+  // References to file entities shared in this message (the new model). Lives on
+  // BaseMessage so encrypted DMs carry plaintext file references too.
+  fileIds?: Eid[];
+  // Resolved file entities, denormalized server-side on read from `fileIds`.
+  files?: MessageFile[];
+
   updatedAt: DateTime;
   createdAt: DateTime;
 };
@@ -102,7 +108,10 @@ export type MessageData = {
     charset: string;
   }[];
   parsingErrors?: Array<{ message: string; path?: string }>;
-  attachments?: Array<{ // TODO make this a separate entity
+  // Legacy embedded attachments. Kept for backward compatibility — DM history
+  // stores attachment metadata inside the (encrypted) message body and can never
+  // be migrated server-side. New messages reference files via `fileIds` instead.
+  attachments?: Array<{
     id: string;
     fileName: string;
     contentType: string;
@@ -112,6 +121,22 @@ export type MessageData = {
     msg: string;
     action?: string;
   } | null;
+};
+
+export type FileStatus = "draft" | "attached" | "deleted";
+
+export type MessageFile = {
+  id: Eid;
+  storageId: string;
+  channelId: Eid;
+  uploaderId: Eid;
+  fileName: string;
+  contentType: string;
+  size: number | null;
+  resolution: { width: number; height: number } | null;
+  status: FileStatus;
+  messageId: Eid | null;
+  createdAt: DateTime;
 };
 
 export type EncryptedMessage = BaseMessage & EncryptedData & { secured: true };
