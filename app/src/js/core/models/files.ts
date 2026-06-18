@@ -13,7 +13,7 @@ type FileUploadPatch = FileUpload & {
 export class FileModel {
   id?: string;
   clientId: string;
-  stream: ReadableStream;
+  file: File;
   status: string;
   fileSize: number;
   fileName: string;
@@ -26,7 +26,7 @@ export class FileModel {
   constructor(value: FileUpload, root: AppModel) {
     makeAutoObservable(this, { root: false });
     this.clientId = value.clientId;
-    this.stream = value.stream;
+    this.file = value.file;
     this.status = "pending";
     this.fileSize = value.fileSize;
     this.fileName = value.fileName;
@@ -39,7 +39,7 @@ export class FileModel {
   async dispose() {
     this.id = undefined;
     this.clientId = "";
-    this.stream = null as unknown as ReadableStream;
+    this.file = null as unknown as File;
     this.status = "pending";
     this.fileSize = 0;
     this.fileName = "";
@@ -122,7 +122,7 @@ export class FilesModel {
   uplaod = flow(function* (this: FilesModel, file: File) {
     const local = new FileModel({
       clientId: generateHexId(),
-      stream: file.stream(),
+      file,
       fileName: file.name,
       fileSize: file.size,
       contentType: file.type,

@@ -30,7 +30,6 @@ module.exports = {
     EMOJI: "writable",
     API_URL: "readonly",
     APP_URL: "readonly",
-    BUFFERED_UPLOAD: "readonly",
   },
   rules: {
     "react-refresh/only-export-components": [

@@ -138,7 +138,7 @@ export type CreateChannelRequest = {
 export type FileUpload = {
   id?: string;
   clientId: string;
-  stream: ReadableStream;
+  file: File;
   onProgress?: (progress: number) => void;
   contentType: string;
   fileSize: number;

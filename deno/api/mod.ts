@@ -86,8 +86,6 @@ class API extends EventTarget {
 
   sseEnabled: boolean;
 
-  bufferedUpload: boolean;
-
   reconnectTimeout: ReturnType<typeof setTimeout> | undefined;
 
   set token(value: string | undefined) {
@@ -105,10 +103,7 @@ class API extends EventTarget {
   getFileUrl = (channelId: string, fileId: string) =>
     `/api/channels/${channelId}/files/${fileId}`;
 
-  constructor(
-    url: string,
-    opts: { fetch: typeof fetch; sse?: boolean; bufferedUpload?: boolean },
-  ) {
+  constructor(url: string, opts: { fetch: typeof fetch; sse?: boolean }) {
     super();
     this.baseUrl = isDeno ? url : "";
     this.abortController = new AbortController();
@@ -126,7 +121,6 @@ class API extends EventTarget {
     this.auth = new AuthAPI(this);
     this.files = new FilesAPI(this);
     this.sseEnabled = opts.sse ?? true;
-    this.bufferedUpload = opts.bufferedUpload ?? false;
   }
 
   init = () => {
