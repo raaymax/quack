@@ -120,20 +120,30 @@ Deno.test("ResizePool - reports no capacity beyond maxPending", async () => {
     const a = pool.resize(new Uint8Array(source), 100, 0, true);
     const b = pool.resize(new Uint8Array(source), 120, 0, true);
     assertEquals(pool.hasCapacity(), false);
-    await Promise.all([a, b]);
+    const [ra, rb] = await Promise.all([a, b]);
+    assert(ra && rb, "both queued jobs should still complete");
     assert(pool.hasCapacity(), "drained pool has capacity again");
   } finally {
     pool.close();
   }
 });
 
-Deno.test("ResizePool - times out a stuck job and keeps serving", async () => {
+Deno.test("ResizePool - times out a stuck job and stays usable", async () => {
   const pool = new ResizePool(1, 4, 1);
   try {
     const first = await pool.resize(new Uint8Array(source), 100, 0, true);
-    const second = await pool.resize(new Uint8Array(source), 120, 0, true);
-    assertEquals(first, null);
-    assertEquals(second, null);
+    assertEquals(first, null, "the job should time out to null");
+
+    let guard: number | undefined;
+    const stuck = new Promise<"stuck">((resolve) => {
+      guard = setTimeout(() => resolve("stuck"), 3000);
+    });
+    const second = await Promise.race([
+      pool.resize(new Uint8Array(source), 120, 0, true),
+      stuck,
+    ]);
+    clearTimeout(guard);
+    assertEquals(second, null, "pool must recover and not deadlock");
   } finally {
     pool.close();
   }
