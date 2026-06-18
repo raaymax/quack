@@ -1,4 +1,5 @@
 import type { ResizeRequest, ResizeResponse } from "./resizeWorker.ts";
+import { envInt } from "./env.ts";
 
 type Pending = (bytes: Uint8Array<ArrayBuffer> | null) => void;
 
@@ -14,20 +15,6 @@ type Active = {
 
 const DEFAULT_WORKERS = 2;
 const DEFAULT_TIMEOUT_MS = 30_000;
-
-const envInt = (name: string, fallback: number): number => {
-  let raw: string | undefined;
-  try {
-    raw = Deno.env.get(name);
-  } catch {
-    return fallback;
-  }
-  if (raw === undefined) return fallback;
-  const value = Number(raw);
-  if (Number.isInteger(value) && value > 0) return value;
-  console.warn(`[storage] invalid ${name}="${raw}", using ${fallback}`);
-  return fallback;
-};
 
 export class ResizePool {
   private workers = new Set<Worker>();
