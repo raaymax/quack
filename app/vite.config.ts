@@ -1,4 +1,5 @@
 import react from "@vitejs/plugin-react";
+import basicSsl from "@vitejs/plugin-basic-ssl";
 import { VitePWA } from "vite-plugin-pwa";
 
 import path from "node:path";
@@ -39,6 +40,7 @@ export default defineConfig(({ command }) => ({
   },
   plugins: [
     react(),
+    command === "serve" && basicSsl(),
     VitePWA({
       injectRegister: "auto",
       strategies: "injectManifest",

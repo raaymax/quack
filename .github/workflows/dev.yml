@@ -13,6 +13,8 @@ env:
 jobs:
   tests:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     services:
       mongo:
         image: mongo:5
@@ -35,12 +37,18 @@ jobs:
       with:
         deno-version: '2.6.8'
     - run: deno install --allow-scripts
+    - name: Install Socket Firewall
+      uses: socketdev/action@ba6de6cc0565af1f42295590380973573297e31f
+      with:
+        mode: firewall-free
     - name: Install frontend dependencies
       working-directory: app
-      run: npm ci
+      run: |
+        corepack enable
+        sfw pnpm install --frozen-lockfile
     - name: Frontend lint
       working-directory: app
-      run: npm run lint
+      run: pnpm lint
     - run: deno task migrate:tests
     - run: deno task check
 

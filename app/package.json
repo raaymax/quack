@@ -2,6 +2,7 @@
   "name": "@quack/app",
   "version": "1.0.0",
   "type": "module",
+  "packageManager": "pnpm@11.5.3",
   "main": "./mod.ts",
   "scripts": {
     "dev": "vite",
@@ -41,6 +42,7 @@
     "@types/react-dom": "^19.1.9",
     "@types/serviceworker": "0.0.152",
     "@types/workbox-sw": "4.3.7",
+    "@vitejs/plugin-basic-ssl": "2.3.0",
     "@vitejs/plugin-react": "^5.0.2",
     "chromatic": "^13.3.5",
     "eslint": "8.57.1",
