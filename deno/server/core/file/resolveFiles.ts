@@ -1,9 +1,10 @@
 import { EntityId, FileEntry } from "../../types.ts";
 import { Repository } from "../../infra/mod.ts";
+import { ClientFile, toClientFile } from "./clientFile.ts";
 
 type WithFiles = {
   fileIds?: EntityId[];
-  files?: FileEntry[];
+  files?: ClientFile[];
 };
 
 export async function resolveFiles(
@@ -24,6 +25,7 @@ export async function resolveFiles(
     if (!m.fileIds?.length) continue;
     m.files = m.fileIds
       .map((id) => byId.get(id.toString()))
-      .filter((f): f is FileEntry => !!f && f.status !== "deleted");
+      .filter((f): f is FileEntry => !!f && f.status !== "deleted")
+      .map(toClientFile);
   }
 }

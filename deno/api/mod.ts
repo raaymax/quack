@@ -100,6 +100,8 @@ class API extends EventTarget {
   }
 
   getUrl = (fileId: string) => `/api/files/${fileId}`;
+  getFileUrl = (channelId: string, fileId: string) =>
+    `/api/channels/${channelId}/files/${fileId}`;
   getThumbnail = (id: string, size?: { w?: number; h?: number }) => {
     const params = new URLSearchParams();
     if (size?.w) params.set("w", size.w.toString());

@@ -2,6 +2,7 @@ import { Route } from "@planigale/planigale";
 import { Core } from "../../../../core/mod.ts";
 import { serialize } from "../../../../core/serializer.ts";
 import { EntityId } from "../../../../types.ts";
+import { toClientFile } from "../../../../core/file/clientFile.ts";
 
 export default (core: Core) =>
   new Route({
@@ -48,6 +49,9 @@ export default (core: Core) =>
       }).internal() as EntityId;
 
       const file = await core.repo.file.get({ id });
-      return Response.json({ status: "ok", file: serialize(file) });
+      return Response.json({
+        status: "ok",
+        file: serialize(toClientFile(file!)),
+      });
     },
   });

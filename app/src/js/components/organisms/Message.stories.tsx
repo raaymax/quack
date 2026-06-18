@@ -190,7 +190,6 @@ export const WithImages: Story = {
       files: [
         {
           id: "file-1",
-          storageId: "123",
           channelId: "test",
           uploaderId: "user-1",
           fileName: "image.jpg",
@@ -203,7 +202,6 @@ export const WithImages: Story = {
         },
         {
           id: "file-2",
-          storageId: "321",
           channelId: "test",
           uploaderId: "user-1",
           fileName: "image2.jpg",

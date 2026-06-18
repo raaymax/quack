@@ -74,7 +74,7 @@ Deno.test("files - register draft, attach via message, list, remove", async () =
       // Now attached -> appears in the per-channel files view.
       list = await core.file.getChannel({ userId, channelId });
       assertEquals(list.length, 1);
-      assertEquals(list[0].storageId, storageId);
+      assertEquals(list[0].id.toString(), fileId);
 
       // ... and over HTTP.
       const listRes = await agent.request()
@@ -84,6 +84,21 @@ Deno.test("files - register draft, attach via message, list, remove", async () =
       const listBody = await listRes.json();
       assertEquals(listBody.length, 1);
       assertEquals(listBody[0].fileName, "hello.txt");
+
+      // Downloadable by entity id (storageId never leaves the server).
+      const dl = await agent.request()
+        .get(`/api/channels/${channelId}/files/${fileId}`)
+        .header("Authorization", `Bearer ${token}`)
+        .expect(200);
+      assertEquals(dl.headers.get("content-type"), "text/plain");
+      assertEquals(await dl.text(), "hello world");
+
+      // Unknown file id -> 404.
+      const missing = await agent.request()
+        .get(`/api/channels/${channelId}/files/0123456789abcdef01234567`)
+        .header("Authorization", `Bearer ${token}`)
+        .expect(404);
+      await missing.body?.cancel?.();
 
       // Removing the message cascades: file row deleted + blob removed.
       await agent.request()

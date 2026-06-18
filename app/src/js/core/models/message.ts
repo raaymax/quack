@@ -33,10 +33,10 @@ function toAttachments(
   const resolved = (value.files ?? [])
     .filter((f) => f.status !== "deleted")
     .map((f) => ({
-      id: f.storageId,
+      id: f.id,
       fileName: f.fileName,
       contentType: f.contentType,
-      url: client.api.getUrl(f.storageId),
+      url: client.api.getFileUrl(f.channelId, f.id),
     }));
   return [...legacy, ...resolved];
 }

@@ -121,7 +121,6 @@ export type FileStatus = "draft" | "attached" | "deleted";
 
 export type MessageFile = {
   id: Eid;
-  storageId: string;
   channelId: Eid;
   uploaderId: Eid;
   fileName: string;

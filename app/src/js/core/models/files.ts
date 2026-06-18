@@ -5,7 +5,6 @@ import { generateHexId } from "../tools/generateHexId.ts";
 
 type FileUploadPatch = FileUpload & {
   id: string;
-  storageId: string;
   status: string;
   progress: number;
   error: string | null;
@@ -13,7 +12,6 @@ type FileUploadPatch = FileUpload & {
 
 export class FileModel {
   id?: string;
-  storageId?: string;
   clientId: string;
   stream: ReadableStream;
   status: string;
@@ -40,7 +38,6 @@ export class FileModel {
 
   async dispose() {
     this.id = undefined;
-    this.storageId = undefined;
     this.clientId = "";
     this.stream = null as unknown as ReadableStream;
     this.status = "pending";
@@ -53,7 +50,6 @@ export class FileModel {
 
   patch = (value: Partial<FileUploadPatch>) => {
     if (value.id !== undefined) this.id = value.id;
-    if (value.storageId !== undefined) this.storageId = value.storageId;
     if (value.status) this.status = value.status;
     if (value.fileSize) this.fileSize = value.fileSize;
     if (value.fileName) this.fileName = value.fileName;
@@ -144,7 +140,6 @@ export class FilesModel {
         local.patch({
           status,
           id: file.id,
-          storageId: file.storageId,
           progress: 100,
         });
       } else {
@@ -167,10 +162,9 @@ export class FilesModel {
 
   toFiles() {
     return this.list
-      .filter((f) => f.status === "ok" && f.id && f.storageId)
+      .filter((f) => f.status === "ok" && f.id)
       .map((f) => ({
         id: f.id as string,
-        storageId: f.storageId as string,
         channelId: this.channelId,
         uploaderId: this.root.userId ?? "",
         fileName: f.fileName,
