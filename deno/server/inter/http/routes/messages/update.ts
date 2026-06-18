@@ -25,6 +25,10 @@ export default (core: Core) =>
           debug: { type: "string" },
           links: { type: "array", items: { type: "string" } },
           mentions: { type: "array", items: { type: "string" } },
+          fileIds: {
+            type: "array",
+            items: { type: "string", format: "entity-id" },
+          },
         },
       },
     },

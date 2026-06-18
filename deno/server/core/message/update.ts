@@ -2,6 +2,7 @@ import * as v from "valibot";
 import { createCommand } from "../command.ts";
 import { Id, IdArr, vMessageBody } from "../types.ts";
 import { NotOwner, ResourceNotFound } from "../errors.ts";
+import { resolveFiles } from "../file/resolveFiles.ts";
 
 export default createCommand({
   type: "message:update",
@@ -15,6 +16,7 @@ export default createCommand({
       emojiOnly: v.optional(v.boolean()),
       links: v.optional(v.array(v.string())),
       mentions: v.optional(v.array(v.string())),
+      fileIds: v.optional(IdArr),
     }),
   }),
 }, async (msg, core) => {
@@ -28,8 +30,22 @@ export default createCommand({
   }
   await repo.message.update({ id: msg.id }, msg.data);
 
+  if (msg.data.fileIds?.length) {
+    await core.dispatch({
+      type: "file:attach",
+      body: {
+        fileIds: msg.data.fileIds.map((f) => f.toString()),
+        messageId: msg.id.toString(),
+        channelId: message.channelId.toString(),
+        userId: msg.userId.toString(),
+      },
+    }).internal();
+  }
+
+  const updated = await repo.message.getR({ id: msg.id });
+  await resolveFiles(repo, [updated]);
   await core.events.dispatch({
     type: "message:updated",
-    payload: await repo.message.getR({ id: msg.id }),
+    payload: updated,
   });
 });

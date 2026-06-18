@@ -118,6 +118,51 @@ Deno.test("files - register draft, attach via message, list, remove", async () =
   }
 });
 
+Deno.test("files - message update attaches additional files", async () => {
+  const agent = await Agent.from(app);
+  try {
+    const session = await login(repo, agent, "admin");
+    const token = session.token;
+    const admin = await repo.user.get({ email: "admin" });
+    const userId = admin!.id.toString();
+
+    await usingChannel(repo, {
+      name: "files-test-update",
+      channelType: ChannelType.PUBLIC,
+      users: [EntityId.from(userId)],
+    }, async (channelId) => {
+      const a = await uploadFile(channelId, userId, "a.txt", "text/plain", "a");
+      const b = await uploadFile(channelId, userId, "b.txt", "text/plain", "b");
+
+      const res = await agent.request()
+        .post(`/api/channels/${channelId}/messages`)
+        .json({ flat: "one", fileIds: [a.fileId] })
+        .header("Authorization", `Bearer ${token}`)
+        .expect(200);
+      const msg = await res.json();
+      assertEquals(msg.files.length, 1);
+
+      // Editing the message to reference both files attaches the new one.
+      await agent.request()
+        .patch(`/api/messages/${msg.id}`)
+        .json({ fileIds: [a.fileId, b.fileId] })
+        .header("Authorization", `Bearer ${token}`)
+        .expect(204);
+
+      const updated = await core.message.get({ userId, messageId: msg.id });
+      const names = (updated.files ?? []).map((f) => f.fileName).sort();
+      assertEquals(names, ["a.txt", "b.txt"]);
+
+      const list = await core.file.getChannel({ userId, channelId });
+      assertEquals(list.length, 2);
+
+      await repo.file.removeMany({ channelId: EntityId.from(channelId) });
+    });
+  } finally {
+    await agent.close();
+  }
+});
+
 Deno.test("files - direct delete only by uploader, sweeps storage", async () => {
   const agent = await Agent.from(app);
   try {
