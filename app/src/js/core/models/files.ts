@@ -159,16 +159,6 @@ export class FilesModel {
       local.patch({ status: "error", progress: 0, error: "unknown error" });
     }
   });
-  toJSON(): Array<{ id?: string; clientId: string; fileName: string; fileSize: number; contentType: string }> {
-    return this.list.map((f) => ({
-      id: f.storageId,
-      clientId: f.clientId,
-      fileName: f.fileName,
-      fileSize: f.fileSize,
-      contentType: f.contentType,
-    }));
-  }
-
   fileIds(): string[] {
     return this.list
       .filter((f) => f.status === "ok" && f.id)

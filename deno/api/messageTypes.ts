@@ -140,11 +140,6 @@ export type Message = FullMessage | EncryptedMessage;
 export type Command = {
   name: string;
   text: string;
-  attachments?: Array<{
-    id: string;
-    fileName: string;
-    contentType: string;
-  }>;
   context: {
     channelId: string;
     parentId?: string;

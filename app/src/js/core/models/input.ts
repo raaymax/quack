@@ -55,13 +55,6 @@ export class InputModel {
       yield client.api.sendCommand({
         name: m[1],
         text: m[3] ?? "",
-        attachments: this.files.toJSON()
-          .filter((a) => a.id)
-          .map((a) => ({
-            id: a.id as string,
-            fileName: a.fileName,
-            contentType: a.contentType,
-          })),
         context: {
           channelId: this.channelId,
           parentId: this.parentId || undefined,

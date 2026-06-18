@@ -6,14 +6,6 @@ export const commandBodyValidator = v.required(
     userId: Id,
     name: v.string(),
     text: v.string(),
-    attachments: v.optional(
-      v.array(v.object({
-        id: v.string(),
-        fileName: v.string(),
-        contentType: v.optional(v.string(), "application/octet-stream"),
-      })),
-      [],
-    ),
     context: v.object({
       channelId: Id,
       appVersion: v.optional(v.string()),

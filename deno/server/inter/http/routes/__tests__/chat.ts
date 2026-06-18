@@ -28,12 +28,6 @@ type CommandResult = {
   events: SSESource | null;
 };
 
-type Attachment = {
-  id: string;
-  fileName: string;
-  contentType: string;
-};
-
 // deno-lint-ignore ban-types
 type Arg<T extends Object> = T | ((chat: Chat) => T);
 const asyncLocalStorage = new AsyncLocalStorage<{ instances: Chat[] }>();
@@ -574,7 +568,6 @@ export class Chat {
 
   executeCommand(
     command: string,
-    attachments: Attachment[],
     test?: (result: CommandResult) => Promise<void> | void,
   ) {
     this.steps.push(async () => {
@@ -586,7 +579,6 @@ export class Chat {
       const json = await this.api.sendCommand({
         name,
         text,
-        attachments,
         context: {
           channelId: this.channelId,
           appVersion: this.appVersion,

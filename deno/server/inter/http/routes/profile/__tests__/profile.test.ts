@@ -22,7 +22,7 @@ Deno.test("GET /api/profile/config - getConfig", async () => {
     const admin = Chat.init(repo, agent);
     await admin.login("admin")
       .createChannel({ name: "Test" });
-    await admin.executeCommand("/main", [])
+    await admin.executeCommand("/main")
       .getConfig(async (body) => {
         assertEquals(body.appVersion, "1.2.3");
         assertEquals(body.mainChannelId, admin.channelId);

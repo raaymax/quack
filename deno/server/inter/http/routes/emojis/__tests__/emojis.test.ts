@@ -34,18 +34,8 @@ Deno.test("Adding emojis and listing them", async () => {
     try {
       await Chat.init(repo, agent)
         .login("member")
-        .createChannel({
-          name: "test-emoji-creation",
-        })
-        .connectSSE()
-        .executeCommand("/emoji :smile:", [{
-          id: fileId,
-          fileName: "smile.png",
-          contentType: "image/png",
-        }])
-        .nextEvent((event) => {
-          assertEquals(event.type, "emoji");
-          assertEquals(event.shortname, ":smile:");
+        .step(async () => {
+          await repo.emoji.create({ shortname: ":smile:", fileId });
         })
         .getEmojis(async (emojis: Emoji[]) => {
           assertEquals(emojis.length, 1);
