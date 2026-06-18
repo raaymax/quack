@@ -32,7 +32,7 @@ export const up = async (db: Db) => {
           $setOnInsert: {
             storageId: att.id,
             channelId: msg.channelId,
-            uploaderId: msg.userId,
+            userId: msg.userId,
             fileName: att.fileName ?? att.id,
             contentType: att.contentType ?? "application/octet-stream",
             size: null,

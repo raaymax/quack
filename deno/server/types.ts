@@ -133,7 +133,7 @@ export type FileEntry = {
   id: EntityId;
   storageId: string;
   channelId: EntityId;
-  uploaderId: EntityId;
+  userId: EntityId;
   fileName: string;
   contentType: string;
   size: number | null;

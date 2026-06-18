@@ -26,7 +26,7 @@ export default createCommand({
     const file = await repo.file.get({ id: fileId });
     if (!file) continue;
     if (file.channelId.neq(data.channelId)) continue;
-    if (file.uploaderId.neq(data.userId)) continue;
+    if (file.userId.neq(data.userId)) continue;
     if (file.status === "attached" && file.messageId?.eq(data.messageId)) {
       continue;
     }

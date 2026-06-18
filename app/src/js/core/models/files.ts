@@ -166,7 +166,7 @@ export class FilesModel {
       .map((f) => ({
         id: f.id as string,
         channelId: this.channelId,
-        uploaderId: this.root.userId ?? "",
+        userId: this.root.userId ?? "",
         fileName: f.fileName,
         contentType: f.contentType,
         size: f.fileSize,

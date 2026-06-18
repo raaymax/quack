@@ -7,7 +7,7 @@ export default createCommand({
   body: v.required(
     v.object({
       channelId: Id,
-      uploaderId: Id,
+      userId: Id,
       storageId: v.string(),
       fileName: v.string(),
       contentType: v.optional(v.string(), "application/octet-stream"),
@@ -20,19 +20,19 @@ export default createCommand({
         null,
       ),
     }),
-    ["channelId", "uploaderId", "storageId", "fileName"],
+    ["channelId", "userId", "storageId", "fileName"],
   ),
 }, async (data, core) => {
   const { repo } = core;
   const channel = await core.channel.access({
     id: data.channelId,
-    userId: data.uploaderId,
+    userId: data.userId,
   }).internal();
 
   const id = await repo.file.create({
     storageId: data.storageId,
     channelId: channel.id,
-    uploaderId: data.uploaderId,
+    userId: data.userId,
     fileName: data.fileName,
     contentType: data.contentType,
     size: data.size,

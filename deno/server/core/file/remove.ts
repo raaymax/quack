@@ -13,7 +13,7 @@ export default createCommand({
   const { repo, bus, storage } = core;
   const file = await repo.file.get({ id: fileId });
   if (!file) throw new ResourceNotFound("File not found");
-  if (file.uploaderId.neq(userId)) throw new NotOwner();
+  if (file.userId.neq(userId)) throw new NotOwner();
 
   await repo.file.update({ id: fileId }, {
     status: "deleted",

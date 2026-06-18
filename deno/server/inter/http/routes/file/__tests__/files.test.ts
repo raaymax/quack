@@ -9,7 +9,7 @@ const { app, repo, core } = createApp();
 
 async function uploadFile(
   channelId: string,
-  uploaderId: string,
+  userId: string,
   fileName: string,
   contentType: string,
   contents: string,
@@ -23,7 +23,7 @@ async function uploadFile(
     type: "file:register",
     body: {
       channelId,
-      uploaderId,
+      userId,
       storageId,
       fileName,
       contentType,

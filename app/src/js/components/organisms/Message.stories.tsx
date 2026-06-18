@@ -191,7 +191,7 @@ export const WithImages: Story = {
         {
           id: "file-1",
           channelId: "test",
-          uploaderId: "user-1",
+          userId: "user-1",
           fileName: "image.jpg",
           contentType: "image/jpeg",
           size: 102400,
@@ -203,7 +203,7 @@ export const WithImages: Story = {
         {
           id: "file-2",
           channelId: "test",
-          uploaderId: "user-1",
+          userId: "user-1",
           fileName: "image2.jpg",
           contentType: "image/jpeg",
           size: 204800,

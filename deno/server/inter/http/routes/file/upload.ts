@@ -39,7 +39,7 @@ export default (core: Core) =>
         type: "file:register",
         body: {
           channelId,
-          uploaderId: userId,
+          userId,
           storageId,
           fileName,
           contentType,
