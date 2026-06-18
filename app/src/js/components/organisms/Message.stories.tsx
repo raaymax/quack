@@ -186,17 +186,47 @@ export const WithImages: Story = {
   args: {
     model: MessageModel.from({
       ...BaseMessage,
-      attachments: [
+      fileIds: ["file-1", "file-2"],
+      files: [
         {
-          id: "123",
+          id: "file-1",
+          storageId: "123",
+          channelId: "test",
+          uploaderId: "user-1",
           fileName: "image.jpg",
           contentType: "image/jpeg",
+          size: 102400,
+          resolution: { width: 800, height: 600 },
+          status: "attached",
+          messageId: "msg-1",
+          createdAt: "2021-01-01T00:00:00Z",
         },
         {
-          id: "321",
+          id: "file-2",
+          storageId: "321",
+          channelId: "test",
+          uploaderId: "user-1",
           fileName: "image2.jpg",
           contentType: "image/jpeg",
+          size: 204800,
+          resolution: { width: 1024, height: 768 },
+          status: "attached",
+          messageId: "msg-1",
+          createdAt: "2021-01-01T00:00:00Z",
         },
+      ],
+    }, app.getMessages("test")!),
+    mode: "default",
+  },
+};
+
+export const WithLegacyAttachments: Story = {
+  args: {
+    model: MessageModel.from({
+      ...BaseMessage,
+      attachments: [
+        { id: "123", fileName: "image.jpg", contentType: "image/jpeg" },
+        { id: "321", fileName: "image2.jpg", contentType: "image/jpeg" },
       ],
     }, app.getMessages("test")!),
     mode: "default",
