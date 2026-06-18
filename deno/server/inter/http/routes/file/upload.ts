@@ -21,9 +21,13 @@ export default (core: Core) =>
     handler: async (req) => {
       const userId = req.state.user.id;
       const { channelId } = req.params;
-      const fileName = req.headers["content-disposition"]
-        .split("filename=")[1].replace(/"/g, "");
-      const contentType = req.headers["content-type"];
+      const disposition = req.headers["content-disposition"] ?? "";
+      const match = disposition.match(/filename\*?=(?:UTF-8'')?"?([^"]+)"?/i);
+      const fileName = (match?.[1] ?? "file")
+        .replace(/[\r\n"\\/]/g, "_")
+        .slice(0, 255);
+      const contentType = req.headers["content-type"] ??
+        "application/octet-stream";
       const size = parseInt(req.headers["content-length"] ?? "0", 10);
 
       await core.channel.access({ id: channelId, userId }).internal();

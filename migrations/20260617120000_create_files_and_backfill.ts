@@ -49,5 +49,21 @@ export const up = async (db: Db) => {
 };
 
 export const down = async (db: Db) => {
-  await db.collection("files").drop();
+  // Intentionally only drops the indexes this migration created. The backfill
+  // is not safely reversible: by the time a rollback runs, the `files`
+  // collection also holds drafts and new uploads from the running app, so
+  // dropping the collection would destroy live data. Remove it manually if a
+  // full teardown is truly intended.
+  const files = db.collection("files");
+  const indexes = await files.indexes().catch(() => []);
+  const names = new Set(indexes.map((i) => i.name));
+  for (
+    const name of [
+      "messageId_1_storageId_1",
+      "channelId_1_status_1_createdAt_-1",
+      "storageId_1_status_1",
+    ]
+  ) {
+    if (names.has(name)) await files.dropIndex(name);
+  }
 };

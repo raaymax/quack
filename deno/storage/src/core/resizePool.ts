@@ -1,10 +1,10 @@
-import type { ResizeRequest, ResizeResponse } from "./resizeWorker.ts";
+import type { WorkerRequest, WorkerResponse } from "./resizeWorker.ts";
 import { getEnvInt } from "./env.ts";
 
-type Pending = (bytes: Uint8Array<ArrayBuffer> | null) => void;
+type Pending = (response: WorkerResponse | null) => void;
 
 type Task = {
-  request: ResizeRequest;
+  request: WorkerRequest;
   resolve: Pending;
 };
 
@@ -44,12 +44,12 @@ export class ResizePool {
       { type: "module" },
     );
     this.workers.add(worker);
-    worker.onmessage = (event: MessageEvent<ResizeResponse>) => {
+    worker.onmessage = (event: MessageEvent<WorkerResponse>) => {
       const entry = this.active.get(worker);
       this.active.delete(worker);
       if (entry) {
         clearTimeout(entry.timer);
-        entry.resolve(event.data.ok ? event.data.bytes : null);
+        entry.resolve(event.data);
       }
       this.release(worker);
     };
@@ -104,10 +104,26 @@ export class ResizePool {
     height: number,
     png: boolean,
   ): Promise<Uint8Array<ArrayBuffer> | null> {
+    return this.enqueue({ op: "resize", bytes, width, height, png }).then(
+      (res) => (res && res.ok && "bytes" in res ? res.bytes : null),
+    );
+  }
+
+  readResolution(
+    bytes: Uint8Array<ArrayBuffer>,
+  ): Promise<{ width: number; height: number } | null> {
+    return this.enqueue({ op: "resolution", bytes }).then(
+      (res) =>
+        res && res.ok && "width" in res
+          ? { width: res.width, height: res.height }
+          : null,
+    );
+  }
+
+  private enqueue(request: WorkerRequest): Promise<WorkerResponse | null> {
     if (this.closed) return Promise.resolve(null);
     this.start();
-    return new Promise<Uint8Array<ArrayBuffer> | null>((resolve) => {
-      const request: ResizeRequest = { bytes, width, height, png };
+    return new Promise<WorkerResponse | null>((resolve) => {
       this.queue.push({ request, resolve });
       this.drain();
     });

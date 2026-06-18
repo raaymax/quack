@@ -30,6 +30,7 @@ export default createCommand({
     if (file.status === "attached" && file.messageId?.eq(data.messageId)) {
       continue;
     }
+    if (file.status !== "draft") continue;
 
     await repo.file.update({ id: fileId }, {
       status: "attached",

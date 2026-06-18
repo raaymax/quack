@@ -2,6 +2,13 @@ import { ApiError, Res, Route } from "@planigale/planigale";
 import { Core } from "../../../../core/mod.ts";
 import { EntityId } from "../../../../types.ts";
 
+const INLINE_SAFE_TYPES = new Set([
+  "image/png",
+  "image/jpeg",
+  "image/gif",
+  "image/webp",
+]);
+
 export default (core: Core) =>
   new Route({
     method: "GET",
@@ -47,12 +54,14 @@ export default (core: Core) =>
       res.body = file.stream;
       res.headers.set("Content-Type", file.contentType);
       res.headers.set("Content-Length", file.size.toString());
-      if (req.query.download) {
-        res.headers.set(
-          "Content-Disposition",
-          `attachment; filename="${entity.fileName}"`,
-        );
-      }
+      res.headers.set("X-Content-Type-Options", "nosniff");
+      const safeName = entity.fileName.replace(/[\r\n"\\]/g, "_");
+      const inline = !req.query.download &&
+        INLINE_SAFE_TYPES.has(file.contentType);
+      res.headers.set(
+        "Content-Disposition",
+        `${inline ? "inline" : "attachment"}; filename="${safeName}"`,
+      );
       return res;
     },
   });

@@ -30,6 +30,13 @@ class Files {
   static isInspectableImage = (contentType: string) =>
     contentType === "image/jpeg" || contentType === "image/png";
 
+  static MAX_DIMENSION = 2048;
+
+  static clampDimension = (value?: number): number | undefined => {
+    if (!value || value <= 0) return undefined;
+    return Math.min(Math.floor(value), Files.MAX_DIMENSION);
+  };
+
   private service!: FileService;
 
   constructor(config: Config) {
@@ -52,26 +59,24 @@ class Files {
     }
 
     const bytes = new Uint8Array(await new Response(stream).arrayBuffer());
+    // Blob copies the bytes, so readResolution can transfer the buffer to the
+    // worker without affecting the payload we store.
+    const blob = new Blob([bytes]);
     const resolution = bytes.length <= MAX_RESIZE_BYTES
-      ? this.readResolution(bytes)
+      ? await this.readResolution(bytes)
       : null;
     return await this.service.upload(
-      new Blob([bytes]).stream(),
+      blob.stream(),
       { ...options, resolution },
     );
   }
 
-  private readResolution(bytes: Uint8Array): Resolution | null {
-    let img: PhotonImage | undefined;
-    try {
-      img = PhotonImage.new_from_byteslice(bytes);
-      return { width: img.get_width(), height: img.get_height() };
-    } catch (e) {
-      console.warn("[storage] could not read image resolution", e);
-      return null;
-    } finally {
-      img?.free();
-    }
+  private async readResolution(
+    bytes: Uint8Array<ArrayBuffer>,
+  ): Promise<Resolution | null> {
+    const pool = getResizePool();
+    if (!pool.hasCapacity()) return null;
+    return await pool.readResolution(bytes);
   }
 
   async stat(fileId: string): Promise<FileMeta> {
@@ -89,7 +94,8 @@ class Files {
   }
 
   async get(id: string, opts?: ScalingOpts): Promise<FileData> {
-    const { width, height } = opts ?? {};
+    const width = Files.clampDimension(opts?.width);
+    const height = Files.clampDimension(opts?.height);
     const targetId = Files.getFileId(id, width, height);
     if (await this.service.exists(targetId)) {
       return this.service.get(targetId);
