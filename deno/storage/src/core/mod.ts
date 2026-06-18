@@ -1,7 +1,7 @@
-import { PhotonImage, resize, SamplingFilter } from "@cf-wasm/photon/node";
 import type { Config } from "@quack/config";
 import type { FileData, FileOpts } from "./types.ts";
 import { files } from "./store/mod.ts";
+import { getResizePool } from "./resizePool.ts";
 import { ApiError } from "@planigale/planigale";
 
 type ScalingOpts = {
@@ -87,33 +87,29 @@ class Files {
     width?: number,
     height?: number,
   ): Promise<ReadableStream<Uint8Array> | null> {
-    let img: PhotonImage | undefined;
-    let out: PhotonImage | undefined;
-    try {
-      const bytes = new Uint8Array(
-        await new Response(file.stream).arrayBuffer(),
-      );
-      img = PhotonImage.new_from_byteslice(bytes);
-
-      const ow = img.get_width();
-      const oh = img.get_height();
-      let w = width || 0;
-      let h = height || 0;
-      if (!w) w = Math.max(1, Math.round((ow / oh) * h));
-      if (!h) h = Math.max(1, Math.round((oh / ow) * w));
-
-      out = resize(img, w, h, SamplingFilter.Lanczos3);
-      const result = file.contentType === "image/png"
-        ? out.get_bytes()
-        : out.get_bytes_jpeg(90);
-      return new Blob([new Uint8Array(result)]).stream();
-    } catch (e) {
-      console.warn("[storage] thumbnail resize failed, serving original", e);
+    const pool = getResizePool();
+    if (!pool.hasCapacity()) {
+      console.warn("[storage] resize pool saturated, serving original");
       return null;
-    } finally {
-      img?.free();
-      out?.free();
     }
+    let bytes: Uint8Array<ArrayBuffer>;
+    try {
+      bytes = new Uint8Array(await new Response(file.stream).arrayBuffer());
+    } catch (e) {
+      console.warn("[storage] reading image to resize failed", e);
+      return null;
+    }
+    const resized = await pool.resize(
+      bytes,
+      width || 0,
+      height || 0,
+      file.contentType === "image/png",
+    );
+    if (!resized) {
+      console.warn("[storage] thumbnail resize failed, serving original");
+      return null;
+    }
+    return new Blob([resized]).stream();
   }
 }
 
