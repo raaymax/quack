@@ -56,48 +56,16 @@ export class FilesAPI {
     args: FileUpload,
     channelId: string,
   ): Promise<UploadResult> => {
-    if (this.isRequestStreamSupported) {
-      return await this.uplaodFileStream(args, channelId);
-    } else {
-      return await this.uploadFileOld(args, channelId);
+    // Request-body streaming (duplex) requires HTTP/2. Production runs behind an
+    // HTTP/2 proxy so big files stream without buffering; the dev server is
+    // HTTP/1.1, so there we buffer and upload via XHR instead.
+    if (!this.api.bufferedUpload && this.isRequestStreamSupported) {
+      return await this.uploadStream(args, channelId);
     }
+    return await this.uploadBuffered(args, channelId);
   };
 
-  private uploadFileOld = (
-    args: FileUpload,
-    channelId: string,
-  ): Promise<UploadResult> => {
-    return new Promise((resolve, reject) => {
-      // @ts-ignore This is only for browsers
-      const xhr = new XMLHttpRequest();
-      xhr.addEventListener("load", () => {
-        const data = JSON.parse(xhr.responseText);
-        delete this.aborts[args.clientId];
-        resolve(data);
-      }, { once: true });
-      xhr.upload.addEventListener("progress", (e: ProgressEvent) => {
-        if (e.lengthComputable) {
-          args.onProgress?.((e.loaded / e.total) * 100);
-        }
-      });
-      xhr.addEventListener("error", (e: Event) => {
-        delete this.aborts[args.clientId];
-        reject(e);
-      }, { once: true });
-      xhr.open("POST", `/api/channels/${channelId}/files`, true);
-      xhr.setRequestHeader("Authorization", `Bearer ${this.api.token}`);
-
-      const formData = new FormData();
-      this.streamToBlob(args.stream, args.contentType)
-        .then((blob) => {
-          formData.append("file", blob, args.fileName);
-          this.aborts[args.clientId] = () => xhr.abort();
-          xhr.send(formData);
-        });
-    });
-  };
-
-  private uplaodFileStream = async (
+  private uploadStream = async (
     args: FileUpload,
     channelId: string,
   ): Promise<UploadResult> => {
@@ -120,7 +88,7 @@ export class FilesAPI {
         signal: abortController.signal,
         duplex: "half",
         headers: {
-          Authorization: `Bearer ${localStorage.token}`,
+          Authorization: `Bearer ${this.api.token}`,
           "Content-Type": args.contentType || "application/octet-stream",
           "Content-Length": args.fileSize.toString(),
           "Content-Disposition": `attachment; filename="${args.fileName}"`,
@@ -134,6 +102,56 @@ export class FilesAPI {
     return await res.json();
   };
 
+  private uploadBuffered = async (
+    args: FileUpload,
+    channelId: string,
+  ): Promise<UploadResult> => {
+    const blob = await this.streamToBlob(args.stream, args.contentType);
+    return await new Promise<UploadResult>((resolve, reject) => {
+      // @ts-ignore XMLHttpRequest is only available in the browser
+      const xhr = new XMLHttpRequest();
+      this.aborts[args.clientId] = () => xhr.abort();
+
+      xhr.upload.addEventListener("progress", (e: ProgressEvent) => {
+        if (e.lengthComputable) {
+          args.onProgress?.((e.loaded / e.total) * 100);
+        }
+      });
+      xhr.addEventListener("load", () => {
+        delete this.aborts[args.clientId];
+        if (xhr.status >= 200 && xhr.status < 300) {
+          try {
+            resolve(JSON.parse(xhr.responseText));
+          } catch (e) {
+            reject(e);
+          }
+        } else {
+          reject(new Error(`Upload failed (${xhr.status})`));
+        }
+      }, { once: true });
+      xhr.addEventListener("error", () => {
+        delete this.aborts[args.clientId];
+        reject(new Error("Upload failed"));
+      }, { once: true });
+      xhr.addEventListener("abort", () => {
+        delete this.aborts[args.clientId];
+        reject(new Error("Upload aborted"));
+      }, { once: true });
+
+      xhr.open("POST", `/api/channels/${channelId}/files`, true);
+      xhr.setRequestHeader("Authorization", `Bearer ${this.api.token}`);
+      xhr.setRequestHeader(
+        "Content-Type",
+        args.contentType || "application/octet-stream",
+      );
+      xhr.setRequestHeader(
+        "Content-Disposition",
+        `attachment; filename="${args.fileName}"`,
+      );
+      xhr.send(blob);
+    });
+  };
+
   private streamToBlob = (
     stream: ReadableStream,
     mimeType: string,
@@ -145,9 +163,8 @@ export class FilesAPI {
       (async () => {
         try {
           const chunks: BlobPart[] = [];
-          // @ts-ignore This is only for browsers
           for await (const chunk of stream) {
-            chunks.push(chunk.value);
+            chunks.push(chunk);
           }
           const blob = mimeType != null
             ? new Blob(chunks, { type: mimeType })

@@ -14,6 +14,7 @@ export default defineConfig(({ command }) => ({
     APP_VERSION: JSON.stringify(process.env.APP_VERSION),
     APP_NAME: JSON.stringify(process.env.APP_NAME),
     API_URL: JSON.stringify(""),
+    BUFFERED_UPLOAD: JSON.stringify(command === "serve"),
   },
   server: command === "serve"
     ? {

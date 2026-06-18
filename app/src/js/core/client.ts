@@ -7,7 +7,10 @@ export class Client {
 
   get api(): Api {
     if (!this._api) {
-      this._api = new Api(API_URL, { fetch: fetch.bind(window) });
+      this._api = new Api(API_URL, {
+        fetch: fetch.bind(window),
+        bufferedUpload: BUFFERED_UPLOAD,
+      });
     }
     return this._api;
   }
