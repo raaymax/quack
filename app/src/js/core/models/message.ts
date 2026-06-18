@@ -15,6 +15,7 @@ type ViewAttachment = {
   id: string;
   fileName: string;
   contentType: string;
+  size?: number;
   url: string;
 };
 
@@ -36,6 +37,7 @@ function toAttachments(
       id: f.id,
       fileName: f.fileName,
       contentType: f.contentType,
+      size: f.size ?? undefined,
       url: client.api.getFileUrl(f.channelId, f.id),
     }));
   return [...legacy, ...resolved];
@@ -85,6 +87,7 @@ export class MessageModel implements ViewMessage {
     id: string;
     fileName: string;
     contentType: string;
+    size?: number;
     url: string;
   }>;
   fileIds?: Eid[];
