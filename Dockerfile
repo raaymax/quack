@@ -3,12 +3,12 @@ RUN mkdir -p /app
 WORKDIR /app
 COPY . .
 WORKDIR /app/app
-RUN npm install 
-RUN mv node_modules ../node_modules
+RUN corepack enable && npm i -g sfw
+RUN sfw pnpm install --frozen-lockfile
 ENV APP_NAME=quack
 ARG APP_VERSION=3.x.x
 ENV APP_VERSION=$APP_VERSION
-RUN APP_NAME=quack APP_VERSION=$APP_VERSION npm run build
+RUN APP_NAME=quack APP_VERSION=$APP_VERSION pnpm build
 
 FROM denoland/deno:alpine-2.6.8
 # WORKAROUND: Deno alpine image ships glibc-linked libs in /usr/local/lib/ that break

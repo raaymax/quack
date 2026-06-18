@@ -1,7 +1,5 @@
-import { EmojiCommand } from "./commands/emoji.ts";
 import { VersionCommand } from "./commands/version.ts";
 import { InviteCommand } from "./commands/invite.ts";
-import { AvatarCommand } from "./commands/avatar.ts";
 import { LeaveCommand } from "./commands/leave.ts";
 import { JoinCommand } from "./commands/join.ts";
 import { MainCommand } from "./commands/main.ts";
@@ -14,10 +12,8 @@ export type CommandType = {
 };
 
 export const commands: CommandType[] = [
-  EmojiCommand,
   VersionCommand,
   InviteCommand,
-  AvatarCommand,
   LeaveCommand,
   JoinCommand,
   MainCommand,

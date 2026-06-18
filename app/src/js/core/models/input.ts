@@ -26,7 +26,7 @@ export class InputModel {
     });
     this.channelId = opts.channelId;
     this.parentId = opts.parentId;
-    this.files = new FilesModel(root);
+    this.files = new FilesModel(root, opts.channelId);
     this.thread = thread;
 
     this.root = root;
@@ -46,14 +46,15 @@ export class InputModel {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const payload: any = fromDom(html);
     html.innerHTML = "";
-    payload.attachments = this.files.toJSON();
-    if (payload.flat.length === 0 && payload.attachments.length === 0) return;
+    const fileIds = this.files.fileIds();
+    payload.fileIds = fileIds;
+    payload.files = this.files.toFiles();
+    if (payload.flat.length === 0 && fileIds.length === 0) return;
     const m = payload.flat.match("^/([^ ]+)( (.*))?");
     if (m) {
       yield client.api.sendCommand({
         name: m[1],
         text: m[3] ?? "",
-        attachments: payload.attachments,
         context: {
           channelId: this.channelId,
           parentId: this.parentId || undefined,

@@ -21,7 +21,7 @@ Deno.test("POST /api/users - user creation flow", async (t) => {
         .sendMessage({ flat: "secret" });
 
       await t.step("creating invite", async () => {
-        await admin.executeCommand("/invite", [], ({ json }) => {
+        await admin.executeCommand("/invite", ({ json }) => {
           url = json.data as string;
         });
         const m = url.match(/https?:\/\/.*\/invite\/(.*)$/);
@@ -31,7 +31,7 @@ Deno.test("POST /api/users - user creation flow", async (t) => {
 
       await t.step("creating second invite", async () => {
         let url2: string = "";
-        await admin.executeCommand("/invite", [], ({ json }) => {
+        await admin.executeCommand("/invite", ({ json }) => {
           url2 = json.data as string;
         });
         const m = url2.match(/https?:\/\/.*\/invite\/(.*)$/);

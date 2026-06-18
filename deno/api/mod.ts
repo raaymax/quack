@@ -100,13 +100,8 @@ class API extends EventTarget {
   }
 
   getUrl = (fileId: string) => `/api/files/${fileId}`;
-  getThumbnail = (id: string, size?: { w?: number; h?: number }) => {
-    const params = new URLSearchParams();
-    if (size?.w) params.set("w", size.w.toString());
-    if (size?.h) params.set("h", size.h.toString());
-    return `${this.getUrl(id)}?${params.toString()}`;
-  };
-  getDownloadUrl = (id: string) => `${this.getUrl(id)}?download=true`;
+  getFileUrl = (channelId: string, fileId: string) =>
+    `/api/channels/${channelId}/files/${fileId}`;
 
   constructor(url: string, opts: { fetch: typeof fetch; sse?: boolean }) {
     super();

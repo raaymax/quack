@@ -16,18 +16,6 @@ export default (core: Core) =>
             description:
               "Everything that comes after the command name `/command <text>`",
           },
-          attachments: {
-            type: "array",
-            items: {
-              type: "object",
-              required: ["id", "fileName"],
-              properties: {
-                id: { type: "string" },
-                fileName: { type: "string" },
-                contentType: { type: "string" },
-              },
-            },
-          },
           context: {
             type: "object",
             required: ["channelId"],
@@ -48,7 +36,6 @@ export default (core: Core) =>
           userId: req.state.user.id,
           name: body.name.replace(/^\//, ""),
           text: body.text,
-          attachments: body.attachments,
           context: body.context,
         },
       });

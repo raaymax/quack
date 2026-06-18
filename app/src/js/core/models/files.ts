@@ -13,7 +13,7 @@ type FileUploadPatch = FileUpload & {
 export class FileModel {
   id?: string;
   clientId: string;
-  stream: ReadableStream;
+  file: File;
   status: string;
   fileSize: number;
   fileName: string;
@@ -26,7 +26,7 @@ export class FileModel {
   constructor(value: FileUpload, root: AppModel) {
     makeAutoObservable(this, { root: false });
     this.clientId = value.clientId;
-    this.stream = value.stream;
+    this.file = value.file;
     this.status = "pending";
     this.fileSize = value.fileSize;
     this.fileName = value.fileName;
@@ -39,7 +39,7 @@ export class FileModel {
   async dispose() {
     this.id = undefined;
     this.clientId = "";
-    this.stream = null as unknown as ReadableStream;
+    this.file = null as unknown as File;
     this.status = "pending";
     this.fileSize = 0;
     this.fileName = "";
@@ -49,7 +49,7 @@ export class FileModel {
   }
 
   patch = (value: Partial<FileUploadPatch>) => {
-    this.id = value.id;
+    if (value.id !== undefined) this.id = value.id;
     if (value.status) this.status = value.status;
     if (value.fileSize) this.fileSize = value.fileSize;
     if (value.fileName) this.fileName = value.fileName;
@@ -66,11 +66,14 @@ export class FileModel {
 export class FilesModel {
   list: FileModel[];
 
+  channelId: string;
+
   root: AppModel;
 
-  constructor(root: AppModel) {
+  constructor(root: AppModel, channelId: string) {
     makeAutoObservable(this, { root: false });
     this.root = root;
+    this.channelId = channelId;
     this.list = [];
   }
 
@@ -119,7 +122,7 @@ export class FilesModel {
   uplaod = flow(function* (this: FilesModel, file: File) {
     const local = new FileModel({
       clientId: generateHexId(),
-      stream: file.stream(),
+      file,
       fileName: file.name,
       fileSize: file.size,
       contentType: file.type,
@@ -128,10 +131,17 @@ export class FilesModel {
     this.list.push(local);
 
     try {
-      const { status, id: fileId } = yield client.api.files.upload(local);
+      const { status, file } = yield client.api.files.upload(
+        local,
+        this.channelId,
+      );
 
-      if (status === "ok") {
-        local.patch({ status, id: fileId, progress: 100 });
+      if (status === "ok" && file) {
+        local.patch({
+          status,
+          id: file.id,
+          progress: 100,
+        });
       } else {
         local.patch({ status, progress: 0, error: "something went wrong" });
       }
@@ -144,13 +154,26 @@ export class FilesModel {
       local.patch({ status: "error", progress: 0, error: "unknown error" });
     }
   });
-  toJSON(): Array<{ id?: string; clientId: string; fileName: string; fileSize: number; contentType: string }> {
-    return this.list.map((f) => ({
-      id: f.id,
-      clientId: f.clientId,
-      fileName: f.fileName,
-      fileSize: f.fileSize,
-      contentType: f.contentType,
-    }));
+  fileIds(): string[] {
+    return this.list
+      .filter((f) => f.status === "ok" && f.id)
+      .map((f) => f.id as string);
+  }
+
+  toFiles() {
+    return this.list
+      .filter((f) => f.status === "ok" && f.id)
+      .map((f) => ({
+        id: f.id as string,
+        channelId: this.channelId,
+        userId: this.root.userId ?? "",
+        fileName: f.fileName,
+        contentType: f.contentType,
+        size: f.fileSize,
+        resolution: null,
+        status: "attached" as const,
+        messageId: null,
+        createdAt: new Date().toISOString(),
+      }));
   }
 }

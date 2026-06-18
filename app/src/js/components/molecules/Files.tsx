@@ -1,11 +1,6 @@
 import styled from "styled-components";
 import { File } from "../atoms/File";
 import { Image } from "../atoms/Image";
-import {
-  getDownloadUrl,
-  getFileUrl,
-  getThumbnailUrl,
-} from "../hooks/fileUrl";
 
 const IMAGE_TYPES = [
   "image/png",
@@ -36,6 +31,7 @@ type FileData = {
   fileName: string;
   contentType: string;
   size?: number;
+  url?: string;
 };
 
 type FilesProps = {
@@ -48,9 +44,7 @@ type ImageFileItemProps = {
 };
 
 const ImageFileItem = ({ file, raw }: ImageFileItemProps) => {
-  const fileUrl = getFileUrl(file.id);
-  const thumbnailUrl = getThumbnailUrl(file.id, { h: 240 });
-  const src = raw ? fileUrl : thumbnailUrl;
+  const src = raw ? file.url : file.url ? `${file.url}?h=240` : undefined;
 
   return (
     <div className="fli">
@@ -58,7 +52,7 @@ const ImageFileItem = ({ file, raw }: ImageFileItemProps) => {
         raw={raw}
         fileName={file.fileName}
         src={src ?? ""}
-        downloadUrl={fileUrl}
+        downloadUrl={file.url}
         size={file.size}
       />
     </div>
@@ -70,7 +64,7 @@ type NonImageFileItemProps = {
 };
 
 const NonImageFileItem = ({ file }: NonImageFileItemProps) => {
-  const downloadUrl = getDownloadUrl(file.id);
+  const downloadUrl = file.url ? `${file.url}?download=true` : undefined;
 
   return (
     <File

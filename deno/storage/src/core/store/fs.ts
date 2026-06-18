@@ -2,7 +2,7 @@ import type { Config } from "@quack/config";
 import { ResourceNotFound } from "@planigale/planigale";
 import { existsSync } from "@std/fs";
 import * as path from "@std/path";
-import type { FileData, FileOpts } from "../types.ts";
+import type { FileData, FileMeta, FileOpts } from "../types.ts";
 
 export const files = (config: Config["storage"]) => {
   const dir = (config.type === "fs" && config.directory) || Deno.cwd();
@@ -49,6 +49,34 @@ export const files = (config: Config["storage"]) => {
         ...meta,
         stream: file.readable,
       };
+    },
+    stat: async (id: string): Promise<FileMeta> => {
+      if (!exists(`${id}.json`)) {
+        throw new ResourceNotFound("File not found");
+      }
+      const meta = JSON.parse(
+        await Deno.readTextFile(path.join(dir, `${id}.json`)),
+      );
+      return {
+        id,
+        filename: meta.filename,
+        contentType: meta.contentType,
+        size: meta.size,
+        resolution: meta.resolution ?? null,
+      };
+    },
+    list: (prefix: string): Promise<string[]> => {
+      const out: string[] = [];
+      if (!existsSync(dir)) return Promise.resolve(out);
+      for (const entry of Deno.readDirSync(dir)) {
+        if (
+          entry.isFile && entry.name.startsWith(prefix) &&
+          !entry.name.endsWith(".json")
+        ) {
+          out.push(entry.name);
+        }
+      }
+      return Promise.resolve(out);
     },
     remove: async (id: string): Promise<void> => {
       if (exists(id)) {

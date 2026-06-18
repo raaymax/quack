@@ -2,6 +2,7 @@ import * as v from "valibot";
 import { Id } from "../types.ts";
 import { createQuery } from "../query.ts";
 import { ResourceNotFound } from "../errors.ts";
+import { resolveFiles } from "../file/resolveFiles.ts";
 
 export default createQuery({
   type: "message:get",
@@ -16,5 +17,6 @@ export default createQuery({
   if (!msg) throw new ResourceNotFound("Message not found");
   await channel.access({ userId, id: msg.channelId }).internal();
 
+  await resolveFiles(repo, [msg]);
   return msg;
 });

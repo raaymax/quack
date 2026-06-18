@@ -1,0 +1,14 @@
+# Supply-chain hardening (see docs: https://pnpm.io/supply-chain-security)
+# minimumReleaseAge: refuse versions newer than N minutes so freshly-published
+# (potentially compromised) releases can't be installed before the community
+# detects them. 10080 = 7 days. pnpm 11 defaults to 1440 (1 day).
+minimumReleaseAge: 10080
+# Forbid transitive deps from pulling git/tarball sources (CVE-2025-69264 vector).
+blockExoticSubdeps: true
+# Flat node_modules like npm — avoids phantom-dependency breakage on migration.
+nodeLinker: hoisted
+# Dependency build/postinstall scripts are blocked by default. Allow only
+# reviewed ones. esbuild is Vite's bundler and needs its install script to
+# fetch its platform binary.
+allowBuilds:
+  esbuild: true

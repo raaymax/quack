@@ -122,6 +122,27 @@ export type Invitation = {
   createdAt: Date;
 };
 
+export type Resolution = {
+  width: number;
+  height: number;
+};
+
+export type FileStatus = "draft" | "attached" | "deleted";
+
+export type FileEntry = {
+  id: EntityId;
+  storageId: string;
+  channelId: EntityId;
+  userId: EntityId;
+  fileName: string;
+  contentType: string;
+  size: number | null;
+  resolution: Resolution | null;
+  status: FileStatus;
+  messageId: EntityId | null;
+  createdAt: Date;
+};
+
 export const vMessageBodyPart: v.GenericSchema<MessageBodyPart> = v.union([
   v.object({ bullet: v.lazy(() => vMessageBody) }),
   v.object({ ordered: v.lazy(() => vMessageBody) }),

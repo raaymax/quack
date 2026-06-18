@@ -17,11 +17,11 @@ These rules apply automatically when this is a git repository, unless the user e
 deno task dev              # Run backend in watch mode
 deno task start            # Production start
 
-# Frontend
-cd app && npm run dev      # Vite dev server (port 3000, HTTPS)
-cd app && npm run build    # Production build
-cd app && npm run lint     # ESLint
-cd app && npm run storybook # Storybook (port 6006)
+# Frontend (pnpm — installs go through Socket Firewall + 1-week cooldown)
+cd app && pnpm dev         # Vite dev server (port 3000, HTTPS via basic-ssl)
+cd app && pnpm build       # Production build
+cd app && pnpm lint        # ESLint
+cd app && pnpm storybook   # Storybook (port 6006)
 
 # Full stack
 deno task check            # fmt + lint + test (all backend)
@@ -32,13 +32,13 @@ deno task migrate:tests    # Migrations on test database
 deno task test                              # All backend tests (needs MongoDB)
 deno test -A deno/server/inter/http/routes/__tests__/channels.test.ts  # Single test file
 deno test -A --filter "channel:create"      # Filter by test name
-cd app && npm run types                     # TypeScript check (frontend)
-cd app && npm run chromatic                 # Visual regression testing
+cd app && pnpm types                        # TypeScript check (frontend)
+cd app && pnpm chromatic                    # Visual regression testing
 ```
 
 ## Architecture
 
-**Monorepo**: Deno workspace (backend) + npm (frontend), single Docker container.
+**Monorepo**: Deno workspace (backend) + pnpm (frontend), single Docker container.
 
 ```
 app/                    # React 19 PWA (Vite, styled-components, MobX)

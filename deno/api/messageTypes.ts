@@ -74,6 +74,9 @@ export type BaseMessage = {
     reaction: string;
   }>;
 
+  fileIds?: Eid[];
+  files?: MessageFile[];
+
   updatedAt: DateTime;
   createdAt: DateTime;
 };
@@ -102,7 +105,7 @@ export type MessageData = {
     charset: string;
   }[];
   parsingErrors?: Array<{ message: string; path?: string }>;
-  attachments?: Array<{ // TODO make this a separate entity
+  attachments?: Array<{
     id: string;
     fileName: string;
     contentType: string;
@@ -114,6 +117,21 @@ export type MessageData = {
   } | null;
 };
 
+export type FileStatus = "draft" | "attached" | "deleted";
+
+export type MessageFile = {
+  id: Eid;
+  channelId: Eid;
+  userId: Eid;
+  fileName: string;
+  contentType: string;
+  size: number | null;
+  resolution: { width: number; height: number } | null;
+  status: FileStatus;
+  messageId: Eid | null;
+  createdAt: DateTime;
+};
+
 export type EncryptedMessage = BaseMessage & EncryptedData & { secured: true };
 export type FullMessage = BaseMessage & MessageData & { secured: false };
 export type Message = FullMessage | EncryptedMessage;
@@ -121,11 +139,6 @@ export type Message = FullMessage | EncryptedMessage;
 export type Command = {
   name: string;
   text: string;
-  attachments?: Array<{
-    id: string;
-    fileName: string;
-    contentType: string;
-  }>;
   context: {
     channelId: string;
     parentId?: string;
