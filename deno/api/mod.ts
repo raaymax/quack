@@ -1,4 +1,4 @@
-import { SSESource } from "@jsr/planigale__sse";
+import { SSESource, type SSESourceInit } from "@jsr/planigale__sse";
 import {
   ApiErrorResponse,
   Channel,
@@ -162,7 +162,7 @@ class API extends EventTarget {
         headers: {
           Authorization: `Bearer ${this.token}`,
         },
-      });
+      } as SSESourceInit);
       if (!this.source) return;
       this.emit(new CustomEvent("con:open", { detail: {} }));
       // @ts-ignore For some reason the AsyncIterator is not recognized
