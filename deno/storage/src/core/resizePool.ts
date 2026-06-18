@@ -7,27 +7,41 @@ type Task = {
   resolve: Pending;
 };
 
-const DEFAULT_WORKERS = 2;
+type Active = {
+  resolve: Pending;
+  timer: number;
+};
 
-const workerCount = () => {
+const DEFAULT_WORKERS = 2;
+const DEFAULT_TIMEOUT_MS = 30_000;
+
+const envInt = (name: string, fallback: number): number => {
+  let raw: string | undefined;
   try {
-    const value = Number(Deno.env.get("STORAGE_RESIZE_WORKERS"));
-    return Number.isInteger(value) && value > 0 ? value : DEFAULT_WORKERS;
+    raw = Deno.env.get(name);
   } catch {
-    return DEFAULT_WORKERS;
+    return fallback;
   }
+  if (raw === undefined) return fallback;
+  const value = Number(raw);
+  if (Number.isInteger(value) && value > 0) return value;
+  console.warn(`[storage] invalid ${name}="${raw}", using ${fallback}`);
+  return fallback;
 };
 
 export class ResizePool {
   private workers = new Set<Worker>();
   private idle: Worker[] = [];
   private queue: Task[] = [];
-  private active = new Map<Worker, Pending>();
-  private seq = 0;
+  private active = new Map<Worker, Active>();
   private started = false;
   private closed = false;
 
-  constructor(private readonly size: number) {}
+  constructor(
+    private readonly size: number,
+    private readonly maxPending: number = size * 4,
+    private readonly timeoutMs: number = DEFAULT_TIMEOUT_MS,
+  ) {}
 
   private start() {
     if (this.started) return;
@@ -44,23 +58,33 @@ export class ResizePool {
     );
     this.workers.add(worker);
     worker.onmessage = (event: MessageEvent<ResizeResponse>) => {
-      const resolve = this.active.get(worker);
+      const entry = this.active.get(worker);
       this.active.delete(worker);
-      resolve?.(event.data.ok ? event.data.bytes : null);
+      if (entry) {
+        clearTimeout(entry.timer);
+        entry.resolve(event.data.ok ? event.data.bytes : null);
+      }
       this.release(worker);
     };
     worker.onerror = (event) => {
       event.preventDefault();
-      const resolve = this.active.get(worker);
-      this.active.delete(worker);
-      resolve?.(null);
-      this.workers.delete(worker);
-      worker.terminate();
-      if (this.closed) return;
-      this.idle.push(this.spawn());
-      this.drain();
+      this.discard(worker);
     };
     return worker;
+  }
+
+  private discard(worker: Worker) {
+    const entry = this.active.get(worker);
+    this.active.delete(worker);
+    if (entry) {
+      clearTimeout(entry.timer);
+      entry.resolve(null);
+    }
+    this.workers.delete(worker);
+    worker.terminate();
+    if (this.closed) return;
+    this.idle.push(this.spawn());
+    this.drain();
   }
 
   private release(worker: Worker) {
@@ -73,9 +97,18 @@ export class ResizePool {
     while (this.queue.length > 0 && this.idle.length > 0) {
       const worker = this.idle.shift()!;
       const task = this.queue.shift()!;
-      this.active.set(worker, task.resolve);
+      const timer = setTimeout(() => {
+        console.warn("[storage] thumbnail resize timed out, serving original");
+        this.discard(worker);
+      }, this.timeoutMs);
+      this.active.set(worker, { resolve: task.resolve, timer });
       worker.postMessage(task.request, [task.request.bytes.buffer]);
     }
+  }
+
+  hasCapacity(): boolean {
+    return !this.closed &&
+      this.active.size + this.queue.length < this.maxPending;
   }
 
   resize(
@@ -87,13 +120,7 @@ export class ResizePool {
     if (this.closed) return Promise.resolve(null);
     this.start();
     return new Promise<Uint8Array<ArrayBuffer> | null>((resolve) => {
-      const request: ResizeRequest = {
-        id: this.seq++,
-        bytes,
-        width,
-        height,
-        png,
-      };
+      const request: ResizeRequest = { bytes, width, height, png };
       this.queue.push({ request, resolve });
       this.drain();
     });
@@ -105,8 +132,9 @@ export class ResizePool {
       task.resolve(null);
     }
     this.queue = [];
-    for (const resolve of this.active.values()) {
-      resolve(null);
+    for (const entry of this.active.values()) {
+      clearTimeout(entry.timer);
+      entry.resolve(null);
     }
     this.active.clear();
     for (const worker of this.workers) {
@@ -121,7 +149,19 @@ let pool: ResizePool | undefined;
 
 export const getResizePool = (): ResizePool => {
   if (!pool) {
-    pool = new ResizePool(workerCount());
+    const workers = envInt("STORAGE_RESIZE_WORKERS", DEFAULT_WORKERS);
+    pool = new ResizePool(
+      workers,
+      envInt("STORAGE_RESIZE_MAX_PENDING", workers * 4),
+      envInt("STORAGE_RESIZE_TIMEOUT_MS", DEFAULT_TIMEOUT_MS),
+    );
   }
   return pool;
 };
+
+export const closeResizePool = () => {
+  pool?.close();
+  pool = undefined;
+};
+
+globalThis.addEventListener("unload", () => closeResizePool());

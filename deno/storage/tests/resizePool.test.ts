@@ -113,6 +113,32 @@ Deno.test("ResizePool - does not block the event loop", async () => {
   }
 });
 
+Deno.test("ResizePool - reports no capacity beyond maxPending", async () => {
+  const pool = new ResizePool(1, 2);
+  try {
+    assert(pool.hasCapacity(), "empty pool has capacity");
+    const a = pool.resize(new Uint8Array(source), 100, 0, true);
+    const b = pool.resize(new Uint8Array(source), 120, 0, true);
+    assertEquals(pool.hasCapacity(), false);
+    await Promise.all([a, b]);
+    assert(pool.hasCapacity(), "drained pool has capacity again");
+  } finally {
+    pool.close();
+  }
+});
+
+Deno.test("ResizePool - times out a stuck job and keeps serving", async () => {
+  const pool = new ResizePool(1, 4, 1);
+  try {
+    const first = await pool.resize(new Uint8Array(source), 100, 0, true);
+    const second = await pool.resize(new Uint8Array(source), 120, 0, true);
+    assertEquals(first, null);
+    assertEquals(second, null);
+  } finally {
+    pool.close();
+  }
+});
+
 Deno.test("ResizePool - resolves pending work as null on close", async () => {
   const pool = new ResizePool(1);
   const inflight = pool.resize(new Uint8Array(source), 100, 0, true);

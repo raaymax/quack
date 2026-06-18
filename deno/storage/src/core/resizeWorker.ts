@@ -2,7 +2,6 @@
 import { PhotonImage, resize, SamplingFilter } from "@cf-wasm/photon/node";
 
 export type ResizeRequest = {
-  id: number;
   bytes: Uint8Array<ArrayBuffer>;
   width: number;
   height: number;
@@ -10,11 +9,11 @@ export type ResizeRequest = {
 };
 
 export type ResizeResponse =
-  | { id: number; ok: true; bytes: Uint8Array<ArrayBuffer> }
-  | { id: number; ok: false; error: string };
+  | { ok: true; bytes: Uint8Array<ArrayBuffer> }
+  | { ok: false };
 
 self.onmessage = (event: MessageEvent<ResizeRequest>) => {
-  const { id, bytes, width, height, png } = event.data;
+  const { bytes, width, height, png } = event.data;
   let img: PhotonImage | undefined;
   let out: PhotonImage | undefined;
   try {
@@ -31,9 +30,9 @@ self.onmessage = (event: MessageEvent<ResizeRequest>) => {
     const result = new Uint8Array(
       png ? out.get_bytes() : out.get_bytes_jpeg(90),
     );
-    self.postMessage({ id, ok: true, bytes: result }, [result.buffer]);
-  } catch (e) {
-    self.postMessage({ id, ok: false, error: String(e) });
+    self.postMessage({ ok: true, bytes: result }, [result.buffer]);
+  } catch {
+    self.postMessage({ ok: false });
   } finally {
     img?.free();
     out?.free();

@@ -87,24 +87,29 @@ class Files {
     width?: number,
     height?: number,
   ): Promise<ReadableStream<Uint8Array> | null> {
-    try {
-      const bytes = new Uint8Array(
-        await new Response(file.stream).arrayBuffer(),
-      );
-      const resized = await getResizePool().resize(
-        bytes,
-        width || 0,
-        height || 0,
-        file.contentType === "image/png",
-      );
-      if (!resized) {
-        return null;
-      }
-      return new Blob([resized]).stream();
-    } catch (e) {
-      console.warn("[storage] thumbnail resize failed, serving original", e);
+    const pool = getResizePool();
+    if (!pool.hasCapacity()) {
+      console.warn("[storage] resize pool saturated, serving original");
       return null;
     }
+    let bytes: Uint8Array<ArrayBuffer>;
+    try {
+      bytes = new Uint8Array(await new Response(file.stream).arrayBuffer());
+    } catch (e) {
+      console.warn("[storage] reading image to resize failed", e);
+      return null;
+    }
+    const resized = await pool.resize(
+      bytes,
+      width || 0,
+      height || 0,
+      file.contentType === "image/png",
+    );
+    if (!resized) {
+      console.warn("[storage] thumbnail resize failed, serving original");
+      return null;
+    }
+    return new Blob([resized]).stream();
   }
 }
 
