@@ -29,14 +29,6 @@ export default createCommand({
       debug: v.optional(v.string()),
       links: v.optional(v.array(v.string()), []),
       mentions: v.optional(IdArr, []),
-      attachments: v.optional(
-        v.array(v.object({
-          id: v.string(),
-          fileName: v.string(),
-          contentType: v.optional(v.string(), "application/octet-stream"),
-        })),
-        [],
-      ),
       fileIds: v.optional(IdArr, []),
     }),
     ["userId", "channelId"],
@@ -81,11 +73,6 @@ export default createCommand({
     userId: msg.userId,
     links: msg.links,
     mentions: msg.mentions,
-    attachments: msg.attachments?.map((file) => ({
-      id: file.id,
-      fileName: file.fileName,
-      contentType: file.contentType,
-    })),
     fileIds: msg.fileIds?.length ? msg.fileIds : undefined,
     createdAt: new Date(),
   });

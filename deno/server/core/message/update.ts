@@ -15,13 +15,6 @@ export default createCommand({
       emojiOnly: v.optional(v.boolean()),
       links: v.optional(v.array(v.string())),
       mentions: v.optional(v.array(v.string())),
-      attachments: v.optional(
-        v.array(v.object({
-          id: v.string(),
-          fileName: v.string(),
-          contentType: v.optional(v.string(), "application/octet-stream"),
-        })),
-      ),
     }),
   }),
 }, async (msg, core) => {

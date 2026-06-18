@@ -25,21 +25,6 @@ export default (core: Core) =>
           debug: { type: "string" },
           links: { type: "array", items: { type: "string" } },
           mentions: { type: "array", items: { type: "string" } },
-          attachments: {
-            type: "array",
-            items: {
-              type: "object",
-              required: ["id", "fileName"],
-              properties: {
-                id: { type: "string" },
-                fileName: { type: "string" },
-                contentType: {
-                  type: "string",
-                  default: "application/octet-stream",
-                },
-              },
-            },
-          },
         },
       },
     },
