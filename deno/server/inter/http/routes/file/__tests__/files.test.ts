@@ -1,5 +1,5 @@
 import { Agent } from "@planigale/testing";
-import { assertEquals } from "@std/assert";
+import { assert, assertEquals } from "@std/assert";
 import { login, usingChannel } from "../../__tests__/mod.ts";
 import { ChannelType, EntityId } from "../../../../../types.ts";
 import { createApp } from "../../__tests__/app.ts";
@@ -70,6 +70,10 @@ Deno.test("files - register draft, attach via message, list, remove", async () =
       assertEquals(msg.files?.length, 1);
       assertEquals(msg.files[0].fileName, "hello.txt");
       assertEquals(msg.files[0].status, "attached");
+      assert(
+        !("storageId" in msg.files[0]),
+        "storageId must not leak in message.files",
+      );
 
       // Now attached -> appears in the per-channel files view.
       list = await core.file.getChannel({ userId, channelId });
@@ -84,6 +88,10 @@ Deno.test("files - register draft, attach via message, list, remove", async () =
       const listBody = await listRes.json();
       assertEquals(listBody.length, 1);
       assertEquals(listBody[0].fileName, "hello.txt");
+      assert(
+        !("storageId" in listBody[0]),
+        "storageId must not leak in the channel files list",
+      );
 
       // Downloadable by entity id (storageId never leaves the server).
       const dl = await agent.request()
@@ -110,6 +118,76 @@ Deno.test("files - register draft, attach via message, list, remove", async () =
       list = await core.file.getChannel({ userId, channelId });
       assertEquals(list.length, 0);
       assertEquals(await core.storage.exists(storageId), false);
+
+      await repo.file.removeMany({ channelId: EntityId.from(channelId) });
+    });
+  } finally {
+    await agent.close();
+  }
+});
+
+Deno.test("files - download: thumbnail, disposition, access control", async () => {
+  const agent = await Agent.from(app);
+  try {
+    const session = await login(repo, agent, "admin");
+    const token = session.token;
+    const admin = await repo.user.get({ email: "admin" });
+    const userId = admin!.id.toString();
+    const memberSession = await login(repo, agent, "member");
+    const memberToken = memberSession.token;
+
+    await usingChannel(repo, {
+      name: "files-test-download",
+      channelType: ChannelType.PRIVATE,
+      users: [EntityId.from(userId)],
+    }, async (channelId) => {
+      const img = await Deno.readFile("deno/storage/tests/quack.png");
+      const storageId = await core.storage.upload(
+        new Blob([img]).stream(),
+        { filename: "pic.png", contentType: "image/png", size: img.length },
+      );
+      const fileId = (await core.dispatch({
+        type: "file:register",
+        body: {
+          channelId,
+          userId,
+          storageId,
+          fileName: "pic.png",
+          contentType: "image/png",
+          size: img.length,
+          resolution: null,
+        },
+      }).internal() as EntityId).toString();
+
+      // download=true sets Content-Disposition.
+      const dl = await agent.request()
+        .get(`/api/channels/${channelId}/files/${fileId}?download=true`)
+        .header("Authorization", `Bearer ${token}`)
+        .expect(200);
+      assertEquals(
+        dl.headers.get("content-disposition"),
+        'attachment; filename="pic.png"',
+      );
+      await dl.body?.cancel?.();
+
+      // ?w&h returns a smaller, still-decodable image.
+      const thumb = await agent.request()
+        .get(`/api/channels/${channelId}/files/${fileId}?w=16&h=16`)
+        .header("Authorization", `Bearer ${token}`)
+        .expect(200);
+      assertEquals(thumb.headers.get("content-type"), "image/png");
+      const thumbBytes = new Uint8Array(await thumb.arrayBuffer());
+      assert(
+        thumbBytes.length > 0 && thumbBytes.length < img.length,
+        "thumbnail should be smaller than the original",
+      );
+
+      // A non-member cannot download the file.
+      const denied = await agent.request()
+        .get(`/api/channels/${channelId}/files/${fileId}`)
+        .header("Authorization", `Bearer ${memberToken}`)
+        .expect(403);
+      await denied.body?.cancel?.();
 
       await repo.file.removeMany({ channelId: EntityId.from(channelId) });
     });

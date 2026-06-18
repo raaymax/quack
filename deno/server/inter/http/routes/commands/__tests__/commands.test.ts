@@ -3,6 +3,8 @@ import { Agent } from "@planigale/testing";
 import { createApp } from "../../__tests__/app.ts";
 import { Chat } from "../../__tests__/chat.ts";
 import { ensureUser } from "../../__tests__/users.ts";
+import { login, usingChannel } from "../../__tests__/mod.ts";
+import { ChannelType } from "../../../../../types.ts";
 
 const { app, repo } = createApp();
 
@@ -10,6 +12,32 @@ Deno.test("POST /api/commands/execute - unauthorized", async () => {
   const agent = await Agent.from(app);
   try {
     await agent.request().post("/api/commands/execute").json({}).expect(401);
+  } finally {
+    await agent.close();
+  }
+});
+
+Deno.test("commands - /avatar and /emoji are no longer commands", async () => {
+  const agent = await Agent.from(app);
+  try {
+    const session = await login(repo, agent, "admin");
+    const token = session.token;
+    const admin = await repo.user.get({ email: "admin" });
+    await usingChannel(repo, {
+      name: "removed-commands",
+      channelType: ChannelType.PUBLIC,
+      users: [admin!.id],
+    }, async (channelId) => {
+      for (const name of ["avatar", "emoji"]) {
+        const res = await agent.request()
+          .post("/api/commands/execute")
+          .json({ name, text: "x", context: { channelId } })
+          .header("Authorization", `Bearer ${token}`)
+          .expect(404);
+        const body = await res.json();
+        assertEquals(body.errorCode, "RESOURCE_NOT_FOUND");
+      }
+    });
   } finally {
     await agent.close();
   }
@@ -94,6 +122,8 @@ Deno.test("command /help", async () => {
         assert(event.clientId, "Event should have clientId");
         assertEquals((event.flat as string).includes("/invite"), true);
         assertEquals((event.flat as string).includes("/version"), true);
+        assertEquals((event.flat as string).includes("/avatar"), false);
+        assertEquals((event.flat as string).includes("/emoji"), false);
       })
       .end();
   });
