@@ -1,4 +1,4 @@
-export const envInt = (name: string, fallback: number): number => {
+export const getEnvInt = (name: string, fallback: number): number => {
   let raw: string | undefined;
   try {
     raw = Deno.env.get(name);

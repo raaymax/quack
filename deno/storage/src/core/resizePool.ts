@@ -1,5 +1,5 @@
 import type { ResizeRequest, ResizeResponse } from "./resizeWorker.ts";
-import { envInt } from "./env.ts";
+import { getEnvInt } from "./env.ts";
 
 type Pending = (bytes: Uint8Array<ArrayBuffer> | null) => void;
 
@@ -136,11 +136,11 @@ let pool: ResizePool | undefined;
 
 export const getResizePool = (): ResizePool => {
   if (!pool) {
-    const workers = envInt("STORAGE_RESIZE_WORKERS", DEFAULT_WORKERS);
+    const workers = getEnvInt("STORAGE_RESIZE_WORKERS", DEFAULT_WORKERS);
     pool = new ResizePool(
       workers,
-      envInt("STORAGE_RESIZE_MAX_PENDING", workers * 4),
-      envInt("STORAGE_RESIZE_TIMEOUT_MS", DEFAULT_TIMEOUT_MS),
+      getEnvInt("STORAGE_RESIZE_MAX_PENDING", workers * 4),
+      getEnvInt("STORAGE_RESIZE_TIMEOUT_MS", DEFAULT_TIMEOUT_MS),
     );
   }
   return pool;
