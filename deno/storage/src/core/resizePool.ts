@@ -19,11 +19,13 @@ const workerCount = () => {
 };
 
 export class ResizePool {
+  private workers = new Set<Worker>();
   private idle: Worker[] = [];
   private queue: Task[] = [];
   private active = new Map<Worker, Pending>();
   private seq = 0;
   private started = false;
+  private closed = false;
 
   constructor(private readonly size: number) {}
 
@@ -40,6 +42,7 @@ export class ResizePool {
       new URL("./resizeWorker.ts", import.meta.url),
       { type: "module" },
     );
+    this.workers.add(worker);
     worker.onmessage = (event: MessageEvent<ResizeResponse>) => {
       const resolve = this.active.get(worker);
       this.active.delete(worker);
@@ -51,7 +54,9 @@ export class ResizePool {
       const resolve = this.active.get(worker);
       this.active.delete(worker);
       resolve?.(null);
+      this.workers.delete(worker);
       worker.terminate();
+      if (this.closed) return;
       this.idle.push(this.spawn());
       this.drain();
     };
@@ -59,6 +64,7 @@ export class ResizePool {
   }
 
   private release(worker: Worker) {
+    if (this.closed) return;
     this.idle.push(worker);
     this.drain();
   }
@@ -78,6 +84,7 @@ export class ResizePool {
     height: number,
     png: boolean,
   ): Promise<Uint8Array<ArrayBuffer> | null> {
+    if (this.closed) return Promise.resolve(null);
     this.start();
     return new Promise<Uint8Array<ArrayBuffer> | null>((resolve) => {
       const request: ResizeRequest = {
@@ -90,6 +97,23 @@ export class ResizePool {
       this.queue.push({ request, resolve });
       this.drain();
     });
+  }
+
+  close() {
+    this.closed = true;
+    for (const task of this.queue) {
+      task.resolve(null);
+    }
+    this.queue = [];
+    for (const resolve of this.active.values()) {
+      resolve(null);
+    }
+    this.active.clear();
+    for (const worker of this.workers) {
+      worker.terminate();
+    }
+    this.workers.clear();
+    this.idle = [];
   }
 }
 
