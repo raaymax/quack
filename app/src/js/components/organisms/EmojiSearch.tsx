@@ -128,6 +128,25 @@ const AddEmojiForm = styled.div`
   .add-emoji-error {
     color: ${(props) => props.theme.Error ?? "#e5484d"};
   }
+
+  .add-emoji-warning-panel {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid ${(props) => props.theme.Warning ?? "#e5a23d"};
+    background-color: ${(props) => props.theme.Warning ?? "#e5a23d"}1a;
+    color: ${(props) => props.theme.Text};
+    font-size: 13px;
+    line-height: 18px;
+
+    .icon {
+      color: ${(props) => props.theme.Warning ?? "#e5a23d"};
+      flex: 0 0 auto;
+    }
+  }
 `;
 
 const EmojiCategory = styled.div`
@@ -163,6 +182,8 @@ const EmojiContainer = styled.div`
   .emoji img {
     width: 22px;
     height: 22px;
+    max-width: 22px;
+    max-height: 22px;
     object-fit: contain;
     vertical-align: middle;
   }
@@ -174,6 +195,8 @@ const EmojiContainer = styled.div`
     .emoji img {
       width: 32px;
       height: 32px;
+      max-width: 32px;
+      max-height: 32px;
     }
   }
   &:hover {
@@ -207,6 +230,7 @@ export const EmojiSearch = observer(
     const [results, setResults] = useState<Record<string, EmojiType[]>>({});
     const [order, setOrder] = useState<string[]>([]);
     const [adding, setAdding] = useState(false);
+    const [pendingReplace, setPendingReplace] = useState(false);
     const [shortname, setShortname] = useState("");
     const [file, setFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -227,12 +251,22 @@ export const EmojiSearch = observer(
       return () => URL.revokeObjectURL(url);
     }, [file]);
 
+    useEffect(() => {
+      setPendingReplace(false);
+    }, [shortname, file]);
+
     const resetForm = () => {
       setAdding(false);
+      setPendingReplace(false);
       setShortname("");
       setFile(null);
       setError(null);
       setSubmitting(false);
+    };
+
+    const openAdd = () => {
+      resetForm();
+      setAdding(true);
     };
 
     const pickFile = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -255,13 +289,24 @@ export const EmojiSearch = observer(
         setError("Please choose an image");
         return;
       }
+      const sn = `:${cleaned}:`;
+      const existing = app.emojis.get(sn);
+      const isCustom = Boolean(existing?.fileId) && !existing?.unicode;
+      if (isCustom && !pendingReplace) {
+        setPendingReplace(true);
+        return;
+      }
       setSubmitting(true);
       setError(null);
       try {
-        await app.emojis.create(`:${cleaned}:`, file);
+        if (isCustom) {
+          await app.emojis.replace(sn, file);
+        } else {
+          await app.emojis.create(sn, file);
+        }
         resetForm();
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to add emoji");
+        setError(err instanceof Error ? err.message : "Failed to save emoji");
         setSubmitting(false);
       }
     };
@@ -341,49 +386,74 @@ export const EmojiSearch = observer(
         {adding
           ? (
             <AddEmojiForm className="cmp-add-emoji-form">
-              <div className="add-emoji-row">
-                <div
-                  className="add-emoji-preview"
-                  onClick={() => fileInputRef.current?.click()}
-                >
-                  {previewUrl
-                    ? <img src={previewUrl} alt="emoji preview" />
-                    : <Icon icon="icons" size={20} />}
-                </div>
-                <FormInput
-                  className="add-emoji-shortname"
-                  placeholder=":shortname:"
-                  value={shortname}
-                  autoFocus
-                  onChange={(e) => setShortname(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") submit();
-                  }}
-                />
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  style={{ display: "none" }}
-                  onChange={pickFile}
-                />
-              </div>
-              {error && (
-                <FormHelpText className="add-emoji-error">{error}</FormHelpText>
-              )}
+              {pendingReplace
+                ? (
+                  <div className="add-emoji-warning-panel">
+                    <Icon icon="lock" size={16} />
+                    <span>
+                      {`:${
+                        shortname.trim().replace(/^:/, "").replace(/:$/, "")
+                      }: already exists. Replace it with the new image?`}
+                    </span>
+                  </div>
+                )
+                : (
+                  <>
+                    <div className="add-emoji-row">
+                      <div
+                        className="add-emoji-preview"
+                        onClick={() => fileInputRef.current?.click()}
+                      >
+                        {previewUrl
+                          ? <img src={previewUrl} alt="emoji preview" />
+                          : <Icon icon="icons" size={20} />}
+                      </div>
+                      <FormInput
+                        className="add-emoji-shortname"
+                        placeholder=":shortname:"
+                        value={shortname}
+                        autoFocus
+                        onChange={(e) => setShortname(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") submit();
+                        }}
+                      />
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        style={{ display: "none" }}
+                        onChange={pickFile}
+                      />
+                    </div>
+                    {error && (
+                      <FormHelpText className="add-emoji-error">
+                        {error}
+                      </FormHelpText>
+                    )}
+                  </>
+                )}
               <div className="add-emoji-actions">
-                <Button type="secondary" onClick={resetForm}>
-                  Cancel
+                <Button
+                  type="secondary"
+                  onClick={() =>
+                    pendingReplace ? setPendingReplace(false) : resetForm()}
+                >
+                  {pendingReplace ? "Back" : "Cancel"}
                 </Button>
                 <Button type="primary" onClick={submit} disabled={submitting}>
-                  {submitting ? "Adding…" : "Add"}
+                  {submitting
+                    ? "Saving…"
+                    : pendingReplace
+                    ? "Replace"
+                    : "Add"}
                 </Button>
               </div>
             </AddEmojiForm>
           )
           : (
             <div className="add-emoji">
-              <Button type="secondary" onClick={() => setAdding(true)}>
+              <Button type="secondary" onClick={openAdd}>
                 ADD EMOJI
                 <Icon icon="plus" size={16} />
               </Button>

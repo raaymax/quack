@@ -78,6 +78,16 @@ export class EmojisModel {
     return emoji;
   });
 
+  replace = flow(function* (
+    this: EmojisModel,
+    shortname: string,
+    file: File,
+  ) {
+    const emoji = yield client.api.replaceEmoji(shortname, file);
+    this.upsert(emoji);
+    return emoji;
+  });
+
   load = flow(function* (this: EmojisModel) {
     const emojis = yield client.api.getEmojis();
     const { default: baseEmojis } = yield import(

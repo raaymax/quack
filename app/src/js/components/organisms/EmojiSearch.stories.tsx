@@ -24,15 +24,17 @@ export const AddEmoji: Story = {
   args: {},
   loaders: [async () => {
     app.emojis.load();
-    client.api.createEmoji = async (shortname: string, file: File) => {
-      const emoji = {
+    const fakeEmoji = (shortname: string, file: File) =>
+      ({
         shortname,
         fileId: URL.createObjectURL(file),
         category: "c",
         empty: false,
-      };
-      return emoji as never;
-    };
+      }) as never;
+    client.api.createEmoji = async (shortname: string, file: File) =>
+      fakeEmoji(shortname, file);
+    client.api.replaceEmoji = async (shortname: string, file: File) =>
+      fakeEmoji(shortname, file);
   }],
   render: (args) => <EmojiSearch {...args} />,
 };

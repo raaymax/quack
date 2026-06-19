@@ -17,6 +17,7 @@ import UpdateMessage from "./message/update.ts";
 import PinMessage from "./message/pin.ts";
 import GetAllEmojis from "./emoji/getAll.ts";
 import CreateEmoji from "./emoji/create.ts";
+import ReplaceEmoji from "./emoji/replace.ts";
 import CommandExecute from "./command/execute.ts";
 import GetAllReadReceipts from "./readReceipt/getAll.ts";
 import GetChannelReadReceipts from "./readReceipt/getChannel.ts";
@@ -68,6 +69,7 @@ const commands = buildCommandCollection([
   AttachFiles,
   RemoveFile,
   CreateEmoji,
+  ReplaceEmoji,
 ]);
 
 export class Core {

@@ -5,7 +5,7 @@ import { createApp } from "../../__tests__/app.ts";
 import { Chat } from "../../__tests__/chat.ts";
 import { ensureUser, login } from "../../__tests__/mod.ts";
 
-const { app, repo } = createApp();
+const { app, repo, core } = createApp();
 
 const PNG_BYTES = Uint8Array.from([
   0x89,
@@ -138,6 +138,64 @@ Deno.test("POST /api/emojis - invalid shortname rejected", async () => {
       await agent.close();
     }
   });
+});
+
+Deno.test("PUT /api/emojis - replaces image and removes old blob", async () => {
+  await withPng(async (png) => {
+    const agent = await Agent.from(app);
+    try {
+      const { token } = await login(repo, agent, "admin");
+      const created = await agent.request()
+        .post("/api/emojis/swap")
+        .file(png)
+        .header("Authorization", `Bearer ${token}`)
+        .expect(200);
+      const oldFileId = (await created.json()).emoji.fileId;
+      assert(await core.storage.exists(oldFileId));
+
+      const replaced = await agent.request()
+        .put("/api/emojis/swap")
+        .file(png)
+        .header("Authorization", `Bearer ${token}`)
+        .expect(200);
+      const newFileId = (await replaced.json()).emoji.fileId;
+
+      assert(newFileId !== oldFileId);
+      assert(!(await core.storage.exists(oldFileId)));
+      assert(await core.storage.exists(newFileId));
+    } finally {
+      await repo.emoji.removeMany({ shortname: ":swap:" });
+      await agent.close();
+    }
+  });
+});
+
+Deno.test("PUT /api/emojis - replacing a missing emoji is 404", async () => {
+  await withPng(async (png) => {
+    const agent = await Agent.from(app);
+    try {
+      const { token } = await login(repo, agent, "admin");
+      await agent.request()
+        .put("/api/emojis/ghost")
+        .file(png)
+        .header("Authorization", `Bearer ${token}`)
+        .expect(404);
+    } finally {
+      await agent.close();
+    }
+  });
+});
+
+Deno.test("PUT /api/emojis - unauthorized", async () => {
+  const agent = await Agent.from(app);
+  try {
+    await agent.request()
+      .put("/api/emojis/swap")
+      .text("img")
+      .expect(401);
+  } finally {
+    await agent.close();
+  }
 });
 
 Deno.test("Adding emojis and listing them", async () => {

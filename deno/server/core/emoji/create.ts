@@ -1,17 +1,7 @@
 import * as v from "valibot";
 import { createCommand } from "../command.ts";
 import { EmojiAlreadyExists } from "../errors.ts";
-
-const Shortname = v.pipe(
-  v.string(),
-  v.transform((i) =>
-    `:${(i as string).trim().replace(/^:/, "").replace(/:$/, "")}:`
-  ),
-  v.regex(
-    /^:[a-zA-Z0-9_+-]+:$/,
-    "invalid emoji shortname, expected :shortname:",
-  ),
-);
+import { Shortname } from "./shortname.ts";
 
 export default createCommand({
   type: "emoji:create",
