@@ -56,6 +56,12 @@ export class UserAlreadyExists extends AppError {
   }
 }
 
+export class EmojiAlreadyExists extends AppError {
+  constructor(msg = "Emoji already exists") {
+    super("EMOJI_ALREADY_EXISTS", msg);
+  }
+}
+
 export class PasswordResetRequired extends AppError {
   token: string;
   constructor(msg = "User password reset is required", token: string) {

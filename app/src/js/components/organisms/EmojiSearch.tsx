@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { SearchBox } from "../atoms/SearchBox";
 import { type Emoji as EmojiType, EmojiDescriptor } from "../../types";
@@ -6,6 +6,7 @@ import { Icon } from "../atoms/Icon";
 import { ClassNames, cn } from "../../utils";
 import { Emoji } from "../molecules/Emoji";
 import { Button } from "../molecules/Button";
+import { FormHelpText, FormInput } from "../atoms/FormInput";
 import { observer } from "mobx-react-lite";
 import { useApp } from "../contexts/appState";
 
@@ -60,6 +61,60 @@ export const EmojiSearchContainer = styled.div`
     border-top: 1px solid ${(props) => props.theme.Strokes};
     flex: 0 0 32px;
     padding: 8px 12px;
+  }
+`;
+
+const AddEmojiForm = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 1px solid ${(props) => props.theme.Strokes};
+  padding: 12px;
+
+  .add-emoji-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .add-emoji-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 48px;
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    border: 1px dashed ${(props) => props.theme.Strokes};
+    overflow: hidden;
+    cursor: pointer;
+    color: ${(props) => props.theme.Labels};
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+  }
+
+  .add-emoji-shortname {
+    flex: 1 1 auto;
+    height: 40px;
+  }
+
+  .add-emoji-actions {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+
+    button {
+      flex: 1 1 0;
+      padding: 11px 16px;
+    }
+  }
+
+  .add-emoji-error {
+    color: ${(props) => props.theme.Error ?? "#e5484d"};
   }
 `;
 
@@ -136,27 +191,115 @@ export const EmojiSearch = observer(
   ({ className, onSelect }: EmojiSearchProps) => {
     const [name, setName] = useState("");
     const [results, setResults] = useState<Record<string, EmojiType[]>>({});
+    const [order, setOrder] = useState<string[]>([]);
+    const [adding, setAdding] = useState(false);
+    const [shortname, setShortname] = useState("");
+    const [file, setFile] = useState<File | null>(null);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(null);
+    const [submitting, setSubmitting] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
     const app = useApp();
     const emojis = app.emojis.getAll();
     const fuse = app.emojis.getFuse();
 
     useEffect(() => {
-      let all: EmojiType[] = emojis;
-      if (name && fuse) {
-        const ret = fuse.search(name, { limit: 100 });
-        all = ret.map((r) => r.item).filter((e) => !e.empty) as EmojiType[];
+      if (!file) {
+        setPreviewUrl(null);
+        return;
+      }
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+      return () => URL.revokeObjectURL(url);
+    }, [file]);
+
+    const resetForm = () => {
+      setAdding(false);
+      setShortname("");
+      setFile(null);
+      setError(null);
+      setSubmitting(false);
+    };
+
+    const pickFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const picked = e.target.files?.[0] ?? null;
+      if (picked && !picked.type.startsWith("image/")) {
+        setError("Please choose an image file");
+        return;
+      }
+      setError(null);
+      setFile(picked);
+    };
+
+    const submit = async () => {
+      const cleaned = shortname.trim().replace(/^:/, "").replace(/:$/, "");
+      if (!/^[a-zA-Z0-9_+-]+$/.test(cleaned)) {
+        setError("Invalid shortname. Use letters, numbers, _ + -");
+        return;
+      }
+      if (!file) {
+        setError("Please choose an image");
+        return;
+      }
+      setSubmitting(true);
+      setError(null);
+      try {
+        await app.emojis.create(`:${cleaned}:`, file);
+        resetForm();
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to add emoji");
+        setSubmitting(false);
+      }
+    };
+
+    useEffect(() => {
+      if (!name || !fuse) {
+        const grouped = emojis.reduce<Record<string, EmojiType[]>>(
+          (acc, emoji) => {
+            const category = emoji.category || "x";
+            (acc[category] = acc[category] || []).push(emoji);
+            return acc;
+          },
+          {},
+        );
+        setResults(grouped);
+        setOrder(Object.keys(CATEGORIES).filter((c) => grouped[c]));
+        return;
       }
 
-      setResults(
-        (all || [])
-          .reduce<Record<string, EmojiType[]>>((acc, emoji) => {
-            const category = emoji.category || "x";
-            acc[category] = acc[category] || [];
-            acc[category].push(emoji);
-            return acc;
-          }, {}),
+      const ret = fuse.search(name, { limit: 100 });
+      const grouped: Record<string, EmojiType[]> = {};
+      const bestScore: Record<string, number> = {};
+      for (const r of ret) {
+        const emoji = r.item as EmojiType;
+        if (emoji.empty) continue;
+        const category = emoji.category || "x";
+        (grouped[category] = grouped[category] || []).push(emoji);
+        const score = r.score ?? 1;
+        if (bestScore[category] === undefined || score < bestScore[category]) {
+          bestScore[category] = score;
+        }
+      }
+      setResults(grouped);
+      setOrder(
+        Object.keys(grouped)
+          .filter((c) => CATEGORIES[c])
+          .sort((a, b) => bestScore[a] - bestScore[b]),
       );
     }, [name, fuse]);
+
+    const renderEmoji = (result: EmojiType) => (
+      <EmojiContainer
+        key={result.shortname}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          onSelect(result);
+        }}
+      >
+        <Emoji shortname={result.shortname} size={24} />
+      </EmojiContainer>
+    );
 
     return (
       <EmojiSearchContainer className={cn("cmp-emoji-search", className)}>
@@ -169,39 +312,69 @@ export const EmojiSearch = observer(
         </div>
         <div className="emoji-scroll">
           <div>
-            {Object.keys(CATEGORIES).filter((c: string) => results[c]).map((
+            {order.filter((c: string) => results[c]).map((
               category: string,
             ) => (
               <EmojiCategory key={category}>
                 <Label>{CATEGORIES[category]}</Label>
                 <EmojiBlock>
-                  {(results[category] || []).map((result) => (
-                    <EmojiContainer
-                      key={result.shortname}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        onSelect(result);
-                      }}
-                    >
-                      <Emoji shortname={result.shortname} size={24} />
-                    </EmojiContainer>
-                  ))}
+                  {(results[category] || []).map(renderEmoji)}
                 </EmojiBlock>
               </EmojiCategory>
             ))}
           </div>
         </div>
-        <div className="add-emoji">
-          <Button
-            type="secondary"
-            onClick={() => {}}
-            tooltip={["Not yet available", "use \\emoji"]}
-          >
-            ADD EMOJI
-            <Icon icon="plus" size={16} />
-          </Button>
-        </div>
+        {adding
+          ? (
+            <AddEmojiForm className="cmp-add-emoji-form">
+              <div className="add-emoji-row">
+                <div
+                  className="add-emoji-preview"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  {previewUrl
+                    ? <img src={previewUrl} alt="emoji preview" />
+                    : <Icon icon="icons" size={20} />}
+                </div>
+                <FormInput
+                  className="add-emoji-shortname"
+                  placeholder=":shortname:"
+                  value={shortname}
+                  autoFocus
+                  onChange={(e) => setShortname(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") submit();
+                  }}
+                />
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  style={{ display: "none" }}
+                  onChange={pickFile}
+                />
+              </div>
+              {error && (
+                <FormHelpText className="add-emoji-error">{error}</FormHelpText>
+              )}
+              <div className="add-emoji-actions">
+                <Button type="secondary" onClick={resetForm}>
+                  Cancel
+                </Button>
+                <Button type="primary" onClick={submit} disabled={submitting}>
+                  {submitting ? "Adding…" : "Add"}
+                </Button>
+              </div>
+            </AddEmojiForm>
+          )
+          : (
+            <div className="add-emoji">
+              <Button type="secondary" onClick={() => setAdding(true)}>
+                ADD EMOJI
+                <Icon icon="plus" size={16} />
+              </Button>
+            </div>
+          )}
       </EmojiSearchContainer>
     );
   },

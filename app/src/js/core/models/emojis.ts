@@ -68,6 +68,16 @@ export class EmojisModel {
     this._fuse = null; // Invalidate cache when emojis change
   }
 
+  create = flow(function* (
+    this: EmojisModel,
+    shortname: string,
+    file: File,
+  ) {
+    const emoji = yield client.api.createEmoji(shortname, file);
+    this.upsert(emoji);
+    return emoji;
+  });
+
   load = flow(function* (this: EmojisModel) {
     const emojis = yield client.api.getEmojis();
     const { default: baseEmojis } = yield import(
@@ -91,6 +101,7 @@ export class EmojisModel {
         {
           findAllMatches: true,
           includeMatches: true,
+          includeScore: true,
           keys: ["name", "shortname"],
         },
       );
