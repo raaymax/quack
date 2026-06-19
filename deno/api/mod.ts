@@ -324,6 +324,37 @@ class API extends EventTarget {
     await this.getResource<Emoji[]>(`/api/emojis`) ?? []
   );
 
+  #uploadEmoji = async (
+    method: "POST" | "PUT",
+    shortname: string,
+    file: File,
+  ): Promise<Emoji> => {
+    const name = shortname.trim().replace(/^:/, "").replace(/:$/, "");
+    const res = await this.fetchWithCredentials(
+      `/api/emojis/${encodeURIComponent(name)}`,
+      {
+        method,
+        headers: {
+          "Content-Type": file.type || "application/octet-stream",
+          "Content-Disposition": `attachment; filename="${file.name}"`,
+        },
+        body: file,
+      },
+    );
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body.message ?? `Failed to save emoji (${res.status})`);
+    }
+    const { emoji } = await res.json();
+    return emoji;
+  };
+
+  createEmoji = (shortname: string, file: File): Promise<Emoji> =>
+    this.#uploadEmoji("POST", shortname, file);
+
+  replaceEmoji = (shortname: string, file: File): Promise<Emoji> =>
+    this.#uploadEmoji("PUT", shortname, file);
+
   getMessages = async (
     q: {
       pinned?: boolean;
