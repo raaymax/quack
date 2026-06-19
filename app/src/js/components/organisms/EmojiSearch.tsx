@@ -61,6 +61,18 @@ export const EmojiSearchContainer = styled.div`
     border-top: 1px solid ${(props) => props.theme.Strokes};
     flex: 0 0 32px;
     padding: 8px 12px;
+
+    button {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+
+      .icon {
+        margin: 0;
+      }
+    }
   }
 `;
 
@@ -148,18 +160,20 @@ const EmojiContainer = styled.div`
   line-height: 30px;
   cursor: pointer;
   user-select: none;
-  img {
-    width: 28px;
-    height: 28px;
+  .emoji img {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+    vertical-align: middle;
   }
   body.mobile & {
     width: 40px;
     height: 40px;
     flex: 0 0 40px;
     font-size: 30px;
-    img {
-      width: 38px;
-      height: 38px;
+    .emoji img {
+      width: 32px;
+      height: 32px;
     }
   }
   &:hover {
