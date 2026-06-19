@@ -97,11 +97,15 @@ Deno.test("POST /api/emojis - duplicate shortname rejected", async () => {
         shortname: ":dup:",
         fileId: crypto.randomUUID(),
       });
+      const before = (await core.storage.list("")).length;
       await agent.request()
         .post("/api/emojis/dup")
         .file(png)
         .header("Authorization", `Bearer ${token}`)
         .expect(409);
+      // The blob is uploaded before the duplicate check runs; it must be
+      // cleaned up so a rejected create does not leak storage.
+      assertEquals((await core.storage.list("")).length, before);
     } finally {
       await repo.emoji.removeMany({ shortname: ":dup:" });
       await agent.close();
@@ -175,11 +179,13 @@ Deno.test("PUT /api/emojis - replacing a missing emoji is 404", async () => {
     const agent = await Agent.from(app);
     try {
       const { token } = await login(repo, agent, "admin");
+      const before = (await core.storage.list("")).length;
       await agent.request()
         .put("/api/emojis/ghost")
         .file(png)
         .header("Authorization", `Bearer ${token}`)
         .expect(404);
+      assertEquals((await core.storage.list("")).length, before);
     } finally {
       await agent.close();
     }
