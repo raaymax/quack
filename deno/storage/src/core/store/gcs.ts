@@ -25,7 +25,7 @@ const API_URL = "https://storage.googleapis.com";
 class Gcs {
   bucketName: string;
 
-  accessToken: Promise<string | null | undefined> | null = null;
+  accessToken: string | null = null;
 
   accessTokenExpires = 0;
 
@@ -45,10 +45,10 @@ class Gcs {
     this.bucketName = config.bucket;
   }
 
-  getAccessToken() {
+  async getAccessToken() {
     if (!this.accessToken || Date.now() > this.accessTokenExpires) {
-      this.accessToken = this.auth.getAccessToken();
-      this.accessTokenExpires = Date.now() + 2 * 1000;
+      this.accessToken = await this.auth.getAccessToken() ?? null;
+      this.accessTokenExpires = Date.now() + 50 * 60 * 1000;
     }
     return this.accessToken;
   }
