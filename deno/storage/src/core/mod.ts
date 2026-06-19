@@ -87,10 +87,6 @@ class Files {
     return await this.service.exists(fileId);
   }
 
-  async list(prefix: string): Promise<string[]> {
-    return await this.service.list(prefix);
-  }
-
   async remove(fileId: string): Promise<void> {
     await this.service.remove(fileId);
     const variants = await this.service.list(`${fileId}-`);

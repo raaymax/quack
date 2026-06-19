@@ -28,6 +28,24 @@ async function withPng(fn: (path: string) => Promise<void>) {
   }
 }
 
+// Records the storageIds produced by storage.upload while `fn` runs, so a test
+// can assert a rejected request cleaned up the blob it uploaded.
+async function trackUploads(fn: () => Promise<void>): Promise<string[]> {
+  const ids: string[] = [];
+  const original = core.storage.upload.bind(core.storage);
+  core.storage.upload = (async (...args: Parameters<typeof original>) => {
+    const id = await original(...args);
+    ids.push(id);
+    return id;
+  }) as typeof core.storage.upload;
+  try {
+    await fn();
+  } finally {
+    core.storage.upload = original;
+  }
+  return ids;
+}
+
 Deno.test("GET /api/emojis - unauthorized", async () => {
   const agent = await Agent.from(app);
   try {
@@ -97,15 +115,17 @@ Deno.test("POST /api/emojis - duplicate shortname rejected", async () => {
         shortname: ":dup:",
         fileId: crypto.randomUUID(),
       });
-      const before = (await core.storage.list("")).length;
-      await agent.request()
-        .post("/api/emojis/dup")
-        .file(png)
-        .header("Authorization", `Bearer ${token}`)
-        .expect(409);
       // The blob is uploaded before the duplicate check runs; it must be
       // cleaned up so a rejected create does not leak storage.
-      assertEquals((await core.storage.list("")).length, before);
+      const uploaded = await trackUploads(async () => {
+        await agent.request()
+          .post("/api/emojis/dup")
+          .file(png)
+          .header("Authorization", `Bearer ${token}`)
+          .expect(409);
+      });
+      assertEquals(uploaded.length, 1);
+      assertEquals(await core.storage.exists(uploaded[0]), false);
     } finally {
       await repo.emoji.removeMany({ shortname: ":dup:" });
       await agent.close();
@@ -179,13 +199,15 @@ Deno.test("PUT /api/emojis - replacing a missing emoji is 404", async () => {
     const agent = await Agent.from(app);
     try {
       const { token } = await login(repo, agent, "admin");
-      const before = (await core.storage.list("")).length;
-      await agent.request()
-        .put("/api/emojis/ghost")
-        .file(png)
-        .header("Authorization", `Bearer ${token}`)
-        .expect(404);
-      assertEquals((await core.storage.list("")).length, before);
+      const uploaded = await trackUploads(async () => {
+        await agent.request()
+          .put("/api/emojis/ghost")
+          .file(png)
+          .header("Authorization", `Bearer ${token}`)
+          .expect(404);
+      });
+      assertEquals(uploaded.length, 1);
+      assertEquals(await core.storage.exists(uploaded[0]), false);
     } finally {
       await agent.close();
     }
