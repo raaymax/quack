@@ -28,8 +28,6 @@ async function withPng(fn: (path: string) => Promise<void>) {
   }
 }
 
-// Records the storageIds produced by storage.upload while `fn` runs, so a test
-// can assert a rejected request cleaned up the blob it uploaded.
 async function trackUploads(fn: () => Promise<void>): Promise<string[]> {
   const ids: string[] = [];
   const original = core.storage.upload.bind(core.storage);
@@ -115,8 +113,6 @@ Deno.test("POST /api/emojis - duplicate shortname rejected", async () => {
         shortname: ":dup:",
         fileId: crypto.randomUUID(),
       });
-      // The blob is uploaded before the duplicate check runs; it must be
-      // cleaned up so a rejected create does not leak storage.
       const uploaded = await trackUploads(async () => {
         await agent.request()
           .post("/api/emojis/dup")

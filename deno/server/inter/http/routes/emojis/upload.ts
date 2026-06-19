@@ -38,10 +38,6 @@ function parseMeta(req: EmojiUploadReq): EmojiUploadMeta | Response {
   return { filename, contentType, size };
 }
 
-// Uploads the image, then runs the command. The blob is stored before the
-// command validates (it consumes the request stream), so if the command
-// rejects (duplicate, missing, ...) we delete the now-orphaned blob to avoid
-// leaking it in storage.
 export async function saveEmojiUpload(
   core: Core,
   req: EmojiUploadReq,
