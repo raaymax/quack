@@ -17,14 +17,14 @@ export default defineConfig(({ command }) => ({
   server: command === "serve"
     ? {
       host: true,
-      port: 3000,
+      port: 4000,
       strictPort: true,
       hmr: {
         overlay: false,
       },
       proxy: {
         "/api": {
-          target: "http://localhost:3001",
+          target: "http://localhost:4001",
           changeOrigin: true,
           secure: false,
         },
