@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { NavChannels } from "../molecules/NavChannels";
 import { NavUsers } from "../molecules/NavUsers";
 import { ClassNames, cn } from "../../utils";
 import styled from "styled-components";
 import { ThemeButtonConnected } from "../molecules/ThemeButtonConnected";
 import { LoggedUserConnected } from "../molecules/LoggedUserConnected";
+import { ProfileSettings } from "./ProfileSettings";
 import { observer } from "mobx-react-lite";
 
 const Container = styled.div`
@@ -69,6 +71,7 @@ export const Sidebar = observer(
       className?: ClassNames;
     },
   ) => {
+    const [showSettings, setShowSettings] = useState(false);
     return (
       <Container className={cn("side-menu", className)} style={style}>
         <div className="side-menu-header">
@@ -80,8 +83,11 @@ export const Sidebar = observer(
         </div>
         <div className="bottom">
           <ThemeButtonConnected />
-          <LoggedUserConnected />
+          <LoggedUserConnected onOpenSettings={() => setShowSettings(true)} />
         </div>
+        {showSettings && (
+          <ProfileSettings onClose={() => setShowSettings(false)} />
+        )}
       </Container>
     );
   },

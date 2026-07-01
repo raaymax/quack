@@ -9,11 +9,28 @@ const Container = styled.div`
   padding: 12px;
   width: 100%;
 
+  .profile-trigger {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+    align-items: center;
+    cursor: pointer;
+    border-radius: 8px;
+    padding: 2px;
+    margin: -2px;
+
+    &:hover {
+      background-color: ${({ theme }) => theme.Channel.Hover};
+    }
+  }
   .profile-pic {
     flex: 0 0 32px;
   }
   .user-info {
     flex: 1;
+    min-width: 0;
     .name {
       color: ${(props) => props.theme.Text};
       font-size: 14px;
@@ -46,17 +63,22 @@ type LoggedUserProps = {
   name: string;
   avatarUrl?: string;
   onLogout: () => void;
+  onOpenSettings?: () => void;
 };
 
-export const LoggedUser = ({ name, avatarUrl, onLogout }: LoggedUserProps) => {
+export const LoggedUser = (
+  { name, avatarUrl, onLogout, onOpenSettings }: LoggedUserProps,
+) => {
   return (
     <Container>
-      <div className="profile-pic">
-        <ProfilePic type="personal" avatarUrl={avatarUrl} />
-      </div>
-      <div className="user-info">
-        <div className="name">{name}</div>
-        <div className="status">Online</div>
+      <div className="profile-trigger" onClick={onOpenSettings}>
+        <div className="profile-pic">
+          <ProfilePic type="personal" avatarUrl={avatarUrl} />
+        </div>
+        <div className="user-info">
+          <div className="name">{name}</div>
+          <div className="status">Online</div>
+        </div>
       </div>
       <div className="user-actions">
         <ButtonWithIcon
