@@ -355,6 +355,41 @@ class API extends EventTarget {
   replaceEmoji = (shortname: string, file: File): Promise<Emoji> =>
     this.#uploadEmoji("PUT", shortname, file);
 
+  updateProfile = async (data: { name: string }): Promise<User> => {
+    const res = await this.fetchWithCredentials(`/api/profile`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(
+        body.message ?? `Failed to update profile (${res.status})`,
+      );
+    }
+    const { user } = await res.json();
+    return user;
+  };
+
+  uploadAvatar = async (file: File): Promise<User> => {
+    const res = await this.fetchWithCredentials(`/api/profile/avatar`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": file.type || "application/octet-stream",
+        "Content-Disposition": `attachment; filename="${file.name}"`,
+      },
+      body: file,
+    });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(
+        body.message ?? `Failed to upload avatar (${res.status})`,
+      );
+    }
+    const { user } = await res.json();
+    return user;
+  };
+
   getMessages = async (
     q: {
       pinned?: boolean;

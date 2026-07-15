@@ -18,10 +18,10 @@ deno task dev              # Run backend in watch mode
 deno task start            # Production start
 
 # Frontend (pnpm — installs go through Socket Firewall + 1-week cooldown)
-cd app && pnpm dev         # Vite dev server (port 3000, HTTPS via basic-ssl)
+cd app && pnpm dev         # Vite dev server (port 4000, HTTPS via basic-ssl; proxies /api → backend :4001)
 cd app && pnpm build       # Production build
 cd app && pnpm lint        # ESLint
-cd app && pnpm storybook   # Storybook (port 6006)
+cd app && pnpm storybook   # Storybook (port 4006)
 
 # Full stack
 deno task check            # fmt + lint + test (all backend)

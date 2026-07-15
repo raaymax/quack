@@ -34,6 +34,8 @@ import CheckChannelAccess from "./channel/checkAccess.ts";
 import InteractionWithMessage from "./message/interaction.ts";
 import ChannelUserTyping from "./channel/userTyping.ts";
 import UserReset from "./user/reset.ts";
+import SetProfile from "./user/setProfile.ts";
+import SetAvatar from "./user/setAvatar.ts";
 import RegisterFile from "./file/register.ts";
 import AttachFiles from "./file/attach.ts";
 import RemoveFile from "./file/remove.ts";
@@ -65,6 +67,8 @@ const commands = buildCommandCollection([
   InteractionWithMessage,
   ChannelUserTyping,
   UserReset,
+  SetProfile,
+  SetAvatar,
   RegisterFile,
   AttachFiles,
   RemoveFile,

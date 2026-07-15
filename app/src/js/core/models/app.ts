@@ -141,6 +141,18 @@ export class AppModel {
     return this._init;
   };
 
+  updateProfile = flow(function* (this: AppModel, name: string) {
+    const user = yield client.api.updateProfile({ name });
+    this.users.upsert(user);
+    return user;
+  });
+
+  uploadAvatar = flow(function* (this: AppModel, file: File) {
+    const user = yield client.api.uploadAvatar(file);
+    this.users.upsert(user);
+    return user;
+  });
+
   setLoading = (loading: boolean) => {
     if (loading) {
       clearTimeout(this.loadingTimeout);
