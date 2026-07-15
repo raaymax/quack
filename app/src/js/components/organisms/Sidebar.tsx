@@ -34,29 +34,21 @@ const Container = styled.div`
     width: 100%;
     height: 100vh;
 
-    & .channel {
-      height: 40px;
-      line-height: 40px;
-      vertical-align: middle;
-      font-size: 20px;
-      & .name {
-        height: 40px;
-        line-height: 40px;
-        vertical-align: middle;
-        font-size: 20px;
-      }
-    }
+    & .channel,
     & .user {
-      height: 40px;
-      line-height: 40px;
-      vertical-align: middle;
+      display: flex;
+      align-items: center;
+      min-height: 40px;
       font-size: 20px;
-      & .name {
-        height: 40px;
-        line-height: 40px;
-        vertical-align: middle;
-        font-size: 20px;
-      }
+    }
+    & .channel .name,
+    & .user .name {
+      font-size: 20px;
+    }
+    & .user .text {
+      display: flex;
+      align-items: center;
+      margin: 0;
     }
   }
   &.hidden {
