@@ -269,7 +269,7 @@ Deno.test("files - direct delete only by uploader, sweeps storage", async () => 
 
       await agent.request()
         .delete(`/api/channels/${channelId}/files/${fileId}`)
-        .emptyBody()
+        .json({})
         .header("Authorization", `Bearer ${token}`)
         .expect(204);
 

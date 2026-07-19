@@ -27,7 +27,7 @@ export class FilesAPI {
   remove = async (channelId: string, fileId: string): Promise<void> => {
     const res = await this.api.fetchWithCredentials(
       `/api/channels/${channelId}/files/${fileId}`,
-      { method: "DELETE" },
+      { method: "DELETE", body: JSON.stringify({}) },
     );
     if (!res.ok) {
       await res.body?.cancel();
