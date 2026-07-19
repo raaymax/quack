@@ -28,17 +28,35 @@ const meta: Meta<typeof FilesView> = {
 export default meta;
 type Story = StoryObj<typeof FilesView>;
 
+const useMockFiles = (initial: FileItem[] = mockFiles) => {
+  const [files, setFiles] = useState<FileItem[]>(initial);
+  const onRemove = useCallback((file: FileItem) => {
+    setFiles((current) => current.filter((f) => f.id !== file.id));
+  }, []);
+  return { files, onRemove };
+};
+
 export const ListView: Story = {
-  args: { files: mockFiles, onDownload: () => {}, onRemove: () => {} },
+  render: (args) => {
+    const { files, onRemove } = useMockFiles();
+    return (
+      <div style={{ height: "100vh" }}>
+        <FilesView {...args} files={files} onRemove={onRemove} />
+      </div>
+    );
+  },
 };
 
 export const GridView: Story = {
-  args: {
-    files: mockFiles,
-    defaultView: "grid",
-    onDownload: () => {},
-    onRemove: () => {},
+  render: (args) => {
+    const { files, onRemove } = useMockFiles();
+    return (
+      <div style={{ height: "100vh" }}>
+        <FilesView {...args} files={files} onRemove={onRemove} />
+      </div>
+    );
   },
+  args: { defaultView: "grid" },
 };
 
 export const Loading: Story = {
@@ -49,24 +67,33 @@ export const Empty: Story = {
   args: { files: [], channelName: "design-team", channelType: "PRIVATE" },
 };
 
+export const LoadError: Story = {
+  args: { files: [], error: true, onRetry: () => {} },
+};
+
 export const Mobile: Story = {
-  args: {
-    files: mockFiles,
-    onDownload: () => {},
-    onRemove: () => {},
-    onMenu: () => {},
+  render: (args) => {
+    const { files, onRemove } = useMockFiles();
+    return (
+      <div style={{ height: "100vh" }}>
+        <FilesView {...args} files={files} onRemove={onRemove} />
+      </div>
+    );
   },
+  args: { onMenu: () => {} },
   parameters: { viewport: { defaultViewport: "mobile" } },
 };
 
 export const MobileGrid: Story = {
-  args: {
-    files: mockFiles,
-    defaultView: "grid",
-    onDownload: () => {},
-    onRemove: () => {},
-    onMenu: () => {},
+  render: (args) => {
+    const { files, onRemove } = useMockFiles();
+    return (
+      <div style={{ height: "100vh" }}>
+        <FilesView {...args} files={files} onRemove={onRemove} />
+      </div>
+    );
   },
+  args: { defaultView: "grid", onMenu: () => {} },
   parameters: { viewport: { defaultViewport: "mobile" } },
 };
 
@@ -93,7 +120,17 @@ const useFakePager = () => {
     }, 700);
   }, []);
 
-  return { files, loadingOlder, onLoadOlder, hasMoreOlder: files.length < MAX_FILES };
+  const onRemove = useCallback((file: FileItem) => {
+    setFiles((current) => current.filter((f) => f.id !== file.id));
+  }, []);
+
+  return {
+    files,
+    loadingOlder,
+    onLoadOlder,
+    onRemove,
+    hasMoreOlder: files.length < MAX_FILES,
+  };
 };
 
 export const InfiniteScroll: Story = {
@@ -107,11 +144,11 @@ export const InfiniteScroll: Story = {
           loadingOlder={pager.loadingOlder}
           hasMoreOlder={pager.hasMoreOlder}
           onLoadOlder={pager.onLoadOlder}
+          onRemove={pager.onRemove}
         />
       </div>
     );
   },
-  args: { onDownload: () => {}, onRemove: () => {} },
 };
 
 export const InChannelContext: Story = {
@@ -148,6 +185,7 @@ export const InChannelContext: Story = {
                 loadingOlder={pager.loadingOlder}
                 hasMoreOlder={pager.hasMoreOlder}
                 onLoadOlder={pager.onLoadOlder}
+                onRemove={pager.onRemove}
                 onClose={() => setActiveView("messages")}
               />
             )
@@ -168,5 +206,4 @@ export const InChannelContext: Story = {
       </div>
     );
   },
-  args: { onDownload: () => {}, onRemove: () => {} },
 };
