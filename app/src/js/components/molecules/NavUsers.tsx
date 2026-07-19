@@ -1,8 +1,14 @@
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { NavButton } from "./NavButton";
+import {
+  type ChannelViewKey,
+  ChannelViewList,
+} from "./NavChannelTree";
 import { ClassNames, cn, isMobile, isUserActive } from "../../utils";
 import { client } from "../../core";
 import { User } from "../../types";
+import { Icon } from "../atoms/Icon";
 import { ProfilePic } from "../atoms/ProfilePic";
 import { SectionHeader } from "../atoms/SectionHeader";
 import { useSidebar } from "../contexts/useSidebar";
@@ -38,6 +44,35 @@ const UserListContainer = styled.div`
   .pic-inline {
     vertical-align: middle;
     display: inline-block;
+  }
+
+  .user-entry {
+    position: relative;
+
+    .caret {
+      position: absolute;
+      top: 0;
+      left: 2px;
+      height: 30px;
+      width: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 1;
+      color: ${(props) => props.theme.Labels};
+      transition: transform 0.15s ease;
+
+      &.expanded {
+        transform: rotate(90deg);
+      }
+    }
+  }
+
+  @media (max-width: 710px) {
+    .user-entry .caret {
+      height: 40px;
+    }
   }
 `;
 
@@ -116,29 +151,63 @@ export const NavUserButton = ({
 };
 
 const NavUserContainer = observer(
-  ({ user, badges }: { user: User; badges: ReadReceiptsModel }) => {
+  ({ user, badges, expanded, onToggle }: {
+    user: User;
+    badges: ReadReceiptsModel;
+    expanded: boolean;
+    onToggle: () => void;
+  }) => {
     const app = useApp();
     const channel = app.channels.getDirect(String(user.id));
     let navigate = (_path: string) => {};
     try {
       navigate = useNavigate();
     } catch { /*ignore*/ }
-    const { channelId: id } = useParams();
+    const { channelId: id, isFiles, isPins, isSearch } = useParams();
     const { hideSidebar } = useSidebar();
+    const isActive = Boolean(channel) && id === channel?.id;
+    const activeView: ChannelViewKey | null = isActive
+      ? (isFiles ? "files" : isPins || isSearch ? null : "messages")
+      : null;
     return (
-      <NavUserButton
-        size={30}
-        user={user as unknown as NavUserButtonProps["user"]}
-        className={{ active: id === channel?.id }}
-        badge={badges.getForChannel(channel?.id ? String(channel.id) : "")}
-        onClick={async () => {
-          const channel = await client.api.putDirectChannel(String(user.id));
-          if (isMobile()) {
-            hideSidebar();
-          }
-          navigate(`/${channel.id}`);
-        }}
-      />
+      <div className="user-entry">
+        {channel && (
+          <span
+            className={cn("caret", { expanded })}
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggle();
+            }}
+          >
+            <Icon icon="chevron" size={12} />
+          </span>
+        )}
+        <NavUserButton
+          size={30}
+          user={user as unknown as NavUserButtonProps["user"]}
+          className={{ active: isActive }}
+          badge={badges.getForChannel(channel?.id ? String(channel.id) : "")}
+          onClick={async () => {
+            const channel = await client.api.putDirectChannel(String(user.id));
+            if (isMobile()) {
+              hideSidebar();
+            }
+            navigate(`/${channel.id}`);
+          }}
+        />
+        {channel && expanded && (
+          <ChannelViewList
+            channelId={channel.id}
+            activeView={activeView}
+            onSelectView={(channelId, view) => {
+              if (isMobile()) hideSidebar();
+              navigate(
+                view === "files" ? `/${channelId}/files` : `/${channelId}`,
+              );
+            }}
+          />
+        )}
+      </div>
     );
   },
 );
@@ -146,6 +215,18 @@ const NavUserContainer = observer(
 export const NavUsers = observer(() => {
   const app = useApp();
   const users = app.users.getAll();
+  const { channelId: id } = useParams();
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  const activeChannel = id ? app.channels.get(id) : null;
+  const activeDmUser = activeChannel?.isDirect
+    ? activeChannel.otherUser ?? activeChannel.user
+    : null;
+  const activeDmUserId = activeDmUser ? String(activeDmUser.id) : null;
+
+  useEffect(() => {
+    if (activeDmUserId) setExpandedId(activeDmUserId);
+  }, [activeDmUserId]);
 
   return (
     <UserListContainer>
@@ -155,6 +236,11 @@ export const NavUsers = observer(() => {
           key={String(user.id)}
           user={user}
           badges={app.readReceipts}
+          expanded={expandedId === String(user.id)}
+          onToggle={() =>
+            setExpandedId((cur) =>
+              cur === String(user.id) ? null : String(user.id)
+            )}
         />
       ))}
     </UserListContainer>

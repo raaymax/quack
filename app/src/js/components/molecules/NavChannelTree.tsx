@@ -81,11 +81,12 @@ const Container = styled.div`
     }
   }
 
-  .views {
-    display: flex;
-    flex-direction: column;
-    margin: 2px 0 6px 0;
-  }
+`;
+
+const ViewsContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin: 2px 0 6px 0;
 
   .view-row {
     display: flex;
@@ -111,6 +112,33 @@ const Container = styled.div`
     }
   }
 `;
+
+type ChannelViewListProps = {
+  channelId: string;
+  activeView?: ChannelViewKey | null;
+  onSelectView?: (channelId: string, view: ChannelViewKey) => void;
+  className?: ClassNames;
+};
+
+export const ChannelViewList = ({
+  channelId,
+  activeView = null,
+  onSelectView,
+  className,
+}: ChannelViewListProps) => (
+  <ViewsContainer className={cn("views", className)}>
+    {VIEWS.map((view) => (
+      <div
+        key={view.key}
+        className={cn("view-row", { active: activeView === view.key })}
+        onClick={() => onSelectView?.(channelId, view.key)}
+      >
+        <Icon icon={view.icon} size={12} />
+        <span className="view-name">{view.label}</span>
+      </div>
+    ))}
+  </ViewsContainer>
+);
 
 type NavChannelTreeProps = {
   channels: ChannelNavItem[];
@@ -179,20 +207,11 @@ export const NavChannelTree = ({
             </div>
 
             {expanded && (
-              <div className="views">
-                {VIEWS.map((view) => (
-                  <div
-                    key={view.key}
-                    className={cn("view-row", {
-                      active: isActiveChannel && activeView === view.key,
-                    })}
-                    onClick={() => onSelectView?.(channel.id, view.key)}
-                  >
-                    <Icon icon={view.icon} size={12} />
-                    <span className="view-name">{view.label}</span>
-                  </div>
-                ))}
-              </div>
+              <ChannelViewList
+                channelId={channel.id}
+                activeView={isActiveChannel ? activeView : null}
+                onSelectView={onSelectView}
+              />
             )}
           </div>
         );

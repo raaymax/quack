@@ -367,9 +367,10 @@ structure with proper relations.
 - [x] **Channel files browser** - Dedicated view to browse/search all files
       shared in a channel (`/:channelId/files`, sidebar channel tree entry,
       timeline UI with date separators, list/grid, SSE-live)
-- [ ] **Files view: DM entry point** - The sidebar channel tree covers
-      PUBLIC/PRIVATE; DIRECT channels can only reach `/:channelId/files` by URL.
-      Extend NavUsers (or the tree) with a files entry for DMs.
+- [x] **Files view: DM entry point** - NavUsers rows with an existing DM channel
+      expand (caret) into the shared Messages/Files view list; DM files history
+      predating the files entity is not backfilled (encrypted history needs the
+      client-side backfill).
 - [ ] **Files view: virtualized rendering** - The full file list renders at once
       (load-all + client-side search decision). For very large channels, add
       render windowing to the timeline; thumbnails already lazy-load via scroll.
