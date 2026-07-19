@@ -72,7 +72,6 @@ export const FilesTimeline = ({
 
   const groups = useMemo(() => groupByDay(files), [files]);
 
-  // Anchor to the newest file (bottom) on first populate.
   useLayoutEffect(() => {
     const el = scrollRef.current;
     if (!el || anchored.current || files.length === 0) return;
@@ -80,7 +79,6 @@ export const FilesTimeline = ({
     anchored.current = true;
   }, [files.length]);
 
-  // Keep the viewport steady when older files are prepended above.
   useLayoutEffect(() => {
     const el = scrollRef.current;
     if (!el || prevHeight.current === null) return;

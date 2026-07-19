@@ -35,13 +35,19 @@ const Container = styled.div`
     height: 100vh;
 
     & .channel,
+    & .channel-row,
     & .user {
       display: flex;
       align-items: center;
       min-height: 40px;
       font-size: 20px;
     }
+    & .view-row {
+      min-height: 36px;
+      font-size: 16px;
+    }
     & .channel .name,
+    & .channel-row .channel-name,
     & .user .name {
       font-size: 20px;
     }

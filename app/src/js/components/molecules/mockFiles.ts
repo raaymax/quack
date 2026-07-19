@@ -108,8 +108,6 @@ const UPLOADER_LIST = [UPLOADERS.ada, UPLOADERS.alan, UPLOADERS.grace];
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
-// Generates a page of older files ending just before `before`, for demoing
-// the scroll-up-to-load-older timeline behaviour.
 export const makeOlderFiles = (
   count: number,
   before: string,

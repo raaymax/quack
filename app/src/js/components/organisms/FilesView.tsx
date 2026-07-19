@@ -44,6 +44,20 @@ const Container = styled.div`
     .files-empty-sub {
       font-size: 13px;
     }
+
+    .retry {
+      border: 1px solid ${(props) => props.theme.Strokes};
+      border-radius: 8px;
+      padding: 6px 16px;
+      background: transparent;
+      cursor: pointer;
+      font-size: 13px;
+      color: ${(props) => props.theme.Text};
+
+      &:hover {
+        background-color: ${(props) => props.theme.Channel.Background};
+      }
+    }
   }
 
   .files-loading {
@@ -59,6 +73,8 @@ type FilesViewProps = {
   channelName: string;
   channelType?: ChannelType;
   loading?: boolean;
+  error?: boolean;
+  onRetry?: () => void;
   loadingOlder?: boolean;
   hasMoreOlder?: boolean;
   onLoadOlder?: () => void;
@@ -74,6 +90,8 @@ export const FilesView = ({
   channelName,
   channelType = "PUBLIC",
   loading = false,
+  error = false,
+  onRetry,
   loadingOlder = false,
   hasMoreOlder = false,
   onLoadOlder,
@@ -89,7 +107,6 @@ export const FilesView = ({
 
   const q = query.trim().toLowerCase();
 
-  // Oldest first, newest last — the message-timeline ordering.
   const visible = useMemo(() => {
     const filtered = q
       ? files.filter((f) => f.fileName.toLowerCase().includes(q))
@@ -102,6 +119,20 @@ export const FilesView = ({
   const renderContent = () => {
     if (loading) {
       return <div className="files-loading"><Loader /></div>;
+    }
+
+    if (error) {
+      return (
+        <div className="files-empty">
+          <Icon className="files-empty-icon" icon="circle-xmark" size={40} />
+          <div className="files-empty-title">Failed to load files</div>
+          <div className="files-empty-sub">
+            {onRetry
+              ? <button type="button" className="retry" onClick={onRetry}>Try again</button>
+              : "Please try again later."}
+          </div>
+        </div>
+      );
     }
 
     if (files.length === 0) {

@@ -17,14 +17,23 @@ export class FilesAPI {
       `/api/channels/${channelId}/files`,
       { method: "GET" },
     );
+    if (!res.ok) {
+      await res.body?.cancel();
+      throw new Error(`Failed to list channel files (${res.status})`);
+    }
     return await res.json();
   };
 
   remove = async (channelId: string, fileId: string): Promise<void> => {
-    await this.api.fetchWithCredentials(
+    const res = await this.api.fetchWithCredentials(
       `/api/channels/${channelId}/files/${fileId}`,
       { method: "DELETE" },
     );
+    if (!res.ok) {
+      await res.body?.cancel();
+      throw new Error(`Failed to remove file (${res.status})`);
+    }
+    await res.body?.cancel();
   };
 
   abort(clientId: string) {

@@ -8,6 +8,7 @@ export class ChannelFilesModel {
   channelId: string;
   loading: boolean = false;
   initialized: boolean = false;
+  error: boolean = false;
   root: AppModel;
 
   private unsubscribers: (() => void)[] = [];
@@ -37,23 +38,37 @@ export class ChannelFilesModel {
   }
 
   init = () => {
-    if (this.initialized) return;
+    if (this.initialized || this.loading) return;
     this.load();
   };
 
   load = flow(function* (this: ChannelFilesModel) {
     this.loading = true;
+    this.error = false;
     try {
-      this.list = yield client.api.files.list(this.channelId);
+      const fetched: MessageFile[] = yield client.api.files.list(
+        this.channelId,
+      );
+      const missed = this.list.filter(
+        (file) => !fetched.some((f) => f.id === file.id),
+      );
+      this.list = [...fetched, ...missed];
       this.initialized = true;
+    } catch (err) {
+      console.error(err);
+      this.error = true;
     } finally {
       this.loading = false;
     }
   });
 
   remove = flow(function* (this: ChannelFilesModel, fileId: string) {
-    yield client.api.files.remove(this.channelId, fileId);
-    this.list = this.list.filter((file) => file.id !== fileId);
+    try {
+      yield client.api.files.remove(this.channelId, fileId);
+      this.list = this.list.filter((file) => file.id !== fileId);
+    } catch (err) {
+      console.error(err);
+    }
   });
 
   onFile = (file: MessageFile) => {

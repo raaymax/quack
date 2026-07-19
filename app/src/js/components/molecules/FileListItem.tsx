@@ -194,7 +194,8 @@ export const FileListItem = ({
         <span className="file-name">{file.fileName}</span>
         <span className="file-type">{file.contentType}</span>
         <span className="meta-inline">
-          {file.uploader.name} · {file.size ? filesize(file.size) : "—"} ·{" "}
+          {file.uploader.name} ·{" "}
+          {file.size == null ? "—" : filesize(file.size)} ·{" "}
           {formatDate(file.createdAt)}
         </span>
       </div>
@@ -207,7 +208,7 @@ export const FileListItem = ({
       <div className="date">{formatDate(file.createdAt)}</div>
 
       <div className="size">
-        {file.size ? filesize(file.size) : "—"}
+        {file.size == null ? "—" : filesize(file.size)}
       </div>
 
       <div className="actions">

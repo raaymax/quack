@@ -40,16 +40,17 @@ const Container = styled.div`
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 5px 8px 5px 8px;
+    padding: 5px 8px 5px 4px;
     cursor: pointer;
 
     &:hover {
+      font-weight: bold;
       background-color: ${(props) => props.theme.Channel.Hover};
       color: ${(props) => props.theme.Channels.HoverText};
     }
 
     &.active {
-      background-color: ${(props) => props.theme.ActiveOverlay};
+      background-color: var(--primary_active_mask);
     }
 
     .caret {
@@ -90,7 +91,7 @@ const Container = styled.div`
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 4px 8px 4px 38px;
+    padding: 4px 8px 4px 40px;
     font-size: 13px;
     cursor: pointer;
     color: ${(props) => props.theme.Labels};
@@ -102,7 +103,7 @@ const Container = styled.div`
 
     &.active {
       color: ${(props) => props.theme.Text};
-      background-color: ${(props) => props.theme.ActiveOverlay};
+      background-color: var(--primary_active_mask);
     }
 
     .view-name {
@@ -114,7 +115,7 @@ const Container = styled.div`
 type NavChannelTreeProps = {
   channels: ChannelNavItem[];
   activeChannelId?: string;
-  activeView?: ChannelViewKey;
+  activeView?: ChannelViewKey | null;
   onSelectChannel?: (channelId: string) => void;
   onSelectView?: (channelId: string, view: ChannelViewKey) => void;
   className?: ClassNames;
@@ -155,7 +156,7 @@ export const NavChannelTree = ({
           <div key={channel.id}>
             <div
               className={cn("channel-row", {
-                active: isActiveChannel && activeView === "messages",
+                active: isActiveChannel,
                 expanded,
               })}
               onClick={() => openChannel(channel.id)}

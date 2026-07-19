@@ -101,12 +101,6 @@ const parseHash = (hash: string): RouteParams => {
   // Split path into segments and remove empty segments
   const segments = path.split("/").filter((segment) => segment !== "");
 
-  // Match patterns based on:
-  // /:channelId
-  // /:channelId/search
-  // /:channelId/pins
-  // /:channelId/files
-  // /:channelId/t/:parentId
   if (segments.length >= 1) {
     params.channelId = segments[0];
 

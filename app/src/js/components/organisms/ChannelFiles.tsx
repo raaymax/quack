@@ -50,7 +50,7 @@ export const ChannelFiles = observer(() => {
       contentType: file.contentType,
       size: file.size,
       createdAt: file.createdAt,
-      url: client.api.getUrl(file.id),
+      url: client.api.getFileUrl(file.channelId, file.id),
       resolution: file.resolution,
       messageId: file.messageId,
       removable: file.userId === app.userId,
@@ -66,10 +66,13 @@ export const ChannelFiles = observer(() => {
 
   return (
     <FilesView
+      key={channelId}
       files={files}
       channelName={channelName}
       channelType={channel.channelType as ChannelType}
       loading={model.loading && !model.initialized}
+      error={model.error}
+      onRetry={() => model.load()}
       onDownload={onDownload}
       onRemove={onRemove}
       onClose={onClose}

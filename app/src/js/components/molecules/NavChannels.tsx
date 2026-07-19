@@ -22,7 +22,7 @@ export const NavChannels = observer(() => {
     navigate = useNavigate();
   } catch { /* ignore */ }
   const badges = app.readReceipts;
-  const { channelId: id, isFiles } = useParams();
+  const { channelId: id, isFiles, isPins, isSearch } = useParams();
   const { hideSidebar } = useSidebar();
   const channels = app.channels.getAll(["PUBLIC", "PRIVATE"]);
 
@@ -58,7 +58,7 @@ export const NavChannels = observer(() => {
           unread: badges.getForChannel(String(c.id))?.count ?? 0,
         }))}
         activeChannelId={id}
-        activeView={isFiles ? "files" : "messages"}
+        activeView={isFiles ? "files" : isPins || isSearch ? null : "messages"}
         onSelectChannel={(channelId) => {
           if (isMobile()) hideSidebar();
           navigate(`/${channelId}`);

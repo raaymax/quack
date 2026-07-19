@@ -149,7 +149,7 @@ export const FileGridItem = ({
           {file.fileName}
         </span>
         <span className="file-sub">
-          {(file.size ? filesize(file.size) : "—") + " · " +
+          {(file.size == null ? "—" : filesize(file.size)) + " · " +
             formatDate(file.createdAt)}
         </span>
       </div>
