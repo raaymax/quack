@@ -76,7 +76,8 @@ const Container = styled.div`
     }
   }
 
-  .search-toggle {
+  .search-toggle,
+  .menu-toggle {
     display: none;
   }
 
@@ -160,6 +161,11 @@ const Container = styled.div`
       display: flex;
     }
 
+    .menu-toggle {
+      display: flex;
+      border: 0;
+    }
+
     .search {
       display: none;
     }
@@ -168,6 +174,7 @@ const Container = styled.div`
       .channel,
       .spacer,
       .search-toggle,
+      .menu-toggle,
       .date-toggle,
       .view-toggle,
       .close-btn {
@@ -201,6 +208,7 @@ type FilesToolbarProps = {
   showDates: boolean;
   onToggleDates: () => void;
   onClose?: () => void;
+  onMenu?: () => void;
   className?: ClassNames;
 };
 
@@ -215,6 +223,7 @@ export const FilesToolbar = ({
   showDates,
   onToggleDates,
   onClose,
+  onMenu,
   className,
 }: FilesToolbarProps) => {
   const [searchOpen, setSearchOpen] = useState(false);
@@ -233,6 +242,17 @@ export const FilesToolbar = ({
     <Container
       className={cn("files-toolbar", { "search-open": searchOpen }, className)}
     >
+      {onMenu && (
+        <button
+          type="button"
+          title="Menu"
+          className="toggle-btn menu-toggle"
+          onClick={onMenu}
+        >
+          <Icon icon="bars" size={18} />
+        </button>
+      )}
+
       <div className="channel">
         <Icon
           className="channel-icon"

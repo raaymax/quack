@@ -3,6 +3,7 @@ import { observer } from "mobx-react-lite";
 import { MessageFile } from "../../types.ts";
 import { client } from "../../core";
 import { useApp } from "../contexts/appState";
+import { useSidebar } from "../contexts/useSidebar";
 import { useNavigate, useParams } from "../AppRouter.tsx";
 import { FilesView } from "./FilesView";
 import { type FileItem } from "../molecules/FileListItem";
@@ -11,6 +12,7 @@ import { type ChannelType } from "../molecules/FilesToolbar";
 export const ChannelFiles = observer(() => {
   const app = useApp();
   const navigate = useNavigate();
+  const { toggleSidebar } = useSidebar();
   const { channelId } = useParams();
 
   useEffect(() => {
@@ -76,6 +78,7 @@ export const ChannelFiles = observer(() => {
       onDownload={onDownload}
       onRemove={onRemove}
       onClose={onClose}
+      onMenu={toggleSidebar}
     />
   );
 });

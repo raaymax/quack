@@ -50,7 +50,12 @@ export const Empty: Story = {
 };
 
 export const Mobile: Story = {
-  args: { files: mockFiles, onDownload: () => {}, onRemove: () => {} },
+  args: {
+    files: mockFiles,
+    onDownload: () => {},
+    onRemove: () => {},
+    onMenu: () => {},
+  },
   parameters: { viewport: { defaultViewport: "mobile" } },
 };
 
@@ -60,6 +65,7 @@ export const MobileGrid: Story = {
     defaultView: "grid",
     onDownload: () => {},
     onRemove: () => {},
+    onMenu: () => {},
   },
   parameters: { viewport: { defaultViewport: "mobile" } },
 };

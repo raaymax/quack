@@ -83,6 +83,7 @@ type FilesViewProps = {
   onDownload?: (file: FileItem) => void;
   onRemove?: (file: FileItem) => void;
   onClose?: () => void;
+  onMenu?: () => void;
 };
 
 export const FilesView = ({
@@ -100,6 +101,7 @@ export const FilesView = ({
   onDownload,
   onRemove,
   onClose,
+  onMenu,
 }: FilesViewProps) => {
   const [view, setView] = useState<ViewMode>(defaultView);
   const [query, setQuery] = useState("");
@@ -184,6 +186,7 @@ export const FilesView = ({
         showDates={showDates}
         onToggleDates={() => setShowDates((v) => !v)}
         onClose={onClose}
+        onMenu={onMenu}
       />
       {renderContent()}
     </Container>

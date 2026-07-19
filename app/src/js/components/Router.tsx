@@ -79,7 +79,7 @@ const RouteHandler = () => {
       <Main>
         {params.isSearch && <Discussion><Search /></Discussion>}
         {params.isPins && <Discussion><Pins /></Discussion>}
-        {params.isFiles && <Discussion><ChannelFiles /></Discussion>}
+        {params.isFiles && <ChannelFiles />}
         {!params.isPins && !params.isSearch && !params.isFiles && (
           <Discussion/>
         )}
