@@ -1,6 +1,7 @@
 import * as v from "valibot";
 import { createCommand } from "../command.ts";
 import { Id, IdArr } from "../types.ts";
+import { toClientFile } from "./clientFile.ts";
 
 export default createCommand({
   type: "file:attach",
@@ -39,6 +40,7 @@ export default createCommand({
     });
 
     const updated = await repo.file.get({ id: fileId });
-    bus.group(channel.users, { type: "file", ...updated });
+    if (!updated) continue;
+    bus.group(channel.users, { type: "file", ...toClientFile(updated) });
   }
 });

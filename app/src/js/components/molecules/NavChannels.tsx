@@ -1,7 +1,10 @@
 import { useCallback, useState } from "react";
 import styled from "styled-components";
 import { ChannelCreateForm } from "./ChannelCreateForm";
-import { Channel } from "./NavChannel";
+import {
+  type ChannelViewKey,
+  NavChannelTree,
+} from "./NavChannelTree";
 import { SectionHeader } from "../atoms/SectionHeader";
 import { useSidebar } from "../contexts/useSidebar";
 import { isMobile } from "../../utils";
@@ -9,31 +12,9 @@ import { useNavigate, useParams } from "../AppRouter.tsx";
 import { observer } from "mobx-react-lite";
 import { useApp } from "../contexts/appState";
 
-const ChannelsContainer = styled.div`
-  .channel {
-    padding: 5px 5px 5px 20px;
-    cursor: pointer;
-  }
-  .channel .name {
-    padding: 0px 10px;
-    cursor: pointer;
-  }
-  .channel.active {
-    background-color: var(--primary_active_mask);
-  }
+const ChannelsContainer = styled.div``;
 
-  .channel:hover {
-    font-weight: bold;
-    background-color: ${(props) => props.theme.Channel.Hover};
-    color: ${(props) => props.theme.Channels.HoverText};
-  }
-`;
-
-type NavChannelsProps = {
-  icon?: string;
-};
-
-export const NavChannels = observer(({ icon }: NavChannelsProps) => {
+export const NavChannels = observer(() => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const app = useApp();
   let navigate = (_path: string) => {};
@@ -41,7 +22,7 @@ export const NavChannels = observer(({ icon }: NavChannelsProps) => {
     navigate = useNavigate();
   } catch { /* ignore */ }
   const badges = app.readReceipts;
-  const { channelId: id } = useParams();
+  const { channelId: id, isFiles } = useParams();
   const { hideSidebar } = useSidebar();
   const channels = app.channels.getAll(["PUBLIC", "PRIVATE"]);
 
@@ -69,22 +50,24 @@ export const NavChannels = observer(({ icon }: NavChannelsProps) => {
         onSubmit={handleCreateChannel}
         onCancel={() => setShowCreateModal(false)}
       />
-      {channels && channels.map((c) => (
-        <Channel
-          channelId={c.id}
-          {...c}
-          className={{ active: id === c.id }}
-          key={c.id}
-          icon={icon ?? "hash"}
-          badge={badges.getForChannel(String(c.id))}
-          onClick={() => {
-            if (isMobile()) {
-              hideSidebar();
-            }
-            navigate(`/${c.id}`);
-          }}
-        />
-      ))}
+      <NavChannelTree
+        channels={channels.map((c) => ({
+          id: c.id,
+          name: c.name,
+          kind: c.channelType,
+          unread: badges.getForChannel(String(c.id))?.count ?? 0,
+        }))}
+        activeChannelId={id}
+        activeView={isFiles ? "files" : "messages"}
+        onSelectChannel={(channelId) => {
+          if (isMobile()) hideSidebar();
+          navigate(`/${channelId}`);
+        }}
+        onSelectView={(channelId, view: ChannelViewKey) => {
+          if (isMobile()) hideSidebar();
+          navigate(view === "files" ? `/${channelId}/files` : `/${channelId}`);
+        }}
+      />
     </ChannelsContainer>
   );
 });

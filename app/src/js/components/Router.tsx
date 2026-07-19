@@ -2,6 +2,7 @@ import { Main } from "./layout/Main.tsx";
 import { Discussion } from "./layout/Discussion.tsx";
 import { Search } from "./organisms/Search.tsx";
 import { Pins } from "./organisms/Pins.tsx";
+import { ChannelFiles } from "./organisms/ChannelFiles.tsx";
 import { app, client } from "../core/index.ts";
 import { ErrorPageS } from "./pages/ErrorPage.tsx";
 import { AppRouterProvider, useParams, useRouter } from "./AppRouter.tsx";
@@ -78,7 +79,8 @@ const RouteHandler = () => {
       <Main>
         {params.isSearch && <Discussion><Search /></Discussion>}
         {params.isPins && <Discussion><Pins /></Discussion>}
-        {!params.isPins && !params.isSearch && (
+        {params.isFiles && <Discussion><ChannelFiles /></Discussion>}
+        {!params.isPins && !params.isSearch && !params.isFiles && (
           <Discussion/>
         )}
       </Main>

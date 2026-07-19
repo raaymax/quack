@@ -12,6 +12,7 @@ type RouteParams = {
   parentId?: string;
   isSearch: boolean;
   isPins: boolean;
+  isFiles: boolean;
   isInvite: boolean;
   isReset: boolean;
   inviteToken?: string;
@@ -77,6 +78,7 @@ const parseHash = (hash: string): RouteParams => {
   const params: RouteParams = {
     isSearch: false,
     isPins: false,
+    isFiles: false,
     isInvite: false,
     isReset: false,
   };
@@ -103,6 +105,7 @@ const parseHash = (hash: string): RouteParams => {
   // /:channelId
   // /:channelId/search
   // /:channelId/pins
+  // /:channelId/files
   // /:channelId/t/:parentId
   if (segments.length >= 1) {
     params.channelId = segments[0];
@@ -112,6 +115,8 @@ const parseHash = (hash: string): RouteParams => {
         params.isSearch = true;
       } else if (segments[1] === "pins") {
         params.isPins = true;
+      } else if (segments[1] === "files") {
+        params.isFiles = true;
       } else if (segments[1] === "t" && segments.length >= 3) {
         params.parentId = segments[2];
       }

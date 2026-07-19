@@ -364,8 +364,20 @@ structure with proper relations.
       when sending/displaying messages
 - [ ] **Web/desktop notifications** - Push notifications for new messages and
       mentions
-- [ ] **Channel files browser** - Dedicated view to browse/search all files
-      shared in a channel
+- [x] **Channel files browser** - Dedicated view to browse/search all files
+      shared in a channel (`/:channelId/files`, sidebar channel tree entry,
+      timeline UI with date separators, list/grid, SSE-live)
+- [ ] **Files view: DM entry point** - The sidebar channel tree covers
+      PUBLIC/PRIVATE; DIRECT channels can only reach `/:channelId/files` by URL.
+      Extend NavUsers (or the tree) with a files entry for DMs.
+- [ ] **Files view: virtualized rendering** - The full file list renders at once
+      (load-all + client-side search decision). For very large channels, add
+      render windowing to the timeline; thumbnails already lazy-load via scroll.
+- [ ] **E2E local search cache (IndexedDB)** - Browser-side cache/index of
+      decrypted old messages+files for complete client-side search in E2E
+      channels; enabler: immutability window (lock messages older than ~1
+      day/week so they cache safely). See v4-scope.md §2 "Search & offline
+      cache".
 - [ ] **Frontend observability** - Error reporting, logging, stats, and
       diagnostics dashboard
 - [ ] **Splash screen** - Add proper loading/splash screen on app startup

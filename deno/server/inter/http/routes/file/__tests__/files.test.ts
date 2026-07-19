@@ -283,3 +283,70 @@ Deno.test("files - direct delete only by uploader, sweeps storage", async () => 
     await agent.close();
   }
 });
+
+Deno.test("files - bus events on attach/remove carry client-safe payloads", async () => {
+  const agent = await Agent.from(app);
+  try {
+    const session = await login(repo, agent, "admin");
+    const token = session.token;
+    const admin = await repo.user.get({ email: "admin" });
+    const userId = admin!.id.toString();
+
+    await usingChannel(repo, {
+      name: "files-test-events",
+      channelType: ChannelType.PUBLIC,
+      users: [EntityId.from(userId)],
+    }, async (channelId) => {
+      const { fileId } = await uploadFile(
+        channelId,
+        userId,
+        "evt.txt",
+        "text/plain",
+        "event payload",
+      );
+
+      const events: Record<string, unknown>[] = [];
+      const unsubscribe = core.bus.on(userId, (msg) => {
+        if (msg.type === "file" || msg.type === "file:removed") {
+          events.push(msg);
+        }
+      });
+
+      try {
+        await agent.request()
+          .post(`/api/channels/${channelId}/messages`)
+          .json({ flat: "evt", fileIds: [fileId] })
+          .header("Authorization", `Bearer ${token}`)
+          .expect(200);
+
+        const attached = events.find((e) => e.type === "file");
+        assert(attached, "attach should emit a 'file' bus event");
+        assertEquals(attached.id, fileId);
+        assertEquals(attached.channelId, channelId);
+        assertEquals(attached.fileName, "evt.txt");
+        assertEquals(attached.status, "attached");
+        assert(
+          !("storageId" in attached),
+          "storageId must not leak in the 'file' bus event",
+        );
+
+        await agent.request()
+          .delete(`/api/channels/${channelId}/files/${fileId}`)
+          .emptyBody()
+          .header("Authorization", `Bearer ${token}`)
+          .expect(204);
+
+        const removed = events.find((e) => e.type === "file:removed");
+        assert(removed, "remove should emit a 'file:removed' bus event");
+        assertEquals(removed.id, fileId);
+        assertEquals(removed.channelId, channelId);
+      } finally {
+        unsubscribe();
+      }
+
+      await repo.file.removeMany({ channelId: EntityId.from(channelId) });
+    });
+  } finally {
+    await agent.close();
+  }
+});
