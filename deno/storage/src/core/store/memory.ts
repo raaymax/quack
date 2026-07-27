@@ -1,6 +1,6 @@
 import type { Config } from "@quack/config";
 import { ResourceNotFound } from "@planigale/planigale";
-import type { FileData, FileOpts } from "../types.ts";
+import type { FileData, FileMeta, FileOpts, Resolution } from "../types.ts";
 
 function* idGenerator(): Generator<string> {
   let id = 0;
@@ -15,6 +15,7 @@ interface InternalFileData {
   filename: string;
   contentType: string;
   size: number;
+  resolution: Resolution | null;
 }
 
 export const files = (config: Config["storage"]) => {
@@ -45,6 +46,7 @@ export const files = (config: Config["storage"]) => {
         filename: options.filename,
         contentType: options.contentType,
         size,
+        resolution: options.resolution ?? null,
       });
       return id;
     },
@@ -61,6 +63,21 @@ export const files = (config: Config["storage"]) => {
         },
       });
     },
+    stat: (id: string): Promise<FileMeta> => {
+      const file = memory.get(id);
+      if (!file) {
+        throw new ResourceNotFound("File not found");
+      }
+      return Promise.resolve({
+        id,
+        filename: file.filename,
+        contentType: file.contentType,
+        size: file.size,
+        resolution: file.resolution,
+      });
+    },
+    list: (prefix: string): Promise<string[]> =>
+      Promise.resolve([...memory.keys()].filter((k) => k.startsWith(prefix))),
     remove: (id: string): Promise<void> => {
       memory.delete(id);
       return Promise.resolve();

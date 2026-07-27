@@ -5,13 +5,16 @@ import { HoverProvider } from "../contexts/hover.tsx";
 import { app, client } from "../../core/index.ts";
 import { MessageModel } from "../../core/models/message.ts";
 
-// Store original getUrl to restore later
+// Store originals to restore later
 const originalGetUrl = client.api.getUrl;
+const originalGetFileUrl = client.api.getFileUrl;
 
 // Mock file URLs for stories
 const mockFileUrls: Record<string, string> = {
   "123": "https://picsum.photos/seed/img1/400/300",
   "321": "https://picsum.photos/seed/img2/400/300",
+  "file-1": "https://picsum.photos/seed/img1/400/300",
+  "file-2": "https://picsum.photos/seed/img2/400/300",
 };
 
 const LOREM =
@@ -22,9 +25,12 @@ const meta: Meta<typeof Message> = {
   title: "Organisms/Message",
   parameters: {},
   loaders: [async () => {
-    // Mock getUrl to return placeholder images for fake file IDs
+    // Mock url builders to return placeholder images for fake file IDs
     client.api.getUrl = (fileId: string) => {
       return mockFileUrls[fileId] || originalGetUrl(fileId);
+    };
+    client.api.getFileUrl = (channelId: string, fileId: string) => {
+      return mockFileUrls[fileId] || originalGetFileUrl(channelId, fileId);
     };
     app.channels.upsert({
       id: "test",
@@ -186,17 +192,45 @@ export const WithImages: Story = {
   args: {
     model: MessageModel.from({
       ...BaseMessage,
-      attachments: [
+      fileIds: ["file-1", "file-2"],
+      files: [
         {
-          id: "123",
+          id: "file-1",
+          channelId: "test",
+          userId: "user-1",
           fileName: "image.jpg",
           contentType: "image/jpeg",
+          size: 102400,
+          resolution: { width: 800, height: 600 },
+          status: "attached",
+          messageId: "msg-1",
+          createdAt: "2021-01-01T00:00:00Z",
         },
         {
-          id: "321",
+          id: "file-2",
+          channelId: "test",
+          userId: "user-1",
           fileName: "image2.jpg",
           contentType: "image/jpeg",
+          size: 204800,
+          resolution: { width: 1024, height: 768 },
+          status: "attached",
+          messageId: "msg-1",
+          createdAt: "2021-01-01T00:00:00Z",
         },
+      ],
+    }, app.getMessages("test")!),
+    mode: "default",
+  },
+};
+
+export const WithLegacyAttachments: Story = {
+  args: {
+    model: MessageModel.from({
+      ...BaseMessage,
+      attachments: [
+        { id: "123", fileName: "image.jpg", contentType: "image/jpeg" },
+        { id: "321", fileName: "image2.jpg", contentType: "image/jpeg" },
       ],
     }, app.getMessages("test")!),
     mode: "default",

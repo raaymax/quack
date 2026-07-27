@@ -54,6 +54,11 @@ export class UserModel {
 
   patch = (value: User) => {
     this.name = value.name;
+    if (value.avatarFileId !== undefined) {
+      this.avatarFileId = value.avatarFileId;
+    }
+    if (value.alias !== undefined) this.alias = value.alias ?? null;
+    if (value.status !== undefined) this.status = value.status;
   };
 
   loadChannel = flow(function* (this: UserModel) {

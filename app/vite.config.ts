@@ -1,13 +1,12 @@
 import react from "@vitejs/plugin-react";
+import basicSsl from "@vitejs/plugin-basic-ssl";
 import { VitePWA } from "vite-plugin-pwa";
 
 import path from "node:path";
 import process from "node:process";
 import { defineConfig } from "vite";
-import fs from "node:fs";
 
 const __dirname = new URL(".", import.meta.url).pathname;
-const sslPath = path.join(__dirname, "../ssl/");
 
 export default defineConfig(({ command }) => ({
   define: {
@@ -17,19 +16,15 @@ export default defineConfig(({ command }) => ({
   },
   server: command === "serve"
     ? {
-      https: {
-        key: fs.readFileSync(path.join(sslPath, "key.pem")),
-        cert: fs.readFileSync(path.join(sslPath, "cert.pem")),
-      },
       host: true,
-      port: 3000,
+      port: 4000,
       strictPort: true,
       hmr: {
         overlay: false,
       },
       proxy: {
         "/api": {
-          target: "http://localhost:3001",
+          target: "http://localhost:4001",
           changeOrigin: true,
           secure: false,
         },
@@ -41,10 +36,15 @@ export default defineConfig(({ command }) => ({
       "@quack/encryption": path.resolve(__dirname, "../deno/encryption/mod.ts"),
       "@quack/api": path.resolve(__dirname, "../deno/api/mod.ts"),
       "@quack/tools": path.resolve(__dirname, "../deno/tools/mod.ts"),
+      "@jsr/planigale__sse": path.resolve(
+        __dirname,
+        "node_modules/@jsr/planigale__sse",
+      ),
     },
   },
   plugins: [
     react(),
+    command === "serve" && basicSsl(),
     VitePWA({
       injectRegister: "auto",
       strategies: "injectManifest",

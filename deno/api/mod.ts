@@ -100,13 +100,8 @@ class API extends EventTarget {
   }
 
   getUrl = (fileId: string) => `/api/files/${fileId}`;
-  getThumbnail = (id: string, size?: { w?: number; h?: number }) => {
-    const params = new URLSearchParams();
-    if (size?.w) params.set("w", size.w.toString());
-    if (size?.h) params.set("h", size.h.toString());
-    return `${this.getUrl(id)}?${params.toString()}`;
-  };
-  getDownloadUrl = (id: string) => `${this.getUrl(id)}?download=true`;
+  getFileUrl = (channelId: string, fileId: string) =>
+    `/api/channels/${channelId}/files/${fileId}`;
 
   constructor(url: string, opts: { fetch: typeof fetch; sse?: boolean }) {
     super();
@@ -328,6 +323,72 @@ class API extends EventTarget {
   getEmojis = async (): Promise<Emoji[]> => (
     await this.getResource<Emoji[]>(`/api/emojis`) ?? []
   );
+
+  #uploadEmoji = async (
+    method: "POST" | "PUT",
+    shortname: string,
+    file: File,
+  ): Promise<Emoji> => {
+    const name = shortname.trim().replace(/^:/, "").replace(/:$/, "");
+    const res = await this.fetchWithCredentials(
+      `/api/emojis/${encodeURIComponent(name)}`,
+      {
+        method,
+        headers: {
+          "Content-Type": file.type || "application/octet-stream",
+          "Content-Disposition": `attachment; filename="${file.name}"`,
+        },
+        body: file,
+      },
+    );
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body.message ?? `Failed to save emoji (${res.status})`);
+    }
+    const { emoji } = await res.json();
+    return emoji;
+  };
+
+  createEmoji = (shortname: string, file: File): Promise<Emoji> =>
+    this.#uploadEmoji("POST", shortname, file);
+
+  replaceEmoji = (shortname: string, file: File): Promise<Emoji> =>
+    this.#uploadEmoji("PUT", shortname, file);
+
+  updateProfile = async (data: { name: string }): Promise<User> => {
+    const res = await this.fetchWithCredentials(`/api/profile`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(
+        body.message ?? `Failed to update profile (${res.status})`,
+      );
+    }
+    const { user } = await res.json();
+    return user;
+  };
+
+  uploadAvatar = async (file: File): Promise<User> => {
+    const res = await this.fetchWithCredentials(`/api/profile/avatar`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": file.type || "application/octet-stream",
+        "Content-Disposition": `attachment; filename="${file.name}"`,
+      },
+      body: file,
+    });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(
+        body.message ?? `Failed to upload avatar (${res.status})`,
+      );
+    }
+    const { user } = await res.json();
+    return user;
+  };
 
   getMessages = async (
     q: {

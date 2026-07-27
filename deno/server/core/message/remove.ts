@@ -9,13 +9,22 @@ export default createCommand({
     userId: Id,
     messageId: Id,
   })),
-}, async ({ userId, messageId }, { repo, bus }) => {
+}, async ({ userId, messageId }, core) => {
+  const { repo, bus } = core;
   const message = await repo.message.get({ id: messageId });
   if (!message) throw new ResourceNotFound("Message not found");
 
   if (userId.neq(message.userId)) throw new NotOwner();
 
   const channel = await repo.channel.get({ id: message.channelId });
+
+  for (const fileId of message.fileIds ?? []) {
+    await core.dispatch({
+      type: "file:remove",
+      body: { fileId: fileId.toString(), userId: userId.toString() },
+    }).internal();
+  }
+
   await repo.message.remove({ id: messageId });
   bus.group(channel?.users ?? [], {
     id: messageId,

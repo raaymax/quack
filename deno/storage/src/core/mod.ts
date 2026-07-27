@@ -1,5 +1,5 @@
 import type { Config } from "@quack/config";
-import type { FileData, FileOpts } from "./types.ts";
+import type { FileData, FileMeta, FileOpts, Resolution } from "./types.ts";
 import { files } from "./store/mod.ts";
 import { getResizePool } from "./resizePool.ts";
 import { ApiError } from "@planigale/planigale";
@@ -15,6 +15,8 @@ interface FileService {
     options: FileOpts,
   ): Promise<string>;
   get(id: string): Promise<FileData>;
+  stat(id: string): Promise<FileMeta>;
+  list(prefix: string): Promise<string[]>;
   remove(id: string): Promise<void>;
   exists(id: string): Promise<boolean>;
 }
@@ -24,6 +26,16 @@ const MAX_RESIZE_BYTES = 25 * 1024 * 1024;
 class Files {
   static getFileId = (id: string, width = 0, height = 0) =>
     `${id}-${width}x${height}`;
+
+  static isInspectableImage = (contentType: string) =>
+    contentType === "image/jpeg" || contentType === "image/png";
+
+  static MAX_DIMENSION = 2048;
+
+  static clampDimension = (value?: number): number | undefined => {
+    if (!value || value <= 0) return undefined;
+    return Math.min(Math.floor(value), Files.MAX_DIMENSION);
+  };
 
   private service!: FileService;
 
@@ -39,7 +51,36 @@ class Files {
     stream: ReadableStream<Uint8Array>,
     options: FileOpts,
   ): Promise<string> {
-    return await this.service.upload(stream, options);
+    const size = typeof options.size === "number" ? options.size : undefined;
+    const canInspect = Files.isInspectableImage(options.contentType) &&
+      (size === undefined || size <= MAX_RESIZE_BYTES);
+    if (!canInspect) {
+      return await this.service.upload(stream, options);
+    }
+
+    const bytes = new Uint8Array(await new Response(stream).arrayBuffer());
+    // Blob copies the bytes, so readResolution can transfer the buffer to the
+    // worker without affecting the payload we store.
+    const blob = new Blob([bytes]);
+    const resolution = bytes.length <= MAX_RESIZE_BYTES
+      ? await this.readResolution(bytes)
+      : null;
+    return await this.service.upload(
+      blob.stream(),
+      { ...options, resolution },
+    );
+  }
+
+  private async readResolution(
+    bytes: Uint8Array<ArrayBuffer>,
+  ): Promise<Resolution | null> {
+    const pool = getResizePool();
+    if (!pool.hasCapacity()) return null;
+    return await pool.readResolution(bytes);
+  }
+
+  async stat(fileId: string): Promise<FileMeta> {
+    return await this.service.stat(fileId);
   }
 
   async exists(fileId: string): Promise<boolean> {
@@ -47,11 +88,14 @@ class Files {
   }
 
   async remove(fileId: string): Promise<void> {
-    return await this.service.remove(fileId);
+    await this.service.remove(fileId);
+    const variants = await this.service.list(`${fileId}-`);
+    await Promise.all(variants.map((variant) => this.service.remove(variant)));
   }
 
   async get(id: string, opts?: ScalingOpts): Promise<FileData> {
-    const { width, height } = opts ?? {};
+    const width = Files.clampDimension(opts?.width);
+    const height = Files.clampDimension(opts?.height);
     const targetId = Files.getFileId(id, width, height);
     if (await this.service.exists(targetId)) {
       return this.service.get(targetId);

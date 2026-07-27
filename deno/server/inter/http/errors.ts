@@ -33,6 +33,15 @@ function mapAppError(error: AppError): ApiError {
       return new NotOwner(error.message);
     case "USER_ALREADY_EXISTS":
       return new UserAlreadyExists(error.message);
+    case "EMOJI_ALREADY_EXISTS": {
+      const emojiExists = new ApiError(
+        409,
+        "EMOJI_ALREADY_EXISTS",
+        error.message,
+      );
+      emojiExists.log = false;
+      return emojiExists;
+    }
     case "PASSWORD_RESET_REQUIRED":
       return new PasswordResetRequired(
         error as AppErrors.PasswordResetRequired,

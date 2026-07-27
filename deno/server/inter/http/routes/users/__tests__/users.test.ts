@@ -63,7 +63,7 @@ Deno.test("POST /api/users - user creation flow", async () => {
       await admin.login("admin")
         .createChannel({ name: "user-invite-test" })
         .sendMessage({ flat: "secret" })
-        .executeCommand("/invite", [], ({ json }) => {
+        .executeCommand("/invite", ({ json }) => {
           url = json.data as string;
         });
       const m = url.match(/https?:\/\/.*\/invite\/(.*)$/);

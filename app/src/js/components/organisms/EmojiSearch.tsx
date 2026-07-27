@@ -6,6 +6,7 @@ import { Icon } from "../atoms/Icon";
 import { ClassNames, cn } from "../../utils";
 import { Emoji } from "../molecules/Emoji";
 import { Button } from "../molecules/Button";
+import { AddEmojiForm } from "./AddEmojiForm";
 import { observer } from "mobx-react-lite";
 import { useApp } from "../contexts/appState";
 
@@ -60,6 +61,18 @@ export const EmojiSearchContainer = styled.div`
     border-top: 1px solid ${(props) => props.theme.Strokes};
     flex: 0 0 32px;
     padding: 8px 12px;
+
+    button {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+
+      .icon {
+        margin: 0;
+      }
+    }
   }
 `;
 
@@ -93,18 +106,24 @@ const EmojiContainer = styled.div`
   line-height: 30px;
   cursor: pointer;
   user-select: none;
-  img {
-    width: 28px;
-    height: 28px;
+  .emoji img {
+    width: 22px;
+    height: 22px;
+    max-width: 22px;
+    max-height: 22px;
+    object-fit: contain;
+    vertical-align: middle;
   }
   body.mobile & {
     width: 40px;
     height: 40px;
     flex: 0 0 40px;
     font-size: 30px;
-    img {
-      width: 38px;
-      height: 38px;
+    .emoji img {
+      width: 32px;
+      height: 32px;
+      max-width: 32px;
+      max-height: 32px;
     }
   }
   &:hover {
@@ -136,27 +155,60 @@ export const EmojiSearch = observer(
   ({ className, onSelect }: EmojiSearchProps) => {
     const [name, setName] = useState("");
     const [results, setResults] = useState<Record<string, EmojiType[]>>({});
+    const [order, setOrder] = useState<string[]>([]);
+    const [adding, setAdding] = useState(false);
     const app = useApp();
     const emojis = app.emojis.getAll();
     const fuse = app.emojis.getFuse();
 
     useEffect(() => {
-      let all: EmojiType[] = emojis;
-      if (name && fuse) {
-        const ret = fuse.search(name, { limit: 100 });
-        all = ret.map((r) => r.item).filter((e) => !e.empty) as EmojiType[];
+      if (!name || !fuse) {
+        const grouped = emojis.reduce<Record<string, EmojiType[]>>(
+          (acc, emoji) => {
+            const category = emoji.category || "x";
+            (acc[category] = acc[category] || []).push(emoji);
+            return acc;
+          },
+          {},
+        );
+        setResults(grouped);
+        setOrder(Object.keys(CATEGORIES).filter((c) => grouped[c]));
+        return;
       }
 
-      setResults(
-        (all || [])
-          .reduce<Record<string, EmojiType[]>>((acc, emoji) => {
-            const category = emoji.category || "x";
-            acc[category] = acc[category] || [];
-            acc[category].push(emoji);
-            return acc;
-          }, {}),
+      const ret = fuse.search(name, { limit: 100 });
+      const grouped: Record<string, EmojiType[]> = {};
+      const bestScore: Record<string, number> = {};
+      for (const r of ret) {
+        const emoji = r.item as EmojiType;
+        if (emoji.empty) continue;
+        const category = emoji.category || "x";
+        (grouped[category] = grouped[category] || []).push(emoji);
+        const score = r.score ?? 1;
+        if (bestScore[category] === undefined || score < bestScore[category]) {
+          bestScore[category] = score;
+        }
+      }
+      setResults(grouped);
+      setOrder(
+        Object.keys(grouped)
+          .filter((c) => CATEGORIES[c])
+          .sort((a, b) => bestScore[a] - bestScore[b]),
       );
     }, [name, fuse]);
+
+    const renderEmoji = (result: EmojiType) => (
+      <EmojiContainer
+        key={result.shortname}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          onSelect(result);
+        }}
+      >
+        <Emoji shortname={result.shortname} size={24} />
+      </EmojiContainer>
+    );
 
     return (
       <EmojiSearchContainer className={cn("cmp-emoji-search", className)}>
@@ -169,39 +221,28 @@ export const EmojiSearch = observer(
         </div>
         <div className="emoji-scroll">
           <div>
-            {Object.keys(CATEGORIES).filter((c: string) => results[c]).map((
+            {order.filter((c: string) => results[c]).map((
               category: string,
             ) => (
               <EmojiCategory key={category}>
                 <Label>{CATEGORIES[category]}</Label>
                 <EmojiBlock>
-                  {(results[category] || []).map((result) => (
-                    <EmojiContainer
-                      key={result.shortname}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        onSelect(result);
-                      }}
-                    >
-                      <Emoji shortname={result.shortname} size={24} />
-                    </EmojiContainer>
-                  ))}
+                  {(results[category] || []).map(renderEmoji)}
                 </EmojiBlock>
               </EmojiCategory>
             ))}
           </div>
         </div>
-        <div className="add-emoji">
-          <Button
-            type="secondary"
-            onClick={() => {}}
-            tooltip={["Not yet available", "use \\emoji"]}
-          >
-            ADD EMOJI
-            <Icon icon="plus" size={16} />
-          </Button>
-        </div>
+        {adding
+          ? <AddEmojiForm onClose={() => setAdding(false)} />
+          : (
+            <div className="add-emoji">
+              <Button type="secondary" onClick={() => setAdding(true)}>
+                ADD EMOJI
+                <Icon icon="plus" size={16} />
+              </Button>
+            </div>
+          )}
       </EmojiSearchContainer>
     );
   },

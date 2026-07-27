@@ -17,7 +17,7 @@ export const from = async (path: string): Promise<Config> => {
 
 const __dirname = path.dirname(path.fromFileUrl(import.meta.url));
 const SECRETS_FILE: string = path.join(__dirname, "..", "..", "secrets.json");
-const PORT: number = parseInt(Deno.env.get("PORT") ?? "3001") || 3001;
+const PORT: number = parseInt(Deno.env.get("PORT") ?? "4001") || 4001;
 const DATABASE_URL = Deno.env.get("DATABASE_URL");
 const ENV = Deno.env.get("ENV_TYPE") || Deno.env.get("NODE_ENV");
 
@@ -51,7 +51,7 @@ const defaults: Partial<Config> = {
     type: "fs",
     directory: path.join(Deno.cwd(), "..", "..", "uploads"),
   },
-  baseUrl: "http://localhost:3001",
+  baseUrl: "http://localhost:4001",
 };
 
 const secrets = generateSecrets();

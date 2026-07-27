@@ -2,7 +2,7 @@ import { defineConfig } from '@quack/config/define';
 import giphy from './plugins/giphy.ts';
 
 export default defineConfig({
-	port: 3001,
+	port: 4001,
   databaseUrl: 'mongodb://chat:chat@mongo:27017/chat?authSource=admin',
 	storage: {
 		type: 'fs',

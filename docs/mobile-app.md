@@ -85,7 +85,7 @@ For local development with HTTPS (required for service workers):
 3. Configure mobile to use local dev server:
    ```bash
    cd mobile
-   export QUACK_SERVER_URL="https://localhost:3000"
+   export QUACK_SERVER_URL="https://localhost:4000"
    npm run cap:sync
    ```
 
@@ -156,7 +156,7 @@ Edit `mobile/capacitor.config.ts`:
 
 ### Local development issues
 1. Ensure SSL certificate is installed on emulator
-2. Verify frontend dev server is running on port 3000
+2. Verify frontend dev server is running on port 4000
 3. Check that `QUACK_SERVER_URL` is set correctly
 
 ## Architecture

@@ -4,22 +4,33 @@ import { useApp } from "../contexts/appState";
 import { getFileUrl } from "../hooks/fileUrl";
 import { LoggedUser } from "./LoggedUser";
 
-export const LoggedUserConnected = observer(() => {
-  const app = useApp();
-  const user = app.profile;
+type LoggedUserConnectedProps = {
+  onOpenSettings?: () => void;
+};
 
-  const avatarUrl = getFileUrl(user?.avatarFileId);
+export const LoggedUserConnected = observer(
+  ({ onOpenSettings }: LoggedUserConnectedProps) => {
+    const app = useApp();
+    const user = app.profile;
 
-  if (!user) {
-    return null;
-  }
+    const avatarUrl = getFileUrl(user?.avatarFileId);
 
-  const handleLogout = async () => {
-    await client.api.auth.logout();
-    document.location.reload();
-  };
+    if (!user) {
+      return null;
+    }
 
-  return (
-    <LoggedUser name={user.name} avatarUrl={avatarUrl} onLogout={handleLogout} />
-  );
-});
+    const handleLogout = async () => {
+      await client.api.auth.logout();
+      document.location.reload();
+    };
+
+    return (
+      <LoggedUser
+        name={user.name}
+        avatarUrl={avatarUrl}
+        onLogout={handleLogout}
+        onOpenSettings={onOpenSettings}
+      />
+    );
+  },
+);

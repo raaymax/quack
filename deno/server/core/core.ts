@@ -16,6 +16,8 @@ import RemoveMessage from "./message/remove.ts";
 import UpdateMessage from "./message/update.ts";
 import PinMessage from "./message/pin.ts";
 import GetAllEmojis from "./emoji/getAll.ts";
+import CreateEmoji from "./emoji/create.ts";
+import ReplaceEmoji from "./emoji/replace.ts";
 import CommandExecute from "./command/execute.ts";
 import GetAllReadReceipts from "./readReceipt/getAll.ts";
 import GetChannelReadReceipts from "./readReceipt/getChannel.ts";
@@ -32,6 +34,12 @@ import CheckChannelAccess from "./channel/checkAccess.ts";
 import InteractionWithMessage from "./message/interaction.ts";
 import ChannelUserTyping from "./channel/userTyping.ts";
 import UserReset from "./user/reset.ts";
+import SetProfile from "./user/setProfile.ts";
+import SetAvatar from "./user/setAvatar.ts";
+import RegisterFile from "./file/register.ts";
+import AttachFiles from "./file/attach.ts";
+import RemoveFile from "./file/remove.ts";
+import GetChannelFiles from "./file/getChannel.ts";
 import { registerCommand } from "./command/repository.ts";
 
 import { Repository, storage } from "../infra/mod.ts";
@@ -59,6 +67,13 @@ const commands = buildCommandCollection([
   InteractionWithMessage,
   ChannelUserTyping,
   UserReset,
+  SetProfile,
+  SetAvatar,
+  RegisterFile,
+  AttachFiles,
+  RemoveFile,
+  CreateEmoji,
+  ReplaceEmoji,
 ]);
 
 export class Core {
@@ -107,6 +122,10 @@ export class Core {
   readReceipt = {
     getAll: GetAllReadReceipts(this),
     getChannel: GetChannelReadReceipts(this),
+  };
+
+  file = {
+    getChannel: GetChannelFiles(this),
   };
 
   constructor(arg: {

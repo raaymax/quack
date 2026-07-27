@@ -86,7 +86,7 @@ Business logic organized by domain aggregate:
 |--------|----------|---------|
 | `channel/` | create, remove, join, leave, getDirect, putDirect | list, get |
 | `message/` | create, update, remove, react, pin | list, search, get |
-| `user/` | create, resetPassword, verifyReset, checkToken | list, get |
+| `user/` | create, resetPassword, verifyReset, checkToken, setProfile, setAvatar | list, get |
 | `session/` | create, remove | get |
 | `emoji/` | create, remove | list |
 | `readReceipt/` | update | list |
@@ -118,7 +118,7 @@ Interface layer exposing the core via HTTP:
 - **`http/mod.ts`** — `HttpInterface` class extending the Planigale framework. Builds all routes, applies middleware, serves static frontend files.
 - **`http/middleware/auth.ts`** — Session-based authentication middleware.
 - **`http/errors.ts`** — Maps domain `AppError` subclasses to HTTP status codes.
-- **`http/routes/`** — Route modules organized by domain: `auth/`, `channels/`, `messages/`, `users/`, `emojis/`, `files/`, `system/`, `mobile/`.
+- **`http/routes/`** — Route modules organized by domain: `auth/`, `channels/`, `messages/`, `users/`, `profile/`, `emojis/`, `files/`, `system/`, `mobile/`.
 - **`cli/mod.ts`** — Minimal CLI interface.
 
 **Route pattern:** Each route file exports `(core: Core) => new Route({ method, url, schema, handler })`.

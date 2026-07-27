@@ -17,6 +17,7 @@ import { channelMessages, messages } from "./routes/messages/mod.ts";
 import { emojis } from "./routes/emojis/mod.ts";
 import { commands } from "./routes/commands/mod.ts";
 import { channelReadReceipt, readReceipt } from "./routes/readReceipt/mod.ts";
+import { channelFiles } from "./routes/file/mod.ts";
 import { interactions } from "./routes/interactions/mod.ts";
 import { mobile } from "./routes/mobile/mod.ts";
 
@@ -45,7 +46,13 @@ export class HttpInterface extends Planigale {
         const start = Date.now();
         const ret = await next();
         const time = Date.now() - start;
-        //console.log(req.method, req.url, ret.status, time + "ms");
+        const status = ret instanceof Response ? ret.status : undefined;
+        const line = `${req.method} ${req.url} ${status ?? "-"} ${time}ms`;
+        if ((status !== undefined && status >= 500) || time >= 2000) {
+          console.warn(`[http] ${line}`);
+        } else {
+          console.log(`[http] ${line}`);
+        }
         return ret;
       });
       this.use(errorHandler);
@@ -71,6 +78,7 @@ export class HttpInterface extends Planigale {
         "/api/channels/:channelId/read-receipts",
         channelReadReceipt(core),
       );
+      this.use("/api/channels/:channelId/files", channelFiles(core));
 
       // todo: move this to routes
       this.route({

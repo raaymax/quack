@@ -3,6 +3,8 @@ import { Agent } from "@planigale/testing";
 import { createApp } from "../../__tests__/app.ts";
 import { Chat } from "../../__tests__/chat.ts";
 import { ensureUser } from "../../__tests__/users.ts";
+import { login, usingChannel } from "../../__tests__/mod.ts";
+import { ChannelType } from "../../../../../types.ts";
 
 const { app, repo } = createApp();
 
@@ -10,6 +12,32 @@ Deno.test("POST /api/commands/execute - unauthorized", async () => {
   const agent = await Agent.from(app);
   try {
     await agent.request().post("/api/commands/execute").json({}).expect(401);
+  } finally {
+    await agent.close();
+  }
+});
+
+Deno.test("commands - /avatar and /emoji are no longer commands", async () => {
+  const agent = await Agent.from(app);
+  try {
+    const session = await login(repo, agent, "admin");
+    const token = session.token;
+    const admin = await repo.user.get({ email: "admin" });
+    await usingChannel(repo, {
+      name: "removed-commands",
+      channelType: ChannelType.PUBLIC,
+      users: [admin!.id],
+    }, async (channelId) => {
+      for (const name of ["avatar", "emoji"]) {
+        const res = await agent.request()
+          .post("/api/commands/execute")
+          .json({ name, text: "x", context: { channelId } })
+          .header("Authorization", `Bearer ${token}`)
+          .expect(404);
+        const body = await res.json();
+        assertEquals(body.errorCode, "RESOURCE_NOT_FOUND");
+      }
+    });
   } finally {
     await agent.close();
   }
@@ -24,7 +52,7 @@ Deno.test("command /echo <text>", async () =>
         .login("admin")
         .createChannel({ name: "test-commands" })
         .connectSSE()
-        .executeCommand("/echo Hello World!!", [])
+        .executeCommand("/echo Hello World!!")
         .nextEvent((event, chat) => {
           assertEquals(event.type, "message");
           assert(event.clientId, "Event should have clientId");
@@ -38,44 +66,6 @@ Deno.test("command /echo <text>", async () =>
         .end(),
   ));
 
-Deno.test("command /emoji <name>", async () =>
-  await Chat.test(app, { type: "handler" }, async (agent) => {
-    const state: Record<string, unknown> = {};
-    try {
-      await Chat.init(repo, agent)
-        .login("admin")
-        .createChannel({ name: "test-commands" })
-        .connectSSE()
-        .executeCommand("/emoji party-parrot", [
-          {
-            id: "party-parrot",
-            fileName: "party-parrot.gif",
-            contentType: "image/gif",
-          },
-        ], async ({ channelId }) => {
-          state.channelId = channelId;
-        })
-        .nextEvent((event) => {
-          assertEquals(event.type, "emoji");
-          assertEquals(event.shortname, ":party-parrot:");
-        })
-        .nextEvent((event) => {
-          assertEquals(event.type, "message");
-          assert(event.clientId, "Event should have clientId");
-          assertEquals(event.flat, "Emoji :party-parrot: created");
-          assertEquals(event.message, {
-            line: [{ text: "Emoji " }, { emoji: ":party-parrot:" }, {
-              text: "created",
-            }],
-          });
-          assertEquals(event.channelId, state.channelId);
-        })
-        .end();
-    } finally {
-      await repo.emoji.removeMany({ shortname: ":party-parrot:" });
-    }
-  }));
-
 Deno.test("command /invite", async () => {
   await repo.invitation.removeMany({});
   return await Chat.test(app, { type: "handler" }, async (agent) => {
@@ -84,7 +74,7 @@ Deno.test("command /invite", async () => {
       .login("admin")
       .createChannel({ name: "test-commands-invite" })
       .connectSSE()
-      .executeCommand("/invite", [], ({ json }) => {
+      .executeCommand("/invite", ({ json }) => {
         url = json.data as string;
       })
       .nextEvent((event) => {
@@ -100,27 +90,6 @@ Deno.test("command /invite", async () => {
   });
 });
 
-Deno.test("command /avatar", async () => {
-  return await Chat.test(app, { type: "handler" }, async (agent) => {
-    await Chat.init(repo, agent)
-      .login("admin")
-      .createChannel({ name: "test-commands-avatar" })
-      .connectSSE()
-      .executeCommand("/avatar", [
-        {
-          id: "party-parrot",
-          fileName: "party-parrot.gif",
-          contentType: "image/gif",
-        },
-      ])
-      .nextEvent((event) => {
-        assertEquals(event.type, "user");
-        assertEquals(event.avatarFileId, "party-parrot");
-      })
-      .end();
-  });
-});
-
 Deno.test("command /version", async () => {
   await ensureUser(repo, "system", { name: "System" });
 
@@ -130,7 +99,7 @@ Deno.test("command /version", async () => {
       .login("admin")
       .createChannel({ name: "test-commands-version" })
       .connectSSE()
-      .executeCommand("/version", [])
+      .executeCommand("/version")
       .nextEvent((event) => {
         assertEquals(event.type, "message");
         assert(event.clientId, "Event should have clientId");
@@ -147,14 +116,14 @@ Deno.test("command /help", async () => {
       .login("admin")
       .createChannel({ name: "test-commands-help" })
       .connectSSE()
-      .executeCommand("/help", [])
+      .executeCommand("/help")
       .nextEvent((event) => {
         assertEquals(event.type, "message");
         assert(event.clientId, "Event should have clientId");
-        assertEquals((event.flat as string).includes("/avatar"), true);
-        assertEquals((event.flat as string).includes("/emoji"), true);
         assertEquals((event.flat as string).includes("/invite"), true);
         assertEquals((event.flat as string).includes("/version"), true);
+        assertEquals((event.flat as string).includes("/avatar"), false);
+        assertEquals((event.flat as string).includes("/emoji"), false);
       })
       .end();
   });
@@ -170,7 +139,7 @@ Deno.test("command /leave", async () => {
         assert(channel, "User should be in the channel");
       })
       .connectSSE()
-      .executeCommand("/leave", [])
+      .executeCommand("/leave")
       .nextEvent((event, chat) => {
         assertEquals(event.type, "channel");
         assert(
@@ -207,7 +176,7 @@ Deno.test("command /join", async () => {
         chat.channelId = member.channelId;
       })
       .connectSSE()
-      .executeCommand("/join", [])
+      .executeCommand("/join")
       .nextEvent((event, chat) => {
         assertEquals(event.type, "channel");
         assertEquals(event.id, chat.channelId);
@@ -229,7 +198,7 @@ Deno.test("command /main", async () => {
       .login("admin")
       .createChannel({ name: "test-commands-main" });
     await admin
-      .executeCommand("/main", [])
+      .executeCommand("/main")
       .getConfig(async (config) => {
         assertEquals(config.mainChannelId, admin.channelId);
       })

@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { NavChannels } from "../molecules/NavChannels";
 import { NavUsers } from "../molecules/NavUsers";
 import { ClassNames, cn } from "../../utils";
 import styled from "styled-components";
 import { ThemeButtonConnected } from "../molecules/ThemeButtonConnected";
 import { LoggedUserConnected } from "../molecules/LoggedUserConnected";
+import { ProfileSettings } from "./ProfileSettings";
 import { observer } from "mobx-react-lite";
 
 const Container = styled.div`
@@ -32,29 +34,21 @@ const Container = styled.div`
     width: 100%;
     height: 100vh;
 
-    & .channel {
-      height: 40px;
-      line-height: 40px;
-      vertical-align: middle;
-      font-size: 20px;
-      & .name {
-        height: 40px;
-        line-height: 40px;
-        vertical-align: middle;
-        font-size: 20px;
-      }
-    }
+    & .channel,
     & .user {
-      height: 40px;
-      line-height: 40px;
-      vertical-align: middle;
+      display: flex;
+      align-items: center;
+      min-height: 40px;
       font-size: 20px;
-      & .name {
-        height: 40px;
-        line-height: 40px;
-        vertical-align: middle;
-        font-size: 20px;
-      }
+    }
+    & .channel .name,
+    & .user .name {
+      font-size: 20px;
+    }
+    & .user .text {
+      display: flex;
+      align-items: center;
+      margin: 0;
     }
   }
   &.hidden {
@@ -69,6 +63,7 @@ export const Sidebar = observer(
       className?: ClassNames;
     },
   ) => {
+    const [showSettings, setShowSettings] = useState(false);
     return (
       <Container className={cn("side-menu", className)} style={style}>
         <div className="side-menu-header">
@@ -80,8 +75,11 @@ export const Sidebar = observer(
         </div>
         <div className="bottom">
           <ThemeButtonConnected />
-          <LoggedUserConnected />
+          <LoggedUserConnected onOpenSettings={() => setShowSettings(true)} />
         </div>
+        {showSettings && (
+          <ProfileSettings onClose={() => setShowSettings(false)} />
+        )}
       </Container>
     );
   },
