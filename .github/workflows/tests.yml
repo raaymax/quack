@@ -43,5 +43,11 @@ jobs:
     - name: Frontend lint
       working-directory: app
       run: pnpm lint
+    - name: Frontend build
+      working-directory: app
+      run: pnpm build
+      env:
+        APP_NAME: quack
+        APP_VERSION: ${{ github.sha }}
     - run: deno task migrate:tests
     - run: deno task check

@@ -1,10 +1,10 @@
-FROM node:22.12-alpine AS build
+FROM node:22-alpine AS build
 RUN mkdir -p /app
 WORKDIR /app
 COPY . .
 WORKDIR /app/app
-RUN corepack enable && npm i -g sfw
-RUN sfw pnpm install --frozen-lockfile
+RUN npm i -g pnpm@11.5.3
+RUN pnpm install --frozen-lockfile
 ENV APP_NAME=quack
 ARG APP_VERSION=3.x.x
 ENV APP_VERSION=$APP_VERSION
