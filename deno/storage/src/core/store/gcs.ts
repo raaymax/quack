@@ -33,6 +33,10 @@ const GCS_BUFFER_LIMIT_BYTES = getEnvInt(
   "STORAGE_GCS_BUFFER_LIMIT_BYTES",
   64 * 1024 * 1024,
 );
+const GCS_AUTH_TIMEOUT_MS = getEnvInt("STORAGE_GCS_AUTH_TIMEOUT_MS", 10_000);
+const GCS_AUTH_MAX_RETRIES = getEnvInt("STORAGE_GCS_AUTH_MAX_RETRIES", 2);
+const TOKEN_REFRESH_AFTER_MS = 45 * 60 * 1000;
+const TOKEN_MAX_AGE_MS = 58 * 60 * 1000;
 
 const RETRYABLE_STATUS = new Set([408, 429, 500, 502, 503, 504]);
 
@@ -118,7 +122,9 @@ class Gcs {
 
   accessToken: string | null = null;
 
-  accessTokenExpires = 0;
+  private tokenFetchedAt = 0;
+
+  private refreshPromise: Promise<string | null> | null = null;
 
   auth = new GoogleAuth({
     scopes: "https://www.googleapis.com/auth/cloud-platform",
@@ -136,22 +142,45 @@ class Gcs {
     this.bucketName = config.bucket;
   }
 
-  async getAccessToken() {
-    if (!this.accessToken || Date.now() > this.accessTokenExpires) {
-      this.accessToken = await this.fetchAccessToken();
-      this.accessTokenExpires = Date.now() + 50 * 60 * 1000;
+  async getAccessToken(): Promise<string | null> {
+    const age = Date.now() - this.tokenFetchedAt;
+    if (this.accessToken && age < TOKEN_MAX_AGE_MS) {
+      if (age >= TOKEN_REFRESH_AFTER_MS) {
+        this.refresh().catch(() => {});
+      }
+      return this.accessToken;
     }
-    return this.accessToken;
+    try {
+      return await this.refresh();
+    } catch (err) {
+      if (this.accessToken) return this.accessToken;
+      throw err;
+    }
+  }
+
+  private refresh(): Promise<string | null> {
+    if (!this.refreshPromise) {
+      this.refreshPromise = this.fetchAccessToken()
+        .then((token) => {
+          this.accessToken = token;
+          this.tokenFetchedAt = Date.now();
+          return token;
+        })
+        .finally(() => {
+          this.refreshPromise = null;
+        });
+    }
+    return this.refreshPromise;
   }
 
   private async fetchAccessToken(): Promise<string | null> {
     let lastError: unknown;
-    for (let attempt = 0; attempt <= GCS_MAX_RETRIES; attempt++) {
+    for (let attempt = 0; attempt <= GCS_AUTH_MAX_RETRIES; attempt++) {
       if (attempt > 0) await backoff(attempt - 1);
       try {
         const token = await withTimeout(
           this.auth.getAccessToken(),
-          GCS_TIMEOUT_MS,
+          GCS_AUTH_TIMEOUT_MS,
           "auth token",
         );
         return token ?? null;
@@ -161,7 +190,7 @@ class Gcs {
         console.warn(
           `[storage][gcs] auth token fetch failed (${reason}), attempt ${
             attempt + 1
-          }/${GCS_MAX_RETRIES + 1}`,
+          }/${GCS_AUTH_MAX_RETRIES + 1}`,
         );
       }
     }
