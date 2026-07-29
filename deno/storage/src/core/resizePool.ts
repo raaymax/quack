@@ -10,7 +10,7 @@ type Task = {
 
 type Active = {
   resolve: Pending;
-  timer: number;
+  timer: ReturnType<typeof setTimeout>;
 };
 
 const DEFAULT_WORKERS = 2;
