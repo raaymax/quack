@@ -47,6 +47,7 @@ export default defineConfig(({ command }) => ({
     command === "serve" && basicSsl(),
     VitePWA({
       injectRegister: "auto",
+      registerType: "autoUpdate",
       strategies: "injectManifest",
       srcDir: "./src",
       filename: "sw.ts",
