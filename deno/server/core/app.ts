@@ -26,7 +26,7 @@ class App {
     this.core.bus.direct(userId, {
       type: "message",
       id: `ephemeral:${Math.random().toString(10)}`,
-      appId,
+      appId: this.appId,
       ephemeral: true,
       channelId: message.channelId,
       parentId: message.parentId,

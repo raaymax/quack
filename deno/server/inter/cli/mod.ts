@@ -5,7 +5,7 @@ const run = new Command()
   .description("Runs the chat server.")
   .action(
     (
-      _options: Record<string, unknown>,
+      _options: void,
       source: string,
       _destination?: string,
     ) => {

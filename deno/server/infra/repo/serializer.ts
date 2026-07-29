@@ -1,6 +1,12 @@
 import { EntityId } from "../../types.ts";
 import { ObjectId } from "./db.ts";
 
+function isPlainObject(obj: unknown): obj is Record<string, unknown> {
+  if (typeof obj !== "object" || obj === null) return false;
+  const proto = Object.getPrototypeOf(obj);
+  return proto === Object.prototype || proto === null;
+}
+
 // deno-lint-ignore no-explicit-any
 function recursiveDeserialize(obj: unknown): any {
   if (obj instanceof EntityId) {
@@ -12,15 +18,16 @@ function recursiveDeserialize(obj: unknown): any {
   if (Array.isArray(obj)) {
     return obj.map(recursiveDeserialize);
   }
-  if (typeof obj === "object" && obj !== null) {
-    const record = obj as Record<string, unknown>;
-    for (const key in record) {
-      record[key] = recursiveDeserialize(record[key]);
+  if (isPlainObject(obj)) {
+    const result: Record<string, unknown> = {};
+    for (const key in obj) {
+      result[key] = recursiveDeserialize(obj[key]);
     }
-    if (record._id) {
-      record.id = record._id;
-      delete record._id;
+    if (result._id) {
+      result.id = result._id;
+      delete result._id;
     }
+    return result;
   }
   return obj;
 }
@@ -35,18 +42,22 @@ function recursiveSerialize(obj: unknown): any {
   if (obj instanceof EntityId) {
     return new ObjectId(obj.value);
   }
+  if (obj instanceof ObjectId) {
+    return obj;
+  }
   if (Array.isArray(obj)) {
     return obj.map(recursiveSerialize);
   }
-  if (typeof obj === "object" && obj !== null) {
-    const record = obj as Record<string, unknown>;
-    for (const key in record) {
-      record[key] = recursiveSerialize(record[key]);
+  if (isPlainObject(obj)) {
+    const result: Record<string, unknown> = {};
+    for (const key in obj) {
+      result[key] = recursiveSerialize(obj[key]);
     }
-    if (record.id) {
-      record._id = record.id;
-      delete record.id;
+    if (result.id) {
+      result._id = result.id;
+      delete result.id;
     }
+    return result;
   }
   return obj;
 }

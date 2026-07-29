@@ -10,7 +10,7 @@ ARG APP_VERSION=3.x.x
 ENV APP_VERSION=$APP_VERSION
 RUN APP_NAME=quack APP_VERSION=$APP_VERSION pnpm build
 
-FROM denoland/deno:alpine-2.6.8
+FROM denoland/deno:alpine-2.9.4
 # WORKAROUND: Deno alpine image ships glibc-linked libs in /usr/local/lib/ that break
 # apk and post-install triggers (libz, libcrypto, libzstd, libgcc_s shadow Alpine's musl libs).
 # Move them aside during apk install, then restore for Deno compatibility.
