@@ -12,6 +12,11 @@ if (files.length) {
   precacheAndRoute(files);
   navigationPreload.enable();
 }
+
+self.skipWaiting();
+self.addEventListener("activate", (event) => {
+  event.waitUntil(self.clients.claim());
+});
 /*
 
 const shareTargetHandler = async ({ event }) => {
