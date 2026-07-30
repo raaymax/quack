@@ -36,6 +36,10 @@ export default defineConfig(({ command }) => ({
       "@quack/encryption": path.resolve(__dirname, "../deno/encryption/mod.ts"),
       "@quack/api": path.resolve(__dirname, "../deno/api/mod.ts"),
       "@quack/tools": path.resolve(__dirname, "../deno/tools/mod.ts"),
+      "@jsr/planigale__sse": path.resolve(
+        __dirname,
+        "node_modules/@jsr/planigale__sse",
+      ),
     },
   },
   plugins: [
@@ -43,6 +47,7 @@ export default defineConfig(({ command }) => ({
     command === "serve" && basicSsl(),
     VitePWA({
       injectRegister: "auto",
+      registerType: "autoUpdate",
       strategies: "injectManifest",
       srcDir: "./src",
       filename: "sw.ts",

@@ -134,7 +134,7 @@ Deno.test("ResizePool - times out a stuck job and stays usable", async () => {
     const first = await pool.resize(new Uint8Array(source), 100, 0, true);
     assertEquals(first, null, "the job should time out to null");
 
-    let guard: number | undefined;
+    let guard: ReturnType<typeof setTimeout> | undefined;
     const stuck = new Promise<"stuck">((resolve) => {
       guard = setTimeout(() => resolve("stuck"), 3000);
     });
