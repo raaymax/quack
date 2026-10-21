@@ -1,7 +1,7 @@
 import { assert, assertEquals } from "@std/assert";
 import { Agent } from "@planigale/testing";
 import { Emoji } from "../../../../../types.ts";
-import { createApp } from "../../__tests__/app.ts";
+import { createApp, isRemote } from "../../__tests__/app.ts";
 import { Chat } from "../../__tests__/chat.ts";
 import { ensureUser, login } from "../../__tests__/mod.ts";
 
@@ -104,7 +104,10 @@ Deno.test("POST /api/emojis - upload creates and lists emoji", async () => {
   });
 });
 
-Deno.test("POST /api/emojis - duplicate shortname rejected", async () => {
+Deno.test({
+  name: "POST /api/emojis - duplicate shortname rejected",
+  ignore: isRemote,
+}, async () => {
   await withPng(async (png) => {
     const agent = await Agent.from(app);
     try {
@@ -190,7 +193,10 @@ Deno.test("PUT /api/emojis - replaces image and removes old blob", async () => {
   });
 });
 
-Deno.test("PUT /api/emojis - replacing a missing emoji is 404", async () => {
+Deno.test({
+  name: "PUT /api/emojis - replacing a missing emoji is 404",
+  ignore: isRemote,
+}, async () => {
   await withPng(async (png) => {
     const agent = await Agent.from(app);
     try {

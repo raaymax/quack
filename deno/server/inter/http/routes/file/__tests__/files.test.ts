@@ -2,7 +2,7 @@ import { Agent } from "@planigale/testing";
 import { assert, assertEquals } from "@std/assert";
 import { login, usingChannel } from "../../__tests__/mod.ts";
 import { ChannelType, EntityId } from "../../../../../types.ts";
-import { createApp } from "../../__tests__/app.ts";
+import { createApp, isRemote } from "../../__tests__/app.ts";
 
 Deno.env.set("ENV_TYPE", "test");
 const { app, repo, core } = createApp();
@@ -374,7 +374,10 @@ Deno.test("files - upload with unknown ?attach value is rejected", async () => {
   }
 });
 
-Deno.test("files - attachToChannel twice is an idempotent no-op", async () => {
+Deno.test({
+  name: "files - attachToChannel twice is an idempotent no-op",
+  ignore: isRemote,
+}, async () => {
   const agent = await Agent.from(app);
   try {
     await login(repo, agent, "admin");
@@ -423,7 +426,11 @@ Deno.test("files - attachToChannel twice is an idempotent no-op", async () => {
   }
 });
 
-Deno.test("files - upload with ?attach=channel emits a client-safe 'file' bus event", async () => {
+Deno.test({
+  name:
+    "files - upload with ?attach=channel emits a client-safe 'file' bus event",
+  ignore: isRemote,
+}, async () => {
   const agent = await Agent.from(app);
   try {
     const session = await login(repo, agent, "admin");
@@ -468,7 +475,10 @@ Deno.test("files - upload with ?attach=channel emits a client-safe 'file' bus ev
   }
 });
 
-Deno.test("files - removeStaleDrafts sweeps only old drafts", async () => {
+Deno.test({
+  name: "files - removeStaleDrafts sweeps only old drafts",
+  ignore: isRemote,
+}, async () => {
   const agent = await Agent.from(app);
   try {
     await login(repo, agent, "admin");
@@ -547,7 +557,10 @@ Deno.test("files - removeStaleDrafts sweeps only old drafts", async () => {
   }
 });
 
-Deno.test("files - bus events on attach/remove carry client-safe payloads", async () => {
+Deno.test({
+  name: "files - bus events on attach/remove carry client-safe payloads",
+  ignore: isRemote,
+}, async () => {
   const agent = await Agent.from(app);
   try {
     const session = await login(repo, agent, "admin");

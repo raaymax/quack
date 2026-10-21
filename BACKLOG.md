@@ -400,6 +400,43 @@ structure with proper relations.
 
 ---
 
+## 6. Rust Server Port (`rust/`)
+
+**Goal:** Replace the Deno backend with the axum server in `rust/` once it
+reaches parity. The Deno route suite runs against it via `QUACK_TEST_TARGET`.
+
+### 6.1 Cutover
+
+- [ ] **Dockerfile + entrypoint** - Build the `rust/` binary in a builder
+      stage, drop Deno from the runtime image, replace `deno task migrate` with
+      `quack-server migrate`
+- [ ] **Config migration** - Move `chat.config.ts` settings (storage, webhooks,
+      giphy key) to `chat.config.json` / env vars
+- [ ] **Remove Deno backend** - Delete `deno/server`, `deno/storage`,
+      `deno/migrate`, `migrations/` after cutover; keep `deno/api` and
+      `deno/encryption` (used by the frontend) or move them into `app/`
+- [ ] **Port route tests to Rust** - Replace the remote-mode Deno harness with
+      native Rust tests before the Deno test helpers are removed
+- [ ] **Load test SSE fan-out** - Bus is a single broadcast channel filtered
+      per subscriber; measure with many concurrent connections
+
+### 6.2 Known gaps vs Deno
+
+- [ ] **No MongoDB transactions** - Deno ran every command in a snapshot
+      transaction; Rust does sequential writes (e.g. message create + thread
+      update + badges)
+- [ ] **No resize worker pool limits** - Image resizing uses a semaphore sized
+      to CPU count; no queue length or timeout env vars yet
+
+### 6.3 Security issues found during the port (present in both servers)
+
+- [ ] **`/api/files/*` has no per-file authorization** - Any logged-in user
+      can download or delete any stored blob by id
+- [ ] **Password reset ignores its token** - `PUT /api/auth/reset/:token`
+      authorizes with email + old bcrypt password only
+
+---
+
 ## Notes
 
 - Created: 2026-02-06

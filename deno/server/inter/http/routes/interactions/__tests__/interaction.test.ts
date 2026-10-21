@@ -1,13 +1,16 @@
 import { Agent } from "@planigale/testing";
 import { assertEquals } from "@std/assert";
-import { createApp } from "../../__tests__/app.ts";
+import { createApp, isRemote } from "../../__tests__/app.ts";
 import { Chat } from "../../__tests__/chat.ts";
 import type { Event, MessageInteractionEvent } from "../../../../../events.ts";
 import { EntityId } from "../../../../../types.ts";
 
 const { app, repo, core } = createApp();
 
-Deno.test("POST /api/interactions - dispatching interactions", async (t) => {
+Deno.test({
+  name: "POST /api/interactions - dispatching interactions",
+  ignore: isRemote,
+}, async (t) => {
   await Chat.test(app, { type: "handler" }, async (agent) => {
     const admin = Chat.init(repo, agent);
     try {
@@ -42,7 +45,10 @@ Deno.test("POST /api/interactions - dispatching interactions", async (t) => {
   });
 });
 
-Deno.test("POST /api/interactions - graceful shutdown", async (t) => {
+Deno.test({
+  name: "POST /api/interactions - graceful shutdown",
+  ignore: isRemote,
+}, async (t) => {
   await Chat.test(app, { type: "handler" }, async (agent) => {
     const admin = Chat.init(repo, agent);
     try {

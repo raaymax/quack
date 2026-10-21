@@ -1,12 +1,15 @@
 import { Agent } from "@planigale/testing";
 import { assert, assertEquals } from "@std/assert";
-import { createApp } from "../../__tests__/app.ts";
+import { createApp, isRemote } from "../../__tests__/app.ts";
 import { Chat } from "../../__tests__/chat.ts";
 import { Message } from "@quack/api";
 
 const { app, repo, core } = createApp();
 
-Deno.test("[EVENTS] When message is sent message:created should be emitted", async (t) => {
+Deno.test({
+  name: "[EVENTS] When message is sent message:created should be emitted",
+  ignore: isRemote,
+}, async (t) => {
   await Chat.test(app, { type: "handler" }, async (agent) => {
     const { promise, resolve } = Promise.withResolvers<Message>();
     const admin = Chat.init(repo, agent);

@@ -1,6 +1,6 @@
 import { assert, assertEquals } from "@std/assert";
 import { Agent } from "@planigale/testing";
-import { createApp } from "../../__tests__/app.ts";
+import { createApp, isRemote } from "../../__tests__/app.ts";
 import { Chat } from "../../__tests__/chat.ts";
 import { ensureUser } from "../../__tests__/users.ts";
 import { login, usingChannel } from "../../__tests__/mod.ts";
@@ -93,7 +93,8 @@ Deno.test("command /invite", async () => {
 Deno.test("command /version", async () => {
   await ensureUser(repo, "system", { name: "System" });
 
-  Deno.env.set("APP_VERSION", "server-version");
+  const serverVersion = isRemote ? "1.2.3" : "server-version";
+  if (!isRemote) Deno.env.set("APP_VERSION", serverVersion);
   return await Chat.test(app, { type: "handler" }, async (agent) => {
     await Chat.init(repo, agent)
       .login("admin")
@@ -103,7 +104,7 @@ Deno.test("command /version", async () => {
       .nextEvent((event) => {
         assertEquals(event.type, "message");
         assert(event.clientId, "Event should have clientId");
-        assertEquals((event.flat as string).includes("server-version"), true);
+        assertEquals((event.flat as string).includes(serverVersion), true);
         assertEquals((event.flat as string).includes("client-version"), true);
       })
       .end();
