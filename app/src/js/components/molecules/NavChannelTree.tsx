@@ -1,23 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import { Icon, IconNames } from "../atoms/Icon";
+import type { ChannelType } from "../../types";
+import { CHANNEL_ICON, Icon, IconNames } from "../atoms/Icon";
 import { Badge } from "../atoms/Badge";
 import { ClassNames, cn } from "../../utils";
 
-export type ChannelKind = "PUBLIC" | "PRIVATE" | "DIRECT";
 export type ChannelViewKey = "messages" | "files";
 
 export type ChannelNavItem = {
   id: string;
   name: string;
-  kind: ChannelKind;
+  kind: ChannelType;
   unread?: number;
-};
-
-const CHANNEL_ICON: Record<ChannelKind, IconNames> = {
-  PUBLIC: "hash",
-  PRIVATE: "lock",
-  DIRECT: "user",
 };
 
 type ViewDef = {
@@ -40,7 +34,7 @@ const Container = styled.div`
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 5px 8px 5px 4px;
+    padding: 5px 8px;
     cursor: pointer;
 
     &:hover {
@@ -146,6 +140,8 @@ type NavChannelTreeProps = {
   activeView?: ChannelViewKey | null;
   onSelectChannel?: (channelId: string) => void;
   onSelectView?: (channelId: string, view: ChannelViewKey) => void;
+  expandedId?: string | null;
+  onExpand?: (id: string | null) => void;
   className?: ClassNames;
 };
 
@@ -155,23 +151,37 @@ export const NavChannelTree = ({
   activeView = "messages",
   onSelectChannel,
   onSelectView,
+  expandedId: expandedIdProp,
+  onExpand,
   className,
 }: NavChannelTreeProps) => {
-  const [expandedId, setExpandedId] = useState<string | undefined>(
-    activeChannelId,
+  const [internalExpanded, setInternalExpanded] = useState<string | null>(
+    activeChannelId ?? null,
   );
+  const expandedId = onExpand ? (expandedIdProp ?? null) : internalExpanded;
+  const setExpanded = onExpand ?? setInternalExpanded;
+
+  const pendingExpand = useRef<string | null>(null);
 
   useEffect(() => {
-    if (activeChannelId) setExpandedId(activeChannelId);
+    pendingExpand.current = activeChannelId ?? null;
   }, [activeChannelId]);
+
+  useEffect(() => {
+    const pending = pendingExpand.current;
+    if (pending && channels.some((c) => c.id === pending)) {
+      setExpanded(pending);
+      pendingExpand.current = null;
+    }
+  }, [activeChannelId, channels, setExpanded]);
 
   const toggle = (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
-    setExpandedId((cur) => (cur === id ? undefined : id));
+    setExpanded(expandedId === id ? null : id);
   };
 
   const openChannel = (id: string) => {
-    setExpandedId(id);
+    setExpanded(id);
     onSelectChannel?.(id);
   };
 
@@ -189,12 +199,6 @@ export const NavChannelTree = ({
               })}
               onClick={() => openChannel(channel.id)}
             >
-              <span
-                className="caret"
-                onClick={(e) => toggle(e, channel.id)}
-              >
-                <Icon icon="chevron" size={12} />
-              </span>
               <Icon
                 className="channel-icon"
                 icon={CHANNEL_ICON[channel.kind]}
@@ -204,6 +208,12 @@ export const NavChannelTree = ({
               {channel.unread
                 ? <Badge>{channel.unread}</Badge>
                 : null}
+              <span
+                className="caret"
+                onClick={(e) => toggle(e, channel.id)}
+              >
+                <Icon icon="chevron" size={12} />
+              </span>
             </div>
 
             {expanded && (

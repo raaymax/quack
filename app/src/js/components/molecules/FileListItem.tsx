@@ -1,3 +1,4 @@
+import { useState } from "react";
 import styled from "styled-components";
 import { filesize } from "filesize";
 import { FileTypeIcon, getFileCategory } from "../atoms/FileTypeIcon";
@@ -18,10 +19,91 @@ export type FileItem = {
   size: number | null;
   createdAt: string;
   url?: string;
-  resolution?: { width: number; height: number } | null;
-  messageId?: string | null;
   removable?: boolean;
   uploader: FileUploader;
+};
+
+export const openFile = (file: FileItem) => {
+  if (file.url) window.open(file.url);
+};
+
+export const getThumbUrl = (file: FileItem, height: number) => {
+  if (getFileCategory(file.contentType) !== "image" || !file.url) {
+    return undefined;
+  }
+  if (file.url.startsWith("data:") || file.url.startsWith("blob:")) {
+    return file.url;
+  }
+  return `${file.url}?h=${height}`;
+};
+
+type FileActionsProps = {
+  file: FileItem;
+  onDownload?: (file: FileItem) => void;
+  onRemove?: (file: FileItem) => void;
+};
+
+export const FileActions = (
+  { file, onDownload, onRemove }: FileActionsProps,
+) => {
+  const [confirming, setConfirming] = useState(false);
+  const stop = (e: React.MouseEvent) => e.stopPropagation();
+
+  if (confirming) {
+    return (
+      <div className="actions" onMouseLeave={() => setConfirming(false)}>
+        <button
+          type="button"
+          title="Confirm delete"
+          className="danger"
+          onClick={(e) => {
+            stop(e);
+            setConfirming(false);
+            onRemove?.(file);
+          }}
+        >
+          <Icon icon="check" size={14} />
+        </button>
+        <button
+          type="button"
+          title="Cancel"
+          onClick={(e) => {
+            stop(e);
+            setConfirming(false);
+          }}
+        >
+          <Icon icon="circle-xmark" size={14} />
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="actions">
+      <button
+        type="button"
+        title="Download"
+        onClick={(e) => {
+          stop(e);
+          onDownload ? onDownload(file) : openFile(file);
+        }}
+      >
+        <Icon icon="download" size={14} />
+      </button>
+      {onRemove && file.removable !== false && (
+        <button
+          type="button"
+          title="Delete"
+          onClick={(e) => {
+            stop(e);
+            setConfirming(true);
+          }}
+        >
+          <Icon icon="delete" size={14} />
+        </button>
+      )}
+    </div>
+  );
 };
 
 const MOBILE = "@media (max-width: 540px)";
@@ -130,6 +212,16 @@ const Row = styled.div`
         color: ${(props) => props.theme.Text};
         background-color: ${(props) => props.theme.Channel.Hover};
       }
+
+      &.danger {
+        color: #fff;
+        background-color: #af0000;
+
+        &:hover {
+          color: #fff;
+          background-color: #d32f2f;
+        }
+      }
     }
   }
 
@@ -173,17 +265,13 @@ export const FileListItem = ({
   onDownload,
   onRemove,
 }: FileListItemProps) => {
-  const isImage = getFileCategory(file.contentType) === "image";
-  const thumbUrl = isImage && file.url ? `${file.url}?h=80` : undefined;
-
-  const open = () => {
-    if (file.url) window.open(file.url);
-  };
-
-  const stop = (e: React.MouseEvent) => e.stopPropagation();
+  const thumbUrl = getThumbUrl(file, 80);
 
   return (
-    <Row className={cn("file-list-item", className)} onClick={open}>
+    <Row
+      className={cn("file-list-item", className)}
+      onClick={() => openFile(file)}
+    >
       <div className="thumb">
         {thumbUrl
           ? <img src={thumbUrl} alt={file.fileName} />
@@ -211,30 +299,7 @@ export const FileListItem = ({
         {file.size == null ? "—" : filesize(file.size)}
       </div>
 
-      <div className="actions">
-        <button
-          type="button"
-          title="Download"
-          onClick={(e) => {
-            stop(e);
-            onDownload ? onDownload(file) : open();
-          }}
-        >
-          <Icon icon="download" size={14} />
-        </button>
-        {onRemove && file.removable !== false && (
-          <button
-            type="button"
-            title="Remove"
-            onClick={(e) => {
-              stop(e);
-              onRemove(file);
-            }}
-          >
-            <Icon icon="delete" size={14} />
-          </button>
-        )}
-      </div>
+      <FileActions file={file} onDownload={onDownload} onRemove={onRemove} />
     </Row>
   );
 };

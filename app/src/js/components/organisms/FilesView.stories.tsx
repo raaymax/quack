@@ -17,6 +17,10 @@ const meta: Meta<typeof FilesView> = {
   argTypes: {
     onDownload: { action: "download" },
     onRemove: { action: "remove" },
+    onUpload: { action: "upload" },
+    onDismissUpload: { action: "dismissUpload" },
+    onRetryUpload: { action: "retryUpload" },
+    onClearRemoveError: { action: "clearRemoveError" },
   },
   render: (args) => (
     <div style={{ height: "100vh" }}>
@@ -95,6 +99,47 @@ export const MobileGrid: Story = {
   },
   args: { defaultView: "grid", onMenu: () => {} },
   parameters: { viewport: { defaultViewport: "mobile" } },
+};
+
+export const Uploading: Story = {
+  render: (args) => {
+    const { files, onRemove } = useMockFiles();
+    return (
+      <div style={{ height: "100vh" }}>
+        <FilesView {...args} files={files} onRemove={onRemove} />
+      </div>
+    );
+  },
+  args: {
+    onUpload: () => {},
+    onDismissUpload: () => {},
+    onRetryUpload: () => {},
+    uploads: [
+      { clientId: "u1", fileName: "vacation-photos.zip", progress: 62 },
+      { clientId: "u2", fileName: "specs.pdf", progress: 12 },
+      {
+        clientId: "u3",
+        fileName: "render-farm-output.mov",
+        progress: 40,
+        error: true,
+      },
+    ],
+  },
+};
+
+export const RemoveFailed: Story = {
+  render: (args) => {
+    const { files, onRemove } = useMockFiles();
+    return (
+      <div style={{ height: "100vh" }}>
+        <FilesView {...args} files={files} onRemove={onRemove} />
+      </div>
+    );
+  },
+  args: {
+    removeError: true,
+    onClearRemoveError: () => {},
+  },
 };
 
 const MAX_FILES = 48;

@@ -15,6 +15,14 @@ export class FileRepo extends Repo<FileQuery, FileEntry> {
     return deserialize(items);
   }
 
+  async getStaleDrafts(before: Date): Promise<FileEntry[]> {
+    const { db } = await this.connect();
+    const items = await db.collection(this.COLLECTION)
+      .find({ status: "draft", createdAt: { $lt: before } })
+      .toArray();
+    return deserialize(items);
+  }
+
   async getChannelFiles(channelId: EntityId): Promise<FileEntry[]> {
     const { db } = await this.connect();
     const items = await db.collection(this.COLLECTION)

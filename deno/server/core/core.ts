@@ -38,7 +38,9 @@ import SetProfile from "./user/setProfile.ts";
 import SetAvatar from "./user/setAvatar.ts";
 import RegisterFile from "./file/register.ts";
 import AttachFiles from "./file/attach.ts";
+import AttachFileToChannel from "./file/attachToChannel.ts";
 import RemoveFile from "./file/remove.ts";
+import RemoveStaleDrafts from "./file/removeStaleDrafts.ts";
 import GetChannelFiles from "./file/getChannel.ts";
 import { registerCommand } from "./command/repository.ts";
 
@@ -71,7 +73,9 @@ const commands = buildCommandCollection([
   SetAvatar,
   RegisterFile,
   AttachFiles,
+  AttachFileToChannel,
   RemoveFile,
+  RemoveStaleDrafts,
   CreateEmoji,
   ReplaceEmoji,
 ]);

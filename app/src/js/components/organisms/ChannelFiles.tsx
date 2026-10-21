@@ -7,7 +7,6 @@ import { useSidebar } from "../contexts/useSidebar";
 import { useNavigate, useParams } from "../AppRouter.tsx";
 import { FilesView } from "./FilesView";
 import { type FileItem } from "../molecules/FileListItem";
-import { type ChannelType } from "../molecules/FilesToolbar";
 
 export const ChannelFiles = observer(() => {
   const app = useApp();
@@ -34,6 +33,10 @@ export const ChannelFiles = observer(() => {
     model?.remove(file.id);
   }, [model]);
 
+  const onUpload = useCallback((files: FileList) => {
+    model?.uploadMany(files);
+  }, [model]);
+
   const onClose = useCallback(() => {
     if (channelId) navigate(`/${channelId}`);
   }, [channelId, navigate]);
@@ -53,8 +56,6 @@ export const ChannelFiles = observer(() => {
       size: file.size,
       createdAt: file.createdAt,
       url: client.api.getFileUrl(file.channelId, file.id),
-      resolution: file.resolution,
-      messageId: file.messageId,
       removable: file.userId === app.userId,
       uploader: {
         id: file.userId,
@@ -71,10 +72,16 @@ export const ChannelFiles = observer(() => {
       key={channelId}
       files={files}
       channelName={channelName}
-      channelType={channel.channelType as ChannelType}
+      channelType={channel.channelType}
       loading={model.loading && !model.initialized}
       error={model.error}
       onRetry={() => model.load()}
+      onUpload={onUpload}
+      uploads={model.uploads}
+      onDismissUpload={(clientId) => model.dismissUpload(clientId)}
+      onRetryUpload={(clientId) => model.retryUpload(clientId)}
+      removeError={model.removeError}
+      onClearRemoveError={() => model.clearRemoveError()}
       onDownload={onDownload}
       onRemove={onRemove}
       onClose={onClose}
@@ -82,5 +89,3 @@ export const ChannelFiles = observer(() => {
     />
   );
 });
-
-export default ChannelFiles;

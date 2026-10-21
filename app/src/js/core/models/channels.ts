@@ -39,7 +39,7 @@ export class ChannelsModel {
   find = flow(function* (this: ChannelsModel, id: string) {
     const channel = yield client.api.getChannelById(id);
     if (!channel) return null;
-    this.channels[channel.id] = new ChannelModel(channel, this.root);
+    this.upsert(channel);
   });
 
   get(id: string): ChannelModel | null {
@@ -65,7 +65,7 @@ export class ChannelsModel {
   findDirect = flow(function* (this: ChannelsModel, userId: string) {
     const channel = yield client.api.getDirectChannel(userId);
     if (channel) {
-      this.channels[channel.id] = new ChannelModel(channel, this.root);
+      this.upsert(channel);
       return this.channels?.[channel.id];
     }
     return null;
@@ -73,7 +73,7 @@ export class ChannelsModel {
 
   create = flow(function* (this: ChannelsModel, channel: CreateChannelRequest) {
     const created = yield client.api.createChannel(channel);
-    this.channels[created.id] = created;
+    this.upsert(created);
   });
 
   putDirectChannel = flow(function* (this: ChannelsModel, userId: string) {
@@ -83,6 +83,8 @@ export class ChannelsModel {
   });
 
   onRemove = (id: string) => {
+    const channel = this.channels[id];
     delete this.channels[id];
+    channel?.dispose();
   };
 }

@@ -43,6 +43,7 @@ export class FilesAPI {
   upload = (
     args: FileUpload,
     channelId: string,
+    attachToChannel = false,
   ): Promise<UploadResult> => {
     return new Promise<UploadResult>((resolve, reject) => {
       // @ts-ignore XMLHttpRequest is only available in the browser
@@ -75,7 +76,13 @@ export class FilesAPI {
         reject(new Error("Upload aborted"));
       }, { once: true });
 
-      xhr.open("POST", `/api/channels/${channelId}/files`, true);
+      xhr.open(
+        "POST",
+        `/api/channels/${channelId}/files${
+          attachToChannel ? "?attach=channel" : ""
+        }`,
+        true,
+      );
       xhr.setRequestHeader("Authorization", `Bearer ${this.api.token}`);
       xhr.setRequestHeader(
         "Content-Type",

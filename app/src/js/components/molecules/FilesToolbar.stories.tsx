@@ -28,9 +28,27 @@ export const Interactive: Story = {
         onViewChange={setView}
         showDates={showDates}
         onToggleDates={() => setShowDates((v) => !v)}
+        onUploadClick={() => {}}
       />
     );
   },
+};
+
+export const WithUploadInProgress: Story = {
+  render: () => (
+    <FilesToolbar
+      channelName="general"
+      count={42}
+      query=""
+      onQueryChange={() => {}}
+      view="list"
+      onViewChange={() => {}}
+      showDates
+      onToggleDates={() => {}}
+      onUploadClick={() => {}}
+      uploading
+    />
+  ),
 };
 
 export const PrivateChannel: Story = {

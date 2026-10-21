@@ -243,6 +243,14 @@ export const useParams = (): RouteParams => {
   return params;
 };
 
+export const getActiveView = (
+  params: Pick<RouteParams, "isFiles" | "isPins" | "isSearch">,
+): "messages" | "files" | null => {
+  if (params.isFiles) return "files";
+  if (params.isPins || params.isSearch) return null;
+  return "messages";
+};
+
 export const useNavigate = (): (
   path: string,
   options?: { state?: any; relative?: "path" },

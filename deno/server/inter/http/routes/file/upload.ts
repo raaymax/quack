@@ -1,4 +1,4 @@
-import { Route } from "@planigale/planigale";
+import { ApiError, Route } from "@planigale/planigale";
 import { Core } from "../../../../core/mod.ts";
 import { serialize } from "../../../../core/serializer.ts";
 import { EntityId } from "../../../../types.ts";
@@ -15,6 +15,12 @@ export default (core: Core) =>
         required: ["channelId"],
         properties: {
           channelId: { type: "string", format: "entity-id" },
+        },
+      },
+      query: {
+        type: "object",
+        properties: {
+          attach: { type: "string", enum: ["channel"] },
         },
       },
     },
@@ -52,10 +58,20 @@ export default (core: Core) =>
         },
       }).internal() as EntityId;
 
+      if (req.query.attach === "channel") {
+        await core.dispatch({
+          type: "file:attachToChannel",
+          body: { fileId: id, channelId, userId },
+        }).internal();
+      }
+
       const file = await core.repo.file.get({ id });
+      if (!file) {
+        throw new ApiError(404, "FILE_NOT_FOUND", "File not found");
+      }
       return Response.json({
         status: "ok",
-        file: serialize(toClientFile(file!)),
+        file: serialize(toClientFile(file)),
       });
     },
   });

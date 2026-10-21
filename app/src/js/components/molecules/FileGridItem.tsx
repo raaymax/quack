@@ -1,9 +1,13 @@
 import styled from "styled-components";
 import { filesize } from "filesize";
-import { FileTypeIcon, getFileCategory } from "../atoms/FileTypeIcon";
-import { Icon } from "../atoms/Icon";
+import { FileTypeIcon } from "../atoms/FileTypeIcon";
 import { ClassNames, cn, formatDate } from "../../utils";
-import type { FileItem } from "./FileListItem.tsx";
+import {
+  FileActions,
+  type FileItem,
+  getThumbUrl,
+  openFile,
+} from "./FileListItem.tsx";
 
 const Card = styled.div`
   position: relative;
@@ -81,6 +85,14 @@ const Card = styled.div`
       &:hover {
         background-color: rgba(0, 0, 0, 0.75);
       }
+
+      &.danger {
+        background-color: #af0000;
+
+        &:hover {
+          background-color: #d32f2f;
+        }
+      }
     }
   }
 
@@ -102,41 +114,14 @@ export const FileGridItem = ({
   onDownload,
   onRemove,
 }: FileGridItemProps) => {
-  const isImage = getFileCategory(file.contentType) === "image";
-  const thumbUrl = isImage && file.url ? `${file.url}?h=240` : undefined;
-
-  const open = () => {
-    if (file.url) window.open(file.url);
-  };
-
-  const stop = (e: React.MouseEvent) => e.stopPropagation();
+  const thumbUrl = getThumbUrl(file, 240);
 
   return (
-    <Card className={cn("file-grid-item", className)} onClick={open}>
-      <div className="actions">
-        <button
-          type="button"
-          title="Download"
-          onClick={(e) => {
-            stop(e);
-            onDownload ? onDownload(file) : open();
-          }}
-        >
-          <Icon icon="download" size={14} />
-        </button>
-        {onRemove && file.removable !== false && (
-          <button
-            type="button"
-            title="Remove"
-            onClick={(e) => {
-              stop(e);
-              onRemove(file);
-            }}
-          >
-            <Icon icon="delete" size={14} />
-          </button>
-        )}
-      </div>
+    <Card
+      className={cn("file-grid-item", className)}
+      onClick={() => openFile(file)}
+    >
+      <FileActions file={file} onDownload={onDownload} onRemove={onRemove} />
 
       <div className="preview">
         {thumbUrl

@@ -1,16 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import { Icon, IconNames } from "../atoms/Icon";
+import type { ChannelType } from "../../types";
+import { CHANNEL_ICON, Icon } from "../atoms/Icon";
 import { ClassNames, cn } from "../../utils";
 
 export type ViewMode = "list" | "grid";
-export type ChannelType = "PUBLIC" | "PRIVATE" | "DIRECT";
-
-const CHANNEL_ICON: Record<ChannelType, IconNames> = {
-  PUBLIC: "hash",
-  PRIVATE: "lock",
-  DIRECT: "user",
-};
 
 const MOBILE = "@media (max-width: 540px)";
 
@@ -175,6 +169,7 @@ const Container = styled.div`
       .spacer,
       .search-toggle,
       .menu-toggle,
+      .upload-btn,
       .date-toggle,
       .view-toggle,
       .close-btn {
@@ -207,6 +202,8 @@ type FilesToolbarProps = {
   onViewChange: (value: ViewMode) => void;
   showDates: boolean;
   onToggleDates: () => void;
+  onUploadClick?: () => void;
+  uploading?: boolean;
   onClose?: () => void;
   onMenu?: () => void;
   className?: ClassNames;
@@ -222,6 +219,8 @@ export const FilesToolbar = ({
   onViewChange,
   showDates,
   onToggleDates,
+  onUploadClick,
+  uploading = false,
   onClose,
   onMenu,
   className,
@@ -266,6 +265,17 @@ export const FilesToolbar = ({
       </div>
 
       <div className="spacer" />
+
+      {onUploadClick && (
+        <button
+          type="button"
+          title="Upload files"
+          className={cn("toggle-btn", "upload-btn", { active: uploading })}
+          onClick={onUploadClick}
+        >
+          <Icon icon="upload" size={14} />
+        </button>
+      )}
 
       <button
         type="button"

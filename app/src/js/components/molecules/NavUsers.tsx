@@ -12,7 +12,7 @@ import { Icon } from "../atoms/Icon";
 import { ProfilePic } from "../atoms/ProfilePic";
 import { SectionHeader } from "../atoms/SectionHeader";
 import { useSidebar } from "../contexts/useSidebar";
-import { useNavigate, useParams } from "../AppRouter.tsx";
+import { getActiveView, useNavigate, useParams } from "../AppRouter.tsx";
 import { observer } from "mobx-react-lite";
 import { useApp } from "../contexts/appState";
 import {
@@ -23,7 +23,7 @@ import { getFileUrl } from "../hooks/fileUrl";
 
 const UserListContainer = styled.div`
   .user {
-    padding: 5px 5px 5px 20px;
+    padding: 5px 24px 5px 20px;
     cursor: pointer;
   }
   .user .name {
@@ -52,7 +52,7 @@ const UserListContainer = styled.div`
     .caret {
       position: absolute;
       top: 0;
-      left: 2px;
+      right: 2px;
       height: 30px;
       width: 16px;
       display: flex;
@@ -151,11 +151,12 @@ export const NavUserButton = ({
 };
 
 const NavUserContainer = observer(
-  ({ user, badges, expanded, onToggle }: {
+  ({ user, badges, expanded, onToggle, onOpen }: {
     user: User;
     badges: ReadReceiptsModel;
     expanded: boolean;
     onToggle: () => void;
+    onOpen: () => void;
   }) => {
     const app = useApp();
     const channel = app.channels.getDirect(String(user.id));
@@ -163,11 +164,12 @@ const NavUserContainer = observer(
     try {
       navigate = useNavigate();
     } catch { /*ignore*/ }
-    const { channelId: id, isFiles, isPins, isSearch } = useParams();
+    const params = useParams();
+    const { channelId: id } = params;
     const { hideSidebar } = useSidebar();
     const isActive = Boolean(channel) && id === channel?.id;
     const activeView: ChannelViewKey | null = isActive
-      ? (isFiles ? "files" : isPins || isSearch ? null : "messages")
+      ? getActiveView(params)
       : null;
     return (
       <div className="user-entry">
@@ -188,11 +190,18 @@ const NavUserContainer = observer(
           className={{ active: isActive }}
           badge={badges.getForChannel(channel?.id ? String(channel.id) : "")}
           onClick={async () => {
-            const channel = await client.api.putDirectChannel(String(user.id));
-            if (isMobile()) {
-              hideSidebar();
+            try {
+              const channel = await client.api.putDirectChannel(
+                String(user.id),
+              );
+              onOpen();
+              if (isMobile()) {
+                hideSidebar();
+              }
+              navigate(`/${channel.id}`);
+            } catch (err) {
+              console.error(err);
             }
-            navigate(`/${channel.id}`);
           }}
         />
         {channel && expanded && (
@@ -212,11 +221,18 @@ const NavUserContainer = observer(
   },
 );
 
-export const NavUsers = observer(() => {
+export const NavUsers = observer((
+  { expandedId: expandedIdProp, onExpand }: {
+    expandedId?: string | null;
+    onExpand?: (id: string | null) => void;
+  } = {},
+) => {
   const app = useApp();
   const users = app.users.getAll();
   const { channelId: id } = useParams();
-  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [internalExpanded, setInternalExpanded] = useState<string | null>(null);
+  const expandedId = onExpand ? (expandedIdProp ?? null) : internalExpanded;
+  const setExpanded = onExpand ?? setInternalExpanded;
 
   const activeChannel = id ? app.channels.get(id) : null;
   const activeDmUser = activeChannel?.isDirect
@@ -225,7 +241,7 @@ export const NavUsers = observer(() => {
   const activeDmUserId = activeDmUser ? String(activeDmUser.id) : null;
 
   useEffect(() => {
-    if (activeDmUserId) setExpandedId(activeDmUserId);
+    if (activeDmUserId) setExpanded(activeDmUserId);
   }, [activeDmUserId]);
 
   return (
@@ -238,9 +254,10 @@ export const NavUsers = observer(() => {
           badges={app.readReceipts}
           expanded={expandedId === String(user.id)}
           onToggle={() =>
-            setExpandedId((cur) =>
-              cur === String(user.id) ? null : String(user.id)
+            setExpanded(
+              expandedId === String(user.id) ? null : String(user.id),
             )}
+          onOpen={() => setExpanded(String(user.id))}
         />
       ))}
     </UserListContainer>

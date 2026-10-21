@@ -1,20 +1,23 @@
 import type { FileItem } from "./FileListItem.tsx";
 
+const svgImage = (color: string, width = 400, height = 300) =>
+  `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='${width}' height='${height}'%3E%3Crect width='${width}' height='${height}' fill='%23${color}'/%3E%3C/svg%3E`;
+
 const UPLOADERS = {
   ada: {
     id: "u-ada",
     name: "Ada Lovelace",
-    avatarUrl: "https://i.pravatar.cc/64?img=47",
+    avatarUrl: svgImage("8e4ec6", 64, 64),
   },
   alan: {
     id: "u-alan",
     name: "Alan Turing",
-    avatarUrl: "https://i.pravatar.cc/64?img=12",
+    avatarUrl: svgImage("0d9488", 64, 64),
   },
   grace: {
     id: "u-grace",
     name: "Grace Hopper",
-    avatarUrl: "https://i.pravatar.cc/64?img=32",
+    avatarUrl: svgImage("2b6cb0", 64, 64),
   },
 };
 
@@ -25,7 +28,7 @@ export const mockFiles: FileItem[] = [
     contentType: "application/pdf",
     size: 2_400_000,
     createdAt: "2026-07-14T10:12:00.000Z",
-    url: "https://picsum.photos/seed/roadmap/400/300",
+    url: "https://example.com/quarterly-roadmap.pdf",
     uploader: UPLOADERS.ada,
   },
   {
@@ -34,8 +37,7 @@ export const mockFiles: FileItem[] = [
     contentType: "image/png",
     size: 5_800_000,
     createdAt: "2026-07-13T16:40:00.000Z",
-    url: "https://picsum.photos/seed/mockup/400/300",
-    resolution: { width: 1920, height: 1080 },
+    url: svgImage("30a46c"),
     uploader: UPLOADERS.grace,
   },
   {
@@ -80,7 +82,7 @@ export const mockFiles: FileItem[] = [
     contentType: "image/svg+xml",
     size: 24_500,
     createdAt: "2026-07-05T19:14:00.000Z",
-    url: "https://picsum.photos/seed/logo/400/300",
+    url: svgImage("f5a623"),
     uploader: UPLOADERS.grace,
   },
   {
@@ -89,8 +91,7 @@ export const mockFiles: FileItem[] = [
     contentType: "image/jpeg",
     size: 3_100_000,
     createdAt: "2026-07-02T12:48:00.000Z",
-    url: "https://picsum.photos/seed/team/400/300",
-    resolution: { width: 4032, height: 3024 },
+    url: svgImage("e5484d"),
     uploader: UPLOADERS.ada,
   },
 ];
@@ -103,6 +104,8 @@ const OLDER_TEMPLATES = [
   { ext: "md", type: "text/markdown" },
   { ext: "xlsx", type: "application/vnd.ms-excel" },
 ];
+
+const IMAGE_COLORS = ["3b82f6", "30a46c", "8e4ec6", "d24726"];
 
 const UPLOADER_LIST = [UPLOADERS.ada, UPLOADERS.alan, UPLOADERS.grace];
 
@@ -129,7 +132,7 @@ export const makeOlderFiles = (
       size: 40_000 + ((idx * 733) % 9_000_000),
       createdAt,
       url: isImage
-        ? `https://picsum.photos/seed/older${idx}/400/300`
+        ? svgImage(IMAGE_COLORS[idx % IMAGE_COLORS.length])
         : `https://example.com/archived-${idx + 1}.${template.ext}`,
       uploader,
     };

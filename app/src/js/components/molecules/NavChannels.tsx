@@ -8,13 +8,18 @@ import {
 import { SectionHeader } from "../atoms/SectionHeader";
 import { useSidebar } from "../contexts/useSidebar";
 import { isMobile } from "../../utils";
-import { useNavigate, useParams } from "../AppRouter.tsx";
+import { getActiveView, useNavigate, useParams } from "../AppRouter.tsx";
 import { observer } from "mobx-react-lite";
 import { useApp } from "../contexts/appState";
 
 const ChannelsContainer = styled.div``;
 
-export const NavChannels = observer(() => {
+export const NavChannels = observer((
+  { expandedId, onExpand }: {
+    expandedId?: string | null;
+    onExpand?: (id: string | null) => void;
+  } = {},
+) => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const app = useApp();
   let navigate = (_path: string) => {};
@@ -22,7 +27,8 @@ export const NavChannels = observer(() => {
     navigate = useNavigate();
   } catch { /* ignore */ }
   const badges = app.readReceipts;
-  const { channelId: id, isFiles, isPins, isSearch } = useParams();
+  const params = useParams();
+  const { channelId: id } = params;
   const { hideSidebar } = useSidebar();
   const channels = app.channels.getAll(["PUBLIC", "PRIVATE"]);
 
@@ -58,7 +64,9 @@ export const NavChannels = observer(() => {
           unread: badges.getForChannel(String(c.id))?.count ?? 0,
         }))}
         activeChannelId={id}
-        activeView={isFiles ? "files" : isPins || isSearch ? null : "messages"}
+        activeView={getActiveView(params)}
+        expandedId={expandedId}
+        onExpand={onExpand}
         onSelectChannel={(channelId) => {
           if (isMobile()) hideSidebar();
           navigate(`/${channelId}`);

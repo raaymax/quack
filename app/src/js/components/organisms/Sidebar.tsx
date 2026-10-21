@@ -70,14 +70,15 @@ export const Sidebar = observer(
     },
   ) => {
     const [showSettings, setShowSettings] = useState(false);
+    const [expandedId, setExpandedId] = useState<string | null>(null);
     return (
       <Container className={cn("side-menu", className)} style={style}>
         <div className="side-menu-header">
           Workspace
         </div>
         <div className="slider">
-          <NavChannels />
-          <NavUsers />
+          <NavChannels expandedId={expandedId} onExpand={setExpandedId} />
+          <NavUsers expandedId={expandedId} onExpand={setExpandedId} />
         </div>
         <div className="bottom">
           <ThemeButtonConnected />

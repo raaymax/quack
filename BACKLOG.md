@@ -374,6 +374,12 @@ structure with proper relations.
 - [ ] **Files view: virtualized rendering** - The full file list renders at once
       (load-all + client-side search decision). For very large channels, add
       render windowing to the timeline; thumbnails already lazy-load via scroll.
+- [ ] **Upload size limit** - No client- or server-side cap on file upload size;
+      the route streams the body straight to storage. Needs a configurable max
+      with a clear client-side error before the upload starts.
+- [ ] **Toast/notification system for action errors** - File action failures
+      (delete, upload) surface via inline banners/rows scoped to the files view;
+      a global toast system would cover message send/pin/etc. failures too.
 - [ ] **E2E local search cache (IndexedDB)** - Browser-side cache/index of
       decrypted old messages+files for complete client-side search in E2E
       channels; enabler: immutability window (lock messages older than ~1
