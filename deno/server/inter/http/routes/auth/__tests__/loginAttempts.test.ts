@@ -1,4 +1,4 @@
-import { assert, assertEquals } from "@std/assert";
+import { assert, assertEquals, assertThrows } from "@std/assert";
 import { Agent } from "@planigale/testing";
 import * as bcrypt from "@ts-rex/bcrypt";
 import { config, createApp } from "../../__tests__/app.ts";
@@ -65,6 +65,42 @@ Deno.test("Login attempts", async (t) => {
     });
     assertEquals(logs[2].email, 'evil"\n{"kind":"login"}');
     assert(!JSON.stringify(logs).includes("wrong"));
+  });
+
+  await t.step("takes the client ip from X-Forwarded-For", async () => {
+    const ip = randomIp();
+    const logs = await captureLogs(async () => {
+      await login({ email: "nobody", password: "x" }, ip, 401);
+      await login({ email: "nobody", password: "x" }, `6.6.6.6, ${ip}`, 401);
+    });
+    assertEquals(logs.map((l) => l.ip), [ip, ip]);
+  });
+
+  await t.step("skips trustProxy hops from the right", async () => {
+    const ip = randomIp();
+    const direct = createApp({ ...config, trustProxy: 0 });
+    const twoProxies = createApp({ ...config, trustProxy: 2 });
+    const logs = await captureLogs(async () => {
+      await Agent.request(direct.app).post("/api/auth/session")
+        .json({ email: "nobody", password: "x" })
+        .header("X-Forwarded-For", ip)
+        .expect(401);
+      await Agent.request(twoProxies.app).post("/api/auth/session")
+        .json({ email: "nobody", password: "x" })
+        .header("X-Forwarded-For", `6.6.6.6, ${ip}, 10.0.0.5`)
+        .expect(401);
+    });
+    await direct.core.close();
+    await twoProxies.core.close();
+    assertEquals(logs.map((l) => l.ip), ["localhost", ip]);
+  });
+
+  await t.step("rejects an invalid trustProxy at startup", () => {
+    for (const trustProxy of [-1, 1.5, "uniquelocal", true]) {
+      assertThrows(() =>
+        createApp({ ...config, trustProxy } as unknown as typeof config)
+      );
+    }
   });
 
   await t.step("blocks an ip after repeated failures", async () => {

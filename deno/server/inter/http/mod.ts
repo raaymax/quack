@@ -4,6 +4,7 @@ import { bodyParser } from "@planigale/body-parser";
 import { join } from "@std/path";
 import { authMiddleware } from "./middleware/auth.ts";
 import { anonymousAccessLog } from "./middleware/anonymousAccessLog.ts";
+import { trustedHops } from "./clientIp.ts";
 import { Core } from "../../core/mod.ts";
 import { messageSchema } from "./schema/message.ts";
 import { errorHandler } from "./errors.ts";
@@ -28,6 +29,7 @@ const PUBLIC_DIR = Deno.env.get("PUBLIC_DIR") ||
 export class HttpInterface extends Planigale {
   constructor(private core: Core) {
     super();
+    trustedHops(core.config.trustProxy);
     try {
       const schema = new SchemaValidator();
       schema.addFormat("entity-id", /^[a-fA-F0-9]{24}$/);
