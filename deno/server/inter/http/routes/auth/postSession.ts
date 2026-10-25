@@ -1,6 +1,6 @@
 import { Res, Route } from "@planigale/planigale";
 import { AccessDenied, TooManyLoginAttempts } from "../../errors.ts";
-import { Core, PasswordResetRequired } from "../../../../core/mod.ts";
+import { Core } from "../../../../core/mod.ts";
 import { logAuthAttempt } from "../../authLog.ts";
 import type { LoginLimiter } from "../../loginLimiter.ts";
 import type { LoginOutcome } from "../../../../types.ts";
@@ -61,7 +61,6 @@ export default (core: Core, limiter: LoginLimiter) => {
         });
       } catch (error) {
         await slot.finish(false);
-        if (error instanceof PasswordResetRequired) log("reset_required");
         throw error;
       }
       await slot.finish(!sessionId);

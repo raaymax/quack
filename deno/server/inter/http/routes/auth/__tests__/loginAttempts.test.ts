@@ -1,6 +1,5 @@
 import { assert, assertEquals, assertThrows } from "@std/assert";
 import { Agent } from "@planigale/testing";
-import * as bcrypt from "@ts-rex/bcrypt";
 import { config, createApp } from "../../__tests__/app.ts";
 import { ensureUser } from "../../__tests__/users.ts";
 import * as enc from "@quack/encryption";
@@ -38,9 +37,7 @@ const captureLogs = async (fn: () => Promise<unknown>) => {
   }
   return lines.filter((line) => line.startsWith("{"))
     .map((line) => JSON.parse(line))
-    .filter((entry) =>
-      entry.kind === "login" || entry.kind === "password_reset"
-    );
+    .filter((entry) => entry.kind === "login");
 };
 
 Deno.test("Login attempts", async (t) => {
@@ -164,30 +161,6 @@ Deno.test("Login attempts", async (t) => {
     const rows = await db.collection("loginAttempts").find({ ip }).toArray();
     assertEquals(rows.length, 1);
     assertEquals(Object.keys(rows[0]).sort(), ["_id", "createdAt", "ip"]);
-  });
-
-  await t.step("logs password reset attempts", async () => {
-    const email = `legacy-${unique()}`;
-    await repo.user.create({ email, password: bcrypt.hash("old") });
-    const ip = randomIp();
-    const res = await login({ email, password: "anything" }, ip, 403);
-    const { token } = await res.json();
-
-    const data = await enc.prepareRegistration({ email, password: "new" });
-    const reset = (oldPassword: string, status: number) =>
-      Agent.request(app).put(`/api/auth/reset/${token}`)
-        .json({ ...data, oldPassword })
-        .header("X-Forwarded-For", ip)
-        .expect(status);
-
-    const logs = await captureLogs(async () => {
-      await reset("wrong", 403);
-      await reset("old", 200);
-    });
-    assertEquals(logs.map((l) => [l.kind, l.result]), [
-      ["password_reset", "failure"],
-      ["password_reset", "success"],
-    ]);
   });
 
   await core.close();

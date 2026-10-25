@@ -88,7 +88,7 @@ Number of reverse proxies in front of the server. The client IP is taken from `X
 
 Every proxy must append to `X-Forwarded-For` (nginx: `proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;`, Traefik: `forwardedHeaders.trustedIPs` for the proxy in front of it), and the server must not be reachable without going through them. Otherwise clients can choose their own IP, or all clients share the IP of one proxy.
 ## loginRateLimit
-Failed logins and password resets are counted per client IP within a sliding window (failures are kept in the `loginAttempts` collection for one day). When the limit is reached the endpoint answers `429` with a `Retry-After` header until older failures leave the window. Attempts already in progress count towards the limit, so parallel requests cannot get past it.
+Failed logins are counted per client IP within a sliding window (failures are kept in the `loginAttempts` collection for one day). When the limit is reached the endpoint answers `429` with a `Retry-After` header until older failures leave the window. Attempts already in progress count towards the limit, so parallel requests cannot get past it.
 ## databaseUrl
 connection string to mongodb instance. By default this value is taken from env variable `DATABASE_URL`.
 example:

@@ -132,28 +132,6 @@ export class Chat {
     return arg;
   }
 
-  isResetValid(token: Arg<string>) {
-    this.steps.push(async () => {
-      const tokenR = this.arg(token);
-      await this.api.auth.checkPasswordResetToken({ token: tokenR });
-    });
-    return this;
-  }
-
-  reset(
-    data: Arg<
-      { token: string; email: string; password: string; oldPassword: string }
-    >,
-    test?: (session: Result) => Promise<void> | void,
-  ) {
-    this.steps.push(async () => {
-      const resetData = this.arg(data);
-      const ret = await this.api.auth.resetPassword(resetData);
-      await test?.(ret);
-    });
-    return this;
-  }
-
   connectSSE() {
     this.steps.push(async () => {
       this.eventSource = this.agent.events("/api/sse", {
