@@ -3,6 +3,7 @@ export default {
   storage: {
     type: "memory",
   },
+  trustProxy: 1,
   loginRateLimit: {
     maxFailuresPerIp: 100_000,
   },

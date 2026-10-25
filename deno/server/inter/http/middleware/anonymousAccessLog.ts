@@ -1,6 +1,6 @@
 import { ApiError, Middleware } from "@planigale/planigale";
 import type { Core } from "../../../core/mod.ts";
-import { clientIp, trustMatcher } from "../clientIp.ts";
+import { clientIp, trustedHops } from "../clientIp.ts";
 
 const SECRET_PATHS: [RegExp, string][] = [
   [/^\/api\/auth\/reset\/[^/]+/, "/api/auth/reset/:token"],
@@ -27,7 +27,7 @@ const responseBytes = (res: unknown) => {
 };
 
 export const anonymousAccessLog = (core: Core): Middleware => {
-  const isTrustedProxy = trustMatcher(core.config.trustProxy ?? false);
+  const hops = trustedHops(core.config.trustProxy);
 
   return async (req, next) => {
     const start = Date.now();
@@ -47,7 +47,7 @@ export const anonymousAccessLog = (core: Core): Middleware => {
         console.log(JSON.stringify({
           kind: "req",
           time: new Date(start).toISOString(),
-          ip: clientIp(req, isTrustedProxy),
+          ip: clientIp(req, hops),
           method: req.method,
           path: redactPath(url.pathname),
           query: redactQuery(url.search),

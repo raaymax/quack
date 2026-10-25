@@ -5,10 +5,10 @@ import { logAuthAttempt } from "../../authLog.ts";
 import type { LoginLimiter } from "../../loginLimiter.ts";
 import type { LoginOutcome } from "../../../../types.ts";
 import { authCookieOptions } from "../../cookies.ts";
-import { clientIp, trustMatcher } from "../../clientIp.ts";
+import { clientIp, trustedHops } from "../../clientIp.ts";
 
 export default (core: Core, limiter: LoginLimiter) => {
-  const isTrustedProxy = trustMatcher(core.config.trustProxy ?? false);
+  const hops = trustedHops(core.config.trustProxy);
 
   return new Route({
     public: true,
@@ -31,7 +31,7 @@ export default (core: Core, limiter: LoginLimiter) => {
           status: 400,
         });
       }
-      const ip = clientIp(req, isTrustedProxy);
+      const ip = clientIp(req, hops);
       const log = (result: LoginOutcome) =>
         logAuthAttempt({
           kind: "login",

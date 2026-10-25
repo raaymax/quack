@@ -73,7 +73,7 @@ File should export folowing object:
 type Config = {
   port?: number; // default `PORT` env otherwise `8080`
   sessionSecret?: string; // auto generated on first run to `secrets.json` but can be overwritten here
-  trustProxy?: bool | number | string[]; // default ["loopback", "linklocal", "uniquelocal"]
+  trustProxy?: number; // proxies in front of the server, default 0
   loginRateLimit?: { // failed login limits
     windowMinutes?: number; // default 15
     maxFailuresPerIp?: number; // default 10
@@ -104,14 +104,16 @@ this value will overwrite the one from `secrets.json`
 
 ## trustProxy
 
-Which proxies may set `X-Forwarded-For`. The client IP is used for login
-monitoring and rate limiting, so only trust proxies you control.
+Number of reverse proxies in front of the server. The client IP is taken from
+`X-Forwarded-For`, skipping that many entries from the right, and is used for
+login rate limiting. `0` (default) ignores the header and uses the connecting
+address.
 
-- `false` - ignore `X-Forwarded-For`, use the connecting address
-- `true` - trust every hop (use the left-most address)
-- number - trust that many hops in front of the server
-- list - addresses or CIDR ranges (`"10.0.0.0/8"`), one per entry, plus the
-  presets `"loopback"`, `"linklocal"` and `"uniquelocal"`
+Every proxy must append to `X-Forwarded-For` (nginx:
+`proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;`, Traefik:
+`forwardedHeaders.trustedIPs` for the proxy in front of it), and the server
+must not be reachable without going through them. Otherwise clients can choose
+their own IP, or all clients share the IP of one proxy.
 
 ## loginRateLimit
 
