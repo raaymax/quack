@@ -20,6 +20,7 @@ export type FileItem = {
   createdAt: string;
   url?: string;
   removable?: boolean;
+  draft?: boolean;
   uploader: FileUploader;
 };
 
@@ -41,10 +42,11 @@ type FileActionsProps = {
   file: FileItem;
   onDownload?: (file: FileItem) => void;
   onRemove?: (file: FileItem) => void;
+  onAttach?: (file: FileItem) => void;
 };
 
 export const FileActions = (
-  { file, onDownload, onRemove }: FileActionsProps,
+  { file, onDownload, onRemove, onAttach }: FileActionsProps,
 ) => {
   const [confirming, setConfirming] = useState(false);
   const stop = (e: React.MouseEvent) => e.stopPropagation();
@@ -80,6 +82,18 @@ export const FileActions = (
 
   return (
     <div className="actions">
+      {onAttach && file.draft && (
+        <button
+          type="button"
+          title="Attach to channel"
+          onClick={(e) => {
+            stop(e);
+            onAttach(file);
+          }}
+        >
+          <Icon icon="send" size={14} />
+        </button>
+      )}
       <button
         type="button"
         title="Download"
@@ -110,7 +124,7 @@ const MOBILE = "@media (max-width: 540px)";
 
 const Row = styled.div`
   display: grid;
-  grid-template-columns: 40px minmax(0, 1fr) 160px 120px 90px 72px;
+  grid-template-columns: 40px minmax(0, 1fr) 160px 120px 90px 104px;
   align-items: center;
   gap: 12px;
   height: 52px;
@@ -148,6 +162,15 @@ const Row = styled.div`
       overflow: hidden;
       text-overflow: ellipsis;
       font-size: 14px;
+    }
+
+    .draft-tag {
+      align-self: flex-start;
+      padding: 0 6px;
+      border-radius: 4px;
+      font-size: 11px;
+      color: ${(props) => props.theme.Labels};
+      border: 1px dashed ${(props) => props.theme.Labels};
     }
 
     .file-type {
@@ -257,6 +280,7 @@ type FileListItemProps = {
   className?: ClassNames;
   onDownload?: (file: FileItem) => void;
   onRemove?: (file: FileItem) => void;
+  onAttach?: (file: FileItem) => void;
 };
 
 export const FileListItem = ({
@@ -264,6 +288,7 @@ export const FileListItem = ({
   className,
   onDownload,
   onRemove,
+  onAttach,
 }: FileListItemProps) => {
   const thumbUrl = getThumbUrl(file, 80);
 
@@ -280,6 +305,7 @@ export const FileListItem = ({
 
       <div className="name">
         <span className="file-name">{file.fileName}</span>
+        {file.draft && <span className="draft-tag">Draft</span>}
         <span className="file-type">{file.contentType}</span>
         <span className="meta-inline">
           {file.uploader.name} ·{" "}
@@ -299,7 +325,12 @@ export const FileListItem = ({
         {file.size == null ? "—" : filesize(file.size)}
       </div>
 
-      <FileActions file={file} onDownload={onDownload} onRemove={onRemove} />
+      <FileActions
+        file={file}
+        onDownload={onDownload}
+        onRemove={onRemove}
+        onAttach={onAttach}
+      />
     </Row>
   );
 };

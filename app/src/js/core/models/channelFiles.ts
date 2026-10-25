@@ -18,7 +18,7 @@ export class ChannelFilesModel {
   loading: boolean = false;
   initialized: boolean = false;
   error: boolean = false;
-  removeError: boolean = false;
+  actionError: string | null = null;
   uploads: PendingUpload[] = [];
   root: AppModel;
 
@@ -91,8 +91,8 @@ export class ChannelFilesModel {
     yield this.upload(clientId, entry.file);
   });
 
-  clearRemoveError = () => {
-    this.removeError = false;
+  clearActionError = () => {
+    this.actionError = null;
   };
 
   upload = flow(function* (
@@ -139,19 +139,31 @@ export class ChannelFilesModel {
   });
 
   remove = flow(function* (this: ChannelFilesModel, fileId: string) {
-    this.removeError = false;
+    this.actionError = null;
     try {
       yield client.api.files.remove(this.channelId, fileId);
       this.list = this.list.filter((file) => file.id !== fileId);
     } catch (err) {
       console.error(err);
-      this.removeError = true;
+      this.actionError = "Failed to delete file.";
+    }
+  });
+
+  attach = flow(function* (this: ChannelFilesModel, fileId: string) {
+    this.actionError = null;
+    try {
+      yield client.api.files.attach(this.channelId, fileId);
+      const file = this.list.find((f) => f.id === fileId);
+      if (file) file.status = "attached";
+    } catch (err) {
+      console.error(err);
+      this.actionError = "Failed to attach file to the channel.";
     }
   });
 
   onFile = (file: MessageFile) => {
     if (file.channelId !== this.channelId) return;
-    if (file.status !== "attached") return;
+    if (file.status === "deleted") return;
     const idx = this.list.findIndex((f) => f.id === file.id);
     if (idx === -1) this.list.push(file);
     else this.list[idx] = file;

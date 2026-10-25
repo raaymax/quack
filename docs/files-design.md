@@ -45,61 +45,68 @@ type File = {
   size: number | null; // new uploads only; null on backfill
   resolution: { width: number; height: number } | null; // images only; null on backfill
   status: "draft" | "attached" | "deleted"; // lifecycle
-  messageId: EntityId | null; // back-ref, set on attach
-  createdAt: Date; // = message.createdAt once attached
+  createdAt: Date; // upload time
 };
 ```
 
 Indexes:
 
-- `{ channelId, createdAt }` — drives the per-channel Files view.
-- unique `{ messageId, storageId }` — idempotent attach/backfill, allows the
-  same blob in different messages.
+- `{ channelId, status, createdAt }` — drives the per-channel Files view.
+- `{ storageId, status }` — "is this blob still used" checks before deleting it.
 
 Two deliberate "closer-to-ideal" choices:
 
 - **`storageId` separate from `id`** — logical file identity is decoupled from
   the physical blob. Costs nothing now; it's the seam where content-addressing /
   dedup slots in later.
-- **`status` lifecycle** — `draft` (uploaded, not yet attached to a message) →
-  `attached` (referenced by a sent message) → `deleted`. The Files view lists
-  **only `attached`**.
+- **`status` lifecycle** — `draft` (uploaded, not yet shared) → `attached`
+  (shared in the channel) → `deleted`. The Files view lists `attached` files to
+  everyone and `draft` files only to their uploader.
+
+Files belong to the **channel**. Messages (and later other resources) only
+reference them through their own `fileIds`. A file has no back-reference to a
+message, so many messages can reference the same file, and deleting a message
+never deletes its files.
 
 ## Lifecycle
 
 ```
 POST /api/channels/:channelId/files   (stream)
   → storage.upload() → storageId + compute resolution
-  → create File { channelId, uploaderId, status: "draft", messageId: null, ... }
+  → create File { channelId, uploaderId, status: "draft", ... }
+  → live "file" event to the uploader only
   → return fileId
+  (?attach=channel attaches it right away — uploads from the Files view)
+
+POST /api/channels/:channelId/files/:fileId/attach
+  → own draft → "attached" (the Files view "Attach to channel" action)
 
 POST /api/channels/:channelId/messages   { fileIds: [fileId], message: ... }
-  → message:create links them: File.status → "attached", File.messageId set,
-    File.createdAt aligned to the message
+  → file:attach checks every referenced file before the message is saved:
+    another channel / deleted / unknown → 404, someone else's draft → 403,
+    own draft → "attached", already attached → just referenced
 ```
 
 ### Status
 
 `status` is **kept from day one** (it's one enum on the row):
 
-- The Files view filters on `status: "attached"`, so never-attached drafts are
-  invisible to users with no extra work.
-- It makes orphans _identifiable_ if cleanup is ever wanted.
+- Drafts are visible (listed, downloadable, live events) only to their
+  uploader; everyone else sees `attached` files only.
+- It makes orphans _identifiable_ for cleanup.
 
-### Orphan GC — deferred (not now)
+### Draft cleanup
 
-Because a File row is created at **upload** (before the message exists), a
-cancelled upload leaves a `draft` orphan. **At current scale this is ignored** —
-no sweeper. Orphan drafts accumulate harmlessly and stay hidden (the view
-filters `status: "attached"`).
-
-When cleanup is eventually wanted it's a ~15-line periodic job with **no schema
-change**: `delete files where status = "draft" and createdAt < now - 24h`, then
-sweep their blobs + thumbnail variants.
+A File row is created at **upload**, before any message exists, so an upload
+that is never sent or attached stays a `draft`. `file:removeStaleDrafts` runs
+on startup and every hour and deletes drafts older than **7 days**, together
+with their blobs and thumbnail variants (unless an attached file still uses the
+same `storageId`).
 
 ## Deletion
 
-`file:remove` and the `message:remove` cascade flip `status: "deleted"`.
+`file:remove` flips `status: "deleted"`. Removing a message does not touch its
+files.
 Physical blob + thumbnail cleanup happens when nothing references the
 `storageId`:
 
@@ -109,9 +116,6 @@ Physical blob + thumbnail cleanup happens when nothing references the
   key prefix). Full-UUID ids make the prefix unambiguous.
 - Physically delete the blob only when no remaining row references that
   `storageId` (cheap `count`).
-
-This also fixes a current leak: deleting a message today removes nothing from
-storage.
 
 ## File addressing & download endpoints
 

@@ -1,6 +1,7 @@
 import * as v from "valibot";
 import { createCommand } from "../command.ts";
 import { Id } from "../types.ts";
+import { toClientFile } from "./clientFile.ts";
 
 export default createCommand({
   type: "file:register",
@@ -23,13 +24,13 @@ export default createCommand({
     ["channelId", "userId", "storageId", "fileName"],
   ),
 }, async (data, core) => {
-  const { repo } = core;
+  const { repo, bus } = core;
   const channel = await core.channel.access({
     id: data.channelId,
     userId: data.userId,
   }).internal();
 
-  const id = await repo.file.create({
+  const file = {
     storageId: data.storageId,
     channelId: channel.id,
     userId: data.userId,
@@ -37,8 +38,13 @@ export default createCommand({
     contentType: data.contentType,
     size: data.size,
     resolution: data.resolution,
-    status: "draft",
+    status: "draft" as const,
     createdAt: new Date(),
+  };
+  const id = await repo.file.create(file);
+  bus.direct(data.userId, {
+    type: "file",
+    ...toClientFile({ ...file, id }),
   });
 
   return id;

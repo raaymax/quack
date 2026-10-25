@@ -52,6 +52,7 @@ type FilesTimelineProps = {
   onLoadOlder?: () => void;
   onDownload?: (file: FileItem) => void;
   onRemove?: (file: FileItem) => void;
+  onAttach?: (file: FileItem) => void;
   className?: ClassNames;
 };
 
@@ -64,6 +65,7 @@ export const FilesTimeline = ({
   onLoadOlder,
   onDownload,
   onRemove,
+  onAttach,
   className,
 }: FilesTimelineProps) => {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -105,6 +107,7 @@ export const FilesTimeline = ({
               file={file}
               onDownload={onDownload}
               onRemove={onRemove}
+              onAttach={onAttach}
             />
           ))}
         </div>
@@ -117,6 +120,7 @@ export const FilesTimeline = ({
               file={file}
               onDownload={onDownload}
               onRemove={onRemove}
+              onAttach={onAttach}
             />
           ))}
         </div>

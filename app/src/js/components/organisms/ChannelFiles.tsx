@@ -33,6 +33,10 @@ export const ChannelFiles = observer(() => {
     model?.remove(file.id);
   }, [model]);
 
+  const onAttach = useCallback((file: FileItem) => {
+    model?.attach(file.id);
+  }, [model]);
+
   const onUpload = useCallback((files: FileList) => {
     model?.uploadMany(files);
   }, [model]);
@@ -57,6 +61,7 @@ export const ChannelFiles = observer(() => {
       createdAt: file.createdAt,
       url: client.api.getFileUrl(file.channelId, file.id),
       removable: file.userId === app.userId,
+      draft: file.status === "draft",
       uploader: {
         id: file.userId,
         name: uploader?.name ?? "Unknown",
@@ -80,10 +85,11 @@ export const ChannelFiles = observer(() => {
       uploads={model.uploads}
       onDismissUpload={(clientId) => model.dismissUpload(clientId)}
       onRetryUpload={(clientId) => model.retryUpload(clientId)}
-      removeError={model.removeError}
-      onClearRemoveError={() => model.clearRemoveError()}
+      actionError={model.actionError}
+      onClearActionError={() => model.clearActionError()}
       onDownload={onDownload}
       onRemove={onRemove}
+      onAttach={onAttach}
       onClose={onClose}
       onMenu={toggleSidebar}
     />

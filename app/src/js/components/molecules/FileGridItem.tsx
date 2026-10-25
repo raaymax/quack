@@ -106,6 +106,7 @@ type FileGridItemProps = {
   className?: ClassNames;
   onDownload?: (file: FileItem) => void;
   onRemove?: (file: FileItem) => void;
+  onAttach?: (file: FileItem) => void;
 };
 
 export const FileGridItem = ({
@@ -113,6 +114,7 @@ export const FileGridItem = ({
   className,
   onDownload,
   onRemove,
+  onAttach,
 }: FileGridItemProps) => {
   const thumbUrl = getThumbUrl(file, 240);
 
@@ -121,7 +123,12 @@ export const FileGridItem = ({
       className={cn("file-grid-item", className)}
       onClick={() => openFile(file)}
     >
-      <FileActions file={file} onDownload={onDownload} onRemove={onRemove} />
+      <FileActions
+        file={file}
+        onDownload={onDownload}
+        onRemove={onRemove}
+        onAttach={onAttach}
+      />
 
       <div className="preview">
         {thumbUrl
@@ -134,7 +141,8 @@ export const FileGridItem = ({
           {file.fileName}
         </span>
         <span className="file-sub">
-          {(file.size == null ? "—" : filesize(file.size)) + " · " +
+          {(file.draft ? "Draft · " : "") +
+            (file.size == null ? "—" : filesize(file.size)) + " · " +
             formatDate(file.createdAt)}
         </span>
       </div>

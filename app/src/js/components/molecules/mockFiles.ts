@@ -30,6 +30,7 @@ export const mockFiles: FileItem[] = [
     createdAt: "2026-07-14T10:12:00.000Z",
     url: "https://example.com/quarterly-roadmap.pdf",
     uploader: UPLOADERS.ada,
+    draft: true,
   },
   {
     id: "f2",

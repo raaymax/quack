@@ -17,10 +17,11 @@ const meta: Meta<typeof FilesView> = {
   argTypes: {
     onDownload: { action: "download" },
     onRemove: { action: "remove" },
+    onAttach: { action: "attach" },
     onUpload: { action: "upload" },
     onDismissUpload: { action: "dismissUpload" },
     onRetryUpload: { action: "retryUpload" },
-    onClearRemoveError: { action: "clearRemoveError" },
+    onClearActionError: { action: "clearActionError" },
   },
   render: (args) => (
     <div style={{ height: "100vh" }}>
@@ -37,15 +38,20 @@ const useMockFiles = (initial: FileItem[] = mockFiles) => {
   const onRemove = useCallback((file: FileItem) => {
     setFiles((current) => current.filter((f) => f.id !== file.id));
   }, []);
-  return { files, onRemove };
+  const onAttach = useCallback((file: FileItem) => {
+    setFiles((current) =>
+      current.map((f) => f.id === file.id ? { ...f, draft: false } : f)
+    );
+  }, []);
+  return { files, onRemove, onAttach };
 };
 
 export const ListView: Story = {
   render: (args) => {
-    const { files, onRemove } = useMockFiles();
+    const { files, onRemove, onAttach } = useMockFiles();
     return (
       <div style={{ height: "100vh" }}>
-        <FilesView {...args} files={files} onRemove={onRemove} />
+        <FilesView {...args} files={files} onRemove={onRemove} onAttach={onAttach} />
       </div>
     );
   },
@@ -53,10 +59,10 @@ export const ListView: Story = {
 
 export const GridView: Story = {
   render: (args) => {
-    const { files, onRemove } = useMockFiles();
+    const { files, onRemove, onAttach } = useMockFiles();
     return (
       <div style={{ height: "100vh" }}>
-        <FilesView {...args} files={files} onRemove={onRemove} />
+        <FilesView {...args} files={files} onRemove={onRemove} onAttach={onAttach} />
       </div>
     );
   },
@@ -77,10 +83,10 @@ export const LoadError: Story = {
 
 export const Mobile: Story = {
   render: (args) => {
-    const { files, onRemove } = useMockFiles();
+    const { files, onRemove, onAttach } = useMockFiles();
     return (
       <div style={{ height: "100vh" }}>
-        <FilesView {...args} files={files} onRemove={onRemove} />
+        <FilesView {...args} files={files} onRemove={onRemove} onAttach={onAttach} />
       </div>
     );
   },
@@ -90,10 +96,10 @@ export const Mobile: Story = {
 
 export const MobileGrid: Story = {
   render: (args) => {
-    const { files, onRemove } = useMockFiles();
+    const { files, onRemove, onAttach } = useMockFiles();
     return (
       <div style={{ height: "100vh" }}>
-        <FilesView {...args} files={files} onRemove={onRemove} />
+        <FilesView {...args} files={files} onRemove={onRemove} onAttach={onAttach} />
       </div>
     );
   },
@@ -103,10 +109,10 @@ export const MobileGrid: Story = {
 
 export const Uploading: Story = {
   render: (args) => {
-    const { files, onRemove } = useMockFiles();
+    const { files, onRemove, onAttach } = useMockFiles();
     return (
       <div style={{ height: "100vh" }}>
-        <FilesView {...args} files={files} onRemove={onRemove} />
+        <FilesView {...args} files={files} onRemove={onRemove} onAttach={onAttach} />
       </div>
     );
   },
@@ -129,16 +135,16 @@ export const Uploading: Story = {
 
 export const RemoveFailed: Story = {
   render: (args) => {
-    const { files, onRemove } = useMockFiles();
+    const { files, onRemove, onAttach } = useMockFiles();
     return (
       <div style={{ height: "100vh" }}>
-        <FilesView {...args} files={files} onRemove={onRemove} />
+        <FilesView {...args} files={files} onRemove={onRemove} onAttach={onAttach} />
       </div>
     );
   },
   args: {
-    removeError: true,
-    onClearRemoveError: () => {},
+    actionError: "Failed to delete file.",
+    onClearActionError: () => {},
   },
 };
 

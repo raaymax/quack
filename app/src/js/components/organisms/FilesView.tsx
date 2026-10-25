@@ -228,10 +228,11 @@ type FilesViewProps = {
   }[];
   onDismissUpload?: (clientId: string) => void;
   onRetryUpload?: (clientId: string) => void;
-  removeError?: boolean;
-  onClearRemoveError?: () => void;
+  actionError?: string | null;
+  onClearActionError?: () => void;
   onDownload?: (file: FileItem) => void;
   onRemove?: (file: FileItem) => void;
+  onAttach?: (file: FileItem) => void;
   onClose?: () => void;
   onMenu?: () => void;
 };
@@ -252,10 +253,11 @@ export const FilesView = observer(({
   uploads = [],
   onDismissUpload,
   onRetryUpload,
-  removeError = false,
-  onClearRemoveError,
+  actionError = null,
+  onClearActionError,
   onDownload,
   onRemove,
+  onAttach,
   onClose,
   onMenu,
 }: FilesViewProps) => {
@@ -341,6 +343,7 @@ export const FilesView = observer(({
         onLoadOlder={onLoadOlder}
         onDownload={onDownload}
         onRemove={onRemove}
+        onAttach={onAttach}
       />
     );
   };
@@ -393,12 +396,12 @@ export const FilesView = observer(({
         onClose={onClose}
         onMenu={onMenu}
       />
-      {removeError && (
+      {actionError && (
         <div className="files-error-banner">
           <Icon icon="circle-xmark" size={14} />
-          <span>Failed to delete file.</span>
-          {onClearRemoveError && (
-            <button type="button" title="Dismiss" onClick={onClearRemoveError}>
+          <span>{actionError}</span>
+          {onClearActionError && (
+            <button type="button" title="Dismiss" onClick={onClearActionError}>
               <Icon icon="xmark" size={12} />
             </button>
           )}

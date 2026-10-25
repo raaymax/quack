@@ -36,6 +36,18 @@ export class FilesAPI {
     await res.body?.cancel();
   };
 
+  attach = async (channelId: string, fileId: string): Promise<void> => {
+    const res = await this.api.fetchWithCredentials(
+      `/api/channels/${channelId}/files/${fileId}/attach`,
+      { method: "POST", body: JSON.stringify({}) },
+    );
+    if (!res.ok) {
+      await res.body?.cancel();
+      throw new Error(`Failed to attach file (${res.status})`);
+    }
+    await res.body?.cancel();
+  };
+
   abort(clientId: string) {
     this.aborts[clientId]?.();
   }

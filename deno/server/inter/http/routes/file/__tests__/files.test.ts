@@ -55,9 +55,9 @@ Deno.test("files - register draft, attach via message, list, keep after message 
         "hello world",
       );
 
-      // A registered-but-unattached file is a draft: not in the channel list.
+      // A registered-but-unattached file is a draft, listed only to its owner.
       let list = await core.file.getChannel({ userId, channelId });
-      assertEquals(list.length, 0);
+      assertEquals(list.map((f) => f.status), ["draft"]);
 
       // Sending a message that references the file attaches it and resolves
       // the file metadata onto the returned message.
@@ -406,7 +406,7 @@ Deno.test("files - referencing an attached file emits no new file event", async 
         unsubscribe();
       }
 
-      assertEquals(events.length, 1);
+      assertEquals(events.filter((e) => e.status === "attached").length, 1);
 
       await repo.file.removeMany({ channelId: EntityId.from(channelId) });
     });
@@ -559,12 +559,13 @@ Deno.test("files - upload with ?attach=channel emits a client-safe 'file' bus ev
           .expect(200);
         const body = await res.json();
 
-        assertEquals(events.length, 1);
-        assertEquals(events[0].id, body.file.id);
-        assertEquals(events[0].channelId, channelId);
-        assertEquals(events[0].status, "attached");
+        const attached = events.filter((e) => e.status === "attached");
+        assertEquals(attached.length, 1);
+        assertEquals(attached[0].id, body.file.id);
+        assertEquals(attached[0].channelId, channelId);
+        assertEquals(attached[0].status, "attached");
         assert(
-          !("storageId" in events[0]),
+          !("storageId" in attached[0]),
           "storageId must not leak in the 'file' bus event",
         );
       } finally {
@@ -617,7 +618,7 @@ Deno.test("files - removeStaleDrafts sweeps only old drafts", async () => {
         body: { fileIds: [oldAttached.fileId], channelId, userId },
       }).internal();
 
-      const backdated = new Date(Date.now() - 25 * 60 * 60 * 1000);
+      const backdated = new Date(Date.now() - 8 * 24 * 60 * 60 * 1000);
       await repo.file.update(
         { id: EntityId.from(oldDraft.fileId) },
         { createdAt: backdated },
@@ -715,6 +716,89 @@ Deno.test("files - bus events on attach/remove carry client-safe payloads", asyn
         assertEquals(removed.channelId, channelId);
       } finally {
         unsubscribe();
+      }
+
+      await repo.file.removeMany({ channelId: EntityId.from(channelId) });
+    });
+  } finally {
+    await agent.close();
+  }
+});
+
+Deno.test("files - drafts are visible only to their owner until attached", async () => {
+  const agent = await Agent.from(app);
+  try {
+    const session = await login(repo, agent, "admin");
+    const token = session.token;
+    const admin = await repo.user.get({ email: "admin" });
+    const userId = admin!.id.toString();
+    const memberSession = await login(repo, agent, "member");
+    const memberToken = memberSession.token;
+    const member = await repo.user.get({ email: "member" });
+    const memberId = member!.id.toString();
+
+    await usingChannel(repo, {
+      name: "files-test-draft-owner",
+      channelType: ChannelType.PUBLIC,
+      users: [EntityId.from(userId), EntityId.from(memberId)],
+    }, async (channelId) => {
+      const ownerEvents: Record<string, unknown>[] = [];
+      const memberEvents: Record<string, unknown>[] = [];
+      const offOwner = core.bus.on(userId, (msg) => {
+        if (msg.type === "file") ownerEvents.push(msg);
+      });
+      const offMember = core.bus.on(memberId, (msg) => {
+        if (msg.type === "file") memberEvents.push(msg);
+      });
+
+      try {
+        const res = await agent.request()
+          .post(`/api/channels/${channelId}/files`)
+          .file("deno/storage/tests/quack.png")
+          .header("Authorization", `Bearer ${token}`)
+          .expect(200);
+        const { file } = await res.json();
+        assertEquals(file.status, "draft");
+        assertEquals(ownerEvents.map((e) => e.status), ["draft"]);
+        assertEquals(memberEvents.length, 0);
+
+        const list = async (auth: string) => {
+          const listed = await agent.request()
+            .get(`/api/channels/${channelId}/files`)
+            .header("Authorization", `Bearer ${auth}`)
+            .expect(200);
+          return (await listed.json()).map((f: { id: string }) => f.id);
+        };
+        assertEquals(await list(token), [file.id]);
+        assertEquals(await list(memberToken), []);
+
+        const download = async (auth: string, status: number) => {
+          const dl = await agent.request()
+            .get(`/api/channels/${channelId}/files/${file.id}`)
+            .header("Authorization", `Bearer ${auth}`)
+            .expect(status);
+          await dl.body?.cancel?.();
+        };
+        await download(token, 200);
+        await download(memberToken, 404);
+
+        const attach = async (auth: string, status: number) => {
+          const attached = await agent.request()
+            .post(`/api/channels/${channelId}/files/${file.id}/attach`)
+            .json({})
+            .header("Authorization", `Bearer ${auth}`)
+            .expect(status);
+          await attached.body?.cancel?.();
+        };
+        await attach(memberToken, 403);
+        await attach(token, 200);
+
+        assertEquals(await list(memberToken), [file.id]);
+        await download(memberToken, 200);
+        assertEquals(memberEvents.map((e) => e.status), ["attached"]);
+      } finally {
+        offOwner();
+        offMember();
       }
 
       await repo.file.removeMany({ channelId: EntityId.from(channelId) });

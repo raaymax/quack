@@ -23,10 +23,19 @@ export class FileRepo extends Repo<FileQuery, FileEntry> {
     return deserialize(items);
   }
 
-  async getChannelFiles(channelId: EntityId): Promise<FileEntry[]> {
+  async getChannelFiles(
+    channelId: EntityId,
+    userId: EntityId,
+  ): Promise<FileEntry[]> {
     const { db } = await this.connect();
     const items = await db.collection(this.COLLECTION)
-      .find(this.makeQuery({ channelId, status: "attached" }))
+      .find({
+        ...serialize({ channelId }),
+        $or: [
+          { status: "attached" },
+          serialize({ status: "draft", userId }),
+        ],
+      })
       .sort("createdAt", -1)
       .toArray();
     return deserialize(items);
