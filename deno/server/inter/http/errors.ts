@@ -46,10 +46,6 @@ function mapAppError(error: AppError): ApiError {
       return new PasswordResetRequired(
         error as AppErrors.PasswordResetRequired,
       );
-    case "TOO_MANY_LOGIN_ATTEMPTS":
-      return new TooManyLoginAttempts(
-        error as AppErrors.TooManyLoginAttempts,
-      );
     case "INVALID_INVITATION": {
       const invalidInvitation = new ApiError(
         400,

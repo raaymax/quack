@@ -1,13 +1,14 @@
 import { Res, Route } from "@planigale/planigale";
-import { Core } from "../../../../core/mod.ts";
-import { AppError, TooManyLoginAttempts } from "../../../../core/errors.ts";
-import { logAuthAttempt } from "../../../../core/loginAttempt/log.ts";
+import { AppError, Core } from "../../../../core/mod.ts";
+import { TooManyLoginAttempts } from "../../errors.ts";
+import { logAuthAttempt } from "../../authLog.ts";
+import type { LoginLimiter } from "../../loginLimiter.ts";
 import type { LoginOutcome } from "../../../../types.ts";
 import { clientIp, trustMatcher } from "../../clientIp.ts";
 
 const REJECTED = new Set(["NO_ACCESS", "RESOURCE_NOT_FOUND"]);
 
-export default (core: Core) => {
+export default (core: Core, limiter: LoginLimiter) => {
   const isTrustedProxy = trustMatcher(core.config.trustProxy ?? false);
 
   return new Route({
@@ -54,7 +55,7 @@ export default (core: Core) => {
 
       let slot;
       try {
-        slot = await core.loginLimiter.acquire(ip);
+        slot = await limiter.acquire(ip);
       } catch (error) {
         if (error instanceof TooManyLoginAttempts) log("blocked");
         throw error;
