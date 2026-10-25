@@ -41,6 +41,8 @@ import AttachFiles from "./file/attach.ts";
 import RemoveFile from "./file/remove.ts";
 import GetChannelFiles from "./file/getChannel.ts";
 import { registerCommand } from "./command/repository.ts";
+import GetRecentLoginFailures from "./loginAttempt/getRecentFailures.ts";
+import RecordLoginFailure from "./loginAttempt/recordFailure.ts";
 
 import { Repository, storage } from "../infra/mod.ts";
 import { buildCommandCollection, EventFrom } from "./command.ts";
@@ -74,6 +76,7 @@ const commands = buildCommandCollection([
   RemoveFile,
   CreateEmoji,
   ReplaceEmoji,
+  RecordLoginFailure,
 ]);
 
 export class Core {
@@ -126,6 +129,10 @@ export class Core {
 
   file = {
     getChannel: GetChannelFiles(this),
+  };
+
+  loginAttempt = {
+    getRecentFailures: GetRecentLoginFailures(this),
   };
 
   constructor(arg: {

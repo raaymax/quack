@@ -63,6 +63,8 @@ export type Session = {
   lastUserAgent: string;
 };
 
+export type LoginOutcome = "success" | "failure" | "blocked" | "reset_required";
+
 export type EncryptedData = {
   encrypted: string;
   _iv: string;

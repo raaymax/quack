@@ -1,10 +1,16 @@
 import { Res, Route } from "@planigale/planigale";
-import { AccessDenied } from "../../errors.ts";
-import { Core } from "../../../../core/mod.ts";
+import { AccessDenied, TooManyLoginAttempts } from "../../errors.ts";
+import { Core, PasswordResetRequired } from "../../../../core/mod.ts";
+import { logAuthAttempt } from "../../authLog.ts";
+import type { LoginLimiter } from "../../loginLimiter.ts";
+import type { LoginOutcome } from "../../../../types.ts";
 import { authCookieOptions } from "../../cookies.ts";
+import { clientIp, trustedHops } from "../../clientIp.ts";
 
-export default (core: Core) =>
-  new Route({
+export default (core: Core, limiter: LoginLimiter) => {
+  const hops = trustedHops(core.config.trustProxy);
+
+  return new Route({
     public: true,
     method: "POST",
     url: "/session",
@@ -25,14 +31,42 @@ export default (core: Core) =>
           status: 400,
         });
       }
-      const sessionId = await core.dispatch({
-        type: "session:create",
-        body: {
+      const ip = clientIp(req, hops);
+      const log = (result: LoginOutcome) =>
+        logAuthAttempt({
+          kind: "login",
+          result,
+          ip,
+          ua: req.headers["user-agent"],
           email: req.body.email,
-          password: req.body.password,
-          legacyPassword: req.body.legacyPassword,
-        },
-      });
+        });
+
+      let slot;
+      try {
+        slot = await limiter.acquire(ip);
+      } catch (error) {
+        if (error instanceof TooManyLoginAttempts) log("blocked");
+        throw error;
+      }
+
+      let sessionId;
+      try {
+        sessionId = await core.dispatch({
+          type: "session:create",
+          body: {
+            email: req.body.email,
+            password: req.body.password,
+            legacyPassword: req.body.legacyPassword,
+          },
+        });
+      } catch (error) {
+        await slot.finish(false);
+        if (error instanceof PasswordResetRequired) log("reset_required");
+        throw error;
+      }
+      await slot.finish(!sessionId);
+      log(sessionId ? "success" : "failure");
+
       if (!sessionId) {
         throw new AccessDenied("Invalid login or password");
       }
@@ -46,3 +80,4 @@ export default (core: Core) =>
       return res;
     },
   });
+};
