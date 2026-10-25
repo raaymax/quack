@@ -235,9 +235,26 @@ async fn rejected_emoji_upload_does_not_leak_its_blob() {
     assert_eq!(body["errorCode"], json!("EMOJI_ALREADY_EXISTS"));
 
     assert!(state.storage.exists(&kept).await.unwrap());
-    let rejected = format!(
-        "f-{}",
-        kept.trim_start_matches("f-").parse::<u64>().unwrap() + 1
-    );
+    let (prefix, n) = kept.rsplit_once('-').unwrap();
+    let rejected = format!("{prefix}-{}", n.parse::<u64>().unwrap() + 1);
     assert!(!state.storage.exists(&rejected).await.unwrap());
+}
+
+#[tokio::test]
+async fn encrypted_messages_keep_their_iv() {
+    let state = state().await;
+    let (user_id, token) = user(&state).await;
+    let channel_id = channel(&state, &[user_id]).await;
+
+    let body = json!({ "clientId": "c-enc", "channelId": channel_id.to_hex(), "encrypted": "cipher", "_iv": "nonce", "secured": true });
+    let request = Request::post(format!("/api/channels/{}/messages", channel_id.to_hex()))
+        .header("authorization", format!("Bearer {token}"))
+        .header("content-type", "application/json")
+        .body(Body::from(body.to_string()))
+        .unwrap();
+    let (status, message) = send(&state, request).await;
+
+    assert_eq!(status, StatusCode::OK);
+    assert_eq!(message["encrypted"], json!("cipher"));
+    assert_eq!(message["_iv"], json!("nonce"));
 }

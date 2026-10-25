@@ -156,7 +156,8 @@ struct CreateMessage {
     message: Option<Value>,
     flat: Option<String>,
     encrypted: Option<String>,
-    _iv: Option<String>,
+    #[serde(rename = "_iv")]
+    iv: Option<String>,
     parent_id: Option<String>,
     client_id: Option<String>,
     #[serde(default)]
@@ -198,7 +199,7 @@ async fn create(
         message: body.message,
         flat: body.flat,
         encrypted: body.encrypted,
-        iv: body._iv,
+        iv: body.iv,
         parent_id: body.parent_id.as_deref().map(oid).transpose()?,
         client_id: body.client_id,
         emoji_only: body.emoji_only,

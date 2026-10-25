@@ -90,6 +90,7 @@ enum Backend {
     Fs(PathBuf),
     Memory {
         files: Mutex<HashMap<String, (FileMeta, Bytes)>>,
+        prefix: String,
         next: AtomicU64,
     },
     Gcs(Arc<GoogleCloudStorage>),
@@ -125,6 +126,7 @@ impl Storage {
             StorageConfig::Fs { directory } => Backend::Fs(directory.clone()),
             StorageConfig::Memory => Backend::Memory {
                 files: Mutex::default(),
+                prefix: format!("f-{:08x}", rand::random::<u32>()),
                 next: AtomicU64::new(0),
             },
             StorageConfig::Gcs { bucket } => Backend::Gcs(Arc::new(
@@ -282,9 +284,14 @@ impl Storage {
                     .await?;
                 Ok((id, meta))
             }
-            Backend::Memory { files, next } => {
-                let id =
-                    id.unwrap_or_else(|| format!("f-{}", next.fetch_add(1, Ordering::Relaxed)));
+            Backend::Memory {
+                files,
+                prefix,
+                next,
+            } => {
+                let id = id.unwrap_or_else(|| {
+                    format!("{prefix}-{}", next.fetch_add(1, Ordering::Relaxed))
+                });
                 let bytes = collect(body).await?;
                 check_size(expected, bytes.len() as u64)?;
                 meta.size = bytes.len() as u64;
