@@ -58,7 +58,12 @@ File should export folowing object:
 type Config = {
   port?: number // default `PORT` env otherwise `8080`
   sessionSecret?: string // auto generated on first run to `secrets.json` but can be overwritten here
-  trustProxy?: bool | string | number // default `uniquelocal` ref: https://expressjs.com/en/guide/behind-proxies.html
+  trustProxy?: bool | number | string | string[] // default `loopback, linklocal, uniquelocal`
+  loginRateLimit?: { // failed login limits
+    windowMinutes?: number // default 15
+    maxFailuresPerIp?: number // default 10
+    maxFailuresPerEmail?: number // default 5
+  }
   vapid?: { // auto generated on first run to `secrets.json` but can be overwritten here
     publicKey: string
     secretKey: string
@@ -80,7 +85,30 @@ port on which application will start
 ## sessionSecret
 this value will overwrite the one from `secrets.json`
 ## trustProxy
-to trust proxy or not. 
+Which proxies may set `X-Forwarded-For`. The client IP is used for login
+monitoring and rate limiting, so only trust proxies you control.
+- `false` - ignore `X-Forwarded-For`, use the connecting address
+- `true` - trust every hop (use the left-most address)
+- number - trust that many hops in front of the server
+- string or list - addresses or CIDR ranges (`10.0.0.0/8`), comma separated,
+  plus presets `loopback`, `linklocal` and `uniquelocal`
+
+## loginRateLimit
+Failed logins are counted per client IP and per email within a sliding window.
+When either limit is reached the login endpoint answers `429` with a
+`Retry-After` header until older failures leave the window. A successful login
+resets the per-email counter.
+
+## Login monitoring
+Every login attempt is stored in the `loginAttempts` collection for 90 days and
+logged as `[auth] login <outcome> ip=<ip> email=<email>`. Outcomes are
+`success`, `failure`, `blocked` and `reset_required`. To see a summary of
+failures, blocked IPs, attacked accounts and unknown emails:
+```
+deno task auth:logins            # last 24h
+deno task auth:logins --hours=168 --limit=20
+deno task auth:logins --json
+```
 ## databaseUrl
 connection string to mongodb instance. By default this value is taken from env variable `DATABASE_URL`.
 example:

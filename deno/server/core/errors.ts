@@ -69,3 +69,17 @@ export class PasswordResetRequired extends AppError {
     this.token = token;
   }
 }
+
+export class TooManyLoginAttempts extends AppError {
+  retryAfter: number;
+  constructor(retryAfter: number) {
+    const minutes = Math.ceil(retryAfter / 60);
+    super(
+      "TOO_MANY_LOGIN_ATTEMPTS",
+      `Too many failed login attempts. Try again in ${minutes} ${
+        minutes === 1 ? "minute" : "minutes"
+      }`,
+    );
+    this.retryAfter = retryAfter;
+  }
+}

@@ -46,6 +46,10 @@ function mapAppError(error: AppError): ApiError {
       return new PasswordResetRequired(
         error as AppErrors.PasswordResetRequired,
       );
+    case "TOO_MANY_LOGIN_ATTEMPTS":
+      return new TooManyLoginAttempts(
+        error as AppErrors.TooManyLoginAttempts,
+      );
     case "INVALID_INVITATION": {
       const invalidInvitation = new ApiError(
         400,
@@ -95,6 +99,24 @@ export class PasswordResetRequired extends ApiError {
     return {
       ...super.serialize(),
       token: this.token,
+    };
+  }
+}
+
+export class TooManyLoginAttempts extends ApiError {
+  override log = false;
+  retryAfter: number;
+
+  constructor(error: { message: string; retryAfter: number }) {
+    super(429, "TOO_MANY_LOGIN_ATTEMPTS", error.message);
+    this.retryAfter = error.retryAfter;
+    this.headers = { "Retry-After": String(error.retryAfter) };
+  }
+
+  override serialize() {
+    return {
+      ...super.serialize(),
+      retryAfter: this.retryAfter,
     };
   }
 }

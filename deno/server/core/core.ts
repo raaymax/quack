@@ -40,6 +40,8 @@ import RegisterFile from "./file/register.ts";
 import AttachFiles from "./file/attach.ts";
 import RemoveFile from "./file/remove.ts";
 import GetChannelFiles from "./file/getChannel.ts";
+import CheckLoginAttempt from "./loginAttempt/check.ts";
+import RecordLoginAttempt from "./loginAttempt/record.ts";
 import { registerCommand } from "./command/repository.ts";
 
 import { Repository, storage } from "../infra/mod.ts";
@@ -74,6 +76,7 @@ const commands = buildCommandCollection([
   RemoveFile,
   CreateEmoji,
   ReplaceEmoji,
+  RecordLoginAttempt,
 ]);
 
 export class Core {
@@ -100,6 +103,10 @@ export class Core {
 
   session = {
     get: GetSession(this),
+  };
+
+  loginAttempt = {
+    check: CheckLoginAttempt(this),
   };
 
   user = {

@@ -1,10 +1,22 @@
 import { Res, Route } from "@planigale/planigale";
 import { AccessDenied } from "../../errors.ts";
 import { Core } from "../../../../core/mod.ts";
+import { AppError } from "../../../../core/errors.ts";
+import type { LoginOutcome } from "../../../../types.ts";
 import { authCookieOptions } from "../../cookies.ts";
+import { clientIp, trustMatcher } from "../../clientIp.ts";
 
-export default (core: Core) =>
-  new Route({
+const outcomeOfError = (error: unknown): LoginOutcome | null => {
+  if (!(error instanceof AppError)) return null;
+  if (error.errorCode === "TOO_MANY_LOGIN_ATTEMPTS") return "blocked";
+  if (error.errorCode === "PASSWORD_RESET_REQUIRED") return "reset_required";
+  return null;
+};
+
+export default (core: Core) => {
+  const isTrustedProxy = trustMatcher(core.config.trustProxy ?? false);
+
+  return new Route({
     public: true,
     method: "POST",
     url: "/session",
@@ -25,14 +37,34 @@ export default (core: Core) =>
           status: 400,
         });
       }
-      const sessionId = await core.dispatch({
-        type: "session:create",
-        body: {
-          email: req.body.email,
-          password: req.body.password,
-          legacyPassword: req.body.legacyPassword,
-        },
-      });
+      const attempt = {
+        email: req.body.email,
+        ip: clientIp(req, isTrustedProxy),
+        userAgent: req.headers["user-agent"],
+      };
+      const record = (outcome: LoginOutcome) =>
+        core.dispatch({
+          type: "loginAttempt:record",
+          body: { ...attempt, outcome },
+        });
+
+      let sessionId;
+      try {
+        await core.loginAttempt.check(attempt);
+        sessionId = await core.dispatch({
+          type: "session:create",
+          body: {
+            email: req.body.email,
+            password: req.body.password,
+            legacyPassword: req.body.legacyPassword,
+          },
+        });
+      } catch (error) {
+        const outcome = outcomeOfError(error);
+        if (outcome) await record(outcome);
+        throw error;
+      }
+      await record(sessionId ? "success" : "failure");
       if (!sessionId) {
         throw new AccessDenied("Invalid login or password");
       }
@@ -46,3 +78,4 @@ export default (core: Core) =>
       return res;
     },
   });
+};

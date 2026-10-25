@@ -3,7 +3,12 @@ export type Config = {
     publicKey: string;
     privateKey: string;
   };
-  trustProxy: string | boolean;
+  trustProxy: boolean | number | string | string[];
+  loginRateLimit?: {
+    windowMinutes?: number;
+    maxFailuresPerIp?: number;
+    maxFailuresPerEmail?: number;
+  };
   sessionSecret: string;
   port: number;
   databaseUrl: string;
