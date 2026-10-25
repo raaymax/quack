@@ -12,7 +12,7 @@ import {
   User,
 } from "../../../../types.ts";
 import { AsyncLocalStorage } from "node:async_hooks";
-import API, { LoginError, Result, UserSession } from "@quack/api";
+import API, { Result, UserSession } from "@quack/api";
 
 export type RegistrationRequest = {
   token: string;
@@ -159,7 +159,7 @@ export class Chat {
   login(
     email = "admin",
     password = "123",
-    test?: (session: Result<UserSession, LoginError>) => Promise<void> | void,
+    test?: (session: Result<UserSession>) => Promise<void> | void,
   ) {
     this.steps.push(async () => {
       await ensureUser(this.repo, email);

@@ -2,7 +2,6 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import { lazy, Suspense } from "react";
 import { Register } from "./pages/Register.tsx";
-import { PasswordReset } from "./pages/PasswordReset.tsx";
 import { Login } from "./pages/Login.tsx";
 import { ThemeSelectorProvider } from "./contexts/theme.tsx";
 import { observer } from "mobx-react-lite";
@@ -31,14 +30,6 @@ const AppContent = observer(() => {
     return (
       <ThemeSelectorProvider>
         <Register />
-      </ThemeSelectorProvider>
-    );
-  }
-
-  if (params.isReset) {
-    return (
-      <ThemeSelectorProvider>
-        <PasswordReset />
       </ThemeSelectorProvider>
     );
   }

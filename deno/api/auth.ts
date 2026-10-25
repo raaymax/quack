@@ -1,9 +1,4 @@
-import type {
-  LoginError,
-  Result,
-  UserSession,
-  UserSessionSecrets,
-} from "./types.ts";
+import type { Result, UserSession, UserSessionSecrets } from "./types.ts";
 import * as enc from "@quack/encryption";
 import type API from "./mod.ts";
 import {
@@ -58,7 +53,7 @@ class AuthAPI extends EventTarget {
 
   async login(
     { email, password }: { email: string; password: string },
-  ): Promise<Result<UserSession, LoginError>> {
+  ): Promise<Result<UserSession>> {
     const credentials = await enc.prepareCredentials(email, password);
     const ret = await this.api.fetchWithCredentials("/api/auth/session", {
       method: "POST",
@@ -151,45 +146,6 @@ class AuthAPI extends EventTarget {
       throw await ret.json();
     }
     return await ret.json();
-  }
-  async checkPasswordResetToken(
-    value: { token: string },
-  ): Promise<{ valid: boolean; email: string }> {
-    const ret = await this.api.fetchWithCredentials(
-      `/api/auth/reset/${value.token}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      },
-    );
-    return await ret.json();
-  }
-
-  async resetPassword(
-    value: {
-      token: string;
-      email: string;
-      password: string;
-      oldPassword: string;
-    },
-  ): Promise<Result> {
-    const data = await enc.prepareRegistration(value);
-    const ret = await this.api.fetchWithCredentials(
-      `/api/auth/reset/${value.token}`,
-      {
-        method: "PUT",
-        body: JSON.stringify({
-          ...data,
-          oldPassword: value.oldPassword,
-        }),
-      },
-    );
-    if (ret.status !== 200) {
-      return { status: "error", ...await ret.json() };
-    }
-    return { status: "ok", ...await ret.json() };
   }
 }
 
