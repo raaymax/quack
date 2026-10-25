@@ -7,6 +7,7 @@ import { AccessDenied, ResourceNotFound } from "../errors.ts";
 export default createCommand({
   type: "user:reset",
   body: v.object({
+    token: v.string(),
     email: v.string(),
     password: v.string(),
     oldPassword: v.string(),
@@ -24,6 +25,7 @@ export default createCommand({
     }),
   }),
 }, async ({
+  token,
   email,
   password,
   oldPassword,
@@ -36,7 +38,10 @@ export default createCommand({
     throw new ResourceNotFound("No old credentials to reset");
   }
 
-  if (!bcrypt.verify(oldPassword, existing.password)) {
+  if (
+    existing.resetToken !== token ||
+    !bcrypt.verify(oldPassword, existing.password)
+  ) {
     throw new AccessDenied();
   }
 

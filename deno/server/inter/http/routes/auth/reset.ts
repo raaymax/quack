@@ -1,8 +1,16 @@
 import { Res, Route } from "@planigale/planigale";
 import { Core } from "../../../../core/mod.ts";
+import { AppError, TooManyLoginAttempts } from "../../../../core/errors.ts";
+import { logAuthAttempt } from "../../../../core/loginAttempt/log.ts";
+import type { LoginOutcome } from "../../../../types.ts";
+import { clientIp, trustMatcher } from "../../clientIp.ts";
 
-export default (core: Core) =>
-  new Route({
+const REJECTED = new Set(["NO_ACCESS", "RESOURCE_NOT_FOUND"]);
+
+export default (core: Core) => {
+  const isTrustedProxy = trustMatcher(core.config.trustProxy ?? false);
+
+  return new Route({
     public: true,
     method: "PUT",
     url: "/reset/:token",
@@ -16,7 +24,7 @@ export default (core: Core) =>
       },
       body: {
         type: "object",
-        required: ["email", "password", "publicKey", "secrets"],
+        required: ["email", "password", "oldPassword", "publicKey", "secrets"],
         properties: {
           email: { type: "string" },
           password: { type: "string" },
@@ -34,16 +42,46 @@ export default (core: Core) =>
       },
     },
     handler: async (req) => {
-      await core.dispatch({
-        type: "user:reset",
-        body: {
+      const ip = clientIp(req, isTrustedProxy);
+      const log = (result: LoginOutcome) =>
+        logAuthAttempt({
+          kind: "password_reset",
+          result,
+          ip,
+          ua: req.headers["user-agent"],
           email: req.body.email,
-          password: req.body.password,
-          oldPassword: req.body.oldPassword,
-          publicKey: req.body.publicKey,
-          secrets: req.body.secrets,
-        },
-      });
+        });
+
+      let slot;
+      try {
+        slot = await core.loginLimiter.acquire(ip);
+      } catch (error) {
+        if (error instanceof TooManyLoginAttempts) log("blocked");
+        throw error;
+      }
+
+      try {
+        await core.dispatch({
+          type: "user:reset",
+          body: {
+            token: req.params.token,
+            email: req.body.email,
+            password: req.body.password,
+            oldPassword: req.body.oldPassword,
+            publicKey: req.body.publicKey,
+            secrets: req.body.secrets,
+          },
+        });
+      } catch (error) {
+        const rejected = error instanceof AppError &&
+          REJECTED.has(error.errorCode);
+        await slot.finish(rejected);
+        if (rejected) log("failure");
+        throw error;
+      }
+      await slot.finish(false);
+      log("success");
       return Res.json({ status: "ok" });
     },
   });
+};

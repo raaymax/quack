@@ -65,18 +65,6 @@ export type Session = {
 
 export type LoginOutcome = "success" | "failure" | "blocked" | "reset_required";
 
-export type LoginAttempt = {
-  id: EntityId;
-  email: string;
-  userId?: EntityId;
-  outcome: LoginOutcome;
-  ip: string;
-  userAgent?: string;
-  count: number;
-  createdAt: Date;
-  lastAttemptAt: Date;
-};
-
 export type EncryptedData = {
   encrypted: string;
   _iv: string;

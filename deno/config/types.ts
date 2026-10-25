@@ -7,7 +7,6 @@ export type Config = {
   loginRateLimit?: {
     windowMinutes?: number;
     maxFailuresPerIp?: number;
-    maxFailuresPerEmail?: number;
   };
   sessionSecret: string;
   port: number;

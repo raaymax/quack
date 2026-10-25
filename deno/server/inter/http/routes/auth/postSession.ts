@@ -1,17 +1,14 @@
 import { Res, Route } from "@planigale/planigale";
 import { AccessDenied } from "../../errors.ts";
 import { Core } from "../../../../core/mod.ts";
-import { AppError } from "../../../../core/errors.ts";
+import {
+  PasswordResetRequired,
+  TooManyLoginAttempts,
+} from "../../../../core/errors.ts";
+import { logAuthAttempt } from "../../../../core/loginAttempt/log.ts";
 import type { LoginOutcome } from "../../../../types.ts";
 import { authCookieOptions } from "../../cookies.ts";
 import { clientIp, trustMatcher } from "../../clientIp.ts";
-
-const outcomeOfError = (error: unknown): LoginOutcome | null => {
-  if (!(error instanceof AppError)) return null;
-  if (error.errorCode === "TOO_MANY_LOGIN_ATTEMPTS") return "blocked";
-  if (error.errorCode === "PASSWORD_RESET_REQUIRED") return "reset_required";
-  return null;
-};
 
 export default (core: Core) => {
   const isTrustedProxy = trustMatcher(core.config.trustProxy ?? false);
@@ -37,20 +34,26 @@ export default (core: Core) => {
           status: 400,
         });
       }
-      const attempt = {
-        email: req.body.email,
-        ip: clientIp(req, isTrustedProxy),
-        userAgent: req.headers["user-agent"],
-      };
-      const record = (outcome: LoginOutcome) =>
-        core.dispatch({
-          type: "loginAttempt:record",
-          body: { ...attempt, outcome },
+      const ip = clientIp(req, isTrustedProxy);
+      const log = (result: LoginOutcome) =>
+        logAuthAttempt({
+          kind: "login",
+          result,
+          ip,
+          ua: req.headers["user-agent"],
+          email: req.body.email,
         });
+
+      let slot;
+      try {
+        slot = await core.loginLimiter.acquire(ip);
+      } catch (error) {
+        if (error instanceof TooManyLoginAttempts) log("blocked");
+        throw error;
+      }
 
       let sessionId;
       try {
-        await core.loginAttempt.check(attempt);
         sessionId = await core.dispatch({
           type: "session:create",
           body: {
@@ -60,11 +63,13 @@ export default (core: Core) => {
           },
         });
       } catch (error) {
-        const outcome = outcomeOfError(error);
-        if (outcome) await record(outcome);
+        await slot.finish(false);
+        if (error instanceof PasswordResetRequired) log("reset_required");
         throw error;
       }
-      await record(sessionId ? "success" : "failure");
+      await slot.finish(!sessionId);
+      log(sessionId ? "success" : "failure");
+
       if (!sessionId) {
         throw new AccessDenied("Invalid login or password");
       }

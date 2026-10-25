@@ -62,7 +62,6 @@ type Config = {
   loginRateLimit?: { // failed login limits
     windowMinutes?: number // default 15
     maxFailuresPerIp?: number // default 10
-    maxFailuresPerEmail?: number // default 5
   }
   vapid?: { // auto generated on first run to `secrets.json` but can be overwritten here
     publicKey: string
@@ -94,21 +93,29 @@ monitoring and rate limiting, so only trust proxies you control.
   plus presets `loopback`, `linklocal` and `uniquelocal`
 
 ## loginRateLimit
-Failed logins are counted per client IP and per email within a sliding window.
-When either limit is reached the login endpoint answers `429` with a
-`Retry-After` header until older failures leave the window. A successful login
-resets the per-email counter.
+Failed logins and password resets are counted per client IP within a sliding
+window (failures are kept in the `loginAttempts` collection for one day). When
+the limit is reached the endpoint answers `429` with a `Retry-After` header
+until older failures leave the window. Attempts already in progress count
+towards the limit, so parallel requests cannot get past it.
 
-## Login monitoring
-Every login attempt is stored in the `loginAttempts` collection for 90 days and
-logged as `[auth] login <outcome> ip=<ip> email=<email>`. Outcomes are
-`success`, `failure`, `blocked` and `reset_required`. To see a summary of
-failures, blocked IPs, attacked accounts and unknown emails:
+## Logging
+Login and password reset attempts are written to stdout as one JSON line each:
 ```
-deno task auth:logins            # last 24h
-deno task auth:logins --hours=168 --limit=20
-deno task auth:logins --json
+{"kind":"login","result":"failure","ip":"203.0.113.9","ua":"...","email":"..."}
 ```
+`result` is `success`, `failure`, `blocked` or `reset_required`; `kind` is
+`login` or `password_reset`. Passwords are never logged.
+
+Every request without a valid session is logged like an access log:
+```
+{"kind":"req","time":"...","ip":"...","method":"GET","path":"/.env","query":"","status":404,"rt":0.001,"ref":"...","ua":"...","session":"none"}
+```
+`session` is `none` (no token) or `invalid` (expired or unknown token).
+Reset and invitation tokens are removed from paths, and `token`, `password`
+and `secret` query values are redacted. Requests from logged-in users only
+produce the usual `[http]` line.
+
 ## databaseUrl
 connection string to mongodb instance. By default this value is taken from env variable `DATABASE_URL`.
 example:

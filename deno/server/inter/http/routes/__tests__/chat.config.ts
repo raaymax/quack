@@ -3,4 +3,7 @@ export default {
   storage: {
     type: "memory",
   },
+  loginRateLimit: {
+    maxFailuresPerIp: 100_000,
+  },
 };

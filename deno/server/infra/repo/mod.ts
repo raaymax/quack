@@ -19,7 +19,6 @@ export { EmojiRepo } from "./emojiRepo.ts";
 export { BadgeRepo } from "./badgeRepo.ts";
 export { FileRepo } from "./fileRepo.ts";
 export { LoginAttemptRepo } from "./loginAttemptRepo.ts";
-export type { LoginStats } from "./loginAttemptRepo.ts";
 export { Database, ObjectId } from "./db.ts";
 
 export class Repository {
