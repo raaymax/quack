@@ -3,4 +3,7 @@ export default {
   storage: {
     type: "memory",
   },
+  anonymousRequestLog: {
+    enabled: false,
+  },
 };

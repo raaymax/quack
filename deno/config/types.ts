@@ -4,6 +4,9 @@ export type Config = {
     privateKey: string;
   };
   trustProxy: boolean | number | string | string[];
+  anonymousRequestLog?: {
+    enabled?: boolean;
+  };
   loginRateLimit?: {
     windowMinutes?: number;
     maxFailuresPerIp?: number;
