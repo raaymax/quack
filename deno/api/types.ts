@@ -109,11 +109,6 @@ export type UserSession = {
   secrets: EncryptedData;
 };
 
-export type LoginError = {
-  errorCode: "PASSWORD_RESET_REQUIRED";
-  token: string;
-};
-
 export type UserSessionSecrets = {
   privateKey: JsonWebKey;
   encryptionKey: JsonWebKey;

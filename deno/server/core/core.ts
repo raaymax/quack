@@ -26,14 +26,12 @@ import UpdateMessageReadReceipt from "./readReceipt/updateMessage.ts";
 import ReactToMessage from "./message/react.ts";
 import CreateUser from "./user/create.ts";
 import CheckToken from "./user/checkToken.ts";
-import UserResetVerify from "./user/resetVerify.ts";
 import PutDirectChannel from "./channel/putDirect.ts";
 import JoinChannel from "./channel/join.ts";
 import GetDirectChannel from "./channel/getDirect.ts";
 import CheckChannelAccess from "./channel/checkAccess.ts";
 import InteractionWithMessage from "./message/interaction.ts";
 import ChannelUserTyping from "./channel/userTyping.ts";
-import UserReset from "./user/reset.ts";
 import SetProfile from "./user/setProfile.ts";
 import SetAvatar from "./user/setAvatar.ts";
 import RegisterFile from "./file/register.ts";
@@ -43,6 +41,8 @@ import RemoveFile from "./file/remove.ts";
 import RemoveStaleDrafts from "./file/removeStaleDrafts.ts";
 import GetChannelFiles from "./file/getChannel.ts";
 import { registerCommand } from "./command/repository.ts";
+import GetRecentLoginFailures from "./loginAttempt/getRecentFailures.ts";
+import RecordLoginFailure from "./loginAttempt/recordFailure.ts";
 
 import { Repository, storage } from "../infra/mod.ts";
 import { buildCommandCollection, EventFrom } from "./command.ts";
@@ -68,7 +68,6 @@ const commands = buildCommandCollection([
   JoinChannel,
   InteractionWithMessage,
   ChannelUserTyping,
-  UserReset,
   SetProfile,
   SetAvatar,
   RegisterFile,
@@ -78,6 +77,7 @@ const commands = buildCommandCollection([
   RemoveStaleDrafts,
   CreateEmoji,
   ReplaceEmoji,
+  RecordLoginFailure,
 ]);
 
 export class Core {
@@ -111,7 +111,6 @@ export class Core {
     getAll: GetAllUsers(this),
     getConfig: GetUserConfig(this),
     checkToken: CheckToken(this),
-    verifyUserReset: UserResetVerify(this),
   };
 
   message = {
@@ -130,6 +129,10 @@ export class Core {
 
   file = {
     getChannel: GetChannelFiles(this),
+  };
+
+  loginAttempt = {
+    getRecentFailures: GetRecentLoginFailures(this),
   };
 
   constructor(arg: {

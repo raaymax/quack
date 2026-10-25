@@ -63,15 +63,7 @@ export const Login = ({ children }: LoginProps) => {
     if (ret.status === "ok") {
       window.location.reload();
     } else {
-      if (ret.errorCode === "PASSWORD_RESET_REQUIRED") {
-        setMsg(
-          <div>
-            {ret.message}. <a href={`/#/reset/${ret.token}`}>reset password</a>
-          </div>,
-        );
-      } else {
-        setMsg(<div>{ret.message}</div>);
-      }
+      setMsg(<div>{ret.message}</div>);
       setStatus("error");
     }
   };

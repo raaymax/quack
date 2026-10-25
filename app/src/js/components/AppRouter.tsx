@@ -14,9 +14,7 @@ type RouteParams = {
   isPins: boolean;
   isFiles: boolean;
   isInvite: boolean;
-  isReset: boolean;
   inviteToken?: string;
-  resetToken?: string;
 };
 
 type RouterContextType = {
@@ -80,7 +78,6 @@ const parseHash = (hash: string): RouteParams => {
     isPins: false,
     isFiles: false,
     isInvite: false,
-    isReset: false,
   };
 
   if (!path) return params;
@@ -89,12 +86,6 @@ const parseHash = (hash: string): RouteParams => {
   if (path.startsWith("/invite/")) {
     params.isInvite = true;
     params.inviteToken = path.substring(8); // Remove "/invite/"
-    return params;
-  }
-
-  if (path.startsWith("/reset/")) {
-    params.isReset = true;
-    params.resetToken = path.substring(7); // Remove "/reset/"
     return params;
   }
 

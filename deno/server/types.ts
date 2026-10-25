@@ -3,8 +3,6 @@ import { EntityId, MessageBody, MessageBodyPart, User } from "@quack/api";
 export * from "@quack/api";
 
 export type DbUser = User & {
-  password?: string;
-  resetToken?: string;
   system?: boolean;
 
   secrets: {
@@ -62,6 +60,8 @@ export type Session = {
   lastIp: string;
   lastUserAgent: string;
 };
+
+export type LoginOutcome = "success" | "failure" | "blocked";
 
 export type EncryptedData = {
   encrypted: string;
