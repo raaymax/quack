@@ -109,7 +109,7 @@ Login and password reset attempts are written to stdout as one JSON line each:
 
 Every request without a valid session is logged like an access log:
 ```
-{"kind":"req","time":"...","ip":"...","method":"GET","path":"/.env","query":"","status":404,"rt":0.001,"ref":"...","ua":"...","session":"none"}
+{"kind":"req","time":"...","ip":"...","method":"GET","path":"/.env","query":"","status":404,"rt":0.001,"ref":"...","ua":"...","dest":"document","session":"none"}
 ```
 `session` is `none` (no token) or `invalid` (expired or unknown token).
 Reset and invitation tokens are removed from paths, and `token`, `password`

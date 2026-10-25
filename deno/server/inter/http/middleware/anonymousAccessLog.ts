@@ -56,6 +56,7 @@ export const anonymousAccessLog = (core: Core): Middleware => {
           rt: (Date.now() - start) / 1000,
           ref: req.headers["referer"],
           ua: req.headers["user-agent"],
+          dest: req.headers["sec-fetch-dest"],
           session: req.state.token ? "invalid" : "none",
         }));
       }

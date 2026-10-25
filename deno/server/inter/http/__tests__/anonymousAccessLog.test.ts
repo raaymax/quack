@@ -44,6 +44,7 @@ Deno.test("Anonymous access log", async (t) => {
       send("GET", "/wp-login.php?redirect=1", {
         referer: "https://evil.example/",
         "user-agent": "probe/1.0",
+        "sec-fetch-dest": "document",
         cookie: "token=stolen",
       })
     );
@@ -63,6 +64,7 @@ Deno.test("Anonymous access log", async (t) => {
         status: 404,
         ref: "https://evil.example/",
         ua: "probe/1.0",
+        dest: "document",
         session: "invalid",
       },
     );
