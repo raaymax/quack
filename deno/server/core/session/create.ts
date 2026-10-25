@@ -1,8 +1,6 @@
 import * as v from "valibot";
 import * as argon2 from "argon2";
 import { createCommand } from "../command.ts";
-import * as enc from "@quack/encryption";
-import { PasswordResetRequired } from "../errors.ts";
 import { SESSION_TTL_SECONDS } from "./constants.ts";
 
 export default createCommand({
@@ -14,17 +12,7 @@ export default createCommand({
   }),
 }, async ({ email, password, legacyPassword }, { repo }) => {
   const user = await repo.user.get({ email });
-  if (!user) return null;
-  if (user.password) {
-    const token = user.resetToken ?? enc.generateRandomToken();
-    if (!user.resetToken) {
-      await repo.user.update({ email }, { resetToken: token });
-    }
-    throw new PasswordResetRequired(
-      "Authentication method is outdated - password reset is required",
-      token,
-    );
-  }
+  if (!user?.secrets?.password) return null;
 
   const storedHash = user.secrets.password.hash;
   if (!await argon2.verify(storedHash, password)) {

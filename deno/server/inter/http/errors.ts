@@ -5,7 +5,6 @@ import {
   ResourceNotFound,
 } from "@planigale/planigale";
 import { AppError } from "../../core/errors.ts";
-import * as AppErrors from "../../core/errors.ts";
 
 export const errorHandler: Middleware = async (req, next) => {
   try {
@@ -42,10 +41,6 @@ function mapAppError(error: AppError): ApiError {
       emojiExists.log = false;
       return emojiExists;
     }
-    case "PASSWORD_RESET_REQUIRED":
-      return new PasswordResetRequired(
-        error as AppErrors.PasswordResetRequired,
-      );
     case "INVALID_INVITATION": {
       const invalidInvitation = new ApiError(
         400,
@@ -82,23 +77,6 @@ export class NotOwner extends ApiError {
     super(403, "NOT_OWNER", message);
   }
 }
-export class PasswordResetRequired extends ApiError {
-  override log = false;
-  token: string;
-
-  constructor(error: { message: string; token: string }) {
-    super(403, "PASSWORD_RESET_REQUIRED", error.message);
-    this.token = error.token;
-  }
-
-  override serialize() {
-    return {
-      ...super.serialize(),
-      token: this.token,
-    };
-  }
-}
-
 export class TooManyLoginAttempts extends ApiError {
   override log = false;
   retryAfter: number;

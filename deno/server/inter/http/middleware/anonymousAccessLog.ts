@@ -3,7 +3,6 @@ import type { Core } from "../../../core/mod.ts";
 import { clientIp, trustedHops } from "../clientIp.ts";
 
 const SECRET_PATHS: [RegExp, string][] = [
-  [/^\/api\/auth\/reset\/[^/]+/, "/api/auth/reset/:token"],
   [/^\/api\/users\/token\/[^/]+/, "/api/users/token/:token"],
   [/^\/api\/users\/(?!token(\/|$))[^/]+$/, "/api/users/:token"],
 ];
