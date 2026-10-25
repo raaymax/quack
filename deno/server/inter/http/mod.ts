@@ -1,8 +1,9 @@
-import { Planigale, Res, Router } from "@planigale/planigale";
+import { Planigale, Res, ResourceNotFound, Router } from "@planigale/planigale";
 import { SchemaValidator } from "@planigale/schema";
 import { bodyParser } from "@planigale/body-parser";
 import { join } from "@std/path";
 import { authMiddleware } from "./middleware/auth.ts";
+import { anonymousAccessLog } from "./middleware/anonymousAccessLog.ts";
 import { Core } from "../../core/mod.ts";
 import { messageSchema } from "./schema/message.ts";
 import { errorHandler } from "./errors.ts";
@@ -55,6 +56,7 @@ export class HttpInterface extends Planigale {
         }
         return ret;
       });
+      this.use(anonymousAccessLog(core));
       this.use(errorHandler);
       this.use(bodyParser);
       this.use(authMiddleware(core));
@@ -91,6 +93,15 @@ export class HttpInterface extends Planigale {
             return await fetch(`${PUBLIC_DIR}/${path}`, { method: "GET" });
           }
           return Res.file(join(PUBLIC_DIR, path)).toResponse();
+        },
+      });
+
+      this.route({
+        method: ["POST", "PUT", "PATCH", "DELETE"],
+        url: "/:path*",
+        public: true,
+        handler: () => {
+          throw new ResourceNotFound("Not Found");
         },
       });
     } catch (e) {
