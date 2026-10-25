@@ -34,7 +34,7 @@ async function uploadFile(
   return { storageId, fileId: id.toString() };
 }
 
-Deno.test("files - register draft, attach via message, list, remove", async () => {
+Deno.test("files - register draft, attach via message, list, keep after message removal", async () => {
   const agent = await Agent.from(app);
   try {
     const session = await login(repo, agent, "admin");
@@ -108,7 +108,7 @@ Deno.test("files - register draft, attach via message, list, remove", async () =
         .expect(404);
       await missing.body?.cancel?.();
 
-      // Removing the message cascades: file row deleted + blob removed.
+      // Removing the message keeps the file in the channel.
       await agent.request()
         .delete(`/api/messages/${msg.id}`)
         .emptyBody()
@@ -116,8 +116,8 @@ Deno.test("files - register draft, attach via message, list, remove", async () =
         .expect(204);
 
       list = await core.file.getChannel({ userId, channelId });
-      assertEquals(list.length, 0);
-      assertEquals(await core.storage.exists(storageId), false);
+      assertEquals(list.length, 1);
+      assertEquals(await core.storage.exists(storageId), true);
 
       await repo.file.removeMany({ channelId: EntityId.from(channelId) });
     });
@@ -147,7 +147,6 @@ Deno.test("files - upload with ?attach=channel becomes a channel file with no me
       const body = await res.json();
       assertEquals(body.status, "ok");
       assertEquals(body.file.status, "attached");
-      assertEquals(body.file.messageId, null);
       assert(
         !("storageId" in body.file),
         "storageId must not leak in the upload response",
@@ -156,7 +155,6 @@ Deno.test("files - upload with ?attach=channel becomes a channel file with no me
       // It shows up in the channel files view without any message.
       const list = await core.file.getChannel({ userId, channelId });
       assertEquals(list.length, 1);
-      assertEquals(list[0].messageId, null);
 
       await repo.file.removeMany({ channelId: EntityId.from(channelId) });
     });
@@ -374,10 +372,11 @@ Deno.test("files - upload with unknown ?attach value is rejected", async () => {
   }
 });
 
-Deno.test("files - attachToChannel twice is an idempotent no-op", async () => {
+Deno.test("files - referencing an attached file emits no new file event", async () => {
   const agent = await Agent.from(app);
   try {
-    await login(repo, agent, "admin");
+    const session = await login(repo, agent, "admin");
+    const token = session.token;
     const admin = await repo.user.get({ email: "admin" });
     const userId = admin!.id.toString();
 
@@ -386,37 +385,148 @@ Deno.test("files - attachToChannel twice is an idempotent no-op", async () => {
       channelType: ChannelType.PUBLIC,
       users: [EntityId.from(userId)],
     }, async (channelId) => {
-      const { fileId } = await uploadFile(
-        channelId,
-        userId,
-        "twice.txt",
-        "text/plain",
-        "twice",
-      );
-
       const events: Record<string, unknown>[] = [];
       const unsubscribe = core.bus.on(userId, (msg) => {
         if (msg.type === "file") events.push(msg);
       });
 
       try {
-        await core.dispatch({
-          type: "file:attachToChannel",
-          body: { fileId, channelId, userId },
-        }).internal();
-        await core.dispatch({
-          type: "file:attachToChannel",
-          body: { fileId, channelId, userId },
-        }).internal();
+        const res = await agent.request()
+          .post(`/api/channels/${channelId}/files?attach=channel`)
+          .file("deno/storage/tests/quack.png")
+          .header("Authorization", `Bearer ${token}`)
+          .expect(200);
+        const { file } = await res.json();
+        await agent.request()
+          .post(`/api/channels/${channelId}/messages`)
+          .json({ flat: "again", fileIds: [file.id] })
+          .header("Authorization", `Bearer ${token}`)
+          .expect(200);
       } finally {
         unsubscribe();
       }
 
-      const file = await repo.file.get({ id: EntityId.from(fileId) });
-      assertEquals(file!.status, "attached");
       assertEquals(events.length, 1);
 
       await repo.file.removeMany({ channelId: EntityId.from(channelId) });
+    });
+  } finally {
+    await agent.close();
+  }
+});
+
+Deno.test("files - many messages can reference one channel file", async () => {
+  const agent = await Agent.from(app);
+  try {
+    const session = await login(repo, agent, "admin");
+    const token = session.token;
+    const admin = await repo.user.get({ email: "admin" });
+    const userId = admin!.id.toString();
+
+    await usingChannel(repo, {
+      name: "files-test-references",
+      channelType: ChannelType.PUBLIC,
+      users: [EntityId.from(userId)],
+    }, async (channelId) => {
+      const res = await agent.request()
+        .post(`/api/channels/${channelId}/files?attach=channel`)
+        .file("deno/storage/tests/quack.png")
+        .header("Authorization", `Bearer ${token}`)
+        .expect(200);
+      const { file } = await res.json();
+
+      for (const flat of ["first", "second"]) {
+        const sent = await agent.request()
+          .post(`/api/channels/${channelId}/messages`)
+          .json({ flat, fileIds: [file.id] })
+          .header("Authorization", `Bearer ${token}`)
+          .expect(200);
+        const msg = await sent.json();
+        assertEquals(msg.files.map((f: { id: string }) => f.id), [file.id]);
+      }
+
+      const list = await core.file.getChannel({ userId, channelId });
+      assertEquals(list.length, 1);
+      assertEquals(list[0].status, "attached");
+
+      await repo.file.removeMany({ channelId: EntityId.from(channelId) });
+    });
+  } finally {
+    await agent.close();
+  }
+});
+
+Deno.test("files - messages cannot reference files they may not use", async () => {
+  const agent = await Agent.from(app);
+  try {
+    const session = await login(repo, agent, "admin");
+    const token = session.token;
+    const admin = await repo.user.get({ email: "admin" });
+    const userId = admin!.id.toString();
+    await login(repo, agent, "member");
+    const member = await repo.user.get({ email: "member" });
+    const memberId = member!.id.toString();
+
+    await usingChannel(repo, {
+      name: "files-test-reference-other",
+      channelType: ChannelType.PUBLIC,
+      users: [EntityId.from(userId)],
+    }, async (otherChannelId) => {
+      await usingChannel(repo, {
+        name: "files-test-reference-denied",
+        channelType: ChannelType.PUBLIC,
+        users: [EntityId.from(userId), EntityId.from(memberId)],
+      }, async (channelId) => {
+        const foreign = await uploadFile(
+          otherChannelId,
+          userId,
+          "other.txt",
+          "text/plain",
+          "other",
+        );
+        const draftOfMember = await uploadFile(
+          channelId,
+          memberId,
+          "member.txt",
+          "text/plain",
+          "member",
+        );
+        const removed = await uploadFile(
+          channelId,
+          userId,
+          "removed.txt",
+          "text/plain",
+          "removed",
+        );
+        await core.dispatch({
+          type: "file:remove",
+          body: { fileId: removed.fileId, userId },
+        }).internal();
+
+        const send = async (fileId: string, status: number) => {
+          const res = await agent.request()
+            .post(`/api/channels/${channelId}/messages`)
+            .json({ flat: "nope", fileIds: [fileId] })
+            .header("Authorization", `Bearer ${token}`)
+            .expect(status);
+          await res.body?.cancel?.();
+        };
+        await send(foreign.fileId, 404);
+        await send(draftOfMember.fileId, 403);
+        await send(removed.fileId, 404);
+
+        const messages = await repo.message.getAll({
+          channelId: EntityId.from(channelId),
+        });
+        assertEquals(messages.length, 0);
+        const draft = await repo.file.get({
+          id: EntityId.from(draftOfMember.fileId),
+        });
+        assertEquals(draft!.status, "draft");
+
+        await repo.file.removeMany({ channelId: EntityId.from(channelId) });
+      });
+      await repo.file.removeMany({ channelId: EntityId.from(otherChannelId) });
     });
   } finally {
     await agent.close();
@@ -503,8 +613,8 @@ Deno.test("files - removeStaleDrafts sweeps only old drafts", async () => {
       );
 
       await core.dispatch({
-        type: "file:attachToChannel",
-        body: { fileId: oldAttached.fileId, channelId, userId },
+        type: "file:attach",
+        body: { fileIds: [oldAttached.fileId], channelId, userId },
       }).internal();
 
       const backdated = new Date(Date.now() - 25 * 60 * 60 * 1000);

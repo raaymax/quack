@@ -38,7 +38,6 @@ export default createCommand({
     size: data.size,
     resolution: data.resolution,
     status: "draft",
-    messageId: null,
     createdAt: new Date(),
   });
 

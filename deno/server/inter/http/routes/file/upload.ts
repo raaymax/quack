@@ -60,8 +60,8 @@ export default (core: Core) =>
 
       if (req.query.attach === "channel") {
         await core.dispatch({
-          type: "file:attachToChannel",
-          body: { fileId: id, channelId, userId },
+          type: "file:attach",
+          body: { fileIds: [id], channelId, userId },
         }).internal();
       }
 

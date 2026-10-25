@@ -139,7 +139,6 @@ export type FileEntry = {
   size: number | null;
   resolution: Resolution | null;
   status: FileStatus;
-  messageId: EntityId | null;
   createdAt: Date;
 };
 

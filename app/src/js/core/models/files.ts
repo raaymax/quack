@@ -172,7 +172,6 @@ export class FilesModel {
         size: f.fileSize,
         resolution: null,
         status: "attached" as const,
-        messageId: null,
         createdAt: new Date().toISOString(),
       }));
   }

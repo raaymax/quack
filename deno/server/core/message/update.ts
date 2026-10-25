@@ -28,19 +28,18 @@ export default createCommand({
   if (message.userId.neq(msg.userId)) {
     throw new NotOwner();
   }
-  await repo.message.update({ id: msg.id }, msg.data);
-
   if (msg.data.fileIds?.length) {
     await core.dispatch({
       type: "file:attach",
       body: {
         fileIds: msg.data.fileIds.map((f) => f.toString()),
-        messageId: msg.id.toString(),
         channelId: message.channelId.toString(),
         userId: msg.userId.toString(),
       },
     }).internal();
   }
+
+  await repo.message.update({ id: msg.id }, msg.data);
 
   const updated = await repo.message.getR({ id: msg.id });
   await resolveFiles(repo, [updated]);

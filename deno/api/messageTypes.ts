@@ -128,7 +128,6 @@ export type MessageFile = {
   size: number | null;
   resolution: { width: number; height: number } | null;
   status: FileStatus;
-  messageId: Eid | null;
   createdAt: DateTime;
 };
 

@@ -203,7 +203,6 @@ export const WithImages: Story = {
           size: 102400,
           resolution: { width: 800, height: 600 },
           status: "attached",
-          messageId: "msg-1",
           createdAt: "2021-01-01T00:00:00Z",
         },
         {
@@ -215,7 +214,6 @@ export const WithImages: Story = {
           size: 204800,
           resolution: { width: 1024, height: 768 },
           status: "attached",
-          messageId: "msg-1",
           createdAt: "2021-01-01T00:00:00Z",
         },
       ],

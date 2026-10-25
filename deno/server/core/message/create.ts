@@ -55,6 +55,17 @@ export default createCommand({
     msg.flat = flatten(msg.message);
   }
 
+  if (msg.fileIds?.length) {
+    await core.dispatch({
+      type: "file:attach",
+      body: {
+        fileIds: msg.fileIds.map((f) => f.toString()),
+        channelId: channel.id.toString(),
+        userId: msg.userId.toString(),
+      },
+    }).internal();
+  }
+
   if (!msg.clientId) {
     msg.clientId = crypto.randomUUID();
   }
@@ -98,18 +109,6 @@ export default createCommand({
         .map((u) => u.toString()),
     },
   }).internal();
-
-  if (msg.fileIds?.length) {
-    await core.dispatch({
-      type: "file:attach",
-      body: {
-        fileIds: msg.fileIds.map((f) => f.toString()),
-        messageId: id.toString(),
-        channelId: channel.id.toString(),
-        userId: msg.userId.toString(),
-      },
-    }).internal();
-  }
 
   if (id && msg.parentId) {
     await repo.message.updateThread({

@@ -18,13 +18,6 @@ export default createCommand({
 
   const channel = await repo.channel.get({ id: message.channelId });
 
-  for (const fileId of message.fileIds ?? []) {
-    await core.dispatch({
-      type: "file:remove",
-      body: { fileId: fileId.toString(), userId: userId.toString() },
-    }).internal();
-  }
-
   await repo.message.remove({ id: messageId });
   bus.group(channel?.users ?? [], {
     id: messageId,
