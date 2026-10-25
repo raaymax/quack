@@ -66,8 +66,7 @@
     "check": "deno fmt && deno lint && deno task test",
     "mobile:config": "deno run -A deno/tools/export-mobile-config.ts",
     "auth:status": "deno run -A deno/tools/auth-migration-status.ts",
-    "auth:logins": "deno run -A deno/tools/login-stats.ts",
-    "security:traffic": "deno run -A deno/tools/traffic-stats.ts"
+    "auth:logins": "deno run -A deno/tools/login-stats.ts"
   },
   "compilerOptions": {
     "jsx": "react",

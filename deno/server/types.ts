@@ -63,31 +63,6 @@ export type Session = {
   lastUserAgent: string;
 };
 
-export type AnonymousRequest = {
-  id: EntityId;
-  createdAt: Date;
-  ip: string;
-  peer: string;
-  forwardedFor?: string;
-  method: string;
-  host?: string;
-  path: string;
-  query?: string;
-  route?: string;
-  status: number;
-  errorCode?: string;
-  durationMs: number;
-  session: "none" | "invalid";
-  userAgent?: string;
-  referer?: string;
-  origin?: string;
-  acceptLanguage?: string;
-  contentType?: string;
-  contentLength?: number;
-  headers: Record<string, string>;
-  body?: string;
-};
-
 export type LoginOutcome = "success" | "failure" | "blocked" | "reset_required";
 
 export type LoginAttempt = {

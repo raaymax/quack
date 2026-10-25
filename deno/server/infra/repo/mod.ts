@@ -9,7 +9,6 @@ import { EmojiRepo } from "./emojiRepo.ts";
 import { BadgeRepo } from "./badgeRepo.ts";
 import { FileRepo } from "./fileRepo.ts";
 import { LoginAttemptRepo } from "./loginAttemptRepo.ts";
-import { AnonymousRequestRepo } from "./anonymousRequestRepo.ts";
 
 export { UserRepo } from "./userRepo.ts";
 export { SessionRepo } from "./sessionRepo.ts";
@@ -21,8 +20,6 @@ export { BadgeRepo } from "./badgeRepo.ts";
 export { FileRepo } from "./fileRepo.ts";
 export { LoginAttemptRepo } from "./loginAttemptRepo.ts";
 export type { LoginStats } from "./loginAttemptRepo.ts";
-export { AnonymousRequestRepo } from "./anonymousRequestRepo.ts";
-export type { AnonymousTrafficStats } from "./anonymousRequestRepo.ts";
 export { Database, ObjectId } from "./db.ts";
 
 export class Repository {
@@ -46,8 +43,6 @@ export class Repository {
 
   loginAttempt: LoginAttemptRepo;
 
-  anonymousRequest: AnonymousRequestRepo;
-
   constructor(config: Config) {
     const databaseUrl = config.databaseUrl ?? Deno.env.get("DATABASE_URL") ??
       "mongodb://chat:chat@localhost:27017/chat?authSource=admin";
@@ -61,7 +56,6 @@ export class Repository {
     this.badge = new BadgeRepo(db);
     this.file = new FileRepo(db);
     this.loginAttempt = new LoginAttemptRepo(db);
-    this.anonymousRequest = new AnonymousRequestRepo(db);
     this.db = db;
   }
 

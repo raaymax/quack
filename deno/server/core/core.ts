@@ -43,7 +43,6 @@ import GetChannelFiles from "./file/getChannel.ts";
 import CheckLoginAttempt from "./loginAttempt/check.ts";
 import RecordLoginAttempt from "./loginAttempt/record.ts";
 import { registerCommand } from "./command/repository.ts";
-import { AnonymousRequestLog } from "./traffic/anonymousRequestLog.ts";
 
 import { Repository, storage } from "../infra/mod.ts";
 import { buildCommandCollection, EventFrom } from "./command.ts";
@@ -92,8 +91,6 @@ export class Core {
   webhooks?: Webhooks;
 
   events: Events;
-
-  anonymousRequests: AnonymousRequestLog;
 
   registerUserCommand = registerCommand;
 
@@ -148,10 +145,6 @@ export class Core {
     this.events = new Events();
     this.repo = arg.repo ?? new Repository(arg.config);
     this.storage = arg.fileStorage ?? storage.initStorage(arg.config);
-    this.anonymousRequests = new AnonymousRequestLog(
-      this.repo,
-      arg.config.anonymousRequestLog?.enabled ?? true,
-    );
 
     if (arg.config.webhooks) {
       this.webhooks = new Webhooks(this, arg.config);
@@ -179,7 +172,6 @@ export class Core {
       payload: null,
     });
 
-    await this.anonymousRequests.flush();
     await this.repo.close();
   };
 }
