@@ -16,7 +16,7 @@ export default (core: Core) =>
       },
       body: {
         type: "object",
-        required: ["email", "password", "publicKey", "secrets"],
+        required: ["email", "password", "oldPassword", "publicKey", "secrets"],
         properties: {
           email: { type: "string" },
           password: { type: "string" },
@@ -37,6 +37,7 @@ export default (core: Core) =>
       await core.dispatch({
         type: "user:reset",
         body: {
+          token: req.params.token,
           email: req.body.email,
           password: req.body.password,
           oldPassword: req.body.oldPassword,
