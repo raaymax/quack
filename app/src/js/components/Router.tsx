@@ -21,7 +21,7 @@ const RouteHandler = () => {
         setError(null);
 
         // Handle special routes
-        if (params.isInvite || params.isReset) {
+        if (params.isInvite) {
           setIsInitialLoading(false);
           return;
         }
@@ -53,7 +53,7 @@ const RouteHandler = () => {
     };
 
     loadRoute();
-  }, [params.channelId, params.isInvite, params.isReset]);
+  }, [params.channelId, params.isInvite]);
 
   if (error) {
     return <ErrorPageS error={error} />;
@@ -65,10 +65,6 @@ const RouteHandler = () => {
 
   // Handle special routes
   if (params.isInvite) {
-    return null; // This will be handled by the main App component
-  }
-
-  if (params.isReset) {
     return null; // This will be handled by the main App component
   }
 
