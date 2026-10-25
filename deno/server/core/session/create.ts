@@ -16,10 +16,8 @@ export default createCommand({
   const user = await repo.user.get({ email });
   if (!user) return null;
   if (user.password) {
-    const token = user.resetToken ?? enc.generateRandomToken();
-    if (!user.resetToken) {
-      await repo.user.update({ email }, { resetToken: token });
-    }
+    const token = enc.generateRandomToken();
+    await repo.user.update({ email }, { resetToken: token });
     throw new PasswordResetRequired(
       "Authentication method is outdated - password reset is required",
       token,

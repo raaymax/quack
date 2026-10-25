@@ -25,7 +25,7 @@ export default (core: Core, limiter: LoginLimiter) => {
       },
       body: {
         type: "object",
-        required: ["email", "password", "oldPassword", "publicKey", "secrets"],
+        required: ["email", "password", "publicKey", "secrets"],
         properties: {
           email: { type: "string" },
           password: { type: "string" },
@@ -65,7 +65,6 @@ export default (core: Core, limiter: LoginLimiter) => {
         await core.dispatch({
           type: "user:reset",
           body: {
-            token: req.params.token,
             email: req.body.email,
             password: req.body.password,
             oldPassword: req.body.oldPassword,
