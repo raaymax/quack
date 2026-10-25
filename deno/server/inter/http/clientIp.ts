@@ -1,6 +1,6 @@
 import type { Req } from "@planigale/planigale";
 
-export type TrustProxy = boolean | number | string | string[];
+export type TrustProxy = boolean | number | string[];
 
 type Matcher = (address: string, hop: number) => boolean;
 
@@ -69,10 +69,7 @@ const rangeMatcher = (range: string): Matcher => {
 export const trustMatcher = (trust: TrustProxy): Matcher => {
   if (typeof trust === "boolean") return () => trust;
   if (typeof trust === "number") return (_address, hop) => hop < trust;
-  const entries = (Array.isArray(trust) ? trust : trust.split(","))
-    .map((entry) => entry.trim())
-    .filter(Boolean)
-    .flatMap((entry) => PRESETS[entry] ?? [entry]);
+  const entries = trust.flatMap((entry) => PRESETS[entry] ?? [entry]);
   const matchers = entries.map(rangeMatcher);
   return (address, hop) => matchers.some((match) => match(address, hop));
 };

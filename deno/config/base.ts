@@ -42,7 +42,7 @@ const defaults: Partial<Config> = {
   port: PORT,
   databaseUrl: DATABASE_URL,
   // https://expressjs.com/en/guide/behind-proxies.html
-  trustProxy: "loopback, linklocal, uniquelocal",
+  trustProxy: ["loopback", "linklocal", "uniquelocal"],
   cors: [
     /https?:\/\/localhost(:[0-9]{,4})?/,
   ],

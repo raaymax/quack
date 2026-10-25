@@ -3,7 +3,7 @@ export type Config = {
     publicKey: string;
     privateKey: string;
   };
-  trustProxy: boolean | number | string | string[];
+  trustProxy: boolean | number | string[];
   loginRateLimit?: {
     windowMinutes?: number;
     maxFailuresPerIp?: number;
