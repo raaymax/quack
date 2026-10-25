@@ -88,11 +88,11 @@ Deno.test("Anonymous access log", async (t) => {
   await t.step("redacts tokens from paths and queries", async () => {
     const entries = await accessLog(async () => {
       await send("GET", "/api/users/token/abcdef");
-      await send("GET", "/api/auth/reset/abcdef?token=abc&password=p&x=1");
+      await send("GET", "/api/users/abcdef?token=abc&password=p&x=1");
     });
     assertEquals(entries.map((e) => e.path), [
       "/api/users/token/:token",
-      "/api/auth/reset/:token",
+      "/api/users/:token",
     ]);
     assertEquals(entries[1].query, "?token=:redacted&password=:redacted&x=1");
     assert(!JSON.stringify(entries).includes("abc"));

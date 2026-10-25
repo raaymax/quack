@@ -1,7 +1,7 @@
 import type { LoginOutcome } from "../../types.ts";
 
 export type AuthLogEntry = {
-  kind: "login" | "password_reset";
+  kind: "login";
   result: LoginOutcome;
   ip: string;
   ua?: string;
