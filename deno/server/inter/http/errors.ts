@@ -99,6 +99,24 @@ export class PasswordResetRequired extends ApiError {
   }
 }
 
+export class TooManyLoginAttempts extends ApiError {
+  override log = false;
+  retryAfter: number;
+
+  constructor(error: { message: string; retryAfter: number }) {
+    super(429, "TOO_MANY_LOGIN_ATTEMPTS", error.message);
+    this.retryAfter = error.retryAfter;
+    this.headers = { "Retry-After": String(error.retryAfter) };
+  }
+
+  override serialize() {
+    return {
+      ...super.serialize(),
+      retryAfter: this.retryAfter,
+    };
+  }
+}
+
 export class UserAlreadyExists extends ApiError {
   override log = false;
 

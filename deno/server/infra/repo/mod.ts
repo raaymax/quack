@@ -8,6 +8,7 @@ import { InvitationRepo } from "./invitationRepo.ts";
 import { EmojiRepo } from "./emojiRepo.ts";
 import { BadgeRepo } from "./badgeRepo.ts";
 import { FileRepo } from "./fileRepo.ts";
+import { LoginAttemptRepo } from "./loginAttemptRepo.ts";
 
 export { UserRepo } from "./userRepo.ts";
 export { SessionRepo } from "./sessionRepo.ts";
@@ -17,6 +18,7 @@ export { InvitationRepo } from "./invitationRepo.ts";
 export { EmojiRepo } from "./emojiRepo.ts";
 export { BadgeRepo } from "./badgeRepo.ts";
 export { FileRepo } from "./fileRepo.ts";
+export { LoginAttemptRepo } from "./loginAttemptRepo.ts";
 export { Database, ObjectId } from "./db.ts";
 
 export class Repository {
@@ -38,6 +40,8 @@ export class Repository {
 
   file: FileRepo;
 
+  loginAttempt: LoginAttemptRepo;
+
   constructor(config: Config) {
     const databaseUrl = config.databaseUrl ?? Deno.env.get("DATABASE_URL") ??
       "mongodb://chat:chat@localhost:27017/chat?authSource=admin";
@@ -50,6 +54,7 @@ export class Repository {
     this.emoji = new EmojiRepo(db);
     this.badge = new BadgeRepo(db);
     this.file = new FileRepo(db);
+    this.loginAttempt = new LoginAttemptRepo(db);
     this.db = db;
   }
 
