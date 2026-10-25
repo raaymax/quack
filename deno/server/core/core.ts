@@ -41,6 +41,8 @@ import AttachFiles from "./file/attach.ts";
 import RemoveFile from "./file/remove.ts";
 import GetChannelFiles from "./file/getChannel.ts";
 import { registerCommand } from "./command/repository.ts";
+import CheckLoginAttempt from "./loginAttempt/check.ts";
+import RecordLoginFailure from "./loginAttempt/recordFailure.ts";
 import { LoginLimiter } from "./loginAttempt/limiter.ts";
 
 import { Repository, storage } from "../infra/mod.ts";
@@ -75,6 +77,7 @@ const commands = buildCommandCollection([
   RemoveFile,
   CreateEmoji,
   ReplaceEmoji,
+  RecordLoginFailure,
 ]);
 
 export class Core {
@@ -131,6 +134,10 @@ export class Core {
     getChannel: GetChannelFiles(this),
   };
 
+  loginAttempt = {
+    check: CheckLoginAttempt(this),
+  };
+
   constructor(arg: {
     config: Config;
     repo?: Repository;
@@ -141,7 +148,7 @@ export class Core {
     this.events = new Events();
     this.repo = arg.repo ?? new Repository(arg.config);
     this.storage = arg.fileStorage ?? storage.initStorage(arg.config);
-    this.loginLimiter = new LoginLimiter(this.repo, this.config);
+    this.loginLimiter = new LoginLimiter(this);
 
     if (arg.config.webhooks) {
       this.webhooks = new Webhooks(this, arg.config);

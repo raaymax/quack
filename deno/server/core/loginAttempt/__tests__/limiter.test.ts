@@ -1,6 +1,7 @@
 import { assertEquals, assertRejects } from "@std/assert";
 import type { Config } from "@quack/config";
-import type { Repository } from "../../../infra/mod.ts";
+import type { Repository, storage } from "../../../infra/mod.ts";
+import { Core } from "../../core.ts";
 import { TooManyLoginAttempts } from "../../errors.ts";
 import { LoginLimiter } from "../limiter.ts";
 
@@ -23,19 +24,30 @@ const fakeRepo = () => {
     },
   };
   return {
-    repo: { loginAttempt } as unknown as Repository,
+    repo: {
+      loginAttempt,
+      db: { withTransaction: <T>(fn: () => Promise<T>) => fn() },
+    } as unknown as Repository,
     failures,
     holdReads: (value: boolean) => holdReads = value,
     releaseReads: () => reads.splice(0).forEach((read) => read.resolve()),
   };
 };
 
-const config = (maxFailuresPerIp: number) =>
-  ({ loginRateLimit: { windowMinutes: 15, maxFailuresPerIp } }) as Config;
+const limiterFor = (repo: Repository, maxFailuresPerIp: number) =>
+  new LoginLimiter(
+    new Core({
+      config: {
+        loginRateLimit: { windowMinutes: 15, maxFailuresPerIp },
+      } as Config,
+      repo,
+      fileStorage: {} as storage.Storage,
+    }),
+  );
 
 Deno.test("LoginLimiter - a failure recorded during a slow read still counts", async () => {
   const fake = fakeRepo();
-  const limiter = new LoginLimiter(fake.repo, config(1));
+  const limiter = limiterFor(fake.repo, 1);
 
   const first = await limiter.acquire("ip");
   fake.holdReads(true);
@@ -53,7 +65,7 @@ Deno.test("LoginLimiter - a failure recorded during a slow read still counts", a
 
 Deno.test("LoginLimiter - parallel attempts cannot exceed the limit", async () => {
   const fake = fakeRepo();
-  const limiter = new LoginLimiter(fake.repo, config(3));
+  const limiter = limiterFor(fake.repo, 3);
 
   const results = await Promise.allSettled(
     Array.from({ length: 8 }, async () => {
@@ -68,7 +80,7 @@ Deno.test("LoginLimiter - parallel attempts cannot exceed the limit", async () =
 
 Deno.test("LoginLimiter - successful attempts release their slot", async () => {
   const fake = fakeRepo();
-  const limiter = new LoginLimiter(fake.repo, config(1));
+  const limiter = limiterFor(fake.repo, 1);
 
   for (let i = 0; i < 5; i++) {
     const slot = await limiter.acquire("ip");

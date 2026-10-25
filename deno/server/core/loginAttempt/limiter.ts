@@ -1,7 +1,4 @@
-import type { Config } from "@quack/config";
-import type { Repository } from "../../infra/mod.ts";
-import { TooManyLoginAttempts } from "../errors.ts";
-import { loginRateLimit } from "./limits.ts";
+import type { Core } from "../core.ts";
 
 export type LoginSlot = {
   finish(failed: boolean): Promise<void>;
@@ -11,7 +8,7 @@ export class LoginLimiter {
   #inFlight = new Map<string, number>();
   #queues = new Map<string, Promise<unknown>>();
 
-  constructor(private repo: Repository, private config: Config) {}
+  constructor(private core: Core) {}
 
   #exclusive<T>(ip: string, fn: () => Promise<T>): Promise<T> {
     const run = (this.#queues.get(ip) ?? Promise.resolve()).then(fn, fn);
@@ -25,24 +22,9 @@ export class LoginLimiter {
 
   acquire(ip: string): Promise<LoginSlot> {
     return this.#exclusive(ip, async () => {
-      const { windowMinutes, maxFailuresPerIp } = loginRateLimit(this.config);
-      const windowMs = windowMinutes * 60 * 1000;
-      const now = Date.now();
-      const failures = await this.repo.loginAttempt.recentFailureTimes(
-        ip,
-        new Date(now - windowMs),
-        maxFailuresPerIp,
-      );
-      const inFlight = this.#inFlight.get(ip) ?? 0;
-      if (failures.length + inFlight >= maxFailuresPerIp) {
-        const oldest = failures.length >= maxFailuresPerIp
-          ? failures[failures.length - 1].getTime()
-          : now;
-        throw new TooManyLoginAttempts(
-          Math.max(1, Math.ceil((oldest + windowMs - now) / 1000)),
-        );
-      }
-      this.#inFlight.set(ip, inFlight + 1);
+      const pending = this.#inFlight.get(ip) ?? 0;
+      await this.core.loginAttempt.check({ ip, pending });
+      this.#inFlight.set(ip, pending + 1);
       return this.#slot(ip);
     });
   }
@@ -55,7 +37,12 @@ export class LoginLimiter {
         finished = true;
         return this.#exclusive(ip, async () => {
           try {
-            if (failed) await this.repo.loginAttempt.recordFailure(ip);
+            if (failed) {
+              await this.core.dispatch({
+                type: "loginAttempt:recordFailure",
+                body: { ip },
+              });
+            }
           } finally {
             const remaining = (this.#inFlight.get(ip) ?? 1) - 1;
             if (remaining > 0) this.#inFlight.set(ip, remaining);
