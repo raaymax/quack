@@ -75,7 +75,7 @@ export type BaseMessage = {
   }>;
 
   fileIds?: Eid[];
-  files?: MessageFile[];
+  files?: ChannelFile[];
 
   updatedAt: DateTime;
   createdAt: DateTime;
@@ -119,7 +119,7 @@ export type MessageData = {
 
 export type FileStatus = "draft" | "attached" | "deleted";
 
-export type MessageFile = {
+export type ChannelFile = {
   id: Eid;
   channelId: Eid;
   userId: Eid;

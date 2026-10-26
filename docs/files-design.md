@@ -122,7 +122,7 @@ Physical blob + thumbnail cleanup happens when nothing references the
 `storageId` is a `@quack/storage` implementation detail and must never reach the
 client — `toClientFile()` strips it from every client-facing payload
 (`message.files`, the channel files list, the upload response), and
-`MessageFile` does not carry it.
+`ChannelFile` does not carry it.
 
 - **New files** are addressed by **File entity id**:
   `GET /api/channels/:channelId/files/:fileId` resolves the entity → `storageId`

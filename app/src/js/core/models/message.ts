@@ -4,7 +4,7 @@ import {
   Eid,
   FullMessage,
   MessageBody,
-  MessageFile,
+  ChannelFile,
   ViewMessage,
   ViewProgress,
 } from "../../types.ts";
@@ -22,7 +22,7 @@ type ViewAttachment = {
 function toAttachments(
   value: {
     attachments?: Array<{ id: string; fileName: string; contentType: string }>;
-    files?: MessageFile[];
+    files?: ChannelFile[];
   },
 ): ViewAttachment[] {
   const legacy = (value.attachments ?? []).map((a) => ({

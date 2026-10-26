@@ -1,7 +1,7 @@
 import { flow, makeAutoObservable } from "mobx";
 import type { AppModel } from "./app.ts";
 import { client } from "../client.ts";
-import { MessageFile } from "../../types.ts";
+import { ChannelFile } from "../../types.ts";
 import { generateHexId } from "../tools/generateHexId.ts";
 
 export type PendingUpload = {
@@ -13,7 +13,7 @@ export type PendingUpload = {
 };
 
 export class ChannelFilesModel {
-  list: MessageFile[] = [];
+  list: ChannelFile[] = [];
   channelId: string;
   loading: boolean = false;
   initialized: boolean = false;
@@ -29,7 +29,7 @@ export class ChannelFilesModel {
     this.channelId = channelId;
     this.root = root;
     this.unsubscribers = [
-      client.on2("file", (file: MessageFile) => this.onFile(file)),
+      client.on2("file", (file: ChannelFile) => this.onFile(file)),
       client.on2(
         "file:removed",
         (msg: { id: string; channelId: string }) => this.onRemoved(msg),
@@ -57,7 +57,7 @@ export class ChannelFilesModel {
     this.loading = true;
     this.error = false;
     try {
-      const fetched: MessageFile[] = yield client.api.files.list(
+      const fetched: ChannelFile[] = yield client.api.files.list(
         this.channelId,
       );
       const missed = this.list.filter(
@@ -109,7 +109,7 @@ export class ChannelFilesModel {
         contentType: file.type,
         onProgress: (p: number) => this.setUploadProgress(clientId, p),
       }, this.channelId, true);
-      if (status === "ok" && uploaded) this.onFile(uploaded as MessageFile);
+      if (status === "ok" && uploaded) this.onFile(uploaded as ChannelFile);
       this.uploads = this.uploads.filter((u) => u.clientId !== clientId);
     } catch (err) {
       console.error(err);
@@ -161,7 +161,7 @@ export class ChannelFilesModel {
     }
   });
 
-  onFile = (file: MessageFile) => {
+  onFile = (file: ChannelFile) => {
     if (file.channelId !== this.channelId) return;
     if (file.status === "deleted") return;
     const idx = this.list.findIndex((f) => f.id === file.id);

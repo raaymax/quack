@@ -1,8 +1,8 @@
 import type API from "./mod.ts";
 import { FileUpload } from "./types.ts";
-import { MessageFile } from "./messageTypes.ts";
+import { ChannelFile } from "./messageTypes.ts";
 
-export type UploadResult = { status: string; file: MessageFile };
+export type UploadResult = { status: string; file: ChannelFile };
 
 export class FilesAPI {
   aborts: Record<string, () => void> = {};
@@ -12,7 +12,7 @@ export class FilesAPI {
     this.api = api;
   }
 
-  list = async (channelId: string): Promise<MessageFile[]> => {
+  list = async (channelId: string): Promise<ChannelFile[]> => {
     const res = await this.api.fetchWithCredentials(
       `/api/channels/${channelId}/files`,
       { method: "GET" },

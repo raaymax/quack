@@ -1,6 +1,6 @@
 import { useCallback, useEffect } from "react";
 import { observer } from "mobx-react-lite";
-import { MessageFile } from "../../types.ts";
+import { ChannelFile } from "../../types.ts";
 import { client } from "../../core";
 import { useApp } from "../contexts/appState";
 import { useSidebar } from "../contexts/useSidebar";
@@ -51,7 +51,7 @@ export const ChannelFiles = observer(() => {
     ? (channel.otherUser ?? channel.user)?.name ?? channel.name
     : channel.name;
 
-  const files: FileItem[] = model.getAll().map((file: MessageFile) => {
+  const files: FileItem[] = model.getAll().map((file: ChannelFile) => {
     const uploader = app.users.get(file.userId);
     return {
       id: file.id,
