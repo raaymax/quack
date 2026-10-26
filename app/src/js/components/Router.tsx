@@ -5,6 +5,7 @@ import { Pins } from "./organisms/Pins.tsx";
 import { ChannelFiles } from "./organisms/ChannelFiles.tsx";
 import { app, client } from "../core/index.ts";
 import { ErrorPageS } from "./pages/ErrorPage.tsx";
+import { PageLoader } from "./atoms/PageLoader.tsx";
 import { AppRouterProvider, useParams, useRouter } from "./AppRouter.tsx";
 import { useEffect, useState } from "react";
 import { InitFailedError, PageNotFoundError } from "./errors.ts";
@@ -61,7 +62,7 @@ const RouteHandler = () => {
   }
 
   if (isInitialLoading) {
-    return <div>Loading...</div>;
+    return <PageLoader />;
   }
 
   // Handle special routes

@@ -6,6 +6,7 @@ import { Login } from "./pages/Login.tsx";
 import { ThemeSelectorProvider } from "./contexts/theme.tsx";
 import { observer } from "mobx-react-lite";
 import { AppRouterProvider, useParams } from "./AppRouter.tsx";
+import { PageLoader } from "./atoms/PageLoader.tsx";
 
 declare global {
   interface Navigator {
@@ -38,7 +39,7 @@ const AppContent = observer(() => {
   return (
     <ThemeSelectorProvider>
       <Login>
-        <Suspense fallback={<div>loading page...</div>}>
+        <Suspense fallback={<PageLoader />}>
           <Secured />
         </Suspense>
       </Login>

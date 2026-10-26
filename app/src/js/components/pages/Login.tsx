@@ -1,6 +1,7 @@
 import { lazy, useCallback, useEffect, useState } from "react";
 import { UserProvider } from "../contexts/user";
 import { client } from "../../core";
+import { PageLoader } from "../atoms/PageLoader";
 const LoginPage = lazy(() => import("./LoginPage"));
 
 type LoginProps = {
@@ -9,7 +10,10 @@ type LoginProps = {
 
 export const Login = ({ children }: LoginProps) => {
   const [status, setStatus] = useState("pending");
-  const [userId, setUser] = useState<string | null>(null);
+  const [userId, setUser] = useState<string | null>(
+    () => client.api.auth.me() ?? null,
+  );
+  const [checking, setChecking] = useState(true);
   const [msg, setMsg] = useState<React.ReactNode | null>(null);
 
   useEffect(() => {
@@ -20,6 +24,7 @@ export const Login = ({ children }: LoginProps) => {
     client.api.auth.restoreSession()
       .then(async ({ status: validationStatus, user: validatedUser }) => {
         setStatus(validationStatus);
+        setChecking(false);
         if (validationStatus === "ok") {
           setUser(validatedUser);
         } else {
@@ -67,6 +72,8 @@ export const Login = ({ children }: LoginProps) => {
       setStatus("error");
     }
   };
+
+  if (!userId && checking) return <PageLoader />;
 
   return userId
     ? (
