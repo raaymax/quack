@@ -12,6 +12,6 @@ export default createQuery({
 }, async ({ userId, channelId }, core) => {
   const channel = await core.channel.access({ id: channelId, userId })
     .internal();
-  const files = await core.repo.file.getChannelFiles(channel.id);
+  const files = await core.repo.file.getChannelFiles(channel.id, userId);
   return files.map(toClientFile);
 });

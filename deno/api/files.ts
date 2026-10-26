@@ -1,8 +1,8 @@
 import type API from "./mod.ts";
 import { FileUpload } from "./types.ts";
-import { MessageFile } from "./messageTypes.ts";
+import { ChannelFile } from "./messageTypes.ts";
 
-export type UploadResult = { status: string; file: MessageFile };
+export type UploadResult = { status: string; file: ChannelFile };
 
 export class FilesAPI {
   aborts: Record<string, () => void> = {};
@@ -12,19 +12,40 @@ export class FilesAPI {
     this.api = api;
   }
 
-  list = async (channelId: string): Promise<MessageFile[]> => {
+  list = async (channelId: string): Promise<ChannelFile[]> => {
     const res = await this.api.fetchWithCredentials(
       `/api/channels/${channelId}/files`,
       { method: "GET" },
     );
+    if (!res.ok) {
+      await res.body?.cancel();
+      throw new Error(`Failed to list channel files (${res.status})`);
+    }
     return await res.json();
   };
 
   remove = async (channelId: string, fileId: string): Promise<void> => {
-    await this.api.fetchWithCredentials(
+    const res = await this.api.fetchWithCredentials(
       `/api/channels/${channelId}/files/${fileId}`,
-      { method: "DELETE" },
+      { method: "DELETE", body: JSON.stringify({}) },
     );
+    if (!res.ok) {
+      await res.body?.cancel();
+      throw new Error(`Failed to remove file (${res.status})`);
+    }
+    await res.body?.cancel();
+  };
+
+  attach = async (channelId: string, fileId: string): Promise<void> => {
+    const res = await this.api.fetchWithCredentials(
+      `/api/channels/${channelId}/files/${fileId}/attach`,
+      { method: "POST", body: JSON.stringify({}) },
+    );
+    if (!res.ok) {
+      await res.body?.cancel();
+      throw new Error(`Failed to attach file (${res.status})`);
+    }
+    await res.body?.cancel();
   };
 
   abort(clientId: string) {
@@ -34,6 +55,7 @@ export class FilesAPI {
   upload = (
     args: FileUpload,
     channelId: string,
+    attachToChannel = false,
   ): Promise<UploadResult> => {
     return new Promise<UploadResult>((resolve, reject) => {
       // @ts-ignore XMLHttpRequest is only available in the browser
@@ -66,7 +88,13 @@ export class FilesAPI {
         reject(new Error("Upload aborted"));
       }, { once: true });
 
-      xhr.open("POST", `/api/channels/${channelId}/files`, true);
+      xhr.open(
+        "POST",
+        `/api/channels/${channelId}/files${
+          attachToChannel ? "?attach=channel" : ""
+        }`,
+        true,
+      );
       xhr.setRequestHeader("Authorization", `Bearer ${this.api.token}`);
       xhr.setRequestHeader(
         "Content-Type",

@@ -203,7 +203,6 @@ export const WithImages: Story = {
           size: 102400,
           resolution: { width: 800, height: 600 },
           status: "attached",
-          messageId: "msg-1",
           createdAt: "2021-01-01T00:00:00Z",
         },
         {
@@ -215,7 +214,40 @@ export const WithImages: Story = {
           size: 204800,
           resolution: { width: 1024, height: 768 },
           status: "attached",
-          messageId: "msg-1",
+          createdAt: "2021-01-01T00:00:00Z",
+        },
+      ],
+    }, app.getMessages("test")!),
+    mode: "default",
+  },
+};
+
+export const WithFiles: Story = {
+  args: {
+    model: MessageModel.from({
+      ...BaseMessage,
+      fileIds: ["file-3", "file-4"],
+      files: [
+        {
+          id: "file-3",
+          channelId: "test",
+          userId: "user-1",
+          fileName: "report.pdf",
+          contentType: "application/pdf",
+          size: 2048000,
+          resolution: null,
+          status: "attached",
+          createdAt: "2021-01-01T00:00:00Z",
+        },
+        {
+          id: "file-4",
+          channelId: "test",
+          userId: "user-1",
+          fileName: "archive.zip",
+          contentType: "application/zip",
+          size: 10240000,
+          resolution: null,
+          status: "attached",
           createdAt: "2021-01-01T00:00:00Z",
         },
       ],

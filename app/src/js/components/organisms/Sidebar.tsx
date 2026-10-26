@@ -35,13 +35,19 @@ const Container = styled.div`
     height: 100vh;
 
     & .channel,
+    & .channel-row,
     & .user {
       display: flex;
       align-items: center;
       min-height: 40px;
       font-size: 20px;
     }
+    & .view-row {
+      min-height: 36px;
+      font-size: 16px;
+    }
     & .channel .name,
+    & .channel-row .channel-name,
     & .user .name {
       font-size: 20px;
     }
@@ -64,14 +70,15 @@ export const Sidebar = observer(
     },
   ) => {
     const [showSettings, setShowSettings] = useState(false);
+    const [expandedId, setExpandedId] = useState<string | null>(null);
     return (
       <Container className={cn("side-menu", className)} style={style}>
         <div className="side-menu-header">
           Workspace
         </div>
         <div className="slider">
-          <NavChannels />
-          <NavUsers />
+          <NavChannels expandedId={expandedId} onExpand={setExpandedId} />
+          <NavUsers expandedId={expandedId} onExpand={setExpandedId} />
         </div>
         <div className="bottom">
           <ThemeButtonConnected />

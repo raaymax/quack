@@ -14,4 +14,5 @@ http.onClose(async () => {
   await core.close();
 });
 
+export { core };
 export default http;
