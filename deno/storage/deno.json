@@ -3,18 +3,13 @@
   "version": "1.8.5",
   "exports": "./src/mod.ts",
   "imports": {
-    "@google-cloud/storage": "npm:@google-cloud/storage@7.16.0",
-    "@planigale/body-parser": "jsr:@planigale/body-parser",
     "@planigale/planigale": "jsr:@planigale/planigale",
     "@planigale/schema": "jsr:@planigale/schema",
-    "@planigale/sse": "jsr:@planigale/sse@0.2.8",
     "@planigale/testing": "jsr:@planigale/testing",
     "@std/assert": "jsr:@std/assert@1.0.0",
     "@std/media-types": "jsr:@std/media-types@1.0.2",
     "@std/path": "jsr:@std/path@1.0.1",
     "@std/fs": "jsr:@std/fs@0.221.0",
-    "@types/node": "npm:@types/node@20.10.4",
-    "concat-stream": "npm:concat-stream@2.0.0",
     "mongodb": "npm:mongodb@6.12.0",
     "@cf-wasm/photon": "npm:@cf-wasm/photon@0.3.6",
     "google-auth-library": "npm:google-auth-library@9.15.0"
