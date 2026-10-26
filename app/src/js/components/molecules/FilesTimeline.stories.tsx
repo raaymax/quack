@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { useCallback, useRef, useState } from "react";
 
 import { FilesTimeline } from "./FilesTimeline.tsx";
-import { makeOlderFiles, mockFiles } from "./mockFiles.ts";
+import { makeOlderFiles, mockFiles } from "../__stories__/mockFiles.ts";
 import type { FileItem } from "./FileListItem.tsx";
 
 const meta: Meta<typeof FilesTimeline> = {

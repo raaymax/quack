@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
 import { FileListItem } from "./FileListItem.tsx";
-import { mockFiles } from "./mockFiles.ts";
+import { mockFiles } from "../__stories__/mockFiles.ts";
 
 const meta: Meta<typeof FileListItem> = {
   component: FileListItem,

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
 import { FileGridItem } from "./FileGridItem.tsx";
-import { mockFiles } from "./mockFiles.ts";
+import { mockFiles } from "../__stories__/mockFiles.ts";
 
 const meta: Meta<typeof FileGridItem> = {
   component: FileGridItem,

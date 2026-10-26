@@ -6,7 +6,7 @@ import {
   type ChannelViewKey,
   NavChannelTree,
 } from "../molecules/NavChannelTree.tsx";
-import { makeOlderFiles, mockFiles } from "../molecules/mockFiles.ts";
+import { makeOlderFiles, mockFiles } from "../__stories__/mockFiles.ts";
 import type { FileItem } from "../molecules/FileListItem.tsx";
 
 const meta: Meta<typeof FilesView> = {

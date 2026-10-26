@@ -1,4 +1,4 @@
-import type { FileItem } from "./FileListItem.tsx";
+import type { FileItem } from "../molecules/FileListItem.tsx";
 
 const svgImage = (color: string, width = 400, height = 300) =>
   `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='${width}' height='${height}'%3E%3Crect width='${width}' height='${height}' fill='%23${color}'/%3E%3C/svg%3E`;
