@@ -75,3 +75,17 @@ export const WithDownload: Story = {
     size: 25000,
   },
 };
+export const Pending: Story = {
+  args: {
+    fileName: "uploading.jpg",
+    src: "",
+    size: 1024000,
+  },
+};
+export const Unavailable: Story = {
+  args: {
+    fileName: "missing.jpg",
+    src: "/missing-image.jpg",
+    size: 1024000,
+  },
+};

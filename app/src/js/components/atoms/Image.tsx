@@ -1,3 +1,4 @@
+import { useState } from "react";
 import styled from "styled-components";
 import { filesize } from "filesize";
 import { Icon } from "./Icon";
@@ -32,6 +33,36 @@ const ImageContainer = styled.div`
 
   &.tile {
     width: 160px;
+    height: 160px;
+  }
+
+  .placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    height: 100%;
+    padding: 12px;
+    box-sizing: border-box;
+    color: ${(props) => props.theme.Labels};
+    font-size: 12px;
+
+    .icon {
+      margin: 0;
+    }
+
+    .label {
+      max-width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  &.single .placeholder {
+    width: 240px;
     height: 160px;
   }
 
@@ -104,28 +135,54 @@ export const Image = ({
   openUrl,
   downloadUrl,
   size,
-}: ImageProps) => (
-  <ImageContainer
-    className={cn("file", "image", variant, { clickable: !!openUrl }, className)}
-    onClick={() => openUrl && window.open(openUrl)}
-  >
-    <img src={src} alt={fileName} loading="lazy" />
-    <div className="overlay">
-      <span className="caption" title={fileName}>
-        {size ? `${fileName} · ${filesize(size)}` : fileName}
-      </span>
-      {downloadUrl && (
-        <button
-          type="button"
-          title="Download"
-          onClick={(e) => {
-            e.stopPropagation();
-            window.open(downloadUrl);
-          }}
-        >
-          <Icon icon="download" size={14} />
-        </button>
-      )}
-    </div>
-  </ImageContainer>
-);
+}: ImageProps) => {
+  const [failed, setFailed] = useState(false);
+  const pending = !src;
+
+  return (
+    <ImageContainer
+      className={cn("file", "image", variant, {
+        clickable: !!openUrl,
+      }, className)}
+      onClick={() => openUrl && window.open(openUrl)}
+    >
+      {pending || failed
+        ? (
+          <div className="placeholder">
+            <Icon
+              icon={pending ? "fa-solid fa-spinner fa-spin" : "fa-solid fa-image"}
+              size={20}
+            />
+            <span className="label">
+              {pending ? "Uploading…" : "Preview unavailable"}
+            </span>
+          </div>
+        )
+        : (
+          <img
+            src={src}
+            alt={fileName}
+            loading="lazy"
+            onError={() => setFailed(true)}
+          />
+        )}
+      <div className="overlay">
+        <span className="caption" title={fileName}>
+          {size ? `${fileName} · ${filesize(size)}` : fileName}
+        </span>
+        {downloadUrl && (
+          <button
+            type="button"
+            title="Download"
+            onClick={(e) => {
+              e.stopPropagation();
+              window.open(downloadUrl);
+            }}
+          >
+            <Icon icon="download" size={14} />
+          </button>
+        )}
+      </div>
+    </ImageContainer>
+  );
+};
