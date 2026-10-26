@@ -163,6 +163,69 @@ Deno.test("files - upload with ?attach=channel becomes a channel file with no me
   }
 });
 
+Deno.test("files - uploads with parseable content types keep raw bytes", async () => {
+  const agent = await Agent.from(app);
+  try {
+    const session = await login(repo, agent, "admin");
+    const token = session.token;
+    const admin = await repo.user.get({ email: "admin" });
+    const userId = admin!.id.toString();
+
+    await usingChannel(repo, {
+      name: "files-test-raw-types",
+      channelType: ChannelType.PUBLIC,
+      users: [EntityId.from(userId)],
+    }, async (channelId) => {
+      const dir = await Deno.makeTempDir();
+      const cases = [
+        {
+          fileName: "data.json",
+          contentType: "application/json; charset=UTF-8",
+          contents: '{"a": [1, 2]}\n',
+        },
+        {
+          fileName: "broken.json",
+          contentType: "application/json; charset=UTF-8",
+          contents: "{not json",
+        },
+        {
+          fileName: "notes.txt",
+          contentType: "text/plain; charset=UTF-8",
+          contents: "hello\nworld\n",
+        },
+      ];
+      try {
+        for (const c of cases) {
+          await Deno.writeTextFile(`${dir}/${c.fileName}`, c.contents);
+          const res = await agent.request()
+            .post(`/api/channels/${channelId}/files`)
+            .file(`${dir}/${c.fileName}`)
+            .header("Authorization", `Bearer ${token}`)
+            .expect(200);
+          const body = await res.json();
+          assertEquals(body.file.fileName, c.fileName);
+          assertEquals(body.file.contentType, c.contentType);
+          assertEquals(
+            body.file.size,
+            new TextEncoder().encode(c.contents).length,
+          );
+
+          const dl = await agent.request()
+            .get(`/api/channels/${channelId}/files/${body.file.id}`)
+            .header("Authorization", `Bearer ${token}`)
+            .expect(200);
+          assertEquals(await dl.text(), c.contents);
+        }
+      } finally {
+        await Deno.remove(dir, { recursive: true });
+        await repo.file.removeMany({ channelId: EntityId.from(channelId) });
+      }
+    });
+  } finally {
+    await agent.close();
+  }
+});
+
 Deno.test("files - download: thumbnail, disposition, access control", async () => {
   const agent = await Agent.from(app);
   try {
