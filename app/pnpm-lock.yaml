@@ -11,9 +11,6 @@ importers:
       '@jsr/planigale__sse':
         specifier: npm:@jsr/planigale__sse@0.2.8
         version: 0.2.8
-      '@sentry/react':
-        specifier: ^10.11.0
-        version: 10.11.0(react@19.1.1)
       filesize:
         specifier: 11.0.2
         version: 11.0.2
@@ -32,9 +29,6 @@ importers:
       react-dom:
         specifier: 19.1.1
         version: 19.1.1(react@19.1.1)
-      react-router-dom:
-        specifier: 7.13.0
-        version: 7.13.0(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       styled-components:
         specifier: 6.1.19
         version: 6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
@@ -44,19 +38,10 @@ importers:
       workbox-precaching:
         specifier: 7.3.0
         version: 7.3.0
-      workbox-routing:
-        specifier: 7.3.0
-        version: 7.3.0
-      workbox-strategies:
-        specifier: 7.3.0
-        version: 7.3.0
     devDependencies:
       '@chromatic-com/storybook':
         specifier: ^5.0.0
         version: 5.0.0(storybook@10.2.3(@testing-library/dom@10.4.1)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
-      '@storybook/addon-onboarding':
-        specifier: ^10.2.3
-        version: 10.2.3(storybook@10.2.3(@testing-library/dom@10.4.1)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
       '@storybook/addon-themes':
         specifier: ^10.2.3
         version: 10.2.3(storybook@10.2.3(@testing-library/dom@10.4.1)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
@@ -75,9 +60,6 @@ importers:
       '@types/serviceworker':
         specifier: 0.0.152
         version: 0.0.152
-      '@types/workbox-sw':
-        specifier: 4.3.7
-        version: 4.3.7
       '@typescript-eslint/eslint-plugin':
         specifier: ^7.18.0
         version: 7.18.0(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.9.2))(eslint@8.57.1)(typescript@5.9.2)
@@ -1079,41 +1061,6 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@sentry-internal/browser-utils@10.11.0':
-    resolution: {integrity: sha512-fnMlz5ntap6x4vRsLOHwPqXh7t82StgAiRt+EaqcMX0t9l8C0w0df8qwrONKXvE5GdHWTNFJj5qR15FERSkg3Q==}
-    engines: {node: '>=18'}
-
-  '@sentry-internal/feedback@10.11.0':
-    resolution: {integrity: sha512-ADey51IIaa29kepb8B7aSgSGSrcyT7QZdRsN1rhitefzrruHzpSUci5c2EPIvmWfKJq8Wnvukm9BHXZXAAIOzA==}
-    engines: {node: '>=18'}
-
-  '@sentry-internal/replay-canvas@10.11.0':
-    resolution: {integrity: sha512-brWQ90IYQyZr44IpTprlmvbtz4l2ABzLdpP94Egh12Onf/q6n4CjLKaA25N5kX0uggHqX1Rs7dNaG0mP3ETHhA==}
-    engines: {node: '>=18'}
-
-  '@sentry-internal/replay@10.11.0':
-    resolution: {integrity: sha512-t4M2bxMp2rKGK/l7bkVWjN+xVw9H9V12jAeXmO/Fskz2RcG1ZNLQnKSx/W/zCRMk8k7xOQFsfiApq+zDN+ziKA==}
-    engines: {node: '>=18'}
-
-  '@sentry/browser@10.11.0':
-    resolution: {integrity: sha512-qemaKCJKJHHCyGBpdLq23xL5u9Xvir20XN7YFTnHcEq4Jvj0GoWsslxKi5cQB2JvpYn62WxTiDgVLeQlleZhSg==}
-    engines: {node: '>=18'}
-
-  '@sentry/core@10.11.0':
-    resolution: {integrity: sha512-39Rxn8cDXConx3+SKOCAhW+/hklM7UDaz+U1OFzFMDlT59vXSpfI6bcXtNiFDrbOxlQ2hX8yAqx8YRltgSftoA==}
-    engines: {node: '>=18'}
-
-  '@sentry/react@10.11.0':
-    resolution: {integrity: sha512-bE4lJ5Ni/n9JUdLWGG99yucY0/zOUXjKl9gfSTkvUvOiAIX/bY0Y4WgOqeWySvbMz679ZdOwF34k8RA/gI7a8g==}
-    engines: {node: '>=18'}
-    peerDependencies:
-      react: ^16.14.0 || 17.x || 18.x || 19.x
-
-  '@storybook/addon-onboarding@10.2.3':
-    resolution: {integrity: sha512-slSExgyykz9lZMVpHu72L8tT3lzPTX6NXpcHYAkof4J+iu5Dl94vdBK320jri61Ox5xKh9h7CTkOK8jSUJP8mA==}
-    peerDependencies:
-      storybook: ^10.2.3
-
   '@storybook/addon-themes@10.2.3':
     resolution: {integrity: sha512-8OVXivm1pDvf2D38RCzzvVqergvFwwG+bNRtevzXW/fjdJ1dG2hMnVlqiONka1Q9w2a2XOxeDBjRxuos0oc3rA==}
     peerDependencies:
@@ -1250,48 +1197,6 @@ packages:
 
   '@types/trusted-types@2.0.7':
     resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
-
-  '@types/workbox-background-sync@4.3.2':
-    resolution: {integrity: sha512-WAp8TxDW8QAs6A2ns2NQlti5MVov/P0bN0TEUPYjhzVqzQa5VQSVSCUA03MLJFkb+kdqvqhcOwWlcbuIgepSsQ==}
-
-  '@types/workbox-broadcast-update@4.3.1':
-    resolution: {integrity: sha512-JAwv2fHu9pTMvu1wKSR5sanTAR6ne8jXBE/MYo4bDs7ipVqM9OZ+M9RO3aXtNXI7oh+8uWgPxHam/7OGZF8d4Q==}
-
-  '@types/workbox-build@5.0.1':
-    resolution: {integrity: sha512-lJrGzEHX/QT3E4F5ABBNvCb8ObOr2LfHNAqAGfRuBPncWlU/d3iIUorECKNXmnZnLbLsgpgvhJWPMgByzR+L+A==}
-
-  '@types/workbox-cacheable-response@4.3.1':
-    resolution: {integrity: sha512-gXOrC5bBwjDu2R6mDFoY0HYhH6+IuaU00SvDDhSOAZSOjPwn8DLPZAQC58xZFLG+ShsvbQw/cT84uZouAdHz9A==}
-
-  '@types/workbox-core@4.3.1':
-    resolution: {integrity: sha512-KTXHNijPQ+LpEdS+MvSdFn+YBzdfoNzgWjkTy68WrByVrsVU0wzE9536fCBIZrbruaEUcmf50vY94crpF3Vong==}
-
-  '@types/workbox-expiration@4.3.1':
-    resolution: {integrity: sha512-sIcKaG5KVN4OvvvdTk57Mdi49QwXPPMYv6ztc/0nGNvdczHUY5w/b4MZbR11ouEbc5PPKCMAawdu9KreMVmZ4g==}
-
-  '@types/workbox-google-analytics@4.3.1':
-    resolution: {integrity: sha512-qDPehZ8ewDbs0VBCbeAozvktz8pBNcF+NYIWrOzq9EwmpifvUoWpKU/iPTIZI7hph/74ROnFFS5clbmtIMfz7Q==}
-
-  '@types/workbox-navigation-preload@4.3.0':
-    resolution: {integrity: sha512-yv4iMch2cM1rW2GTFjtEHAmUJfYtWnHENdR9TrjziO47czDSulLU/UzflmS/L9alQNP7GyHpegDWBJwtKad/Mg==}
-
-  '@types/workbox-precaching@4.3.1':
-    resolution: {integrity: sha512-FDpEzz2iiArZkIhOANoU8WbL3EdvnzA+DZmtDLLgysRJB/iHPHhvzjyveRwfVQh7QOk3O+c5hINlnldVMEPb1g==}
-
-  '@types/workbox-range-requests@4.3.0':
-    resolution: {integrity: sha512-IlZcWZtGlpT4OhEdCdWeMkHHOO5yVwDqmuJq1WtgtjyIwm/mwwVPYGLVeVOE62m8sQ2L9Ziqfem2h9UmabBDmg==}
-
-  '@types/workbox-routing@4.3.1':
-    resolution: {integrity: sha512-2TYTiMcF6lMdMU36zUZPyQurpM8xso3Ad6XnFDdlSZowukoFy6pwZV+oT27z/jU1eaa+QgtPkdYFrS5KsJDMOQ==}
-
-  '@types/workbox-strategies@4.3.1':
-    resolution: {integrity: sha512-jD3LwQpxIzaOThzj9OroMT8Ci9XAmAB5apSAv91WfYQ9jbRB0/+gsxuhLy+BQMERziU8w0hK24SOA/YZr0jhyw==}
-
-  '@types/workbox-streams@4.3.0':
-    resolution: {integrity: sha512-PYI7eAOQ9Dj/cu/WcROOfSsn29pC9gjCudK+hQBSWgAaxfHBmNFQGh7EvtZ3BzOJhjj3O0pEV5l6aA55oBRxBQ==}
-
-  '@types/workbox-sw@4.3.7':
-    resolution: {integrity: sha512-hHuet6bQ3WmDBdaSfI/oFqhUzhHspxwGoV749BO649uyAlueLG0sX7wrqjhFhhZ6MYBYbWIeL2EmNX3bvZMOVw==}
 
   '@typescript-eslint/eslint-plugin@7.18.0':
     resolution: {integrity: sha512-94EQTWZ40mzBc42ATNIBimBEDltSJ9RQHCC8vc/PDbxi4k8dVwUAv4o98dk50M1zB+JGFxp43FP7f8+FP8R6Sw==}
@@ -1622,10 +1527,6 @@ packages:
 
   convert-source-map@2.0.0:
     resolution: {integrity: sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg==}
-
-  cookie@1.1.1:
-    resolution: {integrity: sha512-ei8Aos7ja0weRpFzJnEA9UHJ/7XQmqglbRwnf2ATjcB9Wq874VKH9kfjjirM6UhU2/E5fFYadylyhFldcqSidQ==}
-    engines: {node: '>=18'}
 
   core-js-compat@3.45.1:
     resolution: {integrity: sha512-tqTt5T4PzsMIZ430XGviK4vzYSoeNJ6CXODi6c/voxOT6IZqBht5/EKaSNnYiEjjRYxjVz7DQIsOsY0XNi8PIA==}
@@ -2049,9 +1950,6 @@ packages:
   hasown@2.0.2:
     resolution: {integrity: sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==}
     engines: {node: '>= 0.4'}
-
-  hoist-non-react-statics@3.3.2:
-    resolution: {integrity: sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==}
 
   idb@7.1.1:
     resolution: {integrity: sha512-gchesWBzyvGHRO9W8tzUWFDycow5gwjvFKfyV9FF32Y7F50yZMp7mP+T2mJIWFx49zicqyC4uefHM17o6xKIVQ==}
@@ -2580,23 +2478,6 @@ packages:
     resolution: {integrity: sha512-z6F7K9bV85EfseRCp2bzrpyQ0Gkw1uLoCel9XBVWPg/TjRj94SkJzUTGfOa4bs7iJvBWtQG0Wq7wnI0syw3EBQ==}
     engines: {node: '>=0.10.0'}
 
-  react-router-dom@7.13.0:
-    resolution: {integrity: sha512-5CO/l5Yahi2SKC6rGZ+HDEjpjkGaG/ncEP7eWFTvFxbHP8yeeI0PxTDjimtpXYlR3b3i9/WIL4VJttPrESIf2g==}
-    engines: {node: '>=20.0.0'}
-    peerDependencies:
-      react: '>=18'
-      react-dom: '>=18'
-
-  react-router@7.13.0:
-    resolution: {integrity: sha512-PZgus8ETambRT17BUm/LL8lX3Of+oiLaPuVTRH3l1eLvSPpKO3AvhAEb5N7ihAFZQrYDqkvvWfFh9p0z9VsjLw==}
-    engines: {node: '>=20.0.0'}
-    peerDependencies:
-      react: '>=18'
-      react-dom: '>=18'
-    peerDependenciesMeta:
-      react-dom:
-        optional: true
-
   react@19.1.1:
     resolution: {integrity: sha512-w8nqGImo45dmMIfljjMwOGtbmC/mk4CMYhWIicdSflH91J9TyCyczcPFXJzrZ/ZXcgGRFeP6BU0BEJTw6tZdfQ==}
     engines: {node: '>=0.10.0'}
@@ -2707,9 +2588,6 @@ packages:
 
   serialize-javascript@6.0.2:
     resolution: {integrity: sha512-Saa1xPByTTq2gdeFZYLLo+RFE35NHZkAbqZeWNd3BpzppeVisAqpDjcp8dyf6uIvEqJRd46jemmyA4iFIeVk8g==}
-
-  set-cookie-parser@2.7.2:
-    resolution: {integrity: sha512-oeM1lpU/UvhTxw+g3cIfxXHyJRc/uidd3yK1P242gzHds0udQBYzs3y8j4gCCW+ZJ7ad0yctld8RYO+bdurlvw==}
 
   set-function-length@1.2.2:
     resolution: {integrity: sha512-pgRc4hJ4/sNjWCSS9AmnS40x3bNMDTknHgL5UaMBTMyJnU90EgWh1Rz+MC9eFu4BuN/UwZjKQuY/1v3rM7HMfg==}
@@ -4190,45 +4068,6 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.50.1':
     optional: true
 
-  '@sentry-internal/browser-utils@10.11.0':
-    dependencies:
-      '@sentry/core': 10.11.0
-
-  '@sentry-internal/feedback@10.11.0':
-    dependencies:
-      '@sentry/core': 10.11.0
-
-  '@sentry-internal/replay-canvas@10.11.0':
-    dependencies:
-      '@sentry-internal/replay': 10.11.0
-      '@sentry/core': 10.11.0
-
-  '@sentry-internal/replay@10.11.0':
-    dependencies:
-      '@sentry-internal/browser-utils': 10.11.0
-      '@sentry/core': 10.11.0
-
-  '@sentry/browser@10.11.0':
-    dependencies:
-      '@sentry-internal/browser-utils': 10.11.0
-      '@sentry-internal/feedback': 10.11.0
-      '@sentry-internal/replay': 10.11.0
-      '@sentry-internal/replay-canvas': 10.11.0
-      '@sentry/core': 10.11.0
-
-  '@sentry/core@10.11.0': {}
-
-  '@sentry/react@10.11.0(react@19.1.1)':
-    dependencies:
-      '@sentry/browser': 10.11.0
-      '@sentry/core': 10.11.0
-      hoist-non-react-statics: 3.3.2
-      react: 19.1.1
-
-  '@storybook/addon-onboarding@10.2.3(storybook@10.2.3(@testing-library/dom@10.4.1)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))':
-    dependencies:
-      storybook: 10.2.3(@testing-library/dom@10.4.1)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
-
   '@storybook/addon-themes@10.2.3(storybook@10.2.3(@testing-library/dom@10.4.1)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))':
     dependencies:
       storybook: 10.2.3(@testing-library/dom@10.4.1)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
@@ -4389,67 +4228,6 @@ snapshots:
   '@types/stylis@4.2.5': {}
 
   '@types/trusted-types@2.0.7': {}
-
-  '@types/workbox-background-sync@4.3.2':
-    dependencies:
-      '@types/workbox-core': 4.3.1
-
-  '@types/workbox-broadcast-update@4.3.1':
-    dependencies:
-      '@types/workbox-core': 4.3.1
-
-  '@types/workbox-build@5.0.1':
-    dependencies:
-      '@types/workbox-routing': 4.3.1
-
-  '@types/workbox-cacheable-response@4.3.1':
-    dependencies:
-      '@types/workbox-core': 4.3.1
-
-  '@types/workbox-core@4.3.1': {}
-
-  '@types/workbox-expiration@4.3.1':
-    dependencies:
-      '@types/workbox-core': 4.3.1
-
-  '@types/workbox-google-analytics@4.3.1': {}
-
-  '@types/workbox-navigation-preload@4.3.0': {}
-
-  '@types/workbox-precaching@4.3.1':
-    dependencies:
-      '@types/workbox-core': 4.3.1
-
-  '@types/workbox-range-requests@4.3.0':
-    dependencies:
-      '@types/workbox-core': 4.3.1
-
-  '@types/workbox-routing@4.3.1': {}
-
-  '@types/workbox-strategies@4.3.1':
-    dependencies:
-      '@types/workbox-core': 4.3.1
-      '@types/workbox-routing': 4.3.1
-
-  '@types/workbox-streams@4.3.0':
-    dependencies:
-      '@types/workbox-routing': 4.3.1
-
-  '@types/workbox-sw@4.3.7':
-    dependencies:
-      '@types/workbox-background-sync': 4.3.2
-      '@types/workbox-broadcast-update': 4.3.1
-      '@types/workbox-build': 5.0.1
-      '@types/workbox-cacheable-response': 4.3.1
-      '@types/workbox-core': 4.3.1
-      '@types/workbox-expiration': 4.3.1
-      '@types/workbox-google-analytics': 4.3.1
-      '@types/workbox-navigation-preload': 4.3.0
-      '@types/workbox-precaching': 4.3.1
-      '@types/workbox-range-requests': 4.3.0
-      '@types/workbox-routing': 4.3.1
-      '@types/workbox-strategies': 4.3.1
-      '@types/workbox-streams': 4.3.0
 
   '@typescript-eslint/eslint-plugin@7.18.0(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.9.2))(eslint@8.57.1)(typescript@5.9.2)':
     dependencies:
@@ -4844,8 +4622,6 @@ snapshots:
   concat-map@0.0.1: {}
 
   convert-source-map@2.0.0: {}
-
-  cookie@1.1.1: {}
 
   core-js-compat@3.45.1:
     dependencies:
@@ -5400,10 +5176,6 @@ snapshots:
     dependencies:
       function-bind: 1.1.2
 
-  hoist-non-react-statics@3.3.2:
-    dependencies:
-      react-is: 16.13.1
-
   idb@7.1.1: {}
 
   ignore@5.3.2: {}
@@ -5892,20 +5664,6 @@ snapshots:
 
   react-refresh@0.17.0: {}
 
-  react-router-dom@7.13.0(react-dom@19.1.1(react@19.1.1))(react@19.1.1):
-    dependencies:
-      react: 19.1.1
-      react-dom: 19.1.1(react@19.1.1)
-      react-router: 7.13.0(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
-
-  react-router@7.13.0(react-dom@19.1.1(react@19.1.1))(react@19.1.1):
-    dependencies:
-      cookie: 1.1.1
-      react: 19.1.1
-      set-cookie-parser: 2.7.2
-    optionalDependencies:
-      react-dom: 19.1.1(react@19.1.1)
-
   react@19.1.1: {}
 
   recast@0.23.11:
@@ -6051,8 +5809,6 @@ snapshots:
   serialize-javascript@6.0.2:
     dependencies:
       randombytes: 2.1.0
-
-  set-cookie-parser@2.7.2: {}
 
   set-function-length@1.2.2:
     dependencies:
