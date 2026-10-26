@@ -22,7 +22,14 @@ type Story = StoryObj<typeof Attachment>;
 // Type for mock FileModel with only the properties used by Attachment
 type MockFileModel = Pick<
   FileModel,
-  "clientId" | "fileName" | "contentType" | "fileSize" | "status" | "progress"
+  | "clientId"
+  | "fileName"
+  | "contentType"
+  | "fileSize"
+  | "status"
+  | "progress"
+  | "error"
+  | "file"
 >;
 
 // Create mock FileModel-like objects for stories
@@ -33,6 +40,8 @@ const createMockFile = (overrides: Partial<MockFileModel>): MockFileModel => ({
   fileSize: 1024000,
   status: "pending",
   progress: 0,
+  error: null,
+  file: null as unknown as File,
   ...overrides,
 });
 
@@ -94,6 +103,54 @@ export const ImageFile: Story = {
       fileSize: 2048000,
       status: "ok",
       progress: 100,
+    }) as FileModel,
+  },
+};
+
+export const Failed: Story = {
+  args: {
+    model: createMockFile({
+      fileName: "too-big.mov",
+      contentType: "video/quicktime",
+      status: "error",
+      progress: 0,
+      error: "Upload failed (413)",
+    }) as FileModel,
+  },
+};
+
+const sampleImage = new File(
+  [
+    '<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80">' +
+    '<rect width="80" height="80" fill="#30a46c"/>' +
+    '<circle cx="40" cy="40" r="20" fill="#fff"/></svg>',
+  ],
+  "sketch.svg",
+  { type: "image/svg+xml" },
+);
+
+export const ImagePreview: Story = {
+  args: {
+    model: createMockFile({
+      fileName: "sketch.svg",
+      contentType: "image/svg+xml",
+      fileSize: sampleImage.size,
+      status: "ok",
+      progress: 100,
+      file: sampleImage,
+    }) as FileModel,
+  },
+};
+
+export const ImageUploading: Story = {
+  args: {
+    model: createMockFile({
+      fileName: "sketch.svg",
+      contentType: "image/svg+xml",
+      fileSize: sampleImage.size,
+      status: "pending",
+      progress: 60,
+      file: sampleImage,
     }) as FileModel,
   },
 };

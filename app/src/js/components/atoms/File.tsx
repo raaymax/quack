@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { filesize } from "filesize";
-import { FileTypeIcon, getFileCategory } from "./FileTypeIcon";
+import { FileTypeIcon, getFileTypeLabel } from "./FileTypeIcon";
 import { Icon } from "./Icon";
 import { ClassNames, cn } from "../../utils";
 
@@ -77,13 +77,6 @@ const FileContainer = styled.div`
   }
 `;
 
-const getTypeLabel = (fileName: string, contentType: string) => {
-  const ext = fileName.includes(".") ? fileName.split(".").pop() : undefined;
-  if (ext && ext.length <= 5) return ext.toUpperCase();
-  const category = getFileCategory(contentType);
-  return category === "file" ? "File" : category.toUpperCase();
-};
-
 type FileProps = {
   className?: ClassNames;
   fileName: string;
@@ -111,9 +104,10 @@ export const File = ({
     <div className="meta">
       <span className="file-name" title={fileName}>{fileName}</span>
       <span className="file-sub">
-        {[getTypeLabel(fileName, contentType), size ? filesize(size) : null]
-          .filter(Boolean)
-          .join(" · ")}
+        {[
+          getFileTypeLabel(fileName, contentType),
+          size ? filesize(size) : null,
+        ].filter(Boolean).join(" · ")}
       </span>
     </div>
     {downloadUrl && (

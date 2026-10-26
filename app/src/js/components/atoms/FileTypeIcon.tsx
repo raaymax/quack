@@ -67,6 +67,13 @@ export const getFileCategory = (contentType: string): FileCategory => {
   return "file";
 };
 
+export const getFileTypeLabel = (fileName: string, contentType: string) => {
+  const ext = fileName.includes(".") ? fileName.split(".").pop() : undefined;
+  if (ext && ext.length <= 5) return ext.toUpperCase();
+  const category = getFileCategory(contentType);
+  return category === "file" ? "File" : category.toUpperCase();
+};
+
 const Container = styled.div<{ $size: number; $color: string }>`
   flex: 0 0 auto;
   display: flex;
