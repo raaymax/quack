@@ -8,8 +8,9 @@ const FileContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
-  width: 280px;
-  max-width: 100%;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   padding: 8px 8px 8px 10px;
   border: 1px solid ${(props) => props.theme.Strokes};
   border-radius: 10px;

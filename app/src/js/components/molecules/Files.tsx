@@ -15,13 +15,18 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
-  max-width: min(100%, 680px);
+  max-width: 100%;
 
   .file-list {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     gap: 6px;
+  }
+
+  .file-list.others {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   }
 `;
 
