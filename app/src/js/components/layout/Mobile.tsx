@@ -202,7 +202,7 @@ export const Container = styled.div`
     }
   }
 
-  .overlay {
+  .sidebar-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -404,7 +404,7 @@ export const Mobile = observer(
         })}
       >
         {sidebar && (
-          <div className="overlay">
+          <div className="sidebar-overlay">
             <Workspaces />
             <Sidebar />
           </div>

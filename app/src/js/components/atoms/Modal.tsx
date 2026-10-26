@@ -6,7 +6,7 @@ export const ModalOverlay = styled.div`
   top: 0;
   left: 0;
   right: 0;
-  bottom: 0;
+  bottom: env(keyboard-inset-height, 0px);
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
@@ -31,7 +31,7 @@ export const ModalContainer = styled.div`
 
   @media (max-width: 540px) {
     max-width: 100%;
-    max-height: 85vh;
+    max-height: 85%;
     border-radius: 16px 16px 0 0;
     padding: 20px 16px;
     padding-bottom: calc(20px + env(safe-area-inset-bottom));
