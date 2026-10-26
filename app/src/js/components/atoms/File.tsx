@@ -1,62 +1,132 @@
 import styled from "styled-components";
+import { filesize } from "filesize";
+import { FileTypeIcon, getFileCategory } from "./FileTypeIcon";
+import { Icon } from "./Icon";
+import { ClassNames, cn } from "../../utils";
 
 const FileContainer = styled.div`
-  cursor: pointer;
-  flex: 100%;
-  width: 100%;
-  height: 30px;
-  padding: 0;
-  margin: 3px 0px;
   display: flex;
-  flex-direction: row;
-  border: 1px solid var(--saf-0);
-  .type {
-    line-height: 30px;
-    width: 30px;
-    text-align: center;
-    vertical-align: middle;
+  align-items: center;
+  gap: 10px;
+  width: 280px;
+  max-width: 100%;
+  padding: 8px 8px 8px 10px;
+  border: 1px solid ${(props) => props.theme.Strokes};
+  border-radius: 10px;
+  background-color: ${(props) => props.theme.Input.Background};
+  transition: border-color 0.15s ease;
+
+  &.clickable {
+    cursor: pointer;
   }
 
-  .name {
-    padding: 0 10px;
-    line-height: 30px;
-    vertical-align: middle;
+  &.clickable:hover {
+    border-color: ${(props) => props.theme.Labels};
+  }
+
+  .icon-box {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background-color: ${(props) => props.theme.Channel.Background};
+  }
+
+  .meta {
     flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .file-name {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-size: 13px;
+    font-weight: 500;
+    color: ${(props) => props.theme.Text};
   }
-  &:hover {
-    background-color: var(--primary_active_mask);
-  }
-  &.image {
-    height: auto;
-    width: 100%;
-    flex: 0;
 
-    img.raw-image {
-      max-width: 400px;
-      max-height: 400px;
+  .file-sub {
+    font-size: 11px;
+    color: ${(props) => props.theme.Labels};
+  }
+
+  button {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border: 0;
+    border-radius: 6px;
+    cursor: pointer;
+    color: ${(props) => props.theme.Labels};
+    background-color: transparent;
+
+    &:hover {
+      color: ${(props) => props.theme.Text};
+      background-color: ${(props) => props.theme.Channel.Background};
     }
   }
 `;
 
+const getTypeLabel = (fileName: string, contentType: string) => {
+  const ext = fileName.includes(".") ? fileName.split(".").pop() : undefined;
+  if (ext && ext.length <= 5) return ext.toUpperCase();
+  const category = getFileCategory(contentType);
+  return category === "file" ? "File" : category.toUpperCase();
+};
+
 type FileProps = {
+  className?: ClassNames;
   fileName: string;
   contentType: string;
+  size?: number;
+  openUrl?: string;
   downloadUrl?: string;
 };
 
-export const File = ({ fileName, contentType, downloadUrl }: FileProps) => (
+export const File = ({
+  className,
+  fileName,
+  contentType,
+  size,
+  openUrl,
+  downloadUrl,
+}: FileProps) => (
   <FileContainer
-    onClick={() => downloadUrl && window.open(downloadUrl)}
-    style={{ cursor: downloadUrl ? "pointer" : "default" }}
+    className={cn("file", { clickable: !!openUrl }, className)}
+    onClick={() => openUrl && window.open(openUrl)}
   >
-    <div className="type">
-      <i className="fa-solid fa-file" />
+    <div className="icon-box">
+      <FileTypeIcon contentType={contentType} size={18} />
     </div>
-    <div className="name">
-      {fileName} [{contentType}]
+    <div className="meta">
+      <span className="file-name" title={fileName}>{fileName}</span>
+      <span className="file-sub">
+        {[getTypeLabel(fileName, contentType), size ? filesize(size) : null]
+          .filter(Boolean)
+          .join(" · ")}
+      </span>
     </div>
+    {downloadUrl && (
+      <button
+        type="button"
+        title="Download"
+        onClick={(e) => {
+          e.stopPropagation();
+          window.open(downloadUrl);
+        }}
+      >
+        <Icon icon="download" size={14} />
+      </button>
+    )}
   </FileContainer>
 );

@@ -222,6 +222,40 @@ export const WithImages: Story = {
   },
 };
 
+export const WithFiles: Story = {
+  args: {
+    model: MessageModel.from({
+      ...BaseMessage,
+      fileIds: ["file-3", "file-4"],
+      files: [
+        {
+          id: "file-3",
+          channelId: "test",
+          userId: "user-1",
+          fileName: "report.pdf",
+          contentType: "application/pdf",
+          size: 2048000,
+          resolution: null,
+          status: "attached",
+          createdAt: "2021-01-01T00:00:00Z",
+        },
+        {
+          id: "file-4",
+          channelId: "test",
+          userId: "user-1",
+          fileName: "archive.zip",
+          contentType: "application/zip",
+          size: 10240000,
+          resolution: null,
+          status: "attached",
+          createdAt: "2021-01-01T00:00:00Z",
+        },
+      ],
+    }, app.getMessages("test")!),
+    mode: "default",
+  },
+};
+
 export const WithLegacyAttachments: Story = {
   args: {
     model: MessageModel.from({

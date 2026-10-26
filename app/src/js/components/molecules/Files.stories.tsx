@@ -30,6 +30,7 @@ export const SingleImage: Story = {
         clientId: "client-1",
         fileName: "photo.jpg",
         contentType: "image/jpeg",
+        url: "https://picsum.photos/seed/quack1/800/600",
         size: 1024000,
       },
     ],
@@ -44,6 +45,7 @@ export const MultipleImages: Story = {
         clientId: "client-1",
         fileName: "photo1.jpg",
         contentType: "image/jpeg",
+        url: "https://picsum.photos/seed/quack2/800/600",
         size: 1024000,
       },
       {
@@ -51,6 +53,7 @@ export const MultipleImages: Story = {
         clientId: "client-2",
         fileName: "photo2.png",
         contentType: "image/png",
+        url: "https://picsum.photos/seed/quack3/800/600",
         size: 2048000,
       },
       {
@@ -58,6 +61,7 @@ export const MultipleImages: Story = {
         clientId: "client-3",
         fileName: "animation.gif",
         contentType: "image/gif",
+        url: "https://picsum.photos/seed/quack4/800/600",
         size: 512000,
       },
     ],
@@ -72,6 +76,7 @@ export const SingleFile: Story = {
         clientId: "client-1",
         fileName: "document.pdf",
         contentType: "application/pdf",
+        url: "https://example.com/document.pdf",
         size: 2048000,
       },
     ],
@@ -86,6 +91,7 @@ export const MultipleFiles: Story = {
         clientId: "client-1",
         fileName: "document.pdf",
         contentType: "application/pdf",
+        url: "https://example.com/document.pdf",
         size: 2048000,
       },
       {
@@ -115,6 +121,7 @@ export const MixedContent: Story = {
         clientId: "client-1",
         fileName: "screenshot.png",
         contentType: "image/png",
+        url: "https://picsum.photos/seed/quack5/800/600",
         size: 512000,
       },
       {
@@ -122,6 +129,7 @@ export const MixedContent: Story = {
         clientId: "client-2",
         fileName: "photo.jpg",
         contentType: "image/jpeg",
+        url: "https://picsum.photos/seed/quack6/800/600",
         size: 1024000,
       },
       {
@@ -129,6 +137,7 @@ export const MixedContent: Story = {
         clientId: "client-3",
         fileName: "report.pdf",
         contentType: "application/pdf",
+        url: "https://example.com/document.pdf",
         size: 2048000,
       },
       {

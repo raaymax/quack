@@ -14,17 +14,22 @@ const meta: Meta<typeof Image> = {
       control: "text",
       description: "Image source URL",
     },
-    downloadUrl: {
+    openUrl: {
       control: "text",
       description: "URL to open on click",
+    },
+    downloadUrl: {
+      control: "text",
+      description: "URL used by the download button",
     },
     size: {
       control: "number",
       description: "File size in bytes",
     },
-    raw: {
-      control: "boolean",
-      description: "Whether to display at full size",
+    variant: {
+      control: "radio",
+      options: ["single", "tile"],
+      description: "Large single preview or square gallery tile",
     },
   },
 };
@@ -53,18 +58,19 @@ export const Narrow: Story = {
     size: 13000,
   },
 };
-export const Raw: Story = {
+export const Tile: Story = {
   args: {
-    fileName: "animated.gif",
-    src: "https://picsum.photos/200",
+    fileName: "tile.jpg",
+    src: "https://picsum.photos/400/300",
     size: 50000,
-    raw: true,
+    variant: "tile",
   },
 };
 export const WithDownload: Story = {
   args: {
     fileName: "photo.jpg",
     src: "https://picsum.photos/200",
+    openUrl: "https://picsum.photos/200",
     downloadUrl: "https://picsum.photos/200",
     size: 25000,
   },
