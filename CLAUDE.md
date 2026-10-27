@@ -63,7 +63,7 @@ mobile/                 # Capacitor Android shell
 - **Core** (`deno/server/core/`): Domain logic. `createCommand()` (write ops, Valibot validation, MongoDB transactions) and `createQuery()` (read ops). Internal event bus for cross-domain communication. Domain errors (`AppError`, `ResourceNotFound`, `AccessDenied`).
 - **Infra** (`deno/server/infra/`): Generic `Repo<Query, Model>` base class with CRUD. Domain-specific repos. MongoDB client.
 - **Inter** (`deno/server/inter/`): HTTP routes organized by domain under `http/routes/`. Session-based auth middleware. Error-to-HTTP mapping.
-- **Framework** (`planigale/`): Planigale lives in this repo (no longer pulled from JSR). Fix framework bugs there and add tests next to the code. The frontend imports `@planigale/sse` through a Vite alias and tsconfig path, like `@quack/api`, so `planigale/sse` must stay browser-compatible (no `jsr:`/`npm:` imports, no Deno APIs).
+- **Framework** (`planigale/`): Planigale lives in this repo (no longer pulled from JSR). Fix framework bugs there and add tests next to the code. Request bodies are parsed only for routes that declare `schema.body`; other routes get the raw `ReadableStream` in `req.body` (used by file, avatar and emoji uploads). The frontend imports `@planigale/sse` through a Vite alias and tsconfig path, like `@quack/api`, so `planigale/sse` must stay browser-compatible (no `jsr:`/`npm:` imports, no Deno APIs).
 
 Domains: `channel/`, `message/`, `user/`, `session/`, `emoji/`, `readReceipt/`, `command/`.
 
