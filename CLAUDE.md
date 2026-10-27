@@ -84,6 +84,43 @@ SSE:   Core event → SSE stream → API client EventSource → MobX model → o
 
 PBKDF2 key derivation → ECDH key exchange (P-256) → AES-GCM message encryption. XOR-based 2-of-2 secret splitting for key backup.
 
+### Production
+
+nginx → Traefik → app container (so `trustProxy: 2`). Files are stored in GCS. Logs go to stdout and reach Loki/Grafana through the Docker log driver. `entrypoint.sh` runs `deno task migrate` before starting, so migrations run on every deploy.
+
+## Project Rules
+
+### Backend tests
+- **Endpoint tests only, no unit tests.** Test behavior through the HTTP API. If an endpoint should create a log line or a DB record, assert that it did.
+- Extend the existing test file for the domain instead of adding new ones.
+- Use fixed test emails, clean up with `repo.user.removeMany`, and call `core.close()` at the end of tests that use the DB (see `session.test.ts`).
+
+### Layering
+- `inter/http` imports nothing from core except `core/mod.ts`.
+- HTTP-only concerns (rate limiting, client IP, auth logs, HTTP errors) live in `inter/http`, not in core.
+- Core has one command or query per file.
+- Prefer the minimal valid solution over configurable ones (e.g. `trustProxy` is a hop count, not a list of networks).
+
+### Logging & security
+- Log one line per event, built with `JSON.stringify` of the whole object, never by string concatenation, so crafted paths, user agents or emails can't break or inject lines.
+- Never log passwords, header dumps or request body samples.
+- Don't store unauthenticated traffic in MongoDB; it goes to logs only.
+
+### Domain invariants
+- **Files belong to the channel.** Messages, and any future resources, reference files only through `fileIds`; never add back-references like `messageId` on files. New references go through `file:attach`, which validates channel, ownership and draft state. Deleting a message keeps its files. Avatars and custom emoji are not channel files.
+- **The email is the crypto salt.** It seeds PBKDF2 for both the login hash and the encryption key, so changing a user's email is a crypto migration, not a profile edit. Keep the login credential cryptographically separate from the encryption key.
+
+### Dependencies
+- pnpm refuses versions younger than 7 days (`minimumReleaseAge` in `app/pnpm-workspace.yaml`). For `mobile/` (npm), keep the same cooldown with `npm update --before=<date a week ago>`.
+- Run installs non-interactively (`CI=true`) so they can't hang on a prompt. After many incremental installs, do a clean `rm -rf node_modules && pnpm install --frozen-lockfile` before trusting a strange build error.
+- Remove dependencies that nothing imports instead of keeping them around; they only add security alerts.
+- Dev servers (Vite, Storybook) bind to `0.0.0.0`, so their security updates matter even though they never ship.
+
+### Local development & verification
+- The local seed user is `admin` / `123`.
+- `cd app && pnpm types` already reports errors on `dev`. Compare the output against `dev` instead of expecting zero.
+- Verify UI changes in Storybook (`cd app && pnpm storybook`) or in the running app, not only with type checks.
+
 ## Conventions
 
 - **Conventional Commits**: `feat:`, `fix:`, `refactor:`, `chore:`, `docs:`, `test:`, `perf:`
