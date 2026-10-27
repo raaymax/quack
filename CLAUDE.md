@@ -139,7 +139,7 @@ The body becomes the GitHub release notes. Reference every PR by number:
 ## Key Dependencies
 
 **Backend**: `@planigale/planigale` (HTTP framework), `@planigale/sse`, `@planigale/testing` (test agent), `mongodb`, `valibot`
-**Frontend**: `react@19`, `mobx` + `mobx-react-lite`, `styled-components`, `react-router-dom@7`, `vite`, `storybook`
+**Frontend**: `react@19`, `mobx` + `mobx-react-lite`, `styled-components`, `vite`, `storybook`
 
 ## Reference Docs
 
