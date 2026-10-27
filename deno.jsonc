@@ -25,7 +25,8 @@
   },
   "fmt": {
     "include": [
-      "deno/**"
+      "deno/**",
+      "planigale/**"
     ],
     "exclude": [
       "deno/server/uploads/**",
@@ -33,7 +34,7 @@
     ]
   },
   "lint": {
-    "include": ["deno/"],
+    "include": ["deno/", "planigale/"],
     "exclude": ["packages/", "deno/server/uploads/**", "**/node_modules/**", "app/.cache", "temp/**"],
     "rules": {
       "tags": ["recommended"],
