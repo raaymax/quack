@@ -5,6 +5,7 @@ import { PhotonImage } from "@cf-wasm/photon/node";
 
 import { buildApp } from "../src/interfaces/http/mod.ts";
 import { initStorage } from "../src/core/mod.ts";
+import { closeResizePool } from "../src/core/resizePool.ts";
 import config from "./config.ts";
 
 const __dirname = new URL(".", import.meta.url).pathname;
@@ -61,4 +62,45 @@ Deno.test("GET /:id?w - repeated requests return identical cached bytes", async 
       .arrayBuffer(),
   );
   assertEquals(first, second);
+});
+
+Deno.test("thumbnails requested while the resize pool is busy are still generated and stored", async () => {
+  closeResizePool();
+  Deno.env.set("STORAGE_RESIZE_WORKERS", "1");
+  Deno.env.set("STORAGE_RESIZE_MAX_PENDING", "1");
+  try {
+    const busy = initStorage(config);
+    const bytes = await Deno.readFile(testImagePath);
+    const ids: string[] = [];
+    for (let i = 0; i < 10; i++) {
+      ids.push(
+        await busy.upload(new Blob([bytes]).stream(), {
+          filename: "quack.png",
+          contentType: "image/png",
+          size: bytes.length,
+        }),
+      );
+    }
+
+    const requests = [];
+    for (const id of ids) {
+      requests.push(
+        busy.get(id, { height: 40 }).then(async (file) =>
+          (await new Response(file.stream).arrayBuffer()).byteLength
+        ),
+      );
+      await new Promise((resolve) => setTimeout(resolve, 1));
+    }
+    const sizes = await Promise.all(requests);
+
+    assertEquals(sizes.filter((size) => size >= bytes.length).length, 0);
+    const stored = await Promise.all(
+      ids.map((id) => busy.exists(`${id}-0x40`)),
+    );
+    assertEquals(stored.filter(Boolean).length, ids.length);
+  } finally {
+    Deno.env.delete("STORAGE_RESIZE_WORKERS");
+    Deno.env.delete("STORAGE_RESIZE_MAX_PENDING");
+    closeResizePool();
+  }
 });

@@ -26,7 +26,7 @@ export class ResizePool {
 
   constructor(
     private readonly size: number,
-    private readonly maxPending: number = size * 4,
+    readonly maxPending: number = size * 4,
     private readonly timeoutMs: number = DEFAULT_TIMEOUT_MS,
   ) {}
 
