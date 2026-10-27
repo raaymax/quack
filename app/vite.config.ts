@@ -42,10 +42,7 @@ export default defineConfig(({ command }) => ({
       "@quack/encryption": path.resolve(__dirname, "../deno/encryption/mod.ts"),
       "@quack/api": path.resolve(__dirname, "../deno/api/mod.ts"),
       "@quack/tools": path.resolve(__dirname, "../deno/tools/mod.ts"),
-      "@jsr/planigale__sse": path.resolve(
-        __dirname,
-        "node_modules/@jsr/planigale__sse",
-      ),
+      "@planigale/sse": path.resolve(__dirname, "../planigale/sse/mod.ts"),
     },
   },
   plugins: [

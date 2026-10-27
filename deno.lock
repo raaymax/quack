@@ -37,7 +37,6 @@
     "jsr:@std/text@1.0.0-rc.1": "1.0.0-rc.1",
     "npm:@cf-wasm/photon@0.3.6": "0.3.6",
     "npm:@faker-js/faker@9.3.0": "9.3.0",
-    "npm:@jsr/planigale__sse@0.2.8": "0.2.8",
     "npm:@node-rs/argon2@2.0.2": "2.0.2",
     "npm:@types/json-schema@^7.0.15": "7.0.15",
     "npm:ajv@^8.17.1": "8.17.1",
@@ -220,32 +219,6 @@
     "@faker-js/faker@9.3.0": {
       "integrity": "sha512-r0tJ3ZOkMd9xsu3VRfqlFR6cz0V/jFYRswAIpC+m/DIfAUXq7g8N7wTAlhSANySXYGKzGryfDXwtwsY8TxEIDw==",
       "deprecated": true
-    },
-    "@jsr/planigale__sse@0.2.8": {
-      "integrity": "sha512-sI8OCEUGiNA1x6aQgXP3afBor1eZYfADsMnezaXdCTHNqSMc7H38q+iCzyYb1v6cC+so6A/HeIENpI9hP/MWMQ==",
-      "dependencies": [
-        "@jsr/std__streams"
-      ],
-      "tarball": "https://npm.jsr.io/~/11/@jsr/planigale__sse/0.2.8.tgz"
-    },
-    "@jsr/std__bytes@1.0.6": {
-      "integrity": "sha512-St6yKggjFGhxS52IFLJWvkchRFbAKg2Xh8UxA4S1EGz7GJ2Ui+ssDDldj/w2c8vCxvl6qgR0HaYbKeFJNqujmA==",
-      "tarball": "https://npm.jsr.io/~/11/@jsr/std__bytes/1.0.6.tgz"
-    },
-    "@jsr/std__io@0.224.9": {
-      "integrity": "sha512-MwBAa4WDb2yOuzbd21cweZfIFnH5I0ICOtCTi2ckHLQ+Dx99gvavXPX+e7nqrahaDuaaBlZcA5TC6XHh99IOpw==",
-      "dependencies": [
-        "@jsr/std__bytes"
-      ],
-      "tarball": "https://npm.jsr.io/~/11/@jsr/std__io/0.224.9.tgz"
-    },
-    "@jsr/std__streams@0.224.5": {
-      "integrity": "sha512-LWs0LfBcyj4VzE3ff1cwoEyJ3AkoIT3CQubxeA0YQr3KEC/c6xB9Rq9nVit8gZ8RgtbMDlyfPtN1MkwTgPFj+g==",
-      "dependencies": [
-        "@jsr/std__bytes",
-        "@jsr/std__io"
-      ],
-      "tarball": "https://npm.jsr.io/~/11/@jsr/std__streams/0.224.5.tgz"
     },
     "@mongodb-js/saslprep@1.3.0": {
       "integrity": "sha512-zlayKCsIjYb7/IdfqxorK5+xUMyi4vOKcFy10wKJYc63NSdKI8mNME+uJqfatkPmOSMMUiojrL58IePKBm3gvQ==",
@@ -589,7 +562,6 @@
       "jsr:@std/assert@1.0.14",
       "jsr:@std/fs@1.0.17",
       "jsr:@std/path@1.1.2",
-      "npm:@jsr/planigale__sse@0.2.8",
       "npm:@node-rs/argon2@2.0.2",
       "npm:mongodb@6.19.0",
       "npm:valibot@1.1.0"

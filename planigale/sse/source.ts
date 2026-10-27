@@ -1,4 +1,4 @@
-import { TextLineStream } from "./deps.ts";
+import { TextLineStream } from "./lines.ts";
 
 export declare interface SSESourceInit extends RequestInit {
   fetch?: typeof fetch;
@@ -94,7 +94,7 @@ export class SSESource {
   #connected: () => void;
   #connectionError: (e: Error) => void;
   #keepAliveTime: number = 10000;
-  #keepAliveTimeout: number | undefined;
+  #keepAliveTimeout: ReturnType<typeof setTimeout> | undefined;
   connected: Promise<void>;
 
   constructor(input: Request | string | URL, opts?: SSESourceInit) {
@@ -180,7 +180,7 @@ export class SSESource {
 
     this.#stream = res.body
       .pipeThrough(new TextDecoderStream())
-      .pipeThrough(new TextLineStream({ allowCR: true }))
+      .pipeThrough(new TextLineStream())
       .pipeThrough(new SSEDecoderStream());
 
     this.#connected();

@@ -16,7 +16,6 @@
     "./planigale/testing"
   ],
   "imports": {
-    "@jsr/planigale__sse": "npm:@jsr/planigale__sse@0.2.8",
     "@std/assert": "jsr:@std/assert@1.0.14",
     "@std/fs": "jsr:@std/fs@1.0.17",
     "@std/path": "jsr:@std/path@1.1.2",

@@ -15,7 +15,6 @@
     "chromatic": "npx chromatic"
   },
   "dependencies": {
-    "@jsr/planigale__sse": "npm:@jsr/planigale__sse@0.2.8",
     "filesize": "11.0.2",
     "fuse.js": "7.1.0",
     "mobx": "6.13.7",

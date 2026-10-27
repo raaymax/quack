@@ -1,7 +1,7 @@
 import { type SSEEvent, SSEStream } from "./stream.ts";
 
 export class SSESink extends EventTarget {
-  #keepAliveTimer: number | undefined;
+  #keepAliveTimer: ReturnType<typeof setInterval> | undefined;
   #keepAliveTime = 3000;
   #closed = false;
   stream: ReadableStream<SSEEvent>;
