@@ -1,4 +1,4 @@
-import { SSESource, type SSESourceInit } from "@jsr/planigale__sse";
+import { SSESource, type SSESourceInit } from "@planigale/sse";
 import {
   ApiErrorResponse,
   Channel,

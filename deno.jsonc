@@ -7,15 +7,15 @@
     "./deno/migrate",
     "./deno/encryption",
     "./deno/api",
-    "./deno/tools"
+    "./deno/tools",
+    "./planigale/planigale",
+    "./planigale/body-parser",
+    "./planigale/querystring",
+    "./planigale/schema",
+    "./planigale/sse",
+    "./planigale/testing"
   ],
   "imports": {
-    "@jsr/planigale__sse": "npm:@jsr/planigale__sse@0.2.8",
-    "@planigale/body-parser": "jsr:@planigale/body-parser@0.2.1",
-    "@planigale/planigale": "jsr:@planigale/planigale@0.6.10",
-    "@planigale/testing": "jsr:@planigale/testing@0.3.6",
-    "@planigale/schema": "jsr:@planigale/schema@0.1.4",
-    "@planigale/sse": "jsr:@planigale/sse@0.2.8",
     "@std/assert": "jsr:@std/assert@1.0.14",
     "@std/fs": "jsr:@std/fs@1.0.17",
     "@std/path": "jsr:@std/path@1.1.2",
@@ -25,7 +25,8 @@
   },
   "fmt": {
     "include": [
-      "deno/**"
+      "deno/**",
+      "planigale/**"
     ],
     "exclude": [
       "deno/server/uploads/**",
@@ -33,7 +34,7 @@
     ]
   },
   "lint": {
-    "include": ["deno/"],
+    "include": ["deno/", "planigale/"],
     "exclude": ["packages/", "deno/server/uploads/**", "**/node_modules/**", "app/.cache", "temp/**"],
     "rules": {
       "tags": ["recommended"],

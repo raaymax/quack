@@ -6,20 +6,6 @@
     "jsr:@cliffy/internal@1.0.0-rc.5": "1.0.0-rc.5",
     "jsr:@cliffy/table@1.0.0-rc.5": "1.0.0-rc.5",
     "jsr:@jd1378/another-cookiejar@^5.0.7": "5.0.7",
-    "jsr:@planigale/body-parser@*": "0.2.1",
-    "jsr:@planigale/body-parser@0.2.1": "0.2.1",
-    "jsr:@planigale/planigale@*": "0.6.10",
-    "jsr:@planigale/planigale@0.6.10": "0.6.10",
-    "jsr:@planigale/planigale@~0.6.10": "0.6.10",
-    "jsr:@planigale/planigale@~0.6.4": "0.6.10",
-    "jsr:@planigale/planigale@~0.6.8": "0.6.10",
-    "jsr:@planigale/querystring@0.1": "0.1.0",
-    "jsr:@planigale/schema@*": "0.1.4",
-    "jsr:@planigale/schema@0.1.4": "0.1.4",
-    "jsr:@planigale/sse@0.2.8": "0.2.8",
-    "jsr:@planigale/sse@~0.2.5": "0.2.8",
-    "jsr:@planigale/testing@*": "0.3.6",
-    "jsr:@planigale/testing@0.3.6": "0.3.6",
     "jsr:@std/assert@0.221": "0.221.0",
     "jsr:@std/assert@1": "1.0.14",
     "jsr:@std/assert@1.0.0": "1.0.0",
@@ -51,8 +37,8 @@
     "jsr:@std/text@1.0.0-rc.1": "1.0.0-rc.1",
     "npm:@cf-wasm/photon@0.3.6": "0.3.6",
     "npm:@faker-js/faker@9.3.0": "9.3.0",
-    "npm:@jsr/planigale__sse@0.2.8": "0.2.8",
     "npm:@node-rs/argon2@2.0.2": "2.0.2",
+    "npm:@types/json-schema@^7.0.15": "7.0.15",
     "npm:ajv@^8.17.1": "8.17.1",
     "npm:google-auth-library@9.15.0": "9.15.0",
     "npm:mongodb@6": "6.19.0",
@@ -91,50 +77,6 @@
     },
     "@jd1378/another-cookiejar@5.0.7": {
       "integrity": "788e22828dd428aaebaedc9acbed6ae7033cc240982a10fcfc34aa72dcf01088"
-    },
-    "@planigale/body-parser@0.2.1": {
-      "integrity": "005c9d126aea22d32a3e45d5790d2eff5398a9ff5f3c827f7380a78042bbe673",
-      "dependencies": [
-        "jsr:@planigale/planigale@~0.6.8",
-        "jsr:@planigale/querystring"
-      ]
-    },
-    "@planigale/planigale@0.6.10": {
-      "integrity": "10ce298b6545fae51f0c33215ff14272f6183647519678e55dfce5c7efff9c8b",
-      "dependencies": [
-        "jsr:@planigale/querystring",
-        "jsr:@planigale/sse@~0.2.5",
-        "jsr:@std/http",
-        "jsr:@std/media-types@1.0.2",
-        "jsr:@std/path@1.0.1"
-      ]
-    },
-    "@planigale/querystring@0.1.0": {
-      "integrity": "1fa1c9a6f81a5501e61501d8a4c6e75690ec45aa4a39b940c45ed051089c769c"
-    },
-    "@planigale/schema@0.1.4": {
-      "integrity": "81e99c5955eeae6891e5034dfb7f1d8c712ecb2117e90bae99a482dab003ca50",
-      "dependencies": [
-        "jsr:@planigale/planigale@~0.6.4",
-        "npm:ajv"
-      ]
-    },
-    "@planigale/sse@0.2.8": {
-      "integrity": "0596e034db0372ffcb9a81318dfe5e6cdc9c8602c18950248277d673cd61d9d8",
-      "dependencies": [
-        "jsr:@std/streams"
-      ]
-    },
-    "@planigale/testing@0.3.6": {
-      "integrity": "adc315a8cd91121a14d51a0dc75194d26f0362baa0914ae1b0b5dc5d5ce42f8f",
-      "dependencies": [
-        "jsr:@jd1378/another-cookiejar",
-        "jsr:@planigale/planigale@~0.6.10",
-        "jsr:@planigale/sse@~0.2.5",
-        "jsr:@std/assert@1",
-        "jsr:@std/media-types@1.0.2",
-        "jsr:@std/path@1.0.1"
-      ]
     },
     "@std/assert@0.221.0": {
       "integrity": "a5f1aa6e7909dbea271754fd4ab3f4e687aeff4873b4cef9a320af813adb489a"
@@ -278,32 +220,6 @@
       "integrity": "sha512-r0tJ3ZOkMd9xsu3VRfqlFR6cz0V/jFYRswAIpC+m/DIfAUXq7g8N7wTAlhSANySXYGKzGryfDXwtwsY8TxEIDw==",
       "deprecated": true
     },
-    "@jsr/planigale__sse@0.2.8": {
-      "integrity": "sha512-sI8OCEUGiNA1x6aQgXP3afBor1eZYfADsMnezaXdCTHNqSMc7H38q+iCzyYb1v6cC+so6A/HeIENpI9hP/MWMQ==",
-      "dependencies": [
-        "@jsr/std__streams"
-      ],
-      "tarball": "https://npm.jsr.io/~/11/@jsr/planigale__sse/0.2.8.tgz"
-    },
-    "@jsr/std__bytes@1.0.6": {
-      "integrity": "sha512-St6yKggjFGhxS52IFLJWvkchRFbAKg2Xh8UxA4S1EGz7GJ2Ui+ssDDldj/w2c8vCxvl6qgR0HaYbKeFJNqujmA==",
-      "tarball": "https://npm.jsr.io/~/11/@jsr/std__bytes/1.0.6.tgz"
-    },
-    "@jsr/std__io@0.224.9": {
-      "integrity": "sha512-MwBAa4WDb2yOuzbd21cweZfIFnH5I0ICOtCTi2ckHLQ+Dx99gvavXPX+e7nqrahaDuaaBlZcA5TC6XHh99IOpw==",
-      "dependencies": [
-        "@jsr/std__bytes"
-      ],
-      "tarball": "https://npm.jsr.io/~/11/@jsr/std__io/0.224.9.tgz"
-    },
-    "@jsr/std__streams@0.224.5": {
-      "integrity": "sha512-LWs0LfBcyj4VzE3ff1cwoEyJ3AkoIT3CQubxeA0YQr3KEC/c6xB9Rq9nVit8gZ8RgtbMDlyfPtN1MkwTgPFj+g==",
-      "dependencies": [
-        "@jsr/std__bytes",
-        "@jsr/std__io"
-      ],
-      "tarball": "https://npm.jsr.io/~/11/@jsr/std__streams/0.224.5.tgz"
-    },
     "@mongodb-js/saslprep@1.3.0": {
       "integrity": "sha512-zlayKCsIjYb7/IdfqxorK5+xUMyi4vOKcFy10wKJYc63NSdKI8mNME+uJqfatkPmOSMMUiojrL58IePKBm3gvQ==",
       "dependencies": [
@@ -414,6 +330,9 @@
       "dependencies": [
         "tslib"
       ]
+    },
+    "@types/json-schema@7.0.15": {
+      "integrity": "sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA=="
     },
     "@types/webidl-conversions@7.0.3": {
       "integrity": "sha512-CiJJvcRtIgzadHCYXw7dqEnMNRjhGZlYK05Mj9OyktqV8uVT8fD2BFOB7S1uwBE3Kj2Z+4UyPmFw/Ixgw/LAlA=="
@@ -640,15 +559,9 @@
   },
   "workspace": {
     "dependencies": [
-      "jsr:@planigale/body-parser@0.2.1",
-      "jsr:@planigale/planigale@0.6.10",
-      "jsr:@planigale/schema@0.1.4",
-      "jsr:@planigale/sse@0.2.8",
-      "jsr:@planigale/testing@0.3.6",
       "jsr:@std/assert@1.0.14",
       "jsr:@std/fs@1.0.17",
       "jsr:@std/path@1.1.2",
-      "npm:@jsr/planigale__sse@0.2.8",
       "npm:@node-rs/argon2@2.0.2",
       "npm:mongodb@6.19.0",
       "npm:valibot@1.1.0"
@@ -673,11 +586,6 @@
       "deno/server": {
         "dependencies": [
           "jsr:@cliffy/command@1.0.0-rc.5",
-          "jsr:@planigale/body-parser@*",
-          "jsr:@planigale/planigale@*",
-          "jsr:@planigale/schema@*",
-          "jsr:@planigale/sse@0.2.8",
-          "jsr:@planigale/testing@*",
           "jsr:@std/assert@1.0.14",
           "jsr:@std/path@1.1.2",
           "npm:@faker-js/faker@9.3.0",
@@ -688,9 +596,6 @@
       },
       "deno/storage": {
         "dependencies": [
-          "jsr:@planigale/planigale@*",
-          "jsr:@planigale/schema@*",
-          "jsr:@planigale/testing@*",
           "jsr:@std/assert@1.0.0",
           "jsr:@std/fs@0.221.0",
           "jsr:@std/media-types@1.0.2",
@@ -698,6 +603,25 @@
           "npm:@cf-wasm/photon@0.3.6",
           "npm:google-auth-library@9.15.0",
           "npm:mongodb@6.12.0"
+        ]
+      },
+      "planigale/body-parser": {
+        "dependencies": [
+          "jsr:@std/streams@~0.224.5"
+        ]
+      },
+      "planigale/planigale": {
+        "dependencies": [
+          "jsr:@std/assert@1",
+          "jsr:@std/http@~0.224.5",
+          "jsr:@std/media-types@1.0.2",
+          "jsr:@std/path@1.0.1",
+          "npm:@types/json-schema@^7.0.15"
+        ]
+      },
+      "planigale/querystring": {
+        "dependencies": [
+          "jsr:@std/assert@1"
         ]
       }
     }

@@ -1,0 +1,5 @@
+{
+  "name": "@planigale/schema",
+  "version": "0.1.4",
+  "exports": "./mod.ts"
+}

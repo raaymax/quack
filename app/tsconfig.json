@@ -32,7 +32,8 @@
     "paths": {
       "@quack/encryption": ["./deno/encryption/mod.ts"],
       "@quack/api": ["./deno/api/mod.ts"],
-      "@quack/tools": ["./deno/tools/mod.ts"]
+      "@quack/tools": ["./deno/tools/mod.ts"],
+      "@planigale/sse": ["./planigale/sse/mod.ts"]
     }
   },
   "include": [
@@ -41,7 +42,8 @@
     ".storybook",
     "../deno/encryption",
     "../deno/api/",
-    "../deno/tools/mod.ts"
+    "../deno/tools/mod.ts",
+    "../planigale/sse/*.ts"
   ],
-  "exclude": ["../**/*_test.ts"]
+  "exclude": ["../**/*_test.ts", "../**/*.test.ts"]
 }

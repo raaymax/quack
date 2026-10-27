@@ -3,9 +3,6 @@
   "version": "1.8.5",
   "exports": "./src/mod.ts",
   "imports": {
-    "@planigale/planigale": "jsr:@planigale/planigale",
-    "@planigale/schema": "jsr:@planigale/schema",
-    "@planigale/testing": "jsr:@planigale/testing",
     "@std/assert": "jsr:@std/assert@1.0.0",
     "@std/media-types": "jsr:@std/media-types@1.0.2",
     "@std/path": "jsr:@std/path@1.0.1",
