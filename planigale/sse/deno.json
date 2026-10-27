@@ -1,0 +1,20 @@
+{
+  "name": "@planigale/sse",
+  "version": "0.2.8",
+  "exports": "./mod.ts",
+  "publish": {
+    "include": [
+      "deno.json",
+      "mod.ts",
+      "sink.ts",
+      "source.ts",
+      "stream.ts",
+      "*.ts",
+      "README.md",
+      "LICENSE"
+    ],
+    "exclude": [
+      "src/**/*.test.ts"
+    ]
+  }
+}
