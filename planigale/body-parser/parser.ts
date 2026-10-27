@@ -2,11 +2,10 @@ import { Middleware } from "@planigale/planigale";
 import * as qs from "@planigale/querystring";
 
 export const bodyParser: Middleware = async (req, next) => {
-  const request = req.request;
-  if (!req.route) {
+  if (!req.route?.definition.schema?.body) {
     return await next();
   }
-  req.body = await loadBody(request);
+  req.body = await loadBody(req.request);
   return await next();
 };
 
