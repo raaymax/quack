@@ -60,9 +60,7 @@ export class HttpInterface extends Planigale {
       });
       this.use(anonymousAccessLog(core));
       this.use(errorHandler);
-      this.use((req, next) =>
-        req.route?.definition.rawBody ? next() : bodyParser(req, next)
-      );
+      this.use(bodyParser);
       this.use(authMiddleware(core));
       this.use(schema.middleware);
       this.use("/api/ping", ping(core));
