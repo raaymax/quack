@@ -53,6 +53,7 @@ deno/
   storage/              # @quack/storage — file storage abstraction (fs/gcs/memory)
   migrate/              # Database migrations
   tools/                # Dev utilities
+planigale/              # HTTP framework (Planigale) packages, Deno workspace members
 plugins/                # Plugin system (e.g., giphy)
 mobile/                 # Capacitor Android shell
 ```
@@ -62,6 +63,7 @@ mobile/                 # Capacitor Android shell
 - **Core** (`deno/server/core/`): Domain logic. `createCommand()` (write ops, Valibot validation, MongoDB transactions) and `createQuery()` (read ops). Internal event bus for cross-domain communication. Domain errors (`AppError`, `ResourceNotFound`, `AccessDenied`).
 - **Infra** (`deno/server/infra/`): Generic `Repo<Query, Model>` base class with CRUD. Domain-specific repos. MongoDB client.
 - **Inter** (`deno/server/inter/`): HTTP routes organized by domain under `http/routes/`. Session-based auth middleware. Error-to-HTTP mapping.
+- **Framework** (`planigale/`): Planigale lives in this repo (no longer pulled from JSR). Fix framework bugs there and add tests next to the code. Request bodies are parsed only for routes that declare `schema.body`; other routes get the raw `ReadableStream` in `req.body` (used by file, avatar and emoji uploads). The frontend imports `@planigale/sse` through a Vite alias and tsconfig path, like `@quack/api`, so `planigale/sse` must stay browser-compatible (no `jsr:`/`npm:` imports, no Deno APIs).
 
 Domains: `channel/`, `message/`, `user/`, `session/`, `emoji/`, `readReceipt/`, `command/`.
 
@@ -84,6 +86,43 @@ SSE:   Core event → SSE stream → API client EventSource → MobX model → o
 
 PBKDF2 key derivation → ECDH key exchange (P-256) → AES-GCM message encryption. XOR-based 2-of-2 secret splitting for key backup.
 
+### Production
+
+nginx → Traefik → app container (so `trustProxy: 2`). Files are stored in GCS. Logs go to stdout and reach Loki/Grafana through the Docker log driver. `entrypoint.sh` runs `deno task migrate` before starting, so migrations run on every deploy.
+
+## Project Rules
+
+### Backend tests
+- **Endpoint tests only, no unit tests.** Test behavior through the HTTP API. If an endpoint should create a log line or a DB record, assert that it did.
+- Extend the existing test file for the domain instead of adding new ones.
+- Use fixed test emails, clean up with `repo.user.removeMany`, and call `core.close()` at the end of tests that use the DB (see `session.test.ts`).
+
+### Layering
+- `inter/http` imports nothing from core except `core/mod.ts`.
+- HTTP-only concerns (rate limiting, client IP, auth logs, HTTP errors) live in `inter/http`, not in core.
+- Core has one command or query per file.
+- Prefer the minimal valid solution over configurable ones (e.g. `trustProxy` is a hop count, not a list of networks).
+
+### Logging & security
+- Log one line per event, built with `JSON.stringify` of the whole object, never by string concatenation, so crafted paths, user agents or emails can't break or inject lines.
+- Never log passwords, header dumps or request body samples.
+- Don't store unauthenticated traffic in MongoDB; it goes to logs only.
+
+### Domain invariants
+- **Files belong to the channel.** Messages, and any future resources, reference files only through `fileIds`; never add back-references like `messageId` on files. New references go through `file:attach`, which validates channel, ownership and draft state. Deleting a message keeps its files. Avatars and custom emoji are not channel files.
+- **The email is the crypto salt.** It seeds PBKDF2 for both the login hash and the encryption key, so changing a user's email is a crypto migration, not a profile edit. Keep the login credential cryptographically separate from the encryption key.
+
+### Dependencies
+- pnpm refuses versions younger than 7 days (`minimumReleaseAge` in `app/pnpm-workspace.yaml`). For `mobile/` (npm), keep the same cooldown with `npm update --before=<date a week ago>`.
+- Run installs non-interactively (`CI=true`) so they can't hang on a prompt. After many incremental installs, do a clean `rm -rf node_modules && pnpm install --frozen-lockfile` before trusting a strange build error.
+- Remove dependencies that nothing imports instead of keeping them around; they only add security alerts.
+- Dev servers (Vite, Storybook) bind to `0.0.0.0`, so their security updates matter even though they never ship.
+
+### Local development & verification
+- The local seed user is `admin` / `123`.
+- `cd app && pnpm types` already reports errors on `dev`. Compare the output against `dev` instead of expecting zero.
+- Verify UI changes in Storybook (`cd app && pnpm storybook`) or in the running app, not only with type checks.
+
 ## Conventions
 
 - **Conventional Commits**: `feat:`, `fix:`, `refactor:`, `chore:`, `docs:`, `test:`, `perf:`
@@ -95,10 +134,51 @@ PBKDF2 key derivation → ECDH key exchange (P-256) → AES-GCM message encrypti
 - Never mention AI usage in code or documentation
 - Do not add AI co-author lines to commits
 
+## GitHub Flow & Releases
+
+- **Features land on `dev`.** Every change is a branch off `dev` with a PR back to `dev`, squash merged. `tests.yml` runs on PRs to `dev`.
+- **`main` only receives release PRs** from `dev`. `dev.yml` builds a dev Docker image for PRs to `main`.
+- **Release PR:** head `dev`, base `main`, title `Release vX.Y.Z` (semver: minor for features, patch for fixes only). It **must carry a label named exactly `vX.Y.Z`**. Create it if missing: `gh label create vX.Y.Z --description "Release vX.Y.Z" --color 0E8A16`. Merge it as a merge commit, not squash.
+- **On merge, `release.yml`** reads the version label, creates the GitHub release and the `vX.Y.Z` tag on `main` (release notes = the PR body), then dispatches `docker.yml` to build and publish the image. Without the label the workflow is skipped and no release happens.
+- **Don't create release tags or GitHub releases by hand.** A tag pushed with a personal token also triggers `docker.yml` on tag push, which duplicates the dispatched build.
+- **No files hold the version**, so there's nothing to bump. `APP_VERSION` is injected at image build time.
+- **Changes since the last release:** `git log --oneline origin/main..origin/dev --no-merges`.
+
+### Release PR body
+
+The body becomes the GitHub release notes. Reference every PR by number:
+
+```markdown
+## Release vX.Y.Z
+
+<One sentence: release type and the main themes.>
+
+## Highlights
+
+- **<Feature>** (#123): <what users get, one or two lines>
+
+## What's included
+
+### Features
+- **<Title>** (#123): <short description>
+
+### Fixes
+- **<Title>** (#124): <symptom and cause in one line>
+
+### Removals / Dependencies / Build & CI
+- <only the sections that apply>
+
+## Deploy notes
+
+- <Required config changes, e.g. new or changed `chat.config` keys and their production values>
+- <Migrations that run on start (the entrypoint runs `deno task migrate`), with what each one does>
+- <Manual checks needed before deploying, behavior changes, caveats>
+```
+
 ## Key Dependencies
 
 **Backend**: `@planigale/planigale` (HTTP framework), `@planigale/sse`, `@planigale/testing` (test agent), `mongodb`, `valibot`
-**Frontend**: `react@19`, `mobx` + `mobx-react-lite`, `styled-components`, `react-router-dom@7`, `vite`, `storybook`
+**Frontend**: `react@19`, `mobx` + `mobx-react-lite`, `styled-components`, `vite`, `storybook`
 
 ## Reference Docs
 

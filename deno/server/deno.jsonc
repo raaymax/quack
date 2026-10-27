@@ -2,11 +2,6 @@
   "imports": {
     "@faker-js/faker": "npm:@faker-js/faker@9.3.0",
     "argon2": "npm:@node-rs/argon2@2.0.2",
-    "@planigale/body-parser": "jsr:@planigale/body-parser",
-    "@planigale/planigale": "jsr:@planigale/planigale",
-    "@planigale/schema": "jsr:@planigale/schema",
-    "@planigale/sse": "jsr:@planigale/sse@0.2.8",
-    "@planigale/testing": "jsr:@planigale/testing",
     "@std/assert": "jsr:@std/assert@1.0.14",
     "@std/path": "jsr:@std/path@1.1.2",
     "mongodb": "npm:mongodb@6.19.0",

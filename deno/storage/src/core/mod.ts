@@ -2,6 +2,7 @@ import type { Config } from "@quack/config";
 import type { FileData, FileMeta, FileOpts, Resolution } from "./types.ts";
 import { files } from "./store/mod.ts";
 import { getResizePool } from "./resizePool.ts";
+import { Limiter } from "./limiter.ts";
 import { ApiError } from "@planigale/planigale";
 
 type ScalingOpts = {
@@ -100,30 +101,43 @@ class Files {
     if (await this.service.exists(targetId)) {
       return this.service.get(targetId);
     }
-    if (!await this.service.exists(id)) {
+    const meta = await this.service.stat(id).catch(() => null);
+    if (!meta) {
       throw new ApiError(404, "FILE_NOT_FOUND", "File not found");
     }
-
-    const file = await this.service.get(id);
     if (
       (!width && !height) ||
-      file.size > MAX_RESIZE_BYTES ||
-      (file.contentType !== "image/jpeg" && file.contentType !== "image/png")
+      meta.size > MAX_RESIZE_BYTES ||
+      !Files.isInspectableImage(meta.contentType)
     ) {
-      return file;
-    }
-
-    const resized = await this.scale(file, width, height);
-    if (!resized) {
       return this.service.get(id);
     }
 
-    await this.service.upload(resized, {
-      id: targetId,
-      filename: file.filename,
-      contentType: file.contentType,
+    return await this.getThumbnailLimiter().run(async () => {
+      if (await this.service.exists(targetId)) {
+        return this.service.get(targetId);
+      }
+      const file = await this.service.get(id);
+      const resized = await this.scale(file, width, height);
+      if (!resized) {
+        return this.service.get(id);
+      }
+      await this.service.upload(resized, {
+        id: targetId,
+        filename: file.filename,
+        contentType: file.contentType,
+      });
+      return this.service.get(targetId);
     });
-    return this.service.get(targetId);
+  }
+
+  private thumbnailLimiter?: Limiter;
+
+  private getThumbnailLimiter(): Limiter {
+    if (!this.thumbnailLimiter) {
+      this.thumbnailLimiter = new Limiter(getResizePool().maxPending);
+    }
+    return this.thumbnailLimiter;
   }
 
   private async scale(

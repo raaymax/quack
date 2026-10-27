@@ -9,7 +9,6 @@ export default (core: Core) =>
     method: "POST",
     url: "/",
     public: false,
-    rawBody: true,
     schema: {
       params: {
         type: "object",

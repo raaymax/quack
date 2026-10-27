@@ -45,24 +45,9 @@ export class HttpInterface extends Planigale {
         },
       });
       schema.addSchema(messageSchema);
-      this.use(async (req, next) => {
-        const start = Date.now();
-        const ret = await next();
-        const time = Date.now() - start;
-        const status = ret instanceof Response ? ret.status : undefined;
-        const line = `${req.method} ${req.url} ${status ?? "-"} ${time}ms`;
-        if ((status !== undefined && status >= 500) || time >= 2000) {
-          console.warn(`[http] ${line}`);
-        } else {
-          console.log(`[http] ${line}`);
-        }
-        return ret;
-      });
       this.use(anonymousAccessLog(core));
       this.use(errorHandler);
-      this.use((req, next) =>
-        req.route?.definition.rawBody ? next() : bodyParser(req, next)
-      );
+      this.use(bodyParser);
       this.use(authMiddleware(core));
       this.use(schema.middleware);
       this.use("/api/ping", ping(core));

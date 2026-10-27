@@ -1,7 +1,8 @@
 import { useState } from "react";
 import styled from "styled-components";
 import { filesize } from "filesize";
-import { FileTypeIcon, getFileCategory } from "../atoms/FileTypeIcon";
+import { getFileCategory } from "../atoms/FileTypeIcon";
+import { FileThumb } from "../atoms/FileThumb";
 import { ProfilePic } from "../atoms/ProfilePic";
 import { Icon } from "../atoms/Icon";
 import { ClassNames, cn, formatDate } from "../../utils";
@@ -143,13 +144,7 @@ const Row = styled.div`
     justify-content: center;
     width: 40px;
     height: 40px;
-
-    img {
-      width: 40px;
-      height: 40px;
-      border-radius: 6px;
-      object-fit: cover;
-    }
+    border-radius: 6px;
   }
 
   .name {
@@ -298,9 +293,12 @@ export const FileListItem = ({
       onClick={() => openFile(file)}
     >
       <div className="thumb">
-        {thumbUrl
-          ? <img src={thumbUrl} alt={file.fileName} />
-          : <FileTypeIcon contentType={file.contentType} size={28} />}
+        <FileThumb
+          src={thumbUrl}
+          alt={file.fileName}
+          contentType={file.contentType}
+          iconSize={28}
+        />
       </div>
 
       <div className="name">

@@ -276,6 +276,10 @@ Deno.test("files - download: thumbnail, disposition, access control", async () =
         .header("Authorization", `Bearer ${token}`)
         .expect(200);
       assertEquals(thumb.headers.get("content-type"), "image/png");
+      assertEquals(
+        thumb.headers.get("cache-control"),
+        "private, max-age=31536000, immutable",
+      );
       const thumbBytes = new Uint8Array(await thumb.arrayBuffer());
       assert(
         thumbBytes.length > 0 && thumbBytes.length < img.length,
