@@ -1,5 +1,4 @@
 import * as v from "valibot";
-import { hash, verify } from "@ts-rex/bcrypt";
 import { createCommand } from "../command.ts";
 import { AccessDenied, ResourceNotFound } from "../errors.ts";
 import { Id } from "../types.ts";

@@ -41,7 +41,9 @@ export default (core: Core) =>
       if (
         !entity ||
         entity.channelId.toString() !== channelId ||
-        entity.status === "deleted"
+        entity.status === "deleted" ||
+        (entity.status === "draft" &&
+          entity.userId.toString() !== String(userId))
       ) {
         throw new ApiError(404, "FILE_NOT_FOUND", "File not found");
       }

@@ -88,6 +88,14 @@ export class AppModel {
     return channel.getPins();
   }
 
+  getFiles(channelId: string) {
+    const channel = this.getChannel(channelId);
+    if (!channel) {
+      return null;
+    }
+    return channel.getFiles();
+  }
+
   setSearch(channelId: string, search: string) {
     const channel = this.getChannel(channelId);
     if (!channel) {

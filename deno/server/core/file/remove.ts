@@ -15,10 +15,7 @@ export default createCommand({
   if (!file) throw new ResourceNotFound("File not found");
   if (file.userId.neq(userId)) throw new NotOwner();
 
-  await repo.file.update({ id: fileId }, {
-    status: "deleted",
-    messageId: null,
-  });
+  await repo.file.update({ id: fileId }, { status: "deleted" });
 
   const stillReferenced = await repo.file.count({
     storageId: file.storageId,

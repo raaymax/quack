@@ -1,12 +1,18 @@
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { NavButton } from "./NavButton";
+import {
+  type ChannelViewKey,
+  ChannelViewList,
+} from "./NavChannelTree";
 import { ClassNames, cn, isMobile, isUserActive } from "../../utils";
 import { client } from "../../core";
 import { User } from "../../types";
+import { Icon } from "../atoms/Icon";
 import { ProfilePic } from "../atoms/ProfilePic";
 import { SectionHeader } from "../atoms/SectionHeader";
 import { useSidebar } from "../contexts/useSidebar";
-import { useNavigate, useParams } from "../AppRouter.tsx";
+import { getActiveView, useNavigate, useParams } from "../AppRouter.tsx";
 import { observer } from "mobx-react-lite";
 import { useApp } from "../contexts/appState";
 import {
@@ -17,7 +23,7 @@ import { getFileUrl } from "../hooks/fileUrl";
 
 const UserListContainer = styled.div`
   .user {
-    padding: 5px 5px 5px 20px;
+    padding: 5px 24px 5px 20px;
     cursor: pointer;
   }
   .user .name {
@@ -38,6 +44,35 @@ const UserListContainer = styled.div`
   .pic-inline {
     vertical-align: middle;
     display: inline-block;
+  }
+
+  .user-entry {
+    position: relative;
+
+    .caret {
+      position: absolute;
+      top: 0;
+      right: 2px;
+      height: 30px;
+      width: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 1;
+      color: ${(props) => props.theme.Labels};
+      transition: transform 0.15s ease;
+
+      &.expanded {
+        transform: rotate(90deg);
+      }
+    }
+  }
+
+  @media (max-width: 710px) {
+    .user-entry .caret {
+      height: 40px;
+    }
   }
 `;
 
@@ -116,36 +151,98 @@ export const NavUserButton = ({
 };
 
 const NavUserContainer = observer(
-  ({ user, badges }: { user: User; badges: ReadReceiptsModel }) => {
+  ({ user, badges, expanded, onToggle, onOpen }: {
+    user: User;
+    badges: ReadReceiptsModel;
+    expanded: boolean;
+    onToggle: () => void;
+    onOpen: () => void;
+  }) => {
     const app = useApp();
     const channel = app.channels.getDirect(String(user.id));
     let navigate = (_path: string) => {};
     try {
       navigate = useNavigate();
     } catch { /*ignore*/ }
-    const { channelId: id } = useParams();
+    const params = useParams();
+    const { channelId: id } = params;
     const { hideSidebar } = useSidebar();
+    const isActive = Boolean(channel) && id === channel?.id;
+    const activeView: ChannelViewKey | null = isActive
+      ? getActiveView(params)
+      : null;
     return (
-      <NavUserButton
-        size={30}
-        user={user as unknown as NavUserButtonProps["user"]}
-        className={{ active: id === channel?.id }}
-        badge={badges.getForChannel(channel?.id ? String(channel.id) : "")}
-        onClick={async () => {
-          const channel = await client.api.putDirectChannel(String(user.id));
-          if (isMobile()) {
-            hideSidebar();
-          }
-          navigate(`/${channel.id}`);
-        }}
-      />
+      <div className="user-entry">
+        {channel && (
+          <span
+            className={cn("caret", { expanded })}
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggle();
+            }}
+          >
+            <Icon icon="chevron" size={12} />
+          </span>
+        )}
+        <NavUserButton
+          size={30}
+          user={user as unknown as NavUserButtonProps["user"]}
+          className={{ active: isActive }}
+          badge={badges.getForChannel(channel?.id ? String(channel.id) : "")}
+          onClick={async () => {
+            try {
+              const channel = await client.api.putDirectChannel(
+                String(user.id),
+              );
+              onOpen();
+              if (isMobile()) {
+                hideSidebar();
+              }
+              navigate(`/${channel.id}`);
+            } catch (err) {
+              console.error(err);
+            }
+          }}
+        />
+        {channel && expanded && (
+          <ChannelViewList
+            channelId={channel.id}
+            activeView={activeView}
+            onSelectView={(channelId, view) => {
+              if (isMobile()) hideSidebar();
+              navigate(
+                view === "files" ? `/${channelId}/files` : `/${channelId}`,
+              );
+            }}
+          />
+        )}
+      </div>
     );
   },
 );
 
-export const NavUsers = observer(() => {
+export const NavUsers = observer((
+  { expandedId: expandedIdProp, onExpand }: {
+    expandedId?: string | null;
+    onExpand?: (id: string | null) => void;
+  } = {},
+) => {
   const app = useApp();
   const users = app.users.getAll();
+  const { channelId: id } = useParams();
+  const [internalExpanded, setInternalExpanded] = useState<string | null>(null);
+  const expandedId = onExpand ? (expandedIdProp ?? null) : internalExpanded;
+  const setExpanded = onExpand ?? setInternalExpanded;
+
+  const activeChannel = id ? app.channels.get(id) : null;
+  const activeDmUser = activeChannel?.isDirect
+    ? activeChannel.otherUser ?? activeChannel.user
+    : null;
+  const activeDmUserId = activeDmUser ? String(activeDmUser.id) : null;
+
+  useEffect(() => {
+    if (activeDmUserId) setExpanded(activeDmUserId);
+  }, [activeDmUserId]);
 
   return (
     <UserListContainer>
@@ -155,6 +252,12 @@ export const NavUsers = observer(() => {
           key={String(user.id)}
           user={user}
           badges={app.readReceipts}
+          expanded={expandedId === String(user.id)}
+          onToggle={() =>
+            setExpanded(
+              expandedId === String(user.id) ? null : String(user.id),
+            )}
+          onOpen={() => setExpanded(String(user.id))}
         />
       ))}
     </UserListContainer>

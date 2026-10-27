@@ -23,11 +23,13 @@ export const files = (config: Config["storage"]) => {
         append: false,
         truncate: true,
       });
-      const s = stream.tee();
-      s[0].pipeTo(file.writable);
-      for await (const chunk of s[1]) {
-        size += chunk.length;
-      }
+      const [toFile, toCount] = stream.tee();
+      await Promise.all([
+        toFile.pipeTo(file.writable),
+        (async () => {
+          for await (const chunk of toCount) size += chunk.length;
+        })(),
+      ]);
       if (options.size && size !== options.size) {
         throw new Error("Size mismatch");
       }

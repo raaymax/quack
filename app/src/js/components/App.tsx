@@ -2,11 +2,11 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import { lazy, Suspense } from "react";
 import { Register } from "./pages/Register.tsx";
-import { PasswordReset } from "./pages/PasswordReset.tsx";
 import { Login } from "./pages/Login.tsx";
 import { ThemeSelectorProvider } from "./contexts/theme.tsx";
 import { observer } from "mobx-react-lite";
 import { AppRouterProvider, useParams } from "./AppRouter.tsx";
+import { PageLoader } from "./atoms/PageLoader.tsx";
 
 declare global {
   interface Navigator {
@@ -35,19 +35,11 @@ const AppContent = observer(() => {
     );
   }
 
-  if (params.isReset) {
-    return (
-      <ThemeSelectorProvider>
-        <PasswordReset />
-      </ThemeSelectorProvider>
-    );
-  }
-
   // Default app route
   return (
     <ThemeSelectorProvider>
       <Login>
-        <Suspense fallback={<div>loading page...</div>}>
+        <Suspense fallback={<PageLoader />}>
           <Secured />
         </Suspense>
       </Login>

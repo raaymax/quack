@@ -5,6 +5,7 @@ import * as enc from "@quack/encryption";
 import { client } from "../client.ts";
 import { ThreadModel } from "./thread.ts";
 import { SearchModel } from "./search.ts";
+import { ChannelFilesModel } from "./channelFiles.ts";
 
 export class ChannelModel {
   id: string;
@@ -13,6 +14,7 @@ export class ChannelModel {
   users: string[];
   threads: Record<string, ThreadModel>;
   search: SearchModel;
+  files: ChannelFilesModel | null = null;
   channelType: "DIRECT" | "PRIVATE" | "PUBLIC";
   root: AppModel;
 
@@ -42,6 +44,8 @@ export class ChannelModel {
       Object.values(this.threads).map((thread) => thread.dispose()),
     );
     this.threads = {};
+    await this.files?.dispose();
+    this.files = null;
   }
 
   get user() {
@@ -119,6 +123,13 @@ export class ChannelModel {
 
   getPins = () => {
     return this.getThread("pins", { pinned: true });
+  };
+
+  getFiles = () => {
+    if (!this.files) {
+      this.files = new ChannelFilesModel(this.id, this.root);
+    }
+    return this.files;
   };
 
   getSearch = (search: string) => {

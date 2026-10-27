@@ -12,10 +12,9 @@ type RouteParams = {
   parentId?: string;
   isSearch: boolean;
   isPins: boolean;
+  isFiles: boolean;
   isInvite: boolean;
-  isReset: boolean;
   inviteToken?: string;
-  resetToken?: string;
 };
 
 type RouterContextType = {
@@ -77,8 +76,8 @@ const parseHash = (hash: string): RouteParams => {
   const params: RouteParams = {
     isSearch: false,
     isPins: false,
+    isFiles: false,
     isInvite: false,
-    isReset: false,
   };
 
   if (!path) return params;
@@ -90,20 +89,9 @@ const parseHash = (hash: string): RouteParams => {
     return params;
   }
 
-  if (path.startsWith("/reset/")) {
-    params.isReset = true;
-    params.resetToken = path.substring(7); // Remove "/reset/"
-    return params;
-  }
-
   // Split path into segments and remove empty segments
   const segments = path.split("/").filter((segment) => segment !== "");
 
-  // Match patterns based on:
-  // /:channelId
-  // /:channelId/search
-  // /:channelId/pins
-  // /:channelId/t/:parentId
   if (segments.length >= 1) {
     params.channelId = segments[0];
 
@@ -112,6 +100,8 @@ const parseHash = (hash: string): RouteParams => {
         params.isSearch = true;
       } else if (segments[1] === "pins") {
         params.isPins = true;
+      } else if (segments[1] === "files") {
+        params.isFiles = true;
       } else if (segments[1] === "t" && segments.length >= 3) {
         params.parentId = segments[2];
       }
@@ -242,6 +232,14 @@ export const useRouter = (): RouterContextType => {
 export const useParams = (): RouteParams => {
   const { params } = useRouter();
   return params;
+};
+
+export const getActiveView = (
+  params: Pick<RouteParams, "isFiles" | "isPins" | "isSearch">,
+): "messages" | "files" | null => {
+  if (params.isFiles) return "files";
+  if (params.isPins || params.isSearch) return null;
+  return "messages";
 };
 
 export const useNavigate = (): (

@@ -2,8 +2,10 @@ import { Main } from "./layout/Main.tsx";
 import { Discussion } from "./layout/Discussion.tsx";
 import { Search } from "./organisms/Search.tsx";
 import { Pins } from "./organisms/Pins.tsx";
+import { ChannelFiles } from "./organisms/ChannelFiles.tsx";
 import { app, client } from "../core/index.ts";
 import { ErrorPageS } from "./pages/ErrorPage.tsx";
+import { PageLoader } from "./atoms/PageLoader.tsx";
 import { AppRouterProvider, useParams, useRouter } from "./AppRouter.tsx";
 import { useEffect, useState } from "react";
 import { InitFailedError, PageNotFoundError } from "./errors.ts";
@@ -21,7 +23,7 @@ const RouteHandler = () => {
         setError(null);
 
         // Handle special routes
-        if (params.isInvite || params.isReset) {
+        if (params.isInvite) {
           setIsInitialLoading(false);
           return;
         }
@@ -53,22 +55,18 @@ const RouteHandler = () => {
     };
 
     loadRoute();
-  }, [params.channelId, params.isInvite, params.isReset]);
+  }, [params.channelId, params.isInvite]);
 
   if (error) {
     return <ErrorPageS error={error} />;
   }
 
   if (isInitialLoading) {
-    return <div>Loading...</div>;
+    return <PageLoader />;
   }
 
   // Handle special routes
   if (params.isInvite) {
-    return null; // This will be handled by the main App component
-  }
-
-  if (params.isReset) {
     return null; // This will be handled by the main App component
   }
 
@@ -78,7 +76,8 @@ const RouteHandler = () => {
       <Main>
         {params.isSearch && <Discussion><Search /></Discussion>}
         {params.isPins && <Discussion><Pins /></Discussion>}
-        {!params.isPins && !params.isSearch && (
+        {params.isFiles && <ChannelFiles />}
+        {!params.isPins && !params.isSearch && !params.isFiles && (
           <Discussion/>
         )}
       </Main>

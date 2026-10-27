@@ -22,23 +22,4 @@ export class UserRepo extends Repo<UserQuery, DbUser> {
         { $set: { [`secrets.${type}`]: data } },
       );
   }
-
-  async upgrade(
-    query: UserQuery,
-    data: { publicKey: JsonWebKey; secrets: Secret },
-  ) {
-    const { db } = await this.connect();
-    await db.collection(this.COLLECTION)
-      .updateOne(
-        this.makeQuery(query),
-        { $set: { publicKey: data.publicKey } },
-      );
-    await db.collection(this.COLLECTION)
-      .updateOne(
-        this.makeQuery(query),
-        { $unset: { password: 1, resetToken: 1 } },
-      );
-
-    await this.updateCredentials(query, "password", data.secrets);
-  }
 }

@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { useSize } from "../contexts/useSize.ts";
+import type { ChannelType } from "../../types.ts";
 import { ClassNames, cn } from "../../utils.ts";
 import { observer } from "mobx-react-lite";
 
@@ -34,6 +35,15 @@ const iconMap: Record<string, string> = {
   logout: "fa-solid fa-right-from-bracket",
   "system-user": "fa-solid fa-user-gear",
   user: "fa-solid fa-user",
+  download: "fa-solid fa-download",
+  upload: "fa-solid fa-upload",
+  grid: "fa-solid fa-table-cells-large",
+  list: "fa-solid fa-list",
+  files: "fa-solid fa-folder",
+  file: "fa-solid fa-file",
+  messages: "fa-solid fa-comment",
+  calendar: "fa-solid fa-calendar-day",
+  chevron: "fa-solid fa-chevron-right",
   smile: "fa-regular fa-face-smile",
   moon: "fa-regular fa-moon",
   sun: "fa-regular fa-sun",
@@ -42,6 +52,12 @@ const iconMap: Record<string, string> = {
 } as const;
 
 export type IconNames = keyof typeof iconMap;
+
+export const CHANNEL_ICON: Record<ChannelType, IconNames> = {
+  PUBLIC: "hash",
+  PRIVATE: "lock",
+  DIRECT: "user",
+};
 
 const getIcon = (icon: string) => {
   const [key, mod] = icon?.split(":") ?? [];

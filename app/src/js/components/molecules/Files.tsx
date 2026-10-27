@@ -12,16 +12,21 @@ const IMAGE_TYPES = [
 const RAW_IMAGE_TYPES = ["image/gif", "image/webp"];
 
 const Container = styled.div`
-  max-width: calc(100% - 96px);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 100%;
+
   .file-list {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    gap: 16px;
-    .fli {
-      min-width: 100px;
-      max-width: 400px;
-    }
+    gap: 6px;
+  }
+
+  .file-list.others {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   }
 `;
 
@@ -38,68 +43,52 @@ type FilesProps = {
   list: FileData[];
 };
 
-type ImageFileItemProps = {
-  file: FileData;
-  raw: boolean;
+const getImageSrc = (file: FileData, height: number) => {
+  if (!file.url) return "";
+  if (RAW_IMAGE_TYPES.includes(file.contentType)) return file.url;
+  return `${file.url}?h=${height}`;
 };
 
-const ImageFileItem = ({ file, raw }: ImageFileItemProps) => {
-  const src = raw ? file.url : file.url ? `${file.url}?h=240` : undefined;
+const getDownloadUrl = (file: FileData) =>
+  file.url ? `${file.url}?download=true` : undefined;
+
+export const Files = ({ list }: FilesProps) => {
+  if (list.length === 0) return null;
+  const images = list.filter((file) => IMAGE_TYPES.includes(file.contentType));
+  const others = list.filter((file) => !IMAGE_TYPES.includes(file.contentType));
+  const single = images.length === 1;
 
   return (
-    <div className="fli">
-      <Image
-        raw={raw}
-        fileName={file.fileName}
-        src={src ?? ""}
-        downloadUrl={file.url}
-        size={file.size}
-      />
-    </div>
+    <Container className="cmp-files">
+      {images.length > 0 && (
+        <div className="file-list images">
+          {images.map((file) => (
+            <Image
+              key={file.id || file.clientId}
+              variant={single ? "single" : "tile"}
+              fileName={file.fileName}
+              src={getImageSrc(file, single ? 560 : 320)}
+              openUrl={file.url}
+              downloadUrl={getDownloadUrl(file)}
+              size={file.size}
+            />
+          ))}
+        </div>
+      )}
+      {others.length > 0 && (
+        <div className="file-list others">
+          {others.map((file) => (
+            <File
+              key={file.id || file.clientId}
+              fileName={file.fileName}
+              contentType={file.contentType}
+              size={file.size}
+              openUrl={file.url}
+              downloadUrl={getDownloadUrl(file)}
+            />
+          ))}
+        </div>
+      )}
+    </Container>
   );
 };
-
-type NonImageFileItemProps = {
-  file: FileData;
-};
-
-const NonImageFileItem = ({ file }: NonImageFileItemProps) => {
-  const downloadUrl = file.url ? `${file.url}?download=true` : undefined;
-
-  return (
-    <File
-      fileName={file.fileName}
-      contentType={file.contentType}
-      downloadUrl={downloadUrl}
-    />
-  );
-};
-
-export const Files = ({ list }: FilesProps) =>
-  list.length > 0
-    ? (
-      <Container className="cmp-files">
-        <div className="file-list">
-          {list
-            .filter((file) => IMAGE_TYPES.includes(file.contentType))
-            .map((file) => {
-              const raw = RAW_IMAGE_TYPES.includes(file.contentType);
-              return (
-                <ImageFileItem
-                  key={file.id || file.clientId}
-                  file={file}
-                  raw={raw}
-                />
-              );
-            })}
-        </div>
-        <div className="file-list">
-          {list
-            .filter((file) => !IMAGE_TYPES.includes(file.contentType))
-            .map((file) => (
-              <NonImageFileItem key={file.id || file.clientId} file={file} />
-            ))}
-        </div>
-      </Container>
-    )
-    : null;

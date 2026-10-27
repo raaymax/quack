@@ -14,9 +14,17 @@ const meta: Meta<typeof File> = {
       control: "text",
       description: "MIME type of the file",
     },
-    downloadUrl: {
+    size: {
+      control: "number",
+      description: "File size in bytes",
+    },
+    openUrl: {
       control: "text",
       description: "URL to open on click",
+    },
+    downloadUrl: {
+      control: "text",
+      description: "URL used by the download button",
     },
   },
 };
@@ -28,6 +36,7 @@ export const Primary: Story = {
   args: {
     fileName: "file.txt",
     contentType: "text/plain",
+    size: 1200,
   },
 };
 
@@ -35,6 +44,18 @@ export const WithDownload: Story = {
   args: {
     fileName: "document.pdf",
     contentType: "application/pdf",
+    size: 2048000,
+    openUrl: "https://example.com/document.pdf",
     downloadUrl: "https://example.com/document.pdf",
+  },
+};
+
+export const LongName: Story = {
+  args: {
+    fileName: "quarterly-financial-report-final-version-2-reviewed.xlsx",
+    contentType:
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    size: 512000,
+    downloadUrl: "https://example.com/report.xlsx",
   },
 };
