@@ -57,6 +57,7 @@ export default (core: Core) =>
       res.headers.set("Content-Type", file.contentType);
       res.headers.set("Content-Length", file.size.toString());
       res.headers.set("X-Content-Type-Options", "nosniff");
+      res.headers.set("Cache-Control", "private, max-age=31536000, immutable");
       const safeName = entity.fileName.replace(/[\r\n"\\]/g, "_");
       const inline = !req.query.download &&
         INLINE_SAFE_TYPES.has(file.contentType);

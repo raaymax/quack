@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { filesize } from "filesize";
-import { FileTypeIcon } from "../atoms/FileTypeIcon";
+import { FileThumb } from "../atoms/FileThumb";
 import { ClassNames, cn, formatDate } from "../../utils";
 import {
   FileActions,
@@ -32,12 +32,6 @@ const Card = styled.div`
     height: 120px;
     background-color: ${(props) => props.theme.Channel.Background};
     overflow: hidden;
-
-    img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
   }
 
   .meta {
@@ -131,9 +125,12 @@ export const FileGridItem = ({
       />
 
       <div className="preview">
-        {thumbUrl
-          ? <img src={thumbUrl} alt={file.fileName} />
-          : <FileTypeIcon contentType={file.contentType} size={48} />}
+        <FileThumb
+          src={thumbUrl}
+          alt={file.fileName}
+          contentType={file.contentType}
+          iconSize={48}
+        />
       </div>
 
       <div className="meta">

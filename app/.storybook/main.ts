@@ -24,6 +24,7 @@ const config: StorybookConfig = {
         "@quack/encryption": path.resolve(__dirname, "../../deno/encryption/mod.ts"),
         "@quack/api": path.resolve(__dirname, "../../deno/api/mod.ts"),
         "@quack/tools": path.resolve(__dirname, "../../deno/tools/mod.ts"),
+        "@planigale/sse": path.resolve(__dirname, "../../planigale/sse/mod.ts"),
       },
     };
     return config;
