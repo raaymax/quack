@@ -27,12 +27,6 @@ export default defineConfig(({ command }) => ({
           target: "http://localhost:4001",
           changeOrigin: true,
           secure: false,
-          configure: (proxy) => {
-            proxy.on("proxyRes", (res) => {
-              delete res.headers["connection"];
-              delete res.headers["keep-alive"];
-            });
-          },
         },
       },
     }

@@ -85,7 +85,8 @@ Deno.test("[Res] event stream", async () => {
   const response = res.toResponse();
   assertEquals(response.headers.get("Content-Type"), "text/event-stream");
   assertEquals(response.headers.get("Cache-Control"), "no-cache");
-  assertEquals(response.headers.get("Connection"), "keep-alive");
+  assertEquals(response.headers.get("Connection"), null);
+  assertEquals(response.headers.get("Keep-Alive"), null);
   assert(response.body instanceof ReadableStream);
   response.body.getReader().read().then(({ value }) => {
     assertEquals(new TextDecoder().decode(value), "data:test\n\n");

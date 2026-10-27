@@ -55,8 +55,6 @@ export class SSESink extends EventTarget {
     return {
       "content-type": "text/event-stream",
       "cache-control": "no-cache",
-      "connection": "keep-alive",
-      "keep-alive": `timeout=${Number.MAX_SAFE_INTEGER}`,
     };
   }
 
