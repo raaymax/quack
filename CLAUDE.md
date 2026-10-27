@@ -95,6 +95,47 @@ PBKDF2 key derivation → ECDH key exchange (P-256) → AES-GCM message encrypti
 - Never mention AI usage in code or documentation
 - Do not add AI co-author lines to commits
 
+## GitHub Flow & Releases
+
+- **Features land on `dev`.** Every change is a branch off `dev` with a PR back to `dev`, squash merged. `tests.yml` runs on PRs to `dev`.
+- **`main` only receives release PRs** from `dev`. `dev.yml` builds a dev Docker image for PRs to `main`.
+- **Release PR:** head `dev`, base `main`, title `Release vX.Y.Z` (semver: minor for features, patch for fixes only). It **must carry a label named exactly `vX.Y.Z`**. Create it if missing: `gh label create vX.Y.Z --description "Release vX.Y.Z" --color 0E8A16`. Merge it as a merge commit, not squash.
+- **On merge, `release.yml`** reads the version label, creates the GitHub release and the `vX.Y.Z` tag on `main` (release notes = the PR body), then dispatches `docker.yml` to build and publish the image. Without the label the workflow is skipped and no release happens.
+- **Don't create release tags or GitHub releases by hand.** A tag pushed with a personal token also triggers `docker.yml` on tag push, which duplicates the dispatched build.
+- **No files hold the version**, so there's nothing to bump. `APP_VERSION` is injected at image build time.
+- **Changes since the last release:** `git log --oneline origin/main..origin/dev --no-merges`.
+
+### Release PR body
+
+The body becomes the GitHub release notes. Reference every PR by number:
+
+```markdown
+## Release vX.Y.Z
+
+<One sentence: release type and the main themes.>
+
+## Highlights
+
+- **<Feature>** (#123): <what users get, one or two lines>
+
+## What's included
+
+### Features
+- **<Title>** (#123): <short description>
+
+### Fixes
+- **<Title>** (#124): <symptom and cause in one line>
+
+### Removals / Dependencies / Build & CI
+- <only the sections that apply>
+
+## Deploy notes
+
+- <Required config changes, e.g. new or changed `chat.config` keys and their production values>
+- <Migrations that run on start (the entrypoint runs `deno task migrate`), with what each one does>
+- <Manual checks needed before deploying, behavior changes, caveats>
+```
+
 ## Key Dependencies
 
 **Backend**: `@planigale/planigale` (HTTP framework), `@planigale/sse`, `@planigale/testing` (test agent), `mongodb`, `valibot`
