@@ -63,6 +63,7 @@ mobile/                 # Capacitor Android shell
 - **Core** (`deno/server/core/`): Domain logic. `createCommand()` (write ops, Valibot validation, MongoDB transactions) and `createQuery()` (read ops). Internal event bus for cross-domain communication. Domain errors (`AppError`, `ResourceNotFound`, `AccessDenied`).
 - **Infra** (`deno/server/infra/`): Generic `Repo<Query, Model>` base class with CRUD. Domain-specific repos. MongoDB client.
 - **Inter** (`deno/server/inter/`): HTTP routes organized by domain under `http/routes/`. Session-based auth middleware. Error-to-HTTP mapping.
+- **Framework** (`planigale/`): Planigale lives in this repo (no longer pulled from JSR). Fix framework bugs there and add tests next to the code. The frontend imports `@planigale/sse` through a Vite alias and tsconfig path, like `@quack/api`, so `planigale/sse` must stay browser-compatible (no `jsr:`/`npm:` imports, no Deno APIs). Root `deno fmt`/`deno lint` don't cover `planigale/`; it keeps its own style.
 
 Domains: `channel/`, `message/`, `user/`, `session/`, `emoji/`, `readReceipt/`, `command/`.
 
@@ -99,8 +100,6 @@ PBKDF2 key derivation → ECDH key exchange (P-256) → AES-GCM message encrypti
 ## Key Dependencies
 
 **Backend**: `@planigale/planigale` (HTTP framework), `@planigale/sse`, `@planigale/testing` (test agent), `mongodb`, `valibot`
-
-Planigale lives in this repo under `planigale/` (no longer pulled from JSR). Fix framework bugs there and add tests next to the code. The frontend imports `@planigale/sse` through a Vite alias and tsconfig path, like `@quack/api`, so `planigale/sse` must stay browser-compatible (no `jsr:`/`npm:` imports, no Deno APIs). Root `deno fmt`/`deno lint` don't cover `planigale/`; it keeps its own style.
 **Frontend**: `react@19`, `mobx` + `mobx-react-lite`, `styled-components`, `react-router-dom@7`, `vite`, `storybook`
 
 ## Reference Docs
