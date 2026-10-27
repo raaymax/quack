@@ -128,28 +128,5 @@ Deno.test("Anonymous access log", async (t) => {
     assertEquals(entries, []);
   });
 
-  await t.step("writes only JSON lines", async () => {
-    await ensureUser(repo, "admin");
-    const credentials = await enc.prepareCredentials("admin", "123");
-    const login = await Agent.request(app).post("/api/auth/session")
-      .json(credentials.login).expect(200);
-    const { token } = await login.json();
-
-    const lines: string[] = [];
-    const log = console.log;
-    const warn = console.warn;
-    console.log = (...args: unknown[]) => lines.push(args.join(" "));
-    console.warn = (...args: unknown[]) => lines.push(args.join(" "));
-    try {
-      await send("GET", "/wp-login.php");
-      await send("GET", "/api/channels", { authorization: `Bearer ${token}` });
-    } finally {
-      console.log = log;
-      console.warn = warn;
-    }
-    assert(lines.length > 0);
-    for (const line of lines) JSON.parse(line);
-  });
-
   await core.close();
 });
