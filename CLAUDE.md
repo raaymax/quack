@@ -53,6 +53,7 @@ deno/
   storage/              # @quack/storage — file storage abstraction (fs/gcs/memory)
   migrate/              # Database migrations
   tools/                # Dev utilities
+planigale/              # HTTP framework (Planigale) packages, Deno workspace members
 plugins/                # Plugin system (e.g., giphy)
 mobile/                 # Capacitor Android shell
 ```
@@ -98,6 +99,8 @@ PBKDF2 key derivation → ECDH key exchange (P-256) → AES-GCM message encrypti
 ## Key Dependencies
 
 **Backend**: `@planigale/planigale` (HTTP framework), `@planigale/sse`, `@planigale/testing` (test agent), `mongodb`, `valibot`
+
+Planigale lives in this repo under `planigale/` (no longer pulled from JSR). Fix framework bugs there and add tests next to the code. The frontend imports `@planigale/sse` through a Vite alias and tsconfig path, like `@quack/api`, so `planigale/sse` must stay browser-compatible (no `jsr:`/`npm:` imports, no Deno APIs). Root `deno fmt`/`deno lint` don't cover `planigale/`; it keeps its own style.
 **Frontend**: `react@19`, `mobx` + `mobx-react-lite`, `styled-components`, `react-router-dom@7`, `vite`, `storybook`
 
 ## Reference Docs
